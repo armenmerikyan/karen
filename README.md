@@ -1,5 +1,14 @@
 # karen
+
 Website software for people, businesses, organizations, AI agents for information management and much more.
+
+- Friends List 
+- Post 
+- Friends Feed 
+- Wallets
+- History 
+- Admin
+- Keys 
 
 # Karen Project Setup
 
