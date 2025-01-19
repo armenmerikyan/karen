@@ -1,14 +1,14 @@
 # karen
 People, Businesses, Organizations, AI Agents
 
-# GameBackrooms Project Setup
+# Karen Project Setup
 
-This guide outlines the necessary steps to set up and configure your server and environment for the GameBackrooms project.
+This guide outlines the necessary steps to set up and configure your server and environment for the Karen project.
 
 Before starting, make sure you have the following installed:
 
 - Ubuntu server (or similar Linux distribution)
-- A domain name pointing to your server (e.g., gamebackrooms.com)
+- A domain name pointing to your server (e.g., <YOURDOMANNAME>.com)
 - SSH access to your server
 
 ## 1. Install and Configure Nginx
@@ -41,7 +41,7 @@ Install Certbot and configure SSL for your domain:
 sudo apt install certbot python3-certbot-nginx
 sudo ufw allow 80/tcp   # Allows HTTP traffic on port 80
 sudo ufw allow 443/tcp  # Allows HTTPS traffic on port 443
-sudo certbot --nginx -d gamebackrooms.com -d www.gamebackrooms.com --email info@gamebackrooms.com
+sudo certbot --nginx -d <YOURDOMANNAME>.com -d www.<YOURDOMANNAME>.com --email info@<YOURDOMANNAME>.com
 ```
 
 ## 3. Set Up Python Virtual Environment
@@ -66,9 +66,9 @@ sudo apt install -y git
 Create and enable a systemd service for Athena:
 
 ```bash
-sudo vi /etc/systemd/system/athena.service
+sudo vi /etc/systemd/system/karen.service
 sudo systemctl daemon-reload
-sudo systemctl enable athena
+sudo systemctl enable karen
 ```
 
 ## 5. Set Up SSH Keys
@@ -81,10 +81,10 @@ ssh-keygen -t ed25519 -C "h12600653@gmail.com"
 eval "$(ssh-agent -s)"
 ```
 
-Clone the Athena repository:
+Clone the Karen repository:
 
 ```bash
-git clone git@github.com:gamebackrooms/athena.git
+git clone git@github.com:armenmerikyan/karen.git
 ```
 
 ## 6. Install Project Dependencies
