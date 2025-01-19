@@ -1,91 +1,97 @@
 # karen
-Personal / Business Website Application
+Personal \ Business \ Organizations \ AI Agents
 
+# GameBackrooms Project Setup
 
-#Instructions 
+This guide outlines the necessary steps to set up and configure your server and environment for the GameBackrooms project.
 
- 
+Before starting, make sure you have the following installed:
 
-# Nginx and Python Environment Setup
+- Ubuntu server (or similar Linux distribution)
+- A domain name pointing to your server (e.g., gamebackrooms.com)
+- SSH access to your server
 
-This guide provides step-by-step instructions for setting up Nginx, a Python virtual environment, and configuring HTTPS for your server.
+## 1. Install and Configure Nginx
 
-## Prerequisites
-Ensure you have sudo privileges on your server.
+Install Nginx and set it up to run automatically:
 
----
-
-## Steps
-
-### 1. Update and Install Nginx
 ```bash
-sudo apt update
 sudo apt install -y nginx
 sudo systemctl start nginx
 sudo systemctl enable nginx
 ```
 
-### 2. Configure Nginx
-Edit the default Nginx configuration file:
+Configure Nginx for the project:
+
 ```bash
 sudo vi /etc/nginx/sites-available/default
 ```
-After making changes, restart Nginx:
+
+Restart Nginx to apply changes:
+
 ```bash
 sudo systemctl restart nginx
 ```
 
-### 3. Set Up Python Virtual Environment
+## 2. Install SSL with Certbot
+
+Install Certbot and configure SSL for your domain:
+
+```bash
+sudo apt install certbot python3-certbot-nginx
+sudo ufw allow 80/tcp   # Allows HTTP traffic on port 80
+sudo ufw allow 443/tcp  # Allows HTTPS traffic on port 443
+sudo certbot --nginx -d gamebackrooms.com -d www.gamebackrooms.com --email info@gamebackrooms.com
+```
+
+## 3. Set Up Python Virtual Environment
+
+Install Python 3 and set up a virtual environment:
+
 ```bash
 sudo apt install -y python3-venv
 python3 -m venv gmenv
 source gmenv/bin/activate
 ```
 
-### 4. Install Certbot for HTTPS
-```bash
-sudo apt install certbot python3-certbot-nginx
-```
-Allow HTTP and HTTPS traffic through the firewall:
-```bash
-sudo ufw allow 80/tcp   # Allows HTTP traffic on port 80
-sudo ufw allow 443/tcp  # Allows HTTPS traffic on port 443
-```
-Generate SSL certificates using Certbot:
-```bash
-sudo certbot --nginx -d gamebackrooms.com -d www.gamebackrooms.com --email info@gamebackrooms.com
-```
+Update system packages and install Git:
 
-### 5. Install Git
 ```bash
 sudo apt update
 sudo apt install -y git
 ```
 
-### 6. Configure and Enable Systemd Service
-Create a systemd service file:
+## 4. Set Up Systemd Service
+
+Create and enable a systemd service for Athena:
+
 ```bash
 sudo vi /etc/systemd/system/athena.service
-```
-Reload systemd and enable the service:
-```bash
 sudo systemctl daemon-reload
 sudo systemctl enable athena
 ```
 
----
+## 5. Set Up SSH Keys
 
-## Notes
-- Replace `gamebackrooms.com` and `info@gamebackrooms.com` with your actual domain and email.
-- Ensure your Nginx configuration file is correctly set up to point to your web application.
-- Test your server setup thoroughly after completing these steps.
+Generate SSH keys and configure the SSH agent:
 
-
+```bash
 cd ~/.ssh
 ssh-keygen -t ed25519 -C "h12600653@gmail.com"
 eval "$(ssh-agent -s)"
-git clone git@github.com:gamebackrooms/athena.git
+```
 
+Clone the Athena repository:
+
+```bash
+git clone git@github.com:gamebackrooms/athena.git
+```
+
+## 6. Install Project Dependencies
+
+Install the required Python packages:
+
+```bash
 pip install django
 pip install django-allauth
 pip install django-cors-headers
@@ -99,8 +105,22 @@ pip install pynacl
 pip install social-auth-app-django
 pip install djangorestframework
 pip install psycopg2-binary
+```
 
+## 7. Set Up the Django Project
+
+Make migrations, apply them, and run the development server:
+
+```bash
 python3 manage.py makemigrations
 python3 manage.py migrate
 python3 manage.py runserver
+```
+
+Create a superuser for the Django admin:
+
+```bash
 python manage.py createsuperuser
+```
+
+Ensure that all steps are completed for a smooth setup of the GameBackrooms project.
