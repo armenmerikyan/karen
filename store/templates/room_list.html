@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Room List</h1>
+        
+        {% if rooms %}
+            <table class="table table-striped table-bordered text-white">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Room ID</th>
+                        <th>External ID</th>
+                        <th>External Date Created</th>
+                        <th>Internal Created At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for room in rooms %}
+                        <tr >
+                            <td>{{ room.id }}</td>
+                            <td>{{ room.external_id }}</td>
+                            <td>{{ room.external_date_created }}</td>
+                            <td>{{ room.created_at }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="alert alert-warning">No rooms available.</p>
+        {% endif %}
+    </div>
+{% endblock %}

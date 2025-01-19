@@ -1,0 +1,163 @@
+/* Global Styles */
+body {
+  background-color: #000000; /* Dark background */
+  color: #00FF00; /* Terminal green text color */
+  font-family: 'Courier New', Courier, monospace; /* Terminal character type */
+  text-align: left !important; /* Ensure left alignment */
+  font-size: 16px; /* Adjust font size as desired */
+  line-height: 1.5; /* Improve readability */
+}
+
+/* Card Body Styles */
+.custom-card-body,
+.custom-card-body .list-group-item {
+  background-color: inherit !important; /* Inherit background color from body */
+  color: inherit !important; /* Inherit text color from body */
+}
+
+.custom-card-body .list-group-item:hover {
+  background-color: rgba(31, 31, 31, 0.8) !important; /* Dark hover effect */
+  color: #00FF00 !important;
+}
+
+/* Headings */
+.custom-card-body h3, 
+.custom-card-body h5 {
+  color: inherit !important;
+}
+
+/* Navbar and Footer Styling */
+.navbar, footer {
+  background-color: rgba(31, 31, 31, 0.8) !important;
+  color: #00FF00 !important;
+}
+
+/* Content Container */
+.content-container {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  padding: 20px !important;
+  border-radius: 8px !important;
+  color: #00FF00 !important;
+}
+
+/* Button Styles */
+.btn-dark-custom {
+  background-color: #000000 !important;
+  color: #00FF00 !important;
+}
+
+.btn-dark-custom:hover {
+  background-color: #555 !important;
+  border-color: #666 !important;
+}
+
+/* Footer with Enforced Colors */
+footer {
+  padding: 15px 0 !important;
+  background-color: #000000 !important;
+  color: #00FF00 !important;
+}
+
+footer a {
+  color: #00FF00 !important;
+  text-decoration: none !important;
+}
+
+footer a:hover {
+  text-decoration: underline !important;
+}
+
+/* Navbar Specific Styles */
+.navbar {
+  background-color: rgba(31, 31, 31, 0.9) !important;
+  color: #00FF00 !important;
+}
+
+.navbar-brand,
+.navbar-nav .nav-link {
+  color: #00FF00 !important;
+  font-weight: bold !important;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #00AA00 !important; /* Slightly darker green on hover */
+}
+
+.navbar-toggler {
+  background-color: #00FF00 !important;
+}
+
+.navbar-toggler-icon {
+  filter: invert(1) !important;
+}
+
+/* Active Link Styling */
+.navbar-nav .nav-item.active .nav-link,
+.navbar-nav .nav-link.active {
+  color: #00AA00 !important;
+  font-weight: bold !important;
+  border-bottom: 2px solid #00FF00 !important;
+}
+
+/* Additional Styling */
+a.terminal-green {
+  color: #00FF00 !important;
+  text-decoration: none; /* Optional: Remove underline */
+}
+
+a.terminal-green:hover {
+  color: #ffffff !important; /* White on hover */
+  text-decoration: none; /* Remove underline on hover */
+}
+
+.text-muted {
+  color: #00CC00 !important; /* Slightly muted green for secondary text */
+}
+
+/* Conversation Logs */
+.convo-logs .list-group-item {
+  background-color: #333333 !important;
+  border: 1px solid #555555 !important;
+  color: #00FF00 !important;
+}
+
+.convo-logs .list-group-item:hover {
+  background-color: #444444 !important;
+}
+
+/* Danger Button */
+.btn-danger {
+  color: #FFFFFF !important;
+  background-color: #FF3333 !important;
+  border-color: #FF3333 !important;
+}
+
+.btn-danger:hover {
+  background-color: #CC0000 !important;
+  border-color: #CC0000 !important;
+}
+
+/* Pagination */
+.pagination .page-link {
+  background-color: #333333 !important;
+  color: #00FF00 !important;
+  border: 1px solid #555555 !important;
+}
+
+.pagination .page-item.disabled .page-link {
+  color: #00CC00 !important;
+}
+
+.pagination .page-link:hover {
+  background-color: #444444 !important;
+}
+.dashed-line {
+  border: none;  /* Remove default border */
+  border-top: 2px dashed #00FF00;  /* Change this to the exact terminal-green color code */
+  width: 100%;  /* Full width */
+  margin: 20px 0;  /* Optional, adds space above and below the line */
+}
+.bg-custom-green {
+  background-color: #28a745;
+  color: #FFFFFF !important;
+}
