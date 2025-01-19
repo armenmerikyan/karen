@@ -1,5 +1,5 @@
 # karen
-Personal \ Business \ Organizations \ AI Agents
+People, Businesses, Organizations, AI Agents
 
 # GameBackrooms Project Setup
 
