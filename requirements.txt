@@ -1,0 +1,13 @@
+django
+django-allauth
+django-cors-headers
+PyJWT
+openai==0.28.0
+Pillow
+lxml
+pandas
+base58
+pynacl
+social-auth-app-django
+djangorestframework
+psycopg2-binary
