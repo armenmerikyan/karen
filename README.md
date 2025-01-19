@@ -1,5 +1,5 @@
 # karen
-Web Site Software for People, Businesses, Organizations, AI Agents for Information Management and much more.
+Website Software for People, Businesses, Organizations, AI Agents for Information Management and much more.
 
 # Karen Project Setup
 
