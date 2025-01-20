@@ -615,7 +615,7 @@ def index(request):
 
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
-        profile = WebsiteProfile(name="", about_us="")
+        profile = WebsiteProfile(name="add name", about_us="some info about usS")
 
          
     
