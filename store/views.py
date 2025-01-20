@@ -456,6 +456,10 @@ def view_twitter_status(request):
     return render(request, 'twitter_status_list.html', {'statuses': statuses})
 
 def login_view(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -465,7 +469,7 @@ def login_view(request):
             return redirect('index')
         else:
             return render(request, 'login.html', {'error': 'Invalid credentials'})
-    return render(request, 'login.html')
+    return render(request, 'login.html', { 'profile': profile})
 
 
 @csrf_exempt
