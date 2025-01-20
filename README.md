@@ -123,26 +123,10 @@ Restart=always
 WantedBy=multi-user.target
 ```
 
-## 5. Set Up SSH Keys
-
-Generate SSH keys and configure the SSH agent:
+## 5. Clone the Karen repository
 
 ```bash
-cd ~/.ssh
-ssh-keygen -t ed25519 -C "h12600653@gmail.com"
-eval "$(ssh-agent -s)"
-```
-
-Clone the Karen repository:
-
-```bash
-git clone git@github.com:armenmerikyan/karen.git
-
 git clone https://github.com/armenmerikyan/karen.git
-
-sudo apt update
-
-sudo apt install sqlite3
 
 ```
 
@@ -151,6 +135,10 @@ sudo apt install sqlite3
 Install the required Python packages:
 
 ```bash
+sudo apt update
+sudo apt install sqlite3
+
+
 pip install -r requirements.txt
 
 or 
