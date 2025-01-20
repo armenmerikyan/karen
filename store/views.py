@@ -91,6 +91,7 @@ from .models import WebsiteProfile
 from .forms import TweetForm 
 from .forms import TokenMarketingContentForm
 from .forms import TweetForm 
+from .forms import WebsiteProfileForm
 
 from .serializers import ConversationTopicSerializer
 
@@ -626,6 +627,18 @@ def index(request):
     response = render(request, 'index.html', context) 
 
     return response
+
+def list_and_add_website_profiles(request):
+    if request.method == 'POST':
+        form = WebsiteProfileForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('list_and_add_website_profiles')
+    else:
+        form = WebsiteProfileForm()
+
+    profiles = WebsiteProfile.objects.all()
+    return render(request, 'website_profiles.html', {'form': form, 'profiles': profiles})
 
 def generate_id():
     return uuid.uuid4().hex

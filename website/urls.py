@@ -85,6 +85,7 @@ urlpatterns = [
 
     path('memory/', views.MemoryView.as_view(), name='create_memory'),
     path('memory/<int:memory_id>/', views.MemoryView.as_view(), name='memory_detail'),
+    path('website-profiles/', views.list_and_add_website_profiles, name='list_and_add_website_profiles'),
 
 ]
 

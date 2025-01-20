@@ -5,6 +5,7 @@ from store.models import Brand
 from store.models import Category
 from store.models import Product
 from store.models import Cart
+from store.models import WebsiteProfile
 from .models import TokenMarketingContent
 from store.models import Tweet
 
@@ -108,3 +109,8 @@ class CartForm(forms.ModelForm):
             "shipping_zipcode",
             "shipping_country"
         ]
+
+class WebsiteProfileForm(forms.ModelForm):
+    class Meta:
+        model = WebsiteProfile
+        fields = ['name', 'about_us']
