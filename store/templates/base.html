@@ -2,7 +2,7 @@
 <html>
   {% load static %}
 <head>
-<title>GameBackrooms</title>
+<title>{{ profile.name}}</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -30,7 +30,7 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-        <a class="navbar-brand" href="/">gamebackrooms</a> 
+        <a class="navbar-brand" href="/">{{ profile.name}}</a> 
         <ul class="navbar-nav">
             <li class="nav-item"> 
               <a href="{% url 'about_us' %}" class="nav-link">about</a>
