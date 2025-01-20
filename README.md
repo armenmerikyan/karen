@@ -81,8 +81,8 @@ Install Python 3 and set up a virtual environment:
 
 ```bash
 sudo apt install -y python3-venv
-python3 -m venv gmenv
-source gmenv/bin/activate
+python3 -m venv kenv
+source kenv/bin/activate
 ```
 
 Update system packages and install Git:
