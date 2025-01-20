@@ -35,6 +35,26 @@ Configure Nginx for the project:
 ```bash
 sudo vi /etc/nginx/sites-available/default
 ```
+```default
+server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+	root /var/www/html;
+	index index.html index.htm index.nginx-debian.html;
+
+	server_name www.<YOURDOMANNAME>.com <YOURDOMANNAME>.com;
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-CSRFToken $http_x_csrftoken;
+        proxy_set_header X-CSRF-TOKEN $http_x_csrf_token;
+	    proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 600s;
+    }
+} 
+```
 
 Restart Nginx to apply changes:
 
