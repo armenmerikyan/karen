@@ -191,13 +191,10 @@ python3 manage.py runserver
 Create a superuser for the Django admin:
 
 ```bash
-python manage.py createsuperuser
+python3 manage.py createsuperuser
 ```
 
 Ensure that all steps are completed for a smooth setup of the GameBackrooms project.
 
-
-```bash
-python manage.py createsuperuser
-```
+ 
 
