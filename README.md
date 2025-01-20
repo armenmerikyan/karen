@@ -100,6 +100,25 @@ sudo systemctl daemon-reload
 sudo systemctl enable karen
 ```
 
+```Service
+[Unit]
+Description=Django Web Application
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/root/karen
+
+# Use the Python interpreter from the virtual environment to run the Django server
+ExecStart=/root/gmenv/bin/python /root/karen/manage.py runserver 127.0.0.1:8000
+
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
 ## 5. Set Up SSH Keys
 
 Generate SSH keys and configure the SSH agent:
