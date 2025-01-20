@@ -506,6 +506,7 @@ class Account(models.Model):
 class WebsiteProfile(models.Model):
     name = models.CharField(max_length=255, help_text="The name of the website.")
     about_us = models.TextField(help_text="Information about the website.")
+    wallet = models.CharField(max_length=255, help_text="The address of the Soalan Wallet.")
     created_at = models.DateTimeField(auto_now_add=True, help_text="The date and time when the profile was created.")
     updated_at = models.DateTimeField(auto_now=True, help_text="The date and time when the profile was last updated.")
 
