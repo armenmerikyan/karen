@@ -623,8 +623,7 @@ def index(request):
         'profile': profile, 
     }
     
-    response = render(request, 'index.html', context)
-    response.set_cookie('access_id', access_id)
+    response = render(request, 'index.html', context) 
 
     return response
 
