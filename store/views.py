@@ -179,7 +179,13 @@ def strip_non_unicode(text):
     return None
 
 def about_us(request):
-    return render(request, 'about_us.html')
+    
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+ 
+
+    return render(request, 'about_us.html', { 'profiles': profiles})
 
 def terms_of_service(request):
     return render(request, 'terms_of_service.html')
@@ -616,7 +622,7 @@ def index(request):
 
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
-        profile = WebsiteProfile(name="add name", about_us="some info about usS")
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
 
          
     
