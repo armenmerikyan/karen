@@ -11,6 +11,10 @@ from django.utils.timezone import now
 register = template.Library()
 
 @register.filter
+def add_class(value, class_name):
+    return value.as_widget(attrs={'class': class_name})
+
+@register.filter
 def elapsed_time(created_date):
     # Calculate time difference
     elapsed = now() - created_date
