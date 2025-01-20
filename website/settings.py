@@ -159,6 +159,7 @@ WSGI_APPLICATION = 'website.wsgi.application'
 
 ## RDS Deployment
 # AWS RDS settings
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',

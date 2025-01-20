@@ -112,6 +112,8 @@ User=root
 Group=root
 WorkingDirectory=/root/karen
 
+Environment="ALLOWED_HOSTS=<YOURDOMAINNAME>.com"
+
 # Use the Python interpreter from the virtual environment to run the Django server
 ExecStart=/root/kenv/bin/python /root/karen/manage.py runserver 127.0.0.1:8000
 
@@ -137,6 +139,11 @@ Clone the Karen repository:
 git clone git@github.com:armenmerikyan/karen.git
 
 git clone https://github.com/armenmerikyan/karen.git
+
+sudo apt update
+
+sudo apt install sqlite3
+
 ```
 
 ## 6. Install Project Dependencies
@@ -188,3 +195,9 @@ python manage.py createsuperuser
 ```
 
 Ensure that all steps are completed for a smooth setup of the GameBackrooms project.
+
+
+```bash
+python manage.py createsuperuser
+```
+
