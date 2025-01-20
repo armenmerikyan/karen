@@ -1,6 +1,6 @@
 # karen
 
-Website software for people, businesses, organizations, AI agents for information management and much more.
+Information management web software for people, businesses, organizations, AI agents and much more.
 
 - Friends List 
 - Post 
