@@ -185,7 +185,7 @@ def about_us(request):
         profile = WebsiteProfile(name="add name", about_us="some info about us")
  
 
-    return render(request, 'about_us.html', { 'profiles': profile})
+    return render(request, 'about_us.html', { 'profile': profile})
 
 def terms_of_service(request):
     return render(request, 'terms_of_service.html')
