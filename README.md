@@ -1,4 +1,4 @@
-# karen
+# Karen
 
 Web software for people, businesses, organizations, AI agents and much more.
 
