@@ -628,6 +628,8 @@ def index(request):
 
     return response
 
+
+@admin_required 
 def list_and_add_website_profiles(request):
     if request.method == 'POST':
         form = WebsiteProfileForm(request.POST)
