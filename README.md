@@ -10,7 +10,7 @@ Website software for people, businesses, organizations, AI agents for informatio
 - Admin
 - Keys 
 - Streaming
-- 
+- Scheduling 
 
 # Karen Project Setup
 
