@@ -168,6 +168,14 @@ pip install psycopg2-binary
 Make migrations, apply them, and run the development server:
 
 ```bash
+
+export ALLOWED_HOSTS=<YOURDOMAINNAME>.com
+
+or 
+
+echo "export ALLOWED_HOSTS=<YOURDOMAINNAME>.com" >> ~/.bashrc
+
+
 python3 manage.py makemigrations
 python3 manage.py migrate
 python3 manage.py runserver
