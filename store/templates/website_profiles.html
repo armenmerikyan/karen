@@ -39,7 +39,10 @@
             <h2>Existing Profiles</h2>
             <ul>
                 {% for profile in profiles %}
-                    <li><strong>{{ profile.name }}</strong>: {{ profile.about_us }}</li>
+                    <li><strong>{{ profile.name }}</strong>: {{ profile.about_us }}
+                    <hr>
+                    {{ profile.wallet }}
+                    </li>
                 {% endfor %}
             </ul>
              
