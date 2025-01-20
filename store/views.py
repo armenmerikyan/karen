@@ -86,6 +86,7 @@ from .models import RaidLink
 from .models import Tweet
 from .models import Room
 from .models import Memory
+from .models import WebsiteProfile
 
 from .forms import TweetForm 
 from .forms import TokenMarketingContentForm
@@ -608,96 +609,18 @@ def toggle_handle_status(request, handle_id):
     handle.save()
     return redirect('index')  # Redirect to the list view (update the name if different)
 
-
-@admin_required
+ 
 def index(request):
+ 
 
-    acc_code = request.GET.get('acc_code', '').strip()
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="", about_us="")
 
-    return redirect('login')
-        
-    access_id = request.COOKIES.get('access_id')
-    access_token = None
-    create_token = False
-
-    try:
-        if access_id:
-            access_token = Accesstoken.objects.get(access_cookie=access_id)
-        else:
-            create_token = True
-    except Accesstoken.DoesNotExist:
-        create_token = True
-
-    if create_token:
-        public_key = '0xUN' + generate_id()
-        access_id = generate_id()
-        token_amount_float = 10.0
-        bank_default_balance = 1000
-        access_token, created = Accesstoken.objects.get_or_create(
-            public_wallet_address=public_key,
-            defaults={
-                'access_cookie': access_id,
-                'token_balance': token_amount_float,
-                'bank_balance': bank_default_balance,
-            }
-        )
-
-    cart_id = request.COOKIES.get('cartId')
-    if cart_id is None:
-        cart_id = generate_id()
-
-    social_media_handles = SocialMediaHandle.objects.all().order_by('-follower_count')
-    filter_option = request.GET.get('filter', 'all')
-    
-    if filter_option == 'active':
-        social_media_handles = social_media_handles.filter(is_active=True)
-    elif filter_option == 'inactive':
-        social_media_handles = social_media_handles.filter(is_active=False)
-
-    random_handles = social_media_handles.order_by('?')[:50]
-    latest_marketing_content = None
-
-    topic_id = request.GET.get('id')
-    search_query = request.GET.get('search', '')
-
-    # Initialize convo_logs queryset
-    convo_logs = ConvoLog.objects.all().order_by('-created_date')
-    
-    # Filter by topic if `topic_id` is provided
-    if topic_id:
-        try:
-            topic = ConversationTopic.objects.get(id=topic_id)
-            convo_logs = convo_logs.filter(topic=topic.title)
-        except ConversationTopic.DoesNotExist:
-            pass
-
-    # Apply search filter if search_query exists
-    if search_query:
-        convo_logs = convo_logs.filter(message__icontains=search_query)
-
-    # Pagination setup for convo_logs
-    paginator = Paginator(convo_logs, 10)
-    page_number = request.GET.get('page', 1)
-    page_obj = paginator.get_page(page_number)
-
-    # Calculate elapsed time for each log in the current page
-    for log in page_obj:
-        elapsed_time = now() - log.created_date
-        log.elapsed_time = int(elapsed_time.total_seconds())
-
-    form = TweetForm()
+         
     
     context = {
-        'access_token': access_token,
-        'tokenMintAddress': MY_TOKEN,
-        'pokerGPT_version': pokerGPT_version,
-        'social_media_handles': random_handles,
-        'filter_option': filter_option,
-        'latest_marketing_content': latest_marketing_content,
-        'form': form,
-        'page_obj': page_obj,
-        'topic_id': topic_id,
-        'search_query': search_query,
+        'profile': profile, 
     }
     
     response = render(request, 'index.html', context)
