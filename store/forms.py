@@ -113,4 +113,4 @@ class CartForm(forms.ModelForm):
 class WebsiteProfileForm(forms.ModelForm):
     class Meta:
         model = WebsiteProfile
-        fields = ['name', 'about_us']
+        fields = ['name', 'about_us', 'wallet']
