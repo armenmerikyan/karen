@@ -657,6 +657,19 @@ def list_and_add_website_profiles(request):
     profiles = WebsiteProfile.objects.all()
     return render(request, 'website_profiles.html', {'form': form, 'profiles': profiles, 'profile': profile})
 
+@admin_required 
+def admin_panel(request):
+
+
+    
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+ 
+ 
+     
+    return render(request, 'admin.html', { 'profile': profile})
+
 def generate_id():
     return uuid.uuid4().hex
 

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+
+{% block content %}
+
+<!-- Displaying JSON data -->
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">  
+ 
+            <a href="{% url 'list_and_add_website_profiles' %}" class="nav-link">Admin</a>
+                       
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>    
+
+{% endblock %}
