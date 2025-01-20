@@ -135,6 +135,8 @@ Clone the Karen repository:
 
 ```bash
 git clone git@github.com:armenmerikyan/karen.git
+
+git clone https://github.com/armenmerikyan/karen.git
 ```
 
 ## 6. Install Project Dependencies
