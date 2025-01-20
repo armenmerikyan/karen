@@ -182,7 +182,7 @@ Create a superuser for the Django admin:
 python3 manage.py createsuperuser
 ```
 
-Ensure that all steps are completed for a smooth setup of the GameBackrooms project.
+Ensure that all steps are completed for a smooth setup of the Karen project.
 
  
 
