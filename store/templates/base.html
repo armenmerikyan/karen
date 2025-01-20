@@ -41,9 +41,16 @@
             <li class="nav-item"> 
               <a href="{% url 'tweet_list' %}" class="nav-link">list</a>
             </li> 
+            {% if not user.is_authenticated %}
             <li class="nav-item"> 
-              <a href="{% url 'login' %}" class="nav-link">login</a>
-            </li> 
+              <a href="{% url 'login' %}" class="nav-link">Login</a>
+            </li>
+            {% else %}
+            <li class="nav-item"> 
+              <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+            </li>
+            {% endif %}
+            
             <li class="nav-item"> 
               <a href="{% url 'admin_panel' %}" class="nav-link">Admin</a>
             </li> 
