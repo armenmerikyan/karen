@@ -87,6 +87,7 @@ urlpatterns = [
     path('memory/<int:memory_id>/', views.MemoryView.as_view(), name='memory_detail'),
     path('website_profiles/', views.list_and_add_website_profiles, name='list_and_add_website_profiles'),
     path('admin_panel/', views.admin_panel, name='admin_panel'),
+    path('logout/', views.custom_logout_view, name='logout'),
 
 ]
 

@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.template import loader
@@ -136,6 +136,7 @@ from django.http import HttpResponseForbidden
 from functools import wraps
 from django.shortcuts import redirect
 
+
 pokerGPT_version = "00.00.06"
 small_blind_size = 10
 big_blind_size = 20
@@ -219,6 +220,9 @@ def delete_convo_log(request, id):
     return redirect('index')  # Replace 'convo_log_list' with your list view name
 
 
+def custom_logout_view(request):
+    logout(request)
+    return redirect('login')  # Redirect to the login page or any other page after logout
 
 def conversation_topics(request):
     topics_list = ConversationTopic.objects.all().order_by('-created_date')
