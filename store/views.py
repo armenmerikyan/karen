@@ -637,6 +637,15 @@ def index(request):
 
 @admin_required 
 def list_and_add_website_profiles(request):
+
+
+    
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+ 
+ 
+    
     if request.method == 'POST':
         form = WebsiteProfileForm(request.POST)
         if form.is_valid():
@@ -646,7 +655,7 @@ def list_and_add_website_profiles(request):
         form = WebsiteProfileForm()
 
     profiles = WebsiteProfile.objects.all()
-    return render(request, 'website_profiles.html', {'form': form, 'profiles': profiles})
+    return render(request, 'website_profiles.html', {'form': form, 'profiles': profiles, 'profile': profile})
 
 def generate_id():
     return uuid.uuid4().hex
