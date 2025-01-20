@@ -113,7 +113,7 @@ Group=root
 WorkingDirectory=/root/karen
 
 # Use the Python interpreter from the virtual environment to run the Django server
-ExecStart=/root/gmenv/bin/python /root/karen/manage.py runserver 127.0.0.1:8000
+ExecStart=/root/kenv/bin/python /root/karen/manage.py runserver 127.0.0.1:8000
 
 Restart=always
 
@@ -144,6 +144,10 @@ git clone https://github.com/armenmerikyan/karen.git
 Install the required Python packages:
 
 ```bash
+pip install -r requirements.txt
+
+or 
+
 pip install django
 pip install django-allauth
 pip install django-cors-headers
