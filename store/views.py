@@ -179,8 +179,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import render, redirect 
 from django.conf import settings 
 
 def register(request):
