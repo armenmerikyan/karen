@@ -80,7 +80,7 @@ Install Certbot and configure SSL for your domain:
 sudo apt install certbot python3-certbot-nginx
 sudo ufw allow 80/tcp   # Allows HTTP traffic on port 80
 sudo ufw allow 443/tcp  # Allows HTTPS traffic on port 443
-sudo certbot --nginx -d <YOURDOMANNAME>.com -d www.<YOURDOMANNAME>.com --email info@<YOURDOMANNAME>.com
+sudo certbot --nginx -d YOURDOMANNAME.com -d www.YOURDOMANNAME.com --email info@YOURDOMANNAME.com
 ```
 
 ## 3. Set Up Python Virtual Environment
