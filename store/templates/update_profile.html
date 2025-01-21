@@ -1,5 +1,19 @@
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Update Profile</button>
-</form>
+
+{% extends 'base.html' %}
+{% block content %}
+<section class="d-flex align-items-center justify-content-center" style="min-height: 50vh;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center text-light">
+                <!-- Content for the right column goes here -->
+                <h4>Update Profile</h4> 
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">Update Profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
