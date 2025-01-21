@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+
 from store.models import User
 from store.models import Brand
 from store.models import Category
@@ -10,18 +12,17 @@ from store.models import TokenProfile
 from .models import TokenMarketingContent
 from store.models import Tweet
 
+
 class TokenMarketingContentForm(forms.ModelForm):
     class Meta:
         model = TokenMarketingContent
         fields = ['marketing_content', 'contract_address']
 
 
-class UserCreationForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput)
-
+class UserCreationForm(UserCreationForm): 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password']
+        fields = ['username', 'email', 'first_name', 'last_name']
  
 
 class TweetForm(forms.ModelForm):
