@@ -88,7 +88,10 @@ from .models import Room
 from .models import Memory
 from .models import WebsiteProfile
 from .models import TokenProfile
+from .models import TokenProfile
 
+
+from .forms import TokenProfileForm
 from .forms import TokenProfileForm
 from .forms import TweetForm 
 from .forms import TokenMarketingContentForm
@@ -223,18 +226,18 @@ def delete_convo_log(request, id):
 
 @admin_required
 def token_list(request):
-    tokens = Token.objects.all()
+    tokens = TokenProfile.objects.all()
     return render(request, 'tokens/token_list.html', {'tokens': tokens})
 
 @admin_required
 def add_token(request):
     if request.method == 'POST':
-        form = TokenForm(request.POST)
+        form = TokenProfileForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('token_list')
     else:
-        form = TokenForm()
+        form = TokenProfileForm()
     return render(request, 'tokens/add_token.html', {'form': form})
 
 
