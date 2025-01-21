@@ -197,18 +197,24 @@ def register(request):
             # Send email verification
             current_site = get_current_site(request)
             subject = "Verify your email address"
+            
+
             message = render_to_string('email_verification.html', {
                 'user': user,
                 'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'uidb64': urlsafe_base64_encode(force_bytes(user.pk)),  # Pass uidb64, not uid
                 'token': default_token_generator.make_token(user),
             })
+            
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
             return redirect('email_verification_sent')  # Page showing verification message
     else:
         form = UserCreationForm()
     return render(request, 'register.html', {'form': form, 'profile': profile})
+
+def email_verification_sent(request):
+    return render(request, 'email_verification_sent.html')
 
 def email_verification_confirm(request, uidb64, token):
     try:
