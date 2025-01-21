@@ -186,6 +186,18 @@ def register(request):
         form = UserCreationForm()
     return render(request, 'register.html', {'form': form, 'profile': profile})
 
+@login_required
+def update_profile(request):
+    if request.method == 'POST':
+        form = UserProfileUpdateForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')  # Redirect to profile page after update
+    else:
+        form = UserProfileUpdateForm(instance=request.user)
+    
+    return render(request, 'update_profile.html', {'form': form})
+
 def admin_required(view_func):
     """
     Decorator to ensure the user is logged in and is a superuser.
