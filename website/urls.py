@@ -89,7 +89,7 @@ urlpatterns = [
     path('admin_panel/', views.admin_panel, name='admin_panel'),
     path('logout/', views.custom_logout_view, name='logout'),
     path('token_list', views.token_list, name='token_list'),
-    path('add/', views.add_token, name='add_token'),
+    path('add_token/', views.add_token, name='add_token'),
 
 ]
 
