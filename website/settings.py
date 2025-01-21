@@ -269,6 +269,11 @@ LOGGING = {
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"  # Options: "none", "optional", "mandatory"
+ACCOUNT_AUTHENTICATION_METHOD = "email"  # Use email as the login identifier
+ACCOUNT_USERNAME_REQUIRED = False
+
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_PORT = 587
