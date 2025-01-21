@@ -22,6 +22,7 @@ from django.conf import settings
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import LoginView 
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.views import PasswordResetConfirmView 
 
 urlpatterns = [  
     path('admin/', admin.site.urls), 
@@ -100,6 +101,7 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
+    path('verify-email/<uidb64>/<token>/', views.email_verification_confirm, name='email_verification_confirm'),
 
     path("accounts/", include("allauth.urls")),
 
