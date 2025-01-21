@@ -97,6 +97,7 @@ from .forms import TweetForm
 from .forms import TokenMarketingContentForm
 from .forms import TweetForm 
 from .forms import WebsiteProfileForm
+from .forms import UserCreationForm  # You need to create this form
 
 from .serializers import ConversationTopicSerializer
 
@@ -140,6 +141,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from functools import wraps
 from django.shortcuts import redirect
+
+
 
 
 pokerGPT_version = "00.00.06"
