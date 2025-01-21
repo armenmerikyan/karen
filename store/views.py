@@ -662,10 +662,13 @@ def index(request):
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
 
-         
+
+    tokens = TokenProfile.objects.filter(visible=True)
+ 
     
     context = {
-        'profile': profile, 
+        'profile': profile,
+        'tokens': tokens, 
     }
     
     response = render(request, 'index.html', context) 

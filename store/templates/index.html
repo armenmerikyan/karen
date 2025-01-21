@@ -30,6 +30,16 @@
               <code class="text-break"><a href="https://x.com/{{profile.x_handle}}" >@{{profile.x_handle}}</a></code>
             </div>
         </div>    
+
+        <div class="col-md-12 text-center"> 
+          {% for token in tokens %}
+          <li>
+              {{ token.name }} - {{ token.address }}  
+              <BR>
+              {{ token.description }}  
+          </li>
+          {% endfor %}    
+        </div>        
       </div>
       
     </div>
