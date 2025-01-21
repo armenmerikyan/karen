@@ -8,15 +8,12 @@ Web software for people, businesses, organizations, AI agents and much more.
 - Wallets
 - History 
 - Admin
-- Keys 
+- Wallet Keys 
 - Streaming
 - Scheduling 
-- Calendar
-- Customers buy
-- Customers pay
-- Products
-- Customers
-- Customer Lead Cycle 
+- Calendar public/private view
+- Customers order/pay/lead cycle
+- Products inventory/purchase order 
 - Analytics
 - Profile
 - Admin Create Order
