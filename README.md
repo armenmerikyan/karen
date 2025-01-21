@@ -52,7 +52,7 @@ server {
 	root /var/www/html;
 	index index.html index.htm index.nginx-debian.html;
 
-	server_name www.<YOURDOMANNAME>.com <YOURDOMANNAME>.com;
+	server_name www.YOURDOMANNAME.com YOURDOMANNAME.com;
     location / {
         proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
