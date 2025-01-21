@@ -192,7 +192,7 @@ def update_profile(request):
         form = UserProfileUpdateForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect('profile')  # Redirect to profile page after update
+            return redirect('index')  # Redirect to profile page after update
     else:
         form = UserProfileUpdateForm(instance=request.user)
     
