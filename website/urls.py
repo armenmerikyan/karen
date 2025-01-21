@@ -104,6 +104,7 @@ urlpatterns = [
     path('verify-email/<uidb64>/<token>/', views.email_verification_confirm, name='email_verification_confirm'),
     
     path("accounts/", include("allauth.urls")),
+    path('email-verification-sent/', views.email_verification_sent, name='email_verification_sent'),
 
 ]
 
