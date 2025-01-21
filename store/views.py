@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_backends
 from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.template import loader
