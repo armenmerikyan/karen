@@ -529,12 +529,13 @@ def login_view(request):
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
+        logger.info(f"Authenticate returned: {user}")
         if user is not None:
             login(request, user)
             return redirect('index')
         else:
             return render(request, 'login.html', {'error': 'Invalid credentials', 'profile': profile})
-    return render(request, 'login.html', { 'profile': profile})
+    return render(request, 'login.html', {'profile': profile})
 
 
 @csrf_exempt
