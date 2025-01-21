@@ -181,8 +181,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
-from django.conf import settings
-from myapp.models import WebsiteProfile  # Adjust the import for your model
+from django.conf import settings 
 
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
