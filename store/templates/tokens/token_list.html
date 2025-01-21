@@ -4,19 +4,41 @@
     <title>Token List</title>
 </head>
 <body>
-    <h1>Token List</h1>
-    <ul>
-        {% for token in tokens %}
-            <li>
-                {{ token.name }} - {{ token.address }} - 
-                {% if token.visible %}
-                    Visible
-                {% else %}
-                    Hidden
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'add_token' %}">Add New Token</a>
+
 </body>
 </html>
+
+{% extends '../base.html' %}
+
+{% load custom_filters %}
+
+{% block content %}
+
+<!-- Displaying JSON data -->
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">  
+            <h1>Token List</h1>
+            <ul>
+                {% for token in tokens %}
+                    <li>
+                        {{ token.name }} - {{ token.address }} - 
+                        {% if token.visible %}
+                            Visible
+                        {% else %}
+                            Hidden
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+            <HR>
+            <a href="{% url 'add_token' %}">Add New Token</a>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>    
+{% endblock %} 
