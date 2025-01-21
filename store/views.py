@@ -201,6 +201,10 @@ def register(request):
             subject = "Verify your email address"
             
 
+            user = get_user_model().objects.get(id=user_id)  # Get user by ID
+            uidb64 = urlsafe_base64_encode(force_bytes(user.pk))  # Encode user ID
+            token = default_token_generator.make_token(user)  # Generate token
+
             message = render_to_string('email_verification.html', {
                 'user': user,
                 'domain': request.get_host(),
