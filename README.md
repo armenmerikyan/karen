@@ -121,7 +121,8 @@ Group=root
 WorkingDirectory=/root/karen
 
 Environment="ALLOWED_HOSTS=YOURDOMAINNAME.com"
-
+Environment="EMAIL_HOST_PASSWORD=YOURAPIKEY"
+Environment="DEFAULT_FROM_EMAIL=INFO@YOURDOMAINNAME.COM"
 # Use the Python interpreter from the virtual environment to run the Django server
 ExecStart=/root/kenv/bin/python /root/karen/manage.py runserver 127.0.0.1:8000
 
@@ -164,6 +165,7 @@ pip install pynacl
 pip install social-auth-app-django
 pip install djangorestframework
 pip install psycopg2-binary
+pip install sendgrid
 ```
 
 ## 7. Set Up the Django Project

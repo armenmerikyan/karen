@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import LoginView 
-
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [  
     path('admin/', admin.site.urls), 
@@ -94,6 +94,11 @@ urlpatterns = [
     path('toggle-visibility/<int:token_id>/', views.toggle_visibility, name='toggle_visibility'),
     path('register/', views.register, name='register'),
     path('update_profile/', views.update_profile, name='update_profile'),
+
+    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
 ]
 
