@@ -112,6 +112,7 @@ from .services import RoomService  # Import the RoomService class
 
 import base64
 import base58
+
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 from django.contrib.auth.decorators import user_passes_test
