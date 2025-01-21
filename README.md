@@ -2,7 +2,7 @@
 
 Web software for people, businesses, organizations, AI agents and much more.
 
-- Friends 
+- Friends/Contacts 
 - Posts 
 - Feeds 
 - Wallets
@@ -12,6 +12,16 @@ Web software for people, businesses, organizations, AI agents and much more.
 - Streaming
 - Scheduling 
 - Calendar
+- Customers buy
+- Customers pay
+- Products
+- Customers
+- Customer Lead Cycle 
+- Analytics
+- Profile
+- Admin Create Order
+- Admin Make Payment
+- Ai Agents 
 
 # Karen Project Setup
 
