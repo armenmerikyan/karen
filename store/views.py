@@ -170,7 +170,12 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+
+            # Specify the backend explicitly
+            backend = get_backends()[0]  # Use the first backend as default
+            user.backend = f"{backend.__module__}.{backend.__class__.__name__}"
             login(request, user)
+
             return redirect('home')  # Redirect to home or a dashboard
     else:
         form = UserCreationForm()
