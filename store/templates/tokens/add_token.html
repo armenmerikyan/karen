@@ -13,10 +13,40 @@
  
 
             <h1>Add New Token</h1>
-            <form method="post">
+            <form method="post" class="needs-validation" novalidate>
                 {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Add Token</button>
+                <div class="mb-3">
+                    <div class="form-group">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+                        {{ form.name|add_class:"form-control" }}
+                        <small class="form-text text-muted">{{ form.name.help_text }}</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                        {{ form.description|add_class:"form-control" }}
+                        <small class="form-text text-muted">{{ form.description.help_text }}</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.image_uri.id_for_label }}" class="form-label">Image URI</label>
+                        {{ form.image_uri|add_class:"form-control" }}
+                        <small class="form-text text-muted">{{ form.image_uri.help_text }}</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.address.id_for_label }}" class="form-label">Address</label>
+                        {{ form.address|add_class:"form-control" }}
+                        <small class="form-text text-muted">{{ form.address.help_text }}</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.visible.id_for_label }}" class="form-label">Visible</label>
+                        {{ form.visible|add_class:"form-check-input" }}
+                        <small class="form-text text-muted">{{ form.visible.help_text }}</small>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Token</button>
             </form>
             <a href="{% url 'token_list' %}">Back to Token List</a>
         </div>
