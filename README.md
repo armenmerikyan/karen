@@ -147,25 +147,8 @@ Install the required Python packages:
 sudo apt update
 sudo apt install sqlite3
 
-
 pip install -r requirements.txt
 
-or 
-
-pip install django
-pip install django-allauth
-pip install django-cors-headers
-pip install PyJWT
-pip install openai==0.28.0
-pip install Pillow
-pip install lxml
-pip install pandas
-pip install base58
-pip install pynacl
-pip install social-auth-app-django
-pip install djangorestframework
-pip install psycopg2-binary
-pip install sendgrid
 ```
 
 ## 7. Set Up the Django Project
@@ -173,14 +156,6 @@ pip install sendgrid
 Make migrations, apply them, and run the development server:
 
 ```bash
-
-export ALLOWED_HOSTS=YOURDOMAINNAME.com
-
-or 
-
-echo "export ALLOWED_HOSTS=YOURDOMAINNAME.com" >> ~/.bashrc
-
-
 python3 manage.py makemigrations
 python3 manage.py migrate
 python3 manage.py runserver
