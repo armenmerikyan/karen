@@ -63,6 +63,11 @@ from django.core.serializers import serialize
 
 from django.views.decorators.http import require_POST
 
+
+import logging
+
+logger = logging.getLogger(__name__)
+
 register = template.Library()
 import time 
 import re
@@ -143,7 +148,6 @@ from django.http import HttpResponseForbidden
 from functools import wraps
 from django.shortcuts import redirect
 
-import logging
 
 
 pokerGPT_version = "00.00.06"
