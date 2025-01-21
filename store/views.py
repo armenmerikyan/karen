@@ -182,6 +182,9 @@ from django.core.mail import send_mail
 from django.shortcuts import render, redirect 
 from django.conf import settings 
 
+uid = urlsafe_base64_encode(force_bytes(user.pk))
+token = default_token_generator.make_token(user)
+
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
