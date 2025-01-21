@@ -188,6 +188,10 @@ def register(request):
 
 @login_required
 def update_profile(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     if request.method == 'POST':
         form = UserProfileUpdateForm(request.POST, instance=request.user)
         if form.is_valid():
@@ -196,7 +200,7 @@ def update_profile(request):
     else:
         form = UserProfileUpdateForm(instance=request.user)
     
-    return render(request, 'update_profile.html', {'form': form})
+    return render(request, 'update_profile.html', {'form': form, 'profile': profile})
 
 def admin_required(view_func):
     """
