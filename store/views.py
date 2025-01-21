@@ -226,11 +226,20 @@ def delete_convo_log(request, id):
 
 @admin_required
 def token_list(request):
+
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     tokens = TokenProfile.objects.all()
-    return render(request, 'tokens/token_list.html', {'tokens': tokens})
+    return render(request, 'tokens/token_list.html', {'tokens': tokens, 'profile': profile})
 
 @admin_required
 def add_token(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     if request.method == 'POST':
         form = TokenProfileForm(request.POST)
         if form.is_valid():
@@ -238,7 +247,7 @@ def add_token(request):
             return redirect('token_list')
     else:
         form = TokenProfileForm()
-    return render(request, 'tokens/add_token.html', {'form': form})
+    return render(request, 'tokens/add_token.html', {'form': form, 'profile': profile})
 
 
 def custom_logout_view(request):
