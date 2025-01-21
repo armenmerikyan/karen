@@ -6,11 +6,13 @@
             <div class="col-md-6 text-center text-light">
                 <!-- Content for the right column goes here -->
 
-                <h2>Register</h2>
-                <form method="POST">
+                <h2 class="text-left">Register</h2>
+                <form method="POST" class="text-left">
                     {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit">Register</button>
+                    <div class="form-group">
+                        {{ form.as_p }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register</button>
                 </form>
             </div>
         </div>
