@@ -95,7 +95,7 @@ from .models import WebsiteProfile
 from .models import TokenProfile
 from .models import TokenProfile
 
-
+from .forms import UserProfileUpdateForm
 from .forms import TokenProfileForm
 from .forms import TokenProfileForm
 from .forms import TweetForm 
