@@ -95,7 +95,7 @@ sudo apt install -y git
 
 ## 4. Set Up Systemd Service
 
-Create and enable a systemd service for Athena:
+Create and enable a systemd service for Karen:
 
 ```bash
 sudo vi /etc/systemd/system/karen.service
