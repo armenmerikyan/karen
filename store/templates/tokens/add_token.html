@@ -1,15 +1,28 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Token</title>
-</head>
-<body>
-    <h1>Add New Token</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Add Token</button>
-    </form>
-    <a href="{% url 'token_list' %}">Back to Token List</a>
-</body>
-</html>
+{% extends '../base.html' %}
+
+{% load custom_filters %}
+
+{% block content %}
+
+<!-- Displaying JSON data -->
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">  
+ 
+
+            <h1>Add New Token</h1>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Add Token</button>
+            </form>
+            <a href="{% url 'token_list' %}">Back to Token List</a>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>    
+{% endblock %} 
