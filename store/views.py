@@ -201,7 +201,7 @@ def register(request):
 
             message = render_to_string('email_verification.html', {
                 'user': user,
-                'domain': current_site.domain,
+                'domain': request.get_host(),
                 'uidb64': urlsafe_base64_encode(force_bytes(user.pk)),  # Pass uidb64, not uid
                 'token': default_token_generator.make_token(user),
             })

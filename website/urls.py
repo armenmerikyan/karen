@@ -102,7 +102,7 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
     path('verify-email/<uidb64>/<token>/', views.email_verification_confirm, name='email_verification_confirm'),
-
+    
     path("accounts/", include("allauth.urls")),
 
 ]
