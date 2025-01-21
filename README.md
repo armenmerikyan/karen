@@ -158,7 +158,11 @@ Make migrations, apply them, and run the development server:
 ```bash
 python3 manage.py makemigrations
 python3 manage.py migrate
-python3 manage.py runserver
+
+sudo systemctl start karen 
+
+
+
 ```
 
 Create a superuser for the Django admin:
