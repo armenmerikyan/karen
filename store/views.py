@@ -176,7 +176,7 @@ def register(request):
             user.backend = f"{backend.__module__}.{backend.__class__.__name__}"
             login(request, user)
 
-            return redirect('home')  # Redirect to home or a dashboard
+            return redirect('index')  # Redirect to home or a dashboard
     else:
         form = UserCreationForm()
     return render(request, 'register.html', {'form': form, 'profile': profile})
