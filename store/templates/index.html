@@ -10,12 +10,14 @@
     <div class="container mt-5 text-light">         
       <div class="row">
         
+        {% if not user.is_authenticated %}
         <div class="col-md-12 text-center">   
           <h2 class="card-title text-center mb-4">Register</h2>
           <p class="card-text text-center">Take a moment to 
             <a href="{% url 'register' %}" class="nav-link">Create Account</a>
           </p>     
         </div>
+        {% endif %}
         <div class="col-md-12 text-center">  
 
           <h2 class="card-title text-center mb-4">Solana Wallet Address</h2>
