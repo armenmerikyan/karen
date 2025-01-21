@@ -142,7 +142,7 @@ from django.http import HttpResponseForbidden
 from functools import wraps
 from django.shortcuts import redirect
 
-
+import logging
 
 
 pokerGPT_version = "00.00.06"
