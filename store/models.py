@@ -513,3 +513,15 @@ class WebsiteProfile(models.Model):
 
     def __str__(self):
         return self.name
+    
+class TokenProfile(models.Model):
+    name = models.CharField(max_length=100, unique=True, help_text="Name of the token")
+    description = models.TextField(blank=True, help_text="Description of the token")
+    image_uri = models.URLField(max_length=500, blank=True, help_text="URI for the token's image")
+    address = models.CharField(max_length=100, unique=True, help_text="Token's unique address")
+    visible = models.BooleanField(default=True, help_text="Set to True if the token is visible, False if hidden")
+    created_at = models.DateTimeField(auto_now_add=True, help_text="Timestamp when the token was created")
+    updated_at = models.DateTimeField(auto_now=True, help_text="Timestamp when the token was last updated")
+
+    def __str__(self):
+        return f"{self.name} ({self.address}) - {'Visible' if self.visible else 'Hidden'}" 

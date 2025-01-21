@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Token List</title>
+</head>
+<body>
+    <h1>Token List</h1>
+    <ul>
+        {% for token in tokens %}
+            <li>{{ token.name }} - {{ token.address }} - {{ "Visible" if token.visible else "Hidden" }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'add_token' %}">Add New Token</a>
+</body>
+</html>

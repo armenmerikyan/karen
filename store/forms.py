@@ -6,6 +6,7 @@ from store.models import Category
 from store.models import Product
 from store.models import Cart
 from store.models import WebsiteProfile
+from store.models import TokenProfile
 from .models import TokenMarketingContent
 from store.models import Tweet
 
@@ -114,3 +115,8 @@ class WebsiteProfileForm(forms.ModelForm):
     class Meta:
         model = WebsiteProfile
         fields = ['name', 'about_us', 'wallet', 'x_handle']
+
+class TokenProfileForm(forms.ModelForm):
+    class Meta:
+        model = Token
+        fields = ['name', 'description', 'image_uri', 'address', 'visible']

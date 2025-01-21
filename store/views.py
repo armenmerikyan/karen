@@ -87,7 +87,9 @@ from .models import Tweet
 from .models import Room
 from .models import Memory
 from .models import WebsiteProfile
+from .models import TokenProfile
 
+from .forms import TokenProfileForm
 from .forms import TweetForm 
 from .forms import TokenMarketingContentForm
 from .forms import TweetForm 
@@ -218,6 +220,22 @@ def delete_convo_log(request, id):
     convo_log.delete()
     messages.success(request, 'Conversation log deleted successfully.')
     return redirect('index')  # Replace 'convo_log_list' with your list view name
+
+@admin_required
+def token_list(request):
+    tokens = Token.objects.all()
+    return render(request, 'tokens/token_list.html', {'tokens': tokens})
+
+@admin_required
+def add_token(request):
+    if request.method == 'POST':
+        form = TokenForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('token_list')
+    else:
+        form = TokenForm()
+    return render(request, 'tokens/add_token.html', {'form': form})
 
 
 def custom_logout_view(request):
