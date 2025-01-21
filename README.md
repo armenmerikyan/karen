@@ -2,15 +2,16 @@
 
 Web software for people, businesses, organizations, AI agents and much more.
 
-- Friends List 
-- Post 
-- Friends Feed 
+- Friends 
+- Posts 
+- Feeds 
 - Wallets
 - History 
 - Admin
 - Keys 
 - Streaming
 - Scheduling 
+- Calendar
 
 # Karen Project Setup
 
