@@ -118,5 +118,5 @@ class WebsiteProfileForm(forms.ModelForm):
 
 class TokenProfileForm(forms.ModelForm):
     class Meta:
-        model = Token
+        model = TokenProfile
         fields = ['name', 'description', 'image_uri', 'address', 'visible']
