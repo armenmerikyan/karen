@@ -25,11 +25,17 @@
                 {% for token in tokens %}
                     <li>
                         {{ token.name }} - {{ token.address }} - 
-                        {% if token.visible %}
-                            Visible
-                        {% else %}
-                            Hidden
-                        {% endif %}
+
+                        <form method="post" action="{% url 'toggle_visibility' token.id %}" style="display:inline;">
+                          {% csrf_token %}
+                          <button type="submit" style="background:none; border:none; color:blue; text-decoration:underline; cursor:pointer;">
+                              {% if token.visible %}
+                                  Visible
+                              {% else %}
+                                  Hidden
+                              {% endif %}
+                          </button>
+                      </form>                        
                     </li>
                 {% endfor %}
             </ul>

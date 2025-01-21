@@ -235,6 +235,15 @@ def token_list(request):
     return render(request, 'tokens/token_list.html', {'tokens': tokens, 'profile': profile})
 
 @admin_required
+def toggle_visibility(request, token_id):
+    if request.method == "POST":  # Ensure it's a POST request for safety
+        token = get_object_or_404(TokenProfile, id=token_id)
+        token.visible = not token.visible
+        token.save()
+        return redirect('token_list')  # Replace 'your_view_name' with the name of the view that renders the token list.
+    return HttpResponseForbidden("Invalid request method")
+
+@admin_required
 def add_token(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
