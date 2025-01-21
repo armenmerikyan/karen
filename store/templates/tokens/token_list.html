@@ -7,7 +7,14 @@
     <h1>Token List</h1>
     <ul>
         {% for token in tokens %}
-            <li>{{ token.name }} - {{ token.address }} - {{ "Visible" if token.visible else "Hidden" }}</li>
+            <li>
+                {{ token.name }} - {{ token.address }} - 
+                {% if token.visible %}
+                    Visible
+                {% else %}
+                    Hidden
+                {% endif %}
+            </li>
         {% endfor %}
     </ul>
     <a href="{% url 'add_token' %}">Add New Token</a>
