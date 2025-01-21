@@ -113,7 +113,7 @@ User=root
 Group=root
 WorkingDirectory=/root/karen
 
-Environment="ALLOWED_HOSTS=<YOURDOMAINNAME>.com"
+Environment="ALLOWED_HOSTS=YOURDOMAINNAME.com"
 
 # Use the Python interpreter from the virtual environment to run the Django server
 ExecStart=/root/kenv/bin/python /root/karen/manage.py runserver 127.0.0.1:8000
@@ -165,11 +165,11 @@ Make migrations, apply them, and run the development server:
 
 ```bash
 
-export ALLOWED_HOSTS=<YOURDOMAINNAME>.com
+export ALLOWED_HOSTS=YOURDOMAINNAME.com
 
 or 
 
-echo "export ALLOWED_HOSTS=<YOURDOMAINNAME>.com" >> ~/.bashrc
+echo "export ALLOWED_HOSTS=YOURDOMAINNAME.com" >> ~/.bashrc
 
 
 python3 manage.py makemigrations
