@@ -15,6 +15,18 @@ from .models import TokenMarketingContent
 from store.models import Tweet
 
 class CustomerForm(forms.ModelForm):
+    lifecycle_stage = forms.ModelChoiceField(
+        queryset=LifecycleStage.objects.filter(is_visible=True),  # Only visible stages
+        empty_label="Select Lifecycle Stage",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    class Meta:
+        model = Customer 
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 
+                  'address1', 'address2', 'city', 'state', 'zip_code', 'country', 'lifecycle_stage']
+
+class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ['first_name', 'last_name', 'email', 'phone_number', 

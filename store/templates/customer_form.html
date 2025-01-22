@@ -3,14 +3,11 @@
 {% load custom_filters %}
 
 {% block content %}
-
-<!-- Displaying JSON data -->
 <section class="py-0">
   <div class="container-fluid">
-    <div class="container mt-5 text-light">         
+    <div class="container mt-5 text-light">
       <div class="row">
-        <div class="col-md-12 text-left">  
-
+        <div class="col-md-12 text-left">
             <h1>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Customer</h1>
             <form method="POST">
                 {% csrf_token %}
@@ -18,12 +15,10 @@
                 <button type="submit">{% if form.instance.pk %}Save Changes{% else %}Add Customer{% endif %}</button>
             </form>
             <br>
-            <a href="{% url 'customer_list' %}">Back to Customer List</a>   
+            <a href="{% url 'customer_list' %}">Back to Customer List</a>
         </div>
       </div>
-      
     </div>
   </div>
-</section>    
-
+</section>
 {% endblock %}

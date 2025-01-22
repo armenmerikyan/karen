@@ -348,7 +348,7 @@ def customer_list(request):
     return render(request, 'customer_list.html', {'customers': customers, 'profile': profile })
 
 # Add new customer
-@admin_required
+@admin_required 
 def customer_add(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
@@ -361,7 +361,8 @@ def customer_add(request):
             return redirect('customer_list')
     else:
         form = CustomerForm()
-    return render(request, 'customer_form.html', {'form': form, 'profile': profile })
+
+    return render(request, 'customer_form.html', {'form': form, 'profile': profile})
 
 # Edit existing customer
 @admin_required
