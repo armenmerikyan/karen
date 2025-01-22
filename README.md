@@ -26,9 +26,8 @@ This guide outlines the necessary steps to set up and configure your server and 
 
 Before starting, make sure you have the following installed:
 
-- Ubuntu server (or similar Linux distribution)
+- Ubuntu server (or similar Linux distribution) with SSH access to your server, you can purchase one https://www.vultr.com 
 - A domain name pointing to your server (e.g., YOURDOMANNAME.com), you can purchase one at https://www.namecheap.com 
-- SSH access to your server, you can purchase one https://www.vultr.com 
 - To integrate email sending functionality into the Karen project, you'll need a SendGrid account and API key. You can purchase one at https://sendgrid.com
 
 ## 1. Install and Configure Nginx
