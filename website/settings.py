@@ -270,7 +270,7 @@ LOGGING = {
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"  # Options: "none", "optional", "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = "optional"  # Options: "none", "optional", "mandatory"
 ACCOUNT_AUTHENTICATION_METHOD = "email"  # Use email as the login identifier
 ACCOUNT_USERNAME_REQUIRED = False
 
