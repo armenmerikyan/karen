@@ -1,36 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lifecycle Stages</title>
-</head>
-<body>
-    <h1>Lifecycle Stages</h1>
-    <a href="{% url 'lifecycle_stage_create' %}">Create New Stage</a>
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Rank</th>
-                <th>Description</th>
-                <th>Visible</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for stage in stages %}
-            <tr>
-                <td>{{ stage.name }}</td>
-                <td>{{ stage.rank }}</td>
-                <td>{{ stage.description }}</td>
-                <td>{{ stage.is_visible }}</td>
-                <td>
-                    <a href="{% url 'lifecycle_stage_update' stage.pk %}">Edit</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+
+{% block content %}
+
+<!-- Displaying JSON data -->
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-center">  
+          <div class="card-body custom-card-body"> 
+          <h3 class="card-title text-center">Lifecycle Stages</h3>
+            <div class="list-group list-group-flush">
+                <div class="list-group-item border-0 text-left">
+                    <a href="{% url 'lifecycle_stage_create' %}">Create New Stage</a>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Rank</th>
+                                <th>Description</th>
+                                <th>Visible</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stage in stages %}
+                            <tr>
+                                <td>{{ stage.name }}</td>
+                                <td>{{ stage.rank }}</td>
+                                <td>{{ stage.description }}</td>
+                                <td>{{ stage.is_visible }}</td>
+                                <td>
+                                    <a href="{% url 'lifecycle_stage_update' stage.pk %}">Edit</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+          </div>
+         
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>    
+
+{% endblock %}
