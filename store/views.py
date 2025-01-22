@@ -339,8 +339,13 @@ def upvote_convo_log(request, log_id):
 # List customers
 @admin_required
 def customer_list(request):
+
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     customers = Customer.objects.all()
-    return render(request, 'customer_list.html', {'customers': customers})
+    return render(request, 'customer_list.html', {'customers': customers, 'profile': profile })
 
 # Add new customer
 @admin_required
