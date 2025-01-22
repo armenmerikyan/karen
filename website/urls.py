@@ -107,6 +107,10 @@ urlpatterns = [
     path('email-verification-sent/', views.email_verification_sent, name='email_verification_sent'),
     path('resend-verification-email/', views.resend_verification_email, name='resend_verification_email'),
 
+    path('lifecycle-stages/', views.lifecycle_stage_list, name='lifecycle_stage_list'),
+    path('lifecycle-stages/create/', views.lifecycle_stage_create, name='lifecycle_stage_create'),
+    path('lifecycle-stages/<int:pk>/update/', views.lifecycle_stage_update, name='lifecycle_stage_update'),
+
 ]
 
 

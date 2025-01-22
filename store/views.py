@@ -95,7 +95,9 @@ from .models import WebsiteProfile
 from .models import TokenProfile
 from .models import TokenProfile
 from .models import User
+from .models import LifecycleStage
 
+from .forms import LifecycleStageForm
 from .forms import UserProfileUpdateForm
 from .forms import TokenProfileForm
 from .forms import TokenProfileForm
@@ -695,6 +697,36 @@ def create_tweet_api(request):
         return JsonResponse({"error": "POST request required"}, status=405)
 
 # View to create a new tweet
+# View to list all LifecycleStages
+@admin_required
+def lifecycle_stage_list(request):
+    stages = LifecycleStage.objects.all()
+    return render(request, 'lifecycle_stage_list.html', {'stages': stages})
+
+# View to create a new LifecycleStage
+@admin_required
+def lifecycle_stage_create(request):
+    if request.method == 'POST':
+        form = LifecycleStageForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('lifecycle_stage_list'))  # Redirect to the list view
+    else:
+        form = LifecycleStageForm()
+    return render(request, 'lifecycle_stage_form.html', {'form': form})
+
+# View to update an existing LifecycleStage
+@admin_required
+def lifecycle_stage_update(request, pk):
+    stage = get_object_or_404(LifecycleStage, pk=pk)
+    if request.method == 'POST':
+        form = LifecycleStageForm(request.POST, instance=stage)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('lifecycle_stage_list'))  # Redirect to the list view
+    else:
+        form = LifecycleStageForm(instance=stage)
+    return render(request, 'lifecycle_stage_form.html', {'form': form})
 
 @csrf_exempt
 @admin_required

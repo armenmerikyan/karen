@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lifecycle Stages</title>
+</head>
+<body>
+    <h1>Lifecycle Stages</h1>
+    <a href="{% url 'lifecycle_stage_create' %}">Create New Stage</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Rank</th>
+                <th>Description</th>
+                <th>Visible</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stage in stages %}
+            <tr>
+                <td>{{ stage.name }}</td>
+                <td>{{ stage.rank }}</td>
+                <td>{{ stage.description }}</td>
+                <td>{{ stage.is_visible }}</td>
+                <td>
+                    <a href="{% url 'lifecycle_stage_update' stage.pk %}">Edit</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

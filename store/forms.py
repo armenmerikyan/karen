@@ -9,9 +9,15 @@ from store.models import Product
 from store.models import Cart
 from store.models import WebsiteProfile
 from store.models import TokenProfile
+from store.models import LifecycleStage
 from .models import TokenMarketingContent
 from store.models import Tweet
 
+
+class LifecycleStageForm(forms.ModelForm):
+    class Meta:
+        model = LifecycleStage
+        fields = ['name', 'rank', 'description', 'is_visible']
 
 class TokenMarketingContentForm(forms.ModelForm):
     class Meta:

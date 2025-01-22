@@ -526,3 +526,18 @@ class TokenProfile(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.address}) - {'Visible' if self.visible else 'Hidden'}" 
+    
+
+class LifecycleStage(models.Model):
+    name = models.CharField(max_length=255)
+    rank = models.PositiveIntegerField()  # Rank will help determine the order of stages
+    description = models.TextField(blank=True, null=True)
+    is_visible = models.BooleanField(default=True)  # Whether this stage should be visible in the system
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['rank']  # Ensures stages are listed in rank order
+
+    def __str__(self):
+        return self.name    
