@@ -1429,70 +1429,18 @@ def verify_signature_game(request):
             print('Made it here')
             verify_key.verify(message_bytes, signature_bytes)
             print("Signature is valid!")
- 
-            url = "https://solana-mainnet.g.alchemy.com/v2/VtqY_fIlu2ELUJF4Ea1uLKEYsW-XopF5"
-            headers = {"accept": "application/json", "content-type": "application/json"}
 
-            payload = {
-                "id": 1,
-                "jsonrpc": "2.0",
-                "method": "getTokenAccountsByOwner",
-                "params": [
-                    public_key,
-                    {"mint": MY_TOKEN},
-                    {"encoding": "jsonParsed"},
-                ],
+            response_data = {
+                'valid': True,
+                'message': 'Signature is valid.'
             }
+            response_tmp = JsonResponse(response_data) 
+            user = request.user
+            user.sol_wallet_address = public_key
+            user.save()
 
-            response = requests.post(url, json=payload, headers=headers)
-
-            token_accounts = response.json().get("result", {}).get("value", [])
-            
-            if not token_accounts:
-                print("No token accounts found.")
-                return JsonResponse({'valid': False, 'message': 'No token accounts found for the provided public key.'})
-        
-
-            token_amount_str = response.json()["result"]["value"][0]["account"]["data"]["parsed"]["info"]["tokenAmount"]["uiAmount"]
-            token_amount_float = float(token_amount_str)
-
-            if token_amount_float >= 0:    
-                print("Token amount is greater than 1,000,000")
-                access_id = generate_id()
-                print(access_id)
-                response_data = {
-                    'valid': True,
-                    'message': 'Signature is valid.'
-                }
-                response_tmp = JsonResponse(response_data)
-                #resporesponse_tmpnse.set_cookie('access_id', access_id)     
-                '''
-                access_token, created = Accesstoken.objects.get_or_create(
-                    public_wallet_address=public_key,
-                    defaults={
-                        'access_cookie': access_id,
-                        'token_balance': token_amount_float,
-                    }
-                )
-
-                # If not created, update existing access_token
-                if not created:
-                    access_token.access_cookie = access_id
-                    access_token.token_balance = token_amount_float
-                    access_token.save()
-
-                # Optionally, you can print or log the instance for verification
-                print(access_token)                
-                '''
-                user = request.user
-                user.sol_wallet_address = public_key
-                user.save()
-
-                return response_tmp    
-            else:
-                print("Token amount is not greater than 1,000,000")
-                print("Token Amount as Float:", token_amount_float)
-                return JsonResponse({'valid': True, 'message': 'Signature is valid.'})
+            return response_tmp  
+                    
         except BadSignatureError:
             print("Signature verification failed: Invalid signature")
             return JsonResponse({'valid': False, 'message': 'Invalid signature'})
