@@ -156,6 +156,8 @@ pip install -r requirements.txt
 Make migrations, apply them, and run the development server:
 
 ```bash
+cd karen 
+
 python3 manage.py makemigrations
 python3 manage.py migrate
 
