@@ -12,6 +12,10 @@
             <form method="POST">
                 {% csrf_token %}
                 {{ form.as_p }}
+
+                {{ form.lifecycle_stage.value }}  <!-- This should print the selected lifecycle stage value -->
+                {{ form.lifecycle_stage }}         <!-- This should render the dropdown with the selected value -->
+                                
                 <button type="submit">{% if form.instance.pk %}Save Changes{% else %}Add Customer{% endif %}</button>
             </form>
             <br>
