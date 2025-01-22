@@ -63,7 +63,7 @@
    
   
           console.log('Message signed (Base64):', signatureBase64);
-          const verifySignatureUrl = `/verify_signature/?publicKey=${response.publicKey.toString()}&signature=${encodeURIComponent(signatureBase64)}`;
+          const verifySignatureUrl = `/verify_signature_game/?publicKey=${response.publicKey.toString()}&signature=${encodeURIComponent(signatureBase64)}`;
   
           // Example function to send GET request to Django view
           async function verifySignature() {
