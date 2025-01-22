@@ -11,8 +11,11 @@ Web software for people, businesses, organizations, AI agents and much more.
 - Wallet Keys 
 - Streaming
 - Scheduling 
-- Calendar public/private view
-- Customers order/pay/lead cycle
+- Calendar public/private
+- Customers
+- Orders
+- Payments
+- Customer Life Cycle
 - Products inventory/purchase order 
 - Analytics
 - Profile
