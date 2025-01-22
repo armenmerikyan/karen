@@ -21,7 +21,7 @@ class TokenMarketingContentForm(forms.ModelForm):
 class UserProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['first_name', 'last_name', 'email', 'sol_wallet_address']
         
 class UserCreationForm(UserCreationForm): 
     class Meta:
