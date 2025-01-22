@@ -350,6 +350,10 @@ def customer_list(request):
 # Add new customer
 @admin_required
 def customer_add(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     if request.method == 'POST':
         form = CustomerForm(request.POST)
         if form.is_valid():
@@ -357,11 +361,15 @@ def customer_add(request):
             return redirect('customer_list')
     else:
         form = CustomerForm()
-    return render(request, 'customer_form.html', {'form': form})
+    return render(request, 'customer_form.html', {'form': form, 'profile': profile })
 
 # Edit existing customer
 @admin_required
 def customer_edit(request, customer_id):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     customer = get_object_or_404(Customer, id=customer_id)
     if request.method == 'POST':
         form = CustomerForm(request.POST, instance=customer)
@@ -370,7 +378,7 @@ def customer_edit(request, customer_id):
             return redirect('customer_list')
     else:
         form = CustomerForm(instance=customer)
-    return render(request, 'customer_form.html', {'form': form})
+    return render(request, 'customer_form.html', {'form': form, 'profile': profile })
 
 @admin_required
 @require_POST
