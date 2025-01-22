@@ -534,14 +534,7 @@ class LifecycleStage(models.Model):
     description = models.TextField(blank=True, null=True)
     is_visible = models.BooleanField(default=True)  # Whether this stage should be visible in the system
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    lifecycle_stage = models.ForeignKey(
-        'LifecycleStage',  # Reference to the LifecycleStage model
-        on_delete=models.SET_NULL,  # Will set to null if the stage is deleted
-        null=True,  # Allowing null for existing customers who may not have a stage
-        blank=True,  # Optional field, allowing customers without a stage
-    )
-    
+    updated_at = models.DateTimeField(auto_now=True)    
     class Meta:
         ordering = ['rank']  # Ensures stages are listed in rank order
 
@@ -561,6 +554,13 @@ class Customer(models.Model):
     country = models.CharField(max_length=100, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    lifecycle_stage = models.ForeignKey(
+        'LifecycleStage',  # Reference to the LifecycleStage model
+        on_delete=models.SET_NULL,  # Will set to null if the stage is deleted
+        null=True,  # Allowing null for existing customers who may not have a stage
+        blank=True,  # Optional field, allowing customers without a stage
+    )
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
