@@ -10,10 +10,16 @@ from store.models import Cart
 from store.models import WebsiteProfile
 from store.models import TokenProfile
 from store.models import LifecycleStage
+from store.models import Customer
 from .models import TokenMarketingContent
 from store.models import Tweet
 
-
+class CustomerForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 
+                  'address1', 'address2', 'city', 'state', 'zip_code', 'country']
+        
 class LifecycleStageForm(forms.ModelForm):
     class Meta:
         model = LifecycleStage

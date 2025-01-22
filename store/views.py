@@ -96,7 +96,9 @@ from .models import TokenProfile
 from .models import TokenProfile
 from .models import User
 from .models import LifecycleStage
+from .models import Customer
 
+from .forms import CustomerForm
 from .forms import LifecycleStageForm
 from .forms import UserProfileUpdateForm
 from .forms import TokenProfileForm
@@ -265,6 +267,8 @@ def resend_verification_email(request):
 
     return render(request, 'resend_verification_email.html')
     
+
+
 @login_required
 def update_profile(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -331,6 +335,37 @@ def upvote_convo_log(request, log_id):
     
     # Redirect back to the convo_log_detail page after the upvote
     return redirect('convo_log_detail', pk=convo_log.id)
+
+# List customers
+@admin_required
+def customer_list(request):
+    customers = Customer.objects.all()
+    return render(request, 'customer_list.html', {'customers': customers})
+
+# Add new customer
+@admin_required
+def customer_add(request):
+    if request.method == 'POST':
+        form = CustomerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('customer_list')
+    else:
+        form = CustomerForm()
+    return render(request, 'customer_form.html', {'form': form})
+
+# Edit existing customer
+@admin_required
+def customer_edit(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+    if request.method == 'POST':
+        form = CustomerForm(request.POST, instance=customer)
+        if form.is_valid():
+            form.save()
+            return redirect('customer_list')
+    else:
+        form = CustomerForm(instance=customer)
+    return render(request, 'customer_form.html', {'form': form})
 
 @admin_required
 @require_POST

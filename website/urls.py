@@ -111,6 +111,10 @@ urlpatterns = [
     path('lifecycle-stages/create/', views.lifecycle_stage_create, name='lifecycle_stage_create'),
     path('lifecycle-stages/<int:pk>/update/', views.lifecycle_stage_update, name='lifecycle_stage_update'),
 
+    path('customer_list', views.customer_list, name='customer_list'),
+    path('add_customer/', views.customer_add, name='customer_add'),
+    path('edit/<int:customer_id>/', views.customer_edit, name='customer_edit'),
+
 ]
 
 
