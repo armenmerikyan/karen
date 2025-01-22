@@ -1466,7 +1466,7 @@ def verify_signature_game(request):
                 }
                 response_tmp = JsonResponse(response_data)
                 #resporesponse_tmpnse.set_cookie('access_id', access_id)     
- 
+                '''
                 access_token, created = Accesstoken.objects.get_or_create(
                     public_wallet_address=public_key,
                     defaults={
@@ -1483,7 +1483,7 @@ def verify_signature_game(request):
 
                 # Optionally, you can print or log the instance for verification
                 print(access_token)                
-
+                '''
                 user = request.user
                 user.sol_wallet_address = public_key
                 user.save()
