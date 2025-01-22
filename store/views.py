@@ -223,6 +223,7 @@ def email_verification_sent(request):
     return render(request, 'email_verification_sent.html')
 
 def email_verification_confirm(request, uidb64, token):
+    
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = User.objects.get(pk=uid)
