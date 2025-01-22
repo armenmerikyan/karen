@@ -27,6 +27,7 @@ class UserManager(BaseUserManager):
         """
         Creates and saves a superuser with the given email and password.
         """
+        extra_fields.setdefault('is_active', True)  # Ensure the user is active
         user = self.create_user(email, password, **extra_fields)
         user.is_staff = True
         user.is_superuser = True
