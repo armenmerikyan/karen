@@ -700,12 +700,19 @@ def create_tweet_api(request):
 # View to list all LifecycleStages
 @admin_required
 def lifecycle_stage_list(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
     stages = LifecycleStage.objects.all()
-    return render(request, 'lifecycle_stage_list.html', {'stages': stages})
+    return render(request, 'lifecycle_stage_list.html', {'stages': stages, 'profile': profile})
 
 # View to create a new LifecycleStage
 @admin_required
 def lifecycle_stage_create(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     if request.method == 'POST':
         form = LifecycleStageForm(request.POST)
         if form.is_valid():
@@ -713,11 +720,15 @@ def lifecycle_stage_create(request):
             return redirect(reverse('lifecycle_stage_list'))  # Redirect to the list view
     else:
         form = LifecycleStageForm()
-    return render(request, 'lifecycle_stage_form.html', {'form': form})
+    return render(request, 'lifecycle_stage_form.html', {'form': form, 'profile': profile})
 
 # View to update an existing LifecycleStage
 @admin_required
 def lifecycle_stage_update(request, pk):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     stage = get_object_or_404(LifecycleStage, pk=pk)
     if request.method == 'POST':
         form = LifecycleStageForm(request.POST, instance=stage)
@@ -726,7 +737,7 @@ def lifecycle_stage_update(request, pk):
             return redirect(reverse('lifecycle_stage_list'))  # Redirect to the list view
     else:
         form = LifecycleStageForm(instance=stage)
-    return render(request, 'lifecycle_stage_form.html', {'form': form})
+    return render(request, 'lifecycle_stage_form.html', {'form': form, 'profile': profile})
 
 @csrf_exempt
 @admin_required
