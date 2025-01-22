@@ -20,15 +20,16 @@ Web software for people, businesses, organizations, AI agents and much more.
 - Admin Make Payment
 - Ai Agents 
 
-# Karen Project Setup
+# Project Setup
 
 This guide outlines the necessary steps to set up and configure your server and environment for the Karen project.
 
 Before starting, make sure you have the following installed:
 
 - Ubuntu server (or similar Linux distribution)
-- A domain name pointing to your server (e.g., <YOURDOMANNAME>.com)
+- A domain name pointing to your server (e.g., YOURDOMANNAME.com)
 - SSH access to your server
+- To integrate email sending functionality into the Karen project, you'll need a SendGrid account and API key. Follow these steps to set it up:
 
 ## 1. Install and Configure Nginx
 
