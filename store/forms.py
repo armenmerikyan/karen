@@ -25,12 +25,7 @@ class CustomerForm(forms.ModelForm):
         model = Customer 
         fields = ['first_name', 'last_name', 'email', 'phone_number', 
                   'address1', 'address2', 'city', 'state', 'zip_code', 'country', 'lifecycle_stage']
-
-class CustomerForm(forms.ModelForm):
-    class Meta:
-        model = Customer
-        fields = ['first_name', 'last_name', 'email', 'phone_number', 
-                  'address1', 'address2', 'city', 'state', 'zip_code', 'country']
+ 
         
 class LifecycleStageForm(forms.ModelForm):
     class Meta:
