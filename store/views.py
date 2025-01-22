@@ -277,7 +277,7 @@ def update_profile(request):
     else:
         form = UserProfileUpdateForm(instance=request.user)
     
-    return render(request, 'update_profile.html', {'form': form, 'profile': profile})
+    return render(request, 'update_profile.html', {'form': form, 'profile': profile, 'user':request.user})
 
 def admin_required(view_func):
     """
