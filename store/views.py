@@ -1606,6 +1606,11 @@ def verify_signature(request):
                     is_visible=True,
                     upvote_count=0
                 )
+                
+                user = request.user
+                user.sol_wallet_address = public_key
+                user.save()
+                
                 return response    
             else:
                 print("Token amount is not greater than 1,000,000")
