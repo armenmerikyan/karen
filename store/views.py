@@ -94,6 +94,7 @@ from .models import Memory
 from .models import WebsiteProfile
 from .models import TokenProfile
 from .models import TokenProfile
+from .models import User
 
 from .forms import UserProfileUpdateForm
 from .forms import TokenProfileForm
