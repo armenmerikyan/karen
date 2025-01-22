@@ -29,7 +29,7 @@ Before starting, make sure you have the following installed:
 - Ubuntu server (or similar Linux distribution)
 - A domain name pointing to your server (e.g., YOURDOMANNAME.com)
 - SSH access to your server
-- To integrate email sending functionality into the Karen project, you'll need a SendGrid account and API key. Follow these steps to set it up:
+- To integrate email sending functionality into the Karen project, you'll need a SendGrid account and API key. 
 
 ## 1. Install and Configure Nginx
 
