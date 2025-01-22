@@ -277,7 +277,7 @@ def update_profile(request):
     else:
         form = UserProfileUpdateForm(instance=request.user)
     
-    return render(request, 'update_profile.html', {'form': form, 'profile': profile, 'user':request.user})
+    return render(request, 'update_profile.html', {'form': form, 'profile': profile, 'user': request.user})
 
 def admin_required(view_func):
     """
@@ -1610,12 +1610,13 @@ def verify_signature(request):
                 user = request.user
                 user.sol_wallet_address = public_key
                 user.save()
-                
+
                 return response    
             else:
                 print("Token amount is not greater than 1,000,000")
                 print("Token Amount as Float:", token_amount_float)
                 return JsonResponse({'valid': True, 'message': 'Signature is valid.'})
+            
         except BadSignatureError:
             print("Signature verification failed: Invalid signature")
             return JsonResponse({'valid': False, 'message': 'Invalid signature'})
