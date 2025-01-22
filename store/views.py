@@ -18,7 +18,7 @@ from django.views.generic import View
 
 from django.core.paginator import Paginator
 from django import template
-
+from urllib.parse import quote
 
 from django.views.decorators.csrf import csrf_exempt
 from django.template.context_processors import csrf
@@ -201,10 +201,10 @@ def register(request):
             current_site = get_current_site(request)
             subject = "Verify your email address"
             
+            uidb64 = quote(urlsafe_base64_encode(force_bytes(user.pk)))  # URL encode the UID
+            token = quote(default_token_generator.make_token(user))  # URL encode the token
 
-            uidb64 = urlsafe_base64_encode(force_bytes(user.pk))  # Encode user ID
-            token = default_token_generator.make_token(user)  # Generate token
-
+ 
             message = render_to_string('email_verification.html', {
                 'user': user,
                 'domain': request.get_host(),
