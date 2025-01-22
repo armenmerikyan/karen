@@ -105,6 +105,7 @@ urlpatterns = [
     
     path("accounts/", include("allauth.urls")),
     path('email-verification-sent/', views.email_verification_sent, name='email_verification_sent'),
+    path('resend-verification-email/', views.resend_verification_email, name='resend_verification_email'),
 
 ]
 

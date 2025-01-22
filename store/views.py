@@ -223,7 +223,7 @@ def email_verification_sent(request):
     return render(request, 'email_verification_sent.html')
 
 def email_verification_confirm(request, uidb64, token):
-    
+
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = User.objects.get(pk=uid)
@@ -236,6 +236,32 @@ def email_verification_confirm(request, uidb64, token):
         return redirect('login')  # Redirect to login after successful verification
     else:
         return render(request, 'email_verification_invalid.html')  # Show invalid link message
+    
+def resend_verification_email(request):
+    if request.method == "POST":
+        email = request.POST.get('email')
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return render(request, 'email_not_found.html')
+
+        # Generate token and UID for the user
+        uid = urlsafe_base64_encode(user.pk.encode())
+        token = default_token_generator.make_token(user)
+
+        # Construct the email confirmation link
+        current_site = get_current_site(request)
+        mail_subject = 'Resend Email Verification'
+        message = f'Hi {user.username}, please verify your email using this link: ' \
+                  f'http://{current_site.domain}/verify-email/{uid}/{token}/'
+
+        # Send the email
+        send_mail(mail_subject, message, 'no-reply@example.com', [email])
+
+        return redirect('verification_email_sent')
+
+    return render(request, 'resend_verification_email.html')
     
 @login_required
 def update_profile(request):
