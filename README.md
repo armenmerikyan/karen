@@ -1,7 +1,8 @@
 # Karen
 
 Web software for people, businesses, organizations, AI agents and much more.
-
+- Profile name, about, wallet
+- Tokens
 - Friends/Contacts 
 - Posts 
 - Feeds 
