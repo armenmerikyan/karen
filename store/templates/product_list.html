@@ -18,7 +18,7 @@
                 <li>
                     <strong>{{ product.name }}</strong><br>
                     Price: ${{ product.price }}<br>
-                    Stock: {{ product.stock_quantity }}<br>
+                    Stock: {{ product.quantity }}<br>
                     <img src="{{ product.product_image.url }}" alt="{{ product.name }}" width="100"><br>
                     <a href="{% url 'product_edit' product.pk %}">Edit</a>
                 </li>
