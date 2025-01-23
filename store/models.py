@@ -589,3 +589,23 @@ class Customer(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+    
+class Product(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    stock_quantity = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    image = models.ImageField(upload_to='product_images/', null=True, blank=True)
+    
+    # Reference to the product's lifecycle stage
+    lifecycle_stage = models.ForeignKey(
+        'ProductLifecycleStage',  # Reference to ProductLifecycleStage model
+        on_delete=models.SET_NULL,  # If a stage is deleted, it will be set to null
+        null=True,  # Allows null for products without a lifecycle stage
+        blank=True,  # Makes the lifecycle stage optional
+    )
+
+    def __str__(self):
+        return self.name    

@@ -12,9 +12,14 @@ from store.models import TokenProfile
 from store.models import LifecycleStage
 from store.models import Customer
 from store.models import ProductLifecycleStage
+from store.models import Product 
 from .models import TokenMarketingContent
 from store.models import Tweet
 
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name', 'description', 'price', 'stock_quantity', 'image', 'lifecycle_stage']
 
 class ProductLifecycleStageForm(forms.ModelForm):
     class Meta:

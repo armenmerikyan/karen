@@ -98,7 +98,9 @@ from .models import User
 from .models import LifecycleStage
 from .models import Customer
 from .models import ProductLifecycleStage
+from .models import Product
 
+from .forms import ProductForm
 from .forms import ProductLifecycleStageForm
 from .forms import CustomerForm
 from .forms import LifecycleStageForm
@@ -337,6 +339,39 @@ def upvote_convo_log(request, log_id):
     
     # Redirect back to the convo_log_detail page after the upvote
     return redirect('convo_log_detail', pk=convo_log.id)
+
+# View to list all products
+@admin_required
+def product_list(request):
+    products = Product.objects.all()
+    return render(request, 'product_list.html', {'products': products})
+
+# View to add a new product
+@admin_required
+def product_add(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('product_list')  # Redirect to the product list after saving
+    else:
+        form = ProductForm()
+
+    return render(request, 'product_form.html', {'form': form, 'action': 'Add'})
+
+# View to edit an existing product
+@admin_required
+def product_edit(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('product_list')  # Redirect to product list after saving
+    else:
+        form = ProductForm(instance=product)
+
+    return render(request, 'product_form.html', {'form': form, 'action': 'Edit'})
 
 # List customers
 @admin_required

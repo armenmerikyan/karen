@@ -121,6 +121,11 @@ urlpatterns = [
     path('product_lifecycle_stages_edit/<int:pk>/', views.product_lifecycle_stages_edit, name='product_lifecycle_stages_edit'),
 
 
+    path('product_list', views.product_list, name='product_list'),
+    path('product_add/', views.product_add, name='product_add'),
+    path('product_edit/<int:pk>/', views.product_edit, name='product_edit'),
+
+
 ]
 
 
