@@ -1,11 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ action }} Product</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+
+{% block content %}
+
+<!-- Displaying JSON data -->
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">     
+
     <h1>{{ action }} Product</h1>
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -13,5 +18,12 @@
         <button type="submit">{{ action }} Product</button>
     </form>
     <a href="{% url 'product_list' %}">Back to Product List</a>
-</body>
-</html>
+        </div>
+
+      </div>
+      
+    </div>
+  </div>
+</section>    
+
+{% endblock %}
