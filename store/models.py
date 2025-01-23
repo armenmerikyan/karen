@@ -97,25 +97,7 @@ def product_upload_to(instance, filename):
     name, ext = os.path.splitext(filename)
     return f"product/{instance.id}.png"
 
-class Product(models.Model):
-    id = models.AutoField(primary_key=True)
-    sku = models.CharField(max_length=255, default=default_uuid)
-    name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    wholesale_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    your_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    source_upload = models.TextField(max_length=255, null=True, blank=True)
-    description = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    product_image = models.ImageField(upload_to=product_upload_to, null=True, blank=True)
-    display_priority = models.IntegerField(null=True, blank=True)
-    quantity = models.IntegerField()
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
-    wholesale_price_item_json = models.TextField(null=True)
-    def __str__(self):
-        return self.name
+
 
 class Cart(models.Model):
     id = models.AutoField(primary_key=True)
@@ -590,22 +572,33 @@ class Customer(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
     
+
 class Product(models.Model):
+    id = models.AutoField(primary_key=True)
+    sku = models.CharField(max_length=255, default=default_uuid)
     name = models.CharField(max_length=255)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    stock_quantity = models.IntegerField()
+    wholesale_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    your_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    source_upload = models.TextField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    image = models.ImageField(upload_to='product_images/', null=True, blank=True)
+    product_image = models.ImageField(upload_to='product_images/', null=True, blank=True)
+    display_priority = models.IntegerField(null=True, blank=True)
+    quantity = models.IntegerField()
     
-    # Reference to the product's lifecycle stage
+    # Foreign keys for category, brand, and lifecycle stage
+    category = models.ForeignKey('Category', on_delete=models.CASCADE)
+    brand = models.ForeignKey('Brand', on_delete=models.CASCADE)
     lifecycle_stage = models.ForeignKey(
-        'ProductLifecycleStage',  # Reference to ProductLifecycleStage model
-        on_delete=models.SET_NULL,  # If a stage is deleted, it will be set to null
-        null=True,  # Allows null for products without a lifecycle stage
-        blank=True,  # Makes the lifecycle stage optional
+        'ProductLifecycleStage', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True
     )
+    
+    wholesale_price_item_json = models.TextField(null=True)
 
     def __str__(self):
-        return self.name    
+        return self.name  
