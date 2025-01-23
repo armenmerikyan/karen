@@ -2,24 +2,26 @@
 
 Web software for people, businesses, organizations, AI agents and much more.
 - Profile name, about, wallet
-- Tokens
-- Friends/Contacts 
+- Tokens list, add, edit
+- Friends
+- Contacts 
 - Posts 
 - Feeds 
 - Wallets
 - History 
-- Admin
+- Admin Django
+- Admin profile, tokens, customers, life cycles, product life cycles, products
 - Wallet Keys 
 - Streaming
 - Scheduling 
 - Calendar public/private
-- Customers
+- Customer Life Cycles list, add, edit, visible
+- Customers list, add, edit
+- Product Life Cycles list, add, edit, visible
+- Products list, add, edit
 - Orders
 - Payments
-- Customer Life Cycle
-- Products inventory/purchase order 
-- Analytics
-- Profile
+- Analytics 
 - Admin Create Order
 - Admin Make Payment
 - Ai Agents 

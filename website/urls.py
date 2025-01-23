@@ -126,6 +126,8 @@ urlpatterns = [
     path('product_edit/<int:pk>/', views.product_edit, name='product_edit'),
 
 
+    path('create/', views.create_cart, name='create_cart'),
+
 ]
 
 

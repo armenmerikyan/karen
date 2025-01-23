@@ -340,6 +340,21 @@ def upvote_convo_log(request, log_id):
     # Redirect back to the convo_log_detail page after the upvote
     return redirect('convo_log_detail', pk=convo_log.id)
 
+@admin_required
+def create_cart(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+    if request.method == 'POST':
+        form = CartForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('cart_list')  # Redirect to cart list page or anywhere you want after creating the cart
+    else:
+        form = CartForm()
+    
+    return render(request, 'create_cart.html', {'form': form, 'profile': profile})
+
 # View to list all products
 @admin_required
 def product_list(request):
