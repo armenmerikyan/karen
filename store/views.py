@@ -343,12 +343,20 @@ def upvote_convo_log(request, log_id):
 # View to list all products
 @admin_required
 def product_list(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     products = Product.objects.all()
-    return render(request, 'product_list.html', {'products': products})
+    return render(request, 'product_list.html', {'products': products, 'profile': profile})
 
 # View to add a new product
 @admin_required
 def product_add(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
@@ -357,11 +365,16 @@ def product_add(request):
     else:
         form = ProductForm()
 
-    return render(request, 'product_form.html', {'form': form, 'action': 'Add'})
+    return render(request, 'product_form.html', {'form': form, 'action': 'Add', 'profile': profile})
 
 # View to edit an existing product
 @admin_required
 def product_edit(request, pk):
+
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     product = get_object_or_404(Product, pk=pk)
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
@@ -371,7 +384,7 @@ def product_edit(request, pk):
     else:
         form = ProductForm(instance=product)
 
-    return render(request, 'product_form.html', {'form': form, 'action': 'Edit'})
+    return render(request, 'product_form.html', {'form': form, 'action': 'Edit', 'profile': profile})
 
 # List customers
 @admin_required
