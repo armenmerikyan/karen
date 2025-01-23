@@ -127,6 +127,7 @@ urlpatterns = [
 
 
     path('create/', views.create_cart, name='create_cart'),
+    path('cart_list/', views.cart_list, name='cart_list'),  # URL pattern for viewing the list of carts
 
 ]
 

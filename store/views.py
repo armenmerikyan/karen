@@ -355,6 +355,15 @@ def create_cart(request):
     
     return render(request, 'create_cart.html', {'form': form, 'profile': profile})
 
+
+@admin_required
+def cart_list(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+    carts = Cart.objects.all()  # Fetch all carts from the database
+    return render(request, 'cart_list.html', {'carts': carts, 'profile': profile})
+
 # View to list all products
 @admin_required
 def product_list(request):
