@@ -99,7 +99,10 @@ from .models import LifecycleStage
 from .models import Customer
 from .models import ProductLifecycleStage
 from .models import Product
+from .models import Cart
 
+
+from .forms import CartForm
 from .forms import ProductForm
 from .forms import ProductLifecycleStageForm
 from .forms import CustomerForm
