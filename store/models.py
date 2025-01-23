@@ -582,8 +582,8 @@ class Product(models.Model):
     quantity = models.IntegerField()
     
     # Foreign keys for category, brand, and lifecycle stage
-    category = models.ForeignKey('Category', on_delete=models.CASCADE)
-    brand = models.ForeignKey('Brand', on_delete=models.CASCADE)
+    #category = models.ForeignKey('Category', on_delete=models.CASCADE)
+    #brand = models.ForeignKey('Brand', on_delete=models.CASCADE)
     lifecycle_stage = models.ForeignKey(
         'ProductLifecycleStage', 
         on_delete=models.SET_NULL, 
