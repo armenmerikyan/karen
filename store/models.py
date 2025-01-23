@@ -594,7 +594,7 @@ class Product(models.Model):
     wholesale_price_item_json = models.TextField(null=True)
 
     def __str__(self):
-        return self.name  
+        return self.name
     
 
 class CartProduct(models.Model):
