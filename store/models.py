@@ -540,7 +540,32 @@ class LifecycleStage(models.Model):
 
     def __str__(self):
         return self.name    
+
+class ProductLifecycleStage(models.Model):
+    # The name of the stage (e.g., Concept, Development, Testing, etc.)
+    name = models.CharField(max_length=255)
     
+    # Rank to determine the order of stages in the lifecycle
+    rank = models.PositiveIntegerField()
+    
+    # A brief description of what this stage entails
+    description = models.TextField(blank=True, null=True)
+    
+    # Flag to indicate if this stage is visible in the system (for UI purposes)
+    is_visible = models.BooleanField(default=True)
+    
+    # Timestamp of when the stage was created
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    # Timestamp of the last update to the stage
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['rank']  # Ensures stages are listed in the order of their rank
+    
+    def __str__(self):
+        return f"{self.name} (Rank {self.rank})"
+
 class Customer(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)

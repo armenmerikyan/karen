@@ -11,8 +11,16 @@ from store.models import WebsiteProfile
 from store.models import TokenProfile
 from store.models import LifecycleStage
 from store.models import Customer
+from store.models import ProductLifecycleStage
 from .models import TokenMarketingContent
 from store.models import Tweet
+
+
+class ProductLifecycleStageForm(forms.ModelForm):
+    class Meta:
+        model = ProductLifecycleStage
+        fields = ['name', 'rank', 'description', 'is_visible']
+
 
 class CustomerForm(forms.ModelForm):
     lifecycle_stage = forms.ModelChoiceField(

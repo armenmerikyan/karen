@@ -1,0 +1,23 @@
+<!-- templates/product_lifecycle_stages/product_lifecycle_stages_form.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if stage %}Edit{% else %}Create{% endif %} Product Lifecycle Stage</title>
+</head>
+<body>
+    <h1>{% if stage %}Edit{% else %}Create{% endif %} Product Lifecycle Stage</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">{% if stage %}Save Changes{% else %}Create Stage{% endif %}</button>
+    </form>
+
+    {% if stage %}
+        <a href="{% url 'product_lifecycle_stages_list' %}">Back to List</a>
+    {% else %}
+        <a href="{% url 'product_lifecycle_stages_list' %}">Cancel</a>
+    {% endif %}
+</body>
+</html>

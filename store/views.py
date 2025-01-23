@@ -97,7 +97,9 @@ from .models import TokenProfile
 from .models import User
 from .models import LifecycleStage
 from .models import Customer
+from .models import ProductLifecycleStage
 
+from .forms import ProductLifecycleStageForm
 from .forms import CustomerForm
 from .forms import LifecycleStageForm
 from .forms import UserProfileUpdateForm
@@ -380,6 +382,37 @@ def customer_edit(request, customer_id):
     else:
         form = CustomerForm(instance=customer)
     return render(request, 'customer_form.html', {'form': form, 'profile': profile })
+
+# List all ProductLifecycleStages
+@admin_required
+def product_lifecycle_stages_list(request):
+    stages = ProductLifecycleStage.objects.all()
+    return render(request, 'product_lifecycle_stages/product_lifecycle_stages_list.html', {'stages': stages})
+
+# Create a new ProductLifecycleStage
+@admin_required
+def product_lifecycle_stages_create(request):
+    if request.method == 'POST':
+        form = ProductLifecycleStageForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('product_lifecycle_stages_list'))
+    else:
+        form = ProductLifecycleStageForm()
+    return render(request, 'product_lifecycle_stages/product_lifecycle_stages_form.html', {'form': form})
+
+# Edit an existing ProductLifecycleStage
+@admin_required
+def product_lifecycle_stages_edit(request, pk):
+    stage = get_object_or_404(ProductLifecycleStage, pk=pk)
+    if request.method == 'POST':
+        form = ProductLifecycleStageForm(request.POST, instance=stage)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('product_lifecycle_stages_list'))
+    else:
+        form = ProductLifecycleStageForm(instance=stage)
+    return render(request, 'product_lifecycle_stages/product_lifecycle_stages_form.html', {'form': form, 'stage': stage})
 
 @admin_required
 @require_POST
