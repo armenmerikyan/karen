@@ -1,27 +1,37 @@
-<!-- templates/product_lifecycle_stages/product_lifecycle_stages_list.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Product Lifecycle Stages</title>
-</head>
-<body>
-    <h1>Product Lifecycle Stages</h1>
-    <a href="{% url 'product_lifecycle_stages_create' %}">Create New Stage</a>
-    <ul>
-        {% for stage in stages %}
-            <li>
-                <strong>{{ stage.name }}</strong> (Rank: {{ stage.rank }})
-                {% if stage.is_visible %}
-                    <span>(Visible)</span>
-                {% else %}
-                    <span>(Hidden)</span>
-                {% endif %}
-                <a href="{% url 'product_lifecycle_stages_edit' stage.pk %}">Edit</a>
-            </li>
-        {% empty %}
-            <li>No stages available.</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+
+{% block content %}
+
+<!-- Displaying JSON data -->
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">  
+            <h1>Product Lifecycle Stages</h1>
+            <a href="{% url 'product_lifecycle_stages_create' %}">Create New Stage</a>
+            <ul>
+                {% for stage in stages %}
+                    <li>
+                        <strong>{{ stage.name }}</strong> (Rank: {{ stage.rank }})
+                        {% if stage.is_visible %}
+                            <span>(Visible)</span>
+                        {% else %}
+                            <span>(Hidden)</span>
+                        {% endif %}
+                        <a href="{% url 'product_lifecycle_stages_edit' stage.pk %}">Edit</a>
+                    </li>
+                {% empty %}
+                    <li>No stages available.</li>
+                {% endfor %}
+            </ul>
+          </div>
+      </div>
+      
+    </div>
+  </div>
+</section>    
+
+{% endblock %}
