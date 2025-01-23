@@ -19,7 +19,8 @@ from store.models import Tweet
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'description', 'price', 'stock_quantity', 'image', 'lifecycle_stage']
+        fields = ['name', 'description', 'price', 'wholesale_price', 'your_price', 'source_upload', 'product_image', 'display_priority', 'quantity', 'category', 'brand', 'lifecycle_stage', 'wholesale_price_item_json']
+
 
 class ProductLifecycleStageForm(forms.ModelForm):
     class Meta:
@@ -117,18 +118,7 @@ class CategoryForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['image'].required = False
 
-
-class ProductForm(forms.ModelForm):
-    class Meta:
-        model = Product
-        fields = ['name', 'display_priority', 'price', 'wholesale_price', 'your_price', 'description', 'product_image', 'quantity', 'category', 'brand']
-        widgets = {
-            'product_image': forms.ClearableFileInput(attrs={'multiple': False}),
-        }
-    def __init__(self, *args, **kwargs):
-        super(ProductForm, self).__init__(*args, **kwargs)
-        self.fields['brand'].queryset = Brand.objects.all()
-        self.fields['category'].queryset = Category.objects.all()
+ 
 
 class CartForm(forms.ModelForm):
     class Meta:
