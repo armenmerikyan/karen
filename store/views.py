@@ -386,12 +386,18 @@ def customer_edit(request, customer_id):
 # List all ProductLifecycleStages
 @admin_required
 def product_lifecycle_stages_list(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
     stages = ProductLifecycleStage.objects.all()
-    return render(request, 'product_lifecycle_stages/product_lifecycle_stages_list.html', {'stages': stages})
+    return render(request, 'product_lifecycle_stages/product_lifecycle_stages_list.html', {'stages': stages, 'profile': profile})
 
 # Create a new ProductLifecycleStage
 @admin_required
 def product_lifecycle_stages_create(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
     if request.method == 'POST':
         form = ProductLifecycleStageForm(request.POST)
         if form.is_valid():
@@ -399,11 +405,14 @@ def product_lifecycle_stages_create(request):
             return redirect(reverse('product_lifecycle_stages_list'))
     else:
         form = ProductLifecycleStageForm()
-    return render(request, 'product_lifecycle_stages/product_lifecycle_stages_form.html', {'form': form})
+    return render(request, 'product_lifecycle_stages/product_lifecycle_stages_form.html', {'form': form, 'profile': profile})
 
 # Edit an existing ProductLifecycleStage
 @admin_required
 def product_lifecycle_stages_edit(request, pk):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
     stage = get_object_or_404(ProductLifecycleStage, pk=pk)
     if request.method == 'POST':
         form = ProductLifecycleStageForm(request.POST, instance=stage)
@@ -412,7 +421,7 @@ def product_lifecycle_stages_edit(request, pk):
             return redirect(reverse('product_lifecycle_stages_list'))
     else:
         form = ProductLifecycleStageForm(instance=stage)
-    return render(request, 'product_lifecycle_stages/product_lifecycle_stages_form.html', {'form': form, 'stage': stage})
+    return render(request, 'product_lifecycle_stages/product_lifecycle_stages_form.html', {'form': form, 'stage': stage, 'profile': profile})
 
 @admin_required
 @require_POST
