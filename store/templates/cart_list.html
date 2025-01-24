@@ -1,42 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cart List</title>
-</head>
-<body>
-    <h1>List of Carts</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>External ID</th>
-                <th>Date Created</th>
-                <th>Date Modified</th>
-                <th>Checked Out</th>
-                <th>Paid</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for cart in carts %}
-            <tr>
-                <td>{{ cart.id }}</td>
-                <td>{{ cart.external_id }}</td>
-                <td>{{ cart.date_created }}</td>
-                <td>{{ cart.date_modified }}</td>
-                <td>{{ cart.checked_out }}</td>
-                <td>{{ cart.paid }}</td>
-                <td>
-                    <a href="{% url 'cart_detail' cart.id %}">View Details</a>
-                    <!-- Add more actions if needed (edit, delete, etc.) -->
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <br>
-    <a href="{% url 'create_cart' %}">Create a new Cart</a>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">   
+            <h1>List of Carts</h1>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>External ID</th>
+                        <th>Date Created</th>
+                        <th>Date Modified</th>
+                        <th>Checked Out</th>
+                        <th>Paid</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cart in carts %}
+                    <tr>
+                        <td>{{ cart.id }}</td>
+                        <td>{{ cart.external_id }}</td>
+                        <td>{{ cart.date_created }}</td>
+                        <td>{{ cart.date_modified }}</td>
+                        <td>{{ cart.checked_out }}</td>
+                        <td>{{ cart.paid }}</td>
+                        <td>
+                            <a href="{% url 'cart_detail' cart.id %}">View Details</a>
+                            <!-- Add more actions if needed (edit, delete, etc.) -->
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <br>
+            <a href="{% url 'create_cart' %}">Create a new Cart</a>
+        </div>
+      </div>      
+    </div>
+  </div>
+</section>    
+{% endblock %}
