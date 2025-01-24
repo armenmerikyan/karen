@@ -400,8 +400,15 @@ def cart_detail(request, id):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
+    
     cart = get_object_or_404(Cart, id=id)
-    return render(request, 'cart_detail.html', {'cart': cart, 'profile': profile})
+    cart_products = CartProduct.objects.filter(cart=cart)
+    
+    return render(request, 'cart_detail.html', {
+        'cart': cart,
+        'profile': profile,
+        'cart_products': cart_products
+    })
 
 @admin_required
 def cart_list(request):

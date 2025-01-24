@@ -19,6 +19,17 @@
             <p>{{ cart.shipping_city }}, {{ cart.shipping_state }} {{ cart.shipping_zipcode }}</p>
             <p>{{ cart.shipping_country }}</p>
 
+            <h2>Products in Cart</h2>
+            <ul>
+              {% for product in cart_products %}
+                <li>
+                  <strong>{{ product.product.name }}</strong> - 
+                  Quantity: {{ product.quantity }} - 
+                  Price: {{ product.price|currency }}
+                </li>
+              {% endfor %}
+            </ul>
+
             <a href="{% url 'cart_edit' cart.id %}">Edit Cart</a>
             <a href="{% url 'product_list_shop' cart.id %}">Shop Product</a>
 
