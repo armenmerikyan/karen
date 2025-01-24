@@ -99,29 +99,6 @@ def product_upload_to(instance, filename):
 
 
 
-class Cart(models.Model):
-    id = models.AutoField(primary_key=True)
-    external_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)
-    checked_out = models.BooleanField(default=False)
-    paid = models.BooleanField(default=False)
-    paid_transaction_id = models.CharField(max_length=255, blank=True)
-    billing_address_line1 = models.CharField(max_length=255, blank=True)
-    billing_address_line2 = models.CharField(max_length=255, blank=True)
-    billing_city = models.CharField(max_length=255, blank=True)
-    billing_state = models.CharField(max_length=255, blank=True)
-    billing_zipcode = models.CharField(max_length=255, blank=True)
-    billing_country = models.CharField(max_length=255, blank=True)
-    shipping_address_line1 = models.CharField(max_length=255, blank=True)
-    shipping_address_line2 = models.CharField(max_length=255, blank=True)
-    shipping_city = models.CharField(max_length=255, blank=True)
-    shipping_state = models.CharField(max_length=255, blank=True)
-    shipping_zipcode = models.CharField(max_length=255, blank=True)
-    shipping_country = models.CharField(max_length=255, blank=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='carts', null=True, blank=True)
-    def __str__(self):
-        return self.cart_id
 
 
 class APIData(models.Model):
@@ -565,6 +542,31 @@ class Customer(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
     
+
+class Cart(models.Model):
+    id = models.AutoField(primary_key=True)
+    external_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    checked_out = models.BooleanField(default=False)
+    paid = models.BooleanField(default=False)
+    paid_transaction_id = models.CharField(max_length=255, blank=True)
+    billing_address_line1 = models.CharField(max_length=255, blank=True)
+    billing_address_line2 = models.CharField(max_length=255, blank=True)
+    billing_city = models.CharField(max_length=255, blank=True)
+    billing_state = models.CharField(max_length=255, blank=True)
+    billing_zipcode = models.CharField(max_length=255, blank=True)
+    billing_country = models.CharField(max_length=255, blank=True)
+    shipping_address_line1 = models.CharField(max_length=255, blank=True)
+    shipping_address_line2 = models.CharField(max_length=255, blank=True)
+    shipping_city = models.CharField(max_length=255, blank=True)
+    shipping_state = models.CharField(max_length=255, blank=True)
+    shipping_zipcode = models.CharField(max_length=255, blank=True)
+    shipping_country = models.CharField(max_length=255, blank=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='carts', null=True, blank=True)
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, related_name='carts', null=True, blank=True)  # Added field
+    def __str__(self):
+        return self.cart_id
 
 class Product(models.Model):
     id = models.AutoField(primary_key=True)

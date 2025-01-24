@@ -124,6 +124,7 @@ class CartForm(forms.ModelForm):
     class Meta:
         model = Cart
         fields = [
+            "customer",  # Add customer to the fields
             "billing_address_line1",
             "billing_address_line2",
             "billing_city",
@@ -135,7 +136,19 @@ class CartForm(forms.ModelForm):
             "shipping_city",
             "shipping_state",
             "shipping_zipcode",
-            "shipping_country"
+            "shipping_country",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Customize the customer field
+        self.fields['customer'].queryset = Customer.objects.all()
+        self.fields['customer'].label = "Select Customer"
+        self.fields['customer'].empty_label = "Choose a customer"
+        # Override the label for each customer in the queryset
+        self.fields['customer'].choices = [
+            (customer.id, f"{customer.first_name} {customer.last_name} (ID: {customer.id})")
+            for customer in Customer.objects.all()
         ]
 
 class WebsiteProfileForm(forms.ModelForm):
