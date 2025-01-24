@@ -372,7 +372,7 @@ def cart_edit(request, id):
             return redirect('cart_detail', id=cart.id)
     else:
         form = CartForm(instance=cart)
-    return render(request, 'cart_edit.html', {'form': form, 'caption': caption})
+    return render(request, 'cart_edit.html', {'form': form, 'profile': profile})
 
 @admin_required
 def cart_detail(request, id):
@@ -380,7 +380,7 @@ def cart_detail(request, id):
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
     cart = get_object_or_404(Cart, id=id)
-    return render(request, 'cart_detail.html', {'cart': cart, 'caption': caption})
+    return render(request, 'cart_detail.html', {'cart': cart, 'profile': profile})
 
 @admin_required
 def cart_list(request):
