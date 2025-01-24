@@ -19,7 +19,7 @@ Web software for people, businesses, organizations, AI agents and much more.
 - Customers list, add, edit
 - Product Life Cycles list, add, edit, visible
 - Products list, add, edit
-- Orders
+- Orders / Carts
 - Payments
 - Analytics 
 - Admin Create Order
