@@ -26,7 +26,7 @@ from django.contrib.auth.views import PasswordResetConfirmView
 
 urlpatterns = [  
     path('admin/', admin.site.urls), 
-    path('admin_panel/', admin.site.urls, name='admin_dashboard'),  # Custom URL name
+    path('admin_dashboard/', admin.site.urls, name='admin_dashboard'),  # Custom URL name
     
     path('', views.index, name='index'), 
     path('verify_signature/', views.verify_signature, name='verify_signature'),    
