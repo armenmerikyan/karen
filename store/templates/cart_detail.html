@@ -18,8 +18,12 @@
             <p>{{ cart.shipping_address_line2 }}</p>
             <p>{{ cart.shipping_city }}, {{ cart.shipping_state }} {{ cart.shipping_zipcode }}</p>
             <p>{{ cart.shipping_country }}</p>
-            
+
             <a href="{% url 'cart_edit' cart.id %}">Edit Cart</a>
+
+            <hr>
+
+            <a href="{% url 'cart_list' %}" class="nav-link">Carts</a>   
 
         </div>
       </div>      
