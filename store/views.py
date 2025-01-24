@@ -359,6 +359,25 @@ def create_cart(request):
     return render(request, 'create_cart.html', {'form': form, 'profile': profile})
 
 @admin_required
+def cart_create(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+    cart = Cart.objects.create(
+        billing_address_line1=customer.address1,
+        billing_address_line2=customer.address2,
+        billing_city=customer.city,
+        billing_state=customer.state,
+        billing_zipcode=customer.zip_code,
+        billing_country=customer.country,
+        shipping_address_line1=customer.address1,
+        shipping_address_line2=customer.address2,
+        shipping_city=customer.city,
+        shipping_state=customer.state,
+        shipping_zipcode=customer.zip_code,
+        shipping_country=customer.country, 
+    )
+    return redirect('cart_edit', id=cart.id)
+
+@admin_required
 def cart_edit(request, id):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:

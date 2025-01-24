@@ -115,6 +115,7 @@ urlpatterns = [
     path('customer_list', views.customer_list, name='customer_list'),
     path('add_customer/', views.customer_add, name='customer_add'),
     path('edit/<int:customer_id>/', views.customer_edit, name='customer_edit'),
+    path('customer/<int:customer_id>/cart/create/', views.cart_create, name='cart_create'),
 
     path('product_lifecycle_stages_list', views.product_lifecycle_stages_list, name='product_lifecycle_stages_list'),
     path('product_lifecycle_stages_create/', views.product_lifecycle_stages_create, name='product_lifecycle_stages_create'),
