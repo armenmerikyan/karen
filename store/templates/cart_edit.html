@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">   
+            <h1>Edit Cart</h1>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Save Changes</button>
+            </form>
+            <a href="{% url 'cart_detail' form.instance.id %}">Back to Cart Details</a>
+
+        </div>
+      </div>      
+    </div>
+  </div>
+</section>    
+{% endblock %}
