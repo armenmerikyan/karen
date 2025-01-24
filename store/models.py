@@ -101,7 +101,7 @@ def product_upload_to(instance, filename):
 
 class Cart(models.Model):
     id = models.AutoField(primary_key=True)
-    external_id = models.CharField(max_length=255, unique=True)
+    external_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
     checked_out = models.BooleanField(default=False)
