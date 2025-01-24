@@ -25,7 +25,7 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import PasswordResetConfirmView 
 
 urlpatterns = [  
-    path('admin/', admin.site.urls), 
+    path('admin/', admin.site.urls, name='admin_dashboard'), 
     path('', views.index, name='index'), 
     path('verify_signature/', views.verify_signature, name='verify_signature'),    
     path('game_create/', views.game_create, name='game_create'),  
