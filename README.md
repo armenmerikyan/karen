@@ -10,7 +10,7 @@ Web software for people, businesses, organizations, AI agents and much more.
 - Wallets
 - History 
 - Admin Django
-- Admin profile, tokens, customers, life cycles, product life cycles, products
+- Admin profile, tokens, customers, life cycles, product life cycles, products, carts
 - Wallet Keys 
 - Streaming
 - Scheduling 
