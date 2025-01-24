@@ -20,6 +20,7 @@
             <p>{{ cart.shipping_country }}</p>
 
             <a href="{% url 'cart_edit' cart.id %}">Edit Cart</a>
+            <a href="{% url 'product_list_shop' cart.id %}">Shop Product</a>
 
             <hr>
 

@@ -25,8 +25,7 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import PasswordResetConfirmView 
 
 urlpatterns = [  
-    path('admin/', admin.site.urls), 
-    path('admin_dashboard/', admin.site.urls, name='admin_dashboard'),  # Custom URL name
+    path('admin/', admin.site.urls),  
     
     path('', views.index, name='index'), 
     path('verify_signature/', views.verify_signature, name='verify_signature'),    
@@ -127,6 +126,8 @@ urlpatterns = [
     path('product_list', views.product_list, name='product_list'),
     path('product_add/', views.product_add, name='product_add'),
     path('product_edit/<int:pk>/', views.product_edit, name='product_edit'),
+    path('shop/<int:cart_id>/', views.product_list_shop, name='product_list_shop'),
+    path('add_to_cart/<int:cart_id>/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
 
 
     path('create/', views.create_cart, name='create_cart'),

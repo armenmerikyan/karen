@@ -420,6 +420,19 @@ def product_list(request):
     products = Product.objects.all()
     return render(request, 'product_list.html', {'products': products, 'profile': profile})
 
+@admin_required
+def product_list_shop(request, cart_id):
+    cart = get_object_or_404(Cart, id=cart_id)
+    products = Product.objects.all()
+    return render(request, 'product_list_shop.html', {'products': products, 'cart': cart})
+
+@admin_required
+def add_to_cart(request, cart_id, product_id):
+    product = Product.objects.get(id=product_id)
+    cart = Cart.objects.get(id=cart_id)
+    CartProduct.objects.create(cart=cart, product=product, quantity=1, price=product.price)
+    return redirect('product_list_shop', cart_id=cart.id)
+
 # View to add a new product
 @admin_required
 def product_add(request):
