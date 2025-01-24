@@ -13,7 +13,18 @@ register = template.Library()
 @register.filter
 def add_class(value, class_name):
     return value.as_widget(attrs={'class': class_name})
-
+ 
+@register.filter(name='currency')
+def currency(value):
+    """
+    Converts a numeric value into a formatted currency string.
+    Example: 1234.5 -> $1,234.50
+    """
+    try:
+        value = float(value)
+        return format_html("${:,.2f}", value)
+    except (ValueError, TypeError):
+        return value
 @register.filter
 def elapsed_time(created_date):
     # Calculate time difference
