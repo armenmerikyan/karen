@@ -582,6 +582,7 @@ class Product(models.Model):
     product_image = models.ImageField(upload_to='product_images/', null=True, blank=True)
     display_priority = models.IntegerField(null=True, blank=True)
     quantity = models.IntegerField()
+    is_labor = models.BooleanField(default=False)  # New field added
     
     # Foreign keys for category, brand, and lifecycle stage
     #category = models.ForeignKey('Category', on_delete=models.CASCADE)

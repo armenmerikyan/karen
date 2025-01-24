@@ -19,7 +19,7 @@ from store.models import Tweet
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'description', 'price', 'wholesale_price', 'your_price', 'source_upload', 'product_image', 'display_priority', 'quantity', 'lifecycle_stage']
+        fields = ['name', 'description', 'price', 'wholesale_price', 'your_price', 'source_upload', 'product_image', 'display_priority', 'quantity', 'lifecycle_stage', 'is_labor']
 
 
 class ProductLifecycleStageForm(forms.ModelForm):
