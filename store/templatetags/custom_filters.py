@@ -8,6 +8,8 @@ from datetime import datetime
 from store.models import Accesstoken
 from django.utils.timezone import now
 
+from django.utils.html import format_html
+
 register = template.Library()
 
 @register.filter
@@ -25,6 +27,7 @@ def currency(value):
         return format_html("${:,.2f}", value)
     except (ValueError, TypeError):
         return value
+    
 @register.filter
 def elapsed_time(created_date):
     # Calculate time difference
