@@ -443,18 +443,18 @@ def add_to_cart(request, cart_id, product_id):
         
         if quantity < 1:
             return HttpResponseBadRequest("Quantity must be at least 1.")
+
+
+        cart_products = CartProduct.objects.filter(cart=cart, product=product)
         
-        # Check if the product is already in the cart
-        cart_product, created = CartProduct.objects.get_or_create(cart=cart, product=product)
+        if cart_products.exists():
+            # If multiple CartProducts exist, we can delete them or merge
+            cart_products.delete()
         
-        # If the product is already in the cart, just update the quantity
-        if not created:
-            cart_product.quantity += quantity
-            cart_product.save()
-        else:
-            cart_product.quantity = quantity
-            cart_product.price = product.price
-            cart_product.save()
+        # Create a new CartProduct entry with the correct quantity
+        CartProduct.objects.create(cart=cart, product=product, quantity=quantity, price=product.price)
+
+ 
 
         return redirect('product_list_shop', cart_id=cart.id)
     except Product.DoesNotExist:
