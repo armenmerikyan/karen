@@ -436,11 +436,32 @@ def product_list_shop(request, cart_id):
 
 @admin_required
 def add_to_cart(request, cart_id, product_id):
-    product = Product.objects.get(id=product_id)
-    cart = Cart.objects.get(id=cart_id)
-    CartProduct.objects.create(cart=cart, product=product, quantity=1, price=product.price)
-    return redirect('product_list_shop', cart_id=cart.id)
+    try:
+        product = Product.objects.get(id=product_id)
+        cart = Cart.objects.get(id=cart_id)
+        quantity = int(request.POST.get('quantity', 1))  # Default to 1 if no quantity is provided
+        
+        if quantity < 1:
+            return HttpResponseBadRequest("Quantity must be at least 1.")
+        
+        # Check if the product is already in the cart
+        cart_product, created = CartProduct.objects.get_or_create(cart=cart, product=product)
+        
+        # If the product is already in the cart, just update the quantity
+        if not created:
+            cart_product.quantity += quantity
+            cart_product.save()
+        else:
+            cart_product.quantity = quantity
+            cart_product.price = product.price
+            cart_product.save()
 
+        return redirect('product_list_shop', cart_id=cart.id)
+    except Product.DoesNotExist:
+        return HttpResponseBadRequest("Product not found.")
+    except Cart.DoesNotExist:
+        return HttpResponseBadRequest("Cart not found.")
+    
 # View to add a new product
 @admin_required
 def product_add(request):
