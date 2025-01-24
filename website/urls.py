@@ -128,6 +128,8 @@ urlpatterns = [
 
     path('create/', views.create_cart, name='create_cart'),
     path('cart_list/', views.cart_list, name='cart_list'),  # URL pattern for viewing the list of carts
+    path('cart/<int:id>/', views.cart_detail, name='cart_detail'),
+    path('cart/<int:id>/edit/', views.cart_edit, name='cart_edit'),
 
 ]
 

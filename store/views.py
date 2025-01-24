@@ -358,6 +358,29 @@ def create_cart(request):
     
     return render(request, 'create_cart.html', {'form': form, 'profile': profile})
 
+@admin_required
+def cart_edit(request, id):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
+    cart = get_object_or_404(Cart, id=id)
+    if request.method == "POST":
+        form = CartForm(request.POST, instance=cart)
+        if form.is_valid():
+            form.save()
+            return redirect('cart_detail', id=cart.id)
+    else:
+        form = CartForm(instance=cart)
+    return render(request, 'cart_edit.html', {'form': form, 'caption': caption})
+
+@admin_required
+def cart_detail(request, id):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+    cart = get_object_or_404(Cart, id=id)
+    return render(request, 'cart_detail.html', {'cart': cart, 'caption': caption})
 
 @admin_required
 def cart_list(request):

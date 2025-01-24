@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">   
+            <h1>Cart Details</h1>
+            <p>Billing Address:</p>
+            <p>{{ cart.billing_address_line1 }}</p>
+            <p>{{ cart.billing_address_line2 }}</p>
+            <p>{{ cart.billing_city }}, {{ cart.billing_state }} {{ cart.billing_zipcode }}</p>
+            <p>{{ cart.billing_country }}</p>
+        
+            <p>Shipping Address:</p>
+            <p>{{ cart.shipping_address_line1 }}</p>
+            <p>{{ cart.shipping_address_line2 }}</p>
+            <p>{{ cart.shipping_city }}, {{ cart.shipping_state }} {{ cart.shipping_zipcode }}</p>
+            <p>{{ cart.shipping_country }}</p>
+            
+            <a href="{% url 'cart_edit' cart.id %}">Edit Cart</a>
+
+        </div>
+      </div>      
+    </div>
+  </div>
+</section>    
+{% endblock %}
