@@ -100,6 +100,7 @@ from .models import Customer
 from .models import ProductLifecycleStage
 from .models import Product
 from .models import Cart
+from .models import CartProduct
 
 
 from .forms import CartForm
