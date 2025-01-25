@@ -154,7 +154,7 @@ class CartForm(forms.ModelForm):
 class WebsiteProfileForm(forms.ModelForm):
     class Meta:
         model = WebsiteProfile
-        fields = ['name', 'about_us', 'wallet', 'x_handle']
+        fields = ['name', 'about_us', 'wallet', 'x_handle', 'tax_rate']
 
 class TokenProfileForm(forms.ModelForm):
     class Meta:

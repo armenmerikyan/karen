@@ -463,7 +463,11 @@ class WebsiteProfile(models.Model):
     x_handle = models.CharField(max_length=255, help_text="The x.com handle.")
     created_at = models.DateTimeField(auto_now_add=True, help_text="The date and time when the profile was created.")
     updated_at = models.DateTimeField(auto_now=True, help_text="The date and time when the profile was last updated.")
-
+    tax_rate = models.DecimalField(
+        max_digits=5, 
+        decimal_places=2, 
+        help_text="The sales tax rate as a percentage (e.g., 7.25 for 7.25%)."
+    )
     def __str__(self):
         return self.name
     
