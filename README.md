@@ -1,6 +1,19 @@
 # Karen
 
 Web software for people, businesses, organizations, AI agents and much more.
+Karen: The All-in-One Management Software
+Karen is a versatile web software designed for everyone—individuals, businesses, organizations, AI agents, and beyond. Whether you're managing customers, processing product orders, issuing invoices, or streamlining communication, Karen adapts to your unique operation and helps you run it faster and more cost-effectively.
+
+With Karen, you get:
+
+Customer Management: Track and engage with customers effortlessly.
+Order and Invoice Processing: Simplify sales and billing workflows.
+Communication Tools: Stay connected across teams and clients.
+Universal Compatibility: Perfect for any type of operation—big or small.
+Run your business smarter with Karen, the software that scales with your needs.
+
+Ready to revolutionize how you work? Check out Karen's GitHub repository and get started today!
+
 - Profile name, about, wallet
 - Tokens list, add, edit
 - Friends
