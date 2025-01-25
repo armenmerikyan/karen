@@ -20,24 +20,37 @@
             <p>{{ cart.shipping_country }}</p>
 
             <h2>Products in Cart</h2>
-            <ul>
-              {% for product in cart_products %}
-                {% with total_price=product.quantity|multiply:product.price %}
-                  {% with total_tax=total_price|multiply:product.tax_rate|add:0 %}
-                    {% with total_with_product=total_price|add:total_tax %}
-                      <li>
-                        <strong>{{ product.product.name }}</strong> - 
-                        Quantity: {{ product.quantity }} - 
-                        Price: {{ product.price|currency }} -  
-                        Subtotal: {{ total_price|floatformat:2|currency }} - 
-                        Tax: {{ total_tax|floatformat:2|currency }} - 
-                        Total with Tax: {{ total_with_product|floatformat:2|currency }}
-                      </li>
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Subtotal</th>
+                  <th>Tax</th>
+                  <th>Total with Tax</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for product in cart_products %}
+                  {% with total_price=product.quantity|multiply:product.price %}
+                    {% with total_tax=total_price|multiply:product.tax_rate|add:0 %}
+                      {% with total_with_product=total_price|add:total_tax %}
+                        <tr>
+                          <td><strong>{{ product.product.name }}</strong></td>
+                          <td>{{ product.quantity }}</td>
+                          <td>{{ product.price|currency }}</td>
+                          <td>{{ total_price|floatformat:2|currency }}</td>
+                          <td>{{ total_tax|floatformat:2|currency }}</td>
+                          <td>{{ total_with_product|floatformat:2|currency }}</td>
+                        </tr>
+                      {% endwith %}
                     {% endwith %}
                   {% endwith %}
-                {% endwith %}
-              {% endfor %}
-            </ul>
+                {% endfor %}
+              </tbody>
+            </table>
+            
             
             <h3>Subtotal: {{ subtotal|floatformat:2|currency }}</h3>
             <h3>Total with Tax: {{ total_with_tax|floatformat:2|currency }}</h3>
