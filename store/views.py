@@ -450,6 +450,9 @@ def product_list_shop(request, cart_id):
 
 @admin_required
 def add_to_cart(request, cart_id, product_id):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
     try:
         product = Product.objects.get(id=product_id)
         cart = Cart.objects.get(id=cart_id)
@@ -466,7 +469,7 @@ def add_to_cart(request, cart_id, product_id):
             cart_products.delete()
         
         # Check if product is not labor and get its tax rate
-        tax_rate = product.tax_rate if not product.is_labor else 0
+        tax_rate = profile.tax_rate if not product.is_labor else 0
         
         # Create a new CartProduct entry with the correct quantity and tax rate
         CartProduct.objects.create(cart=cart, product=product, quantity=quantity, price=product.price, tax_rate=tax_rate)
