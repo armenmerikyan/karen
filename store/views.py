@@ -398,6 +398,9 @@ def cart_edit(request, id):
 
 @admin_required
 def cart_detail(request, id):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
     print('cart_detail')
     try:
         cart = Cart.objects.get(id=id)
@@ -419,6 +422,7 @@ def cart_detail(request, id):
             'cart_products': cart_products,
             'subtotal': subtotal,
             'total_with_tax': total_with_tax,
+            'profile': profile,
         })
     except Cart.DoesNotExist:
         return HttpResponseBadRequest("Cart not found.")
