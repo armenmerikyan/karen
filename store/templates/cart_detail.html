@@ -22,16 +22,12 @@
             <h2>Products in Cart</h2>
             <ul>
               {% for product in cart_products %}
-                {% with total=product.quantity|add:0 %}
-                  {% with total=total|add:product.price %}
-                    <li>
-                      <strong>{{ product.product.name }}</strong> - 
-                      Quantity: {{ product.quantity }} - 
-                      Price: {{ product.price|currency }} - 
-                      Total: {{ total|floatformat:2|currency }}
-                    </li>
-                  {% endwith %}
-                {% endwith %}
+                <li>
+                  <strong>{{ product.product.name }}</strong> - 
+                  Quantity: {{ product.quantity }} - 
+                  Price: {{ product.price|currency }} -  
+                  Total: {{ product.quantity|multiply:product.price|floatformat:2|currency }}
+                </li>
               {% endfor %}
             </ul>
             

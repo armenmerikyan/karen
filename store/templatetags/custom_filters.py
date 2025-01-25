@@ -13,6 +13,13 @@ from django.utils.html import format_html
 register = template.Library()
 
 @register.filter
+def multiply(value, arg):
+    try:
+        return value * arg
+    except (TypeError, ValueError):
+        return 0  # Return 0 if there is an error
+    
+@register.filter
 def add_class(value, class_name):
     return value.as_widget(attrs={'class': class_name})
  
