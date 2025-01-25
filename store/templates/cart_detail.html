@@ -10,7 +10,7 @@
             <h3>Customer Information:</h3>
             <p><strong>Name:</strong> {{ cart.customer.first_name }} {{ cart.customer.last_name }}</p>
             <p><strong>Email:</strong> {{ cart.customer.email }}</p>
-                        
+
             <p>Billing Address:</p>
             <p>{{ cart.billing_address_line1 }}</p>
             <p>{{ cart.billing_address_line2 }}</p>
@@ -54,6 +54,7 @@
             
             </div>
             <div style="text-align: right;">
+                <h3>Tax: {{ total_tax|floatformat:2|currency }}</h3>
                 <h3>Subtotal: {{ subtotal|floatformat:2|currency }}</h3>
                 <h3>Total with Tax: {{ total_with_tax|floatformat:2|currency }}</h3>
             </div> 

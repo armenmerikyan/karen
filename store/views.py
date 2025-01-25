@@ -407,25 +407,29 @@ def cart_detail(request, id):
         cart_products = CartProduct.objects.filter(cart=cart)
         
         subtotal = 0
+        total_tax = 0
         total_with_tax = 0
         for cart_product in cart_products:
             total_price = cart_product.quantity * cart_product.product.price
-            # Access the tax rate from the CartProduct model
-            total_tax = total_price * cart_product.tax_rate / 100
-            total_with_product = total_price + total_tax
+            # Calculate tax for the product
+            product_tax = total_price * cart_product.tax_rate / 100
+            total_with_product = total_price + product_tax
             
             subtotal += total_price
+            total_tax += product_tax  # Accumulate the total tax
             total_with_tax += total_with_product
         
         return render(request, 'cart_detail.html', {
             'cart': cart,
             'cart_products': cart_products,
             'subtotal': subtotal,
+            'total_tax': total_tax,  # Add total tax to context
             'total_with_tax': total_with_tax,
             'profile': profile,
         })
     except Cart.DoesNotExist:
         return HttpResponseBadRequest("Cart not found.")
+
     
 
 @admin_required
