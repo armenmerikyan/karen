@@ -451,9 +451,11 @@ def add_to_cart(request, cart_id, product_id):
             # If multiple CartProducts exist, we can delete them or merge
             cart_products.delete()
         
-        # Create a new CartProduct entry with the correct quantity
-        CartProduct.objects.create(cart=cart, product=product, quantity=quantity, price=product.price)
-
+        # Check if product is not labor and get its tax rate
+        tax_rate = product.tax_rate if not product.is_labor else 0
+        
+        # Create a new CartProduct entry with the correct quantity and tax rate
+        CartProduct.objects.create(cart=cart, product=product, quantity=quantity, price=product.price, tax_rate=tax_rate)
  
 
         return redirect('product_list_shop', cart_id=cart.id)

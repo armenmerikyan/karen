@@ -21,14 +21,30 @@
 
             <h2>Products in Cart</h2>
             <ul>
-              {% for product in cart_products %}
-                <li>
-                  <strong>{{ product.product.name }}</strong> - 
-                  Quantity: {{ product.quantity }} - 
-                  Price: {{ product.price|currency }} -  
-                  Total: {{ product.quantity|multiply:product.price|floatformat:2|currency }}
-                </li>
-              {% endfor %}
+              {% with subtotal=0 total_with_tax=0 %}
+                {% for product in cart_products %}
+                  {% with total_price=product.quantity|multiply:product.price %}
+                    {% with total_tax=total_price|multiply:product.tax_rate|div:100 %}
+                      {% with total_with_product=total_price|add:total_tax %}
+                        <li>
+                          <strong>{{ product.product.name }}</strong> - 
+                          Quantity: {{ product.quantity }} - 
+                          Price: {{ product.price|currency }} -  
+                          Subtotal: {{ total_price|floatformat:2|currency }} - 
+                          Tax: {{ total_tax|floatformat:2|currency }} - 
+                          Total with Tax: {{ total_with_product|floatformat:2|currency }}
+                        </li>
+                        {% with subtotal=subtotal|add:total_price %}
+                        {% with total_with_tax=total_with_tax|add:total_with_product %}
+                      {% endwith %}
+                    {% endwith %}
+                  {% endwith %}
+                {% endfor %}
+              </ul>
+            
+              <h3>Subtotal: {{ subtotal|floatformat:2|currency }}</h3>
+              <h3>Tax: {{ total_with_tax|subtract:subtotal|floatformat:2|currency }}</h3>
+              <h3>Total with Tax: {{ total_with_tax|floatformat:2|currency }}</h3>
             </ul>
             
 

@@ -611,3 +611,8 @@ class CartProduct(models.Model):
     quantity = models.IntegerField(default=1)
     added_at = models.DateTimeField(auto_now_add=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    tax_rate = models.DecimalField(
+        max_digits=5, 
+        decimal_places=2, 
+        help_text="The sales tax rate as a percentage (e.g., 7.25 for 7.25%)."
+    )    
