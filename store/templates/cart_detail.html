@@ -25,7 +25,8 @@
                 <li>
                   <strong>{{ product.product.name }}</strong> - 
                   Quantity: {{ product.quantity }} - 
-                  Price: {{ product.price|currency }}
+                  Price: {{ product.price|currency }} - 
+                  Total: {{ product.quantity * product.price|currency }}
                 </li>
               {% endfor %}
             </ul>
