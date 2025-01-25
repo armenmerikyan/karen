@@ -395,7 +395,31 @@ def cart_edit(request, id):
         form = CartForm(instance=cart)
     return render(request, 'cart_edit.html', {'form': form, 'profile': profile})
 
- 
+@admin_required
+def cart_detail(request, id):
+    try:
+        cart = Cart.objects.get(id=id)
+        cart_products = CartProduct.objects.filter(cart=cart)
+        
+        subtotal = 0
+        total_with_tax = 0
+        for cart_product in cart_products:
+            total_price = cart_product.quantity * cart_product.product.price
+            total_tax = total_price * cart_product.product.tax_rate / 100
+            total_with_product = total_price + total_tax
+            
+            subtotal += total_price
+            total_with_tax += total_with_product
+        
+        return render(request, 'cart_detail.html', {
+            'cart': cart,
+            'cart_products': cart_products,
+            'subtotal': subtotal,
+            'total_with_tax': total_with_tax,
+        })
+    except Cart.DoesNotExist:
+        return HttpResponseBadRequest("Cart not found.")
+
 @admin_required
 def cart_detail(request, cart_id):
     try:
