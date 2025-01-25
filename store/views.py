@@ -396,16 +396,17 @@ def cart_edit(request, id):
     return render(request, 'cart_edit.html', {'form': form, 'profile': profile})
 
 @admin_required
-def cart_detail(request, id):
+def cart_detail(request, cart_id):
     try:
-        cart = Cart.objects.get(id=id)
+        cart = Cart.objects.get(id=cart_id)
         cart_products = CartProduct.objects.filter(cart=cart)
         
         subtotal = 0
         total_with_tax = 0
         for cart_product in cart_products:
             total_price = cart_product.quantity * cart_product.product.price
-            total_tax = total_price * cart_product.product.tax_rate / 100
+            # Access the tax rate from the CartProduct model
+            total_tax = total_price * cart_product.tax_rate / 100
             total_with_product = total_price + total_tax
             
             subtotal += total_price
