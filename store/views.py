@@ -448,9 +448,12 @@ def product_list(request):
 
 @admin_required
 def product_list_shop(request, cart_id):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
     cart = get_object_or_404(Cart, id=cart_id)
     products = Product.objects.all()
-    return render(request, 'product_list_shop.html', {'products': products, 'cart': cart})
+    return render(request, 'product_list_shop.html', {'products': products, 'cart': cart, 'profile':profile})
 
 @admin_required
 def add_to_cart(request, cart_id, product_id):
