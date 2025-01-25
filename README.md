@@ -1,6 +1,6 @@
 # Karen
 
-Karen: The All-in-One Management Software
+The All-in-One Software
 
 Karen is a versatile web software designed for everyone—individuals, businesses, organizations, AI agents, and beyond. Whether you're managing customers, processing product orders, issuing invoices, or streamlining communication, Karen adapts to your unique operation and helps you run it faster and more cost-effectively.
 
