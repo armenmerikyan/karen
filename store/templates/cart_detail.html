@@ -20,6 +20,7 @@
             <p>{{ cart.shipping_country }}</p>
 
             <h2>Products in Cart</h2>
+            <div style="text-align: right;">
             <table>
               <thead>
                 <tr>
@@ -47,12 +48,11 @@
               </tbody>
             </table>
             
-            
+            </div>
             <div style="text-align: right;">
                 <h3>Subtotal: {{ subtotal|floatformat:2|currency }}</h3>
                 <h3>Total with Tax: {{ total_with_tax|floatformat:2|currency }}</h3>
-              </div>
-            </ul>
+            </div> 
             
 
             <a href="{% url 'cart_edit' cart.id %}">Edit Cart</a>
