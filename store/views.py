@@ -396,9 +396,9 @@ def cart_edit(request, id):
     return render(request, 'cart_edit.html', {'form': form, 'profile': profile})
 
 @admin_required
-def cart_detail(request, cart_id):
+def cart_detail(request, id):
     try:
-        cart = Cart.objects.get(id=cart_id)
+        cart = Cart.objects.get(id=id)
         cart_products = CartProduct.objects.filter(cart=cart)
         
         subtotal = 0
