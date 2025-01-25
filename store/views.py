@@ -395,8 +395,10 @@ def cart_edit(request, id):
         form = CartForm(instance=cart)
     return render(request, 'cart_edit.html', {'form': form, 'profile': profile})
 
+
 @admin_required
 def cart_detail(request, id):
+    print('cart_detail')
     try:
         cart = Cart.objects.get(id=id)
         cart_products = CartProduct.objects.filter(cart=cart)
