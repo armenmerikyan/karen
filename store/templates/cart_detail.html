@@ -40,9 +40,7 @@
                           <td><strong>{{ product.product.name }}</strong></td>
                           <td>{{ product.quantity }}</td>
                           <td>{{ product.price|currency }}</td>
-                          <td>{{ total_price|floatformat:2|currency }}</td>
-                          <td>{{ total_tax|floatformat:2|currency }}</td>
-                          <td>{{ total_with_product|floatformat:2|currency }}</td>
+                          <td>{{ total_price|floatformat:2|currency }}</td> 
                         </tr>
                       {% endwith %}
                     {% endwith %}
