@@ -57,7 +57,9 @@
                 <h3>Tax: {{ total_tax|floatformat:2|currency }}</h3>
                 <h3>Subtotal: {{ subtotal|floatformat:2|currency }}</h3>
                 <h3>Total with Tax: {{ total_with_tax|floatformat:2|currency }}</h3>
-            </div> 
+                <h3>Total Paid: {{ total_payments|floatformat:2|currency }}</h3>
+                <h3>Balance Due: {{ balance_due|floatformat:2|currency }}</h3>
+            </div>
             
 
             <a href="{% url 'cart_edit' cart.id %}">Edit Cart</a>
