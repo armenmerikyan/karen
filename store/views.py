@@ -460,7 +460,7 @@ def payment_form(request, cart_id):
         payment.status = 'COMPLETED'
         payment.save()
 
-        return redirect('cart_details', cart_id=cart.id)
+        return redirect('cart_detail', cart_id=cart.id)
 
     return render(request, 'payment_form.html', {'cart': cart})
 
