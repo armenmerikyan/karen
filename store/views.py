@@ -101,6 +101,8 @@ from .models import ProductLifecycleStage
 from .models import Product
 from .models import Cart
 from .models import CartProduct
+from .models import Payment
+from .models import PaymentApplication
 
 
 from .forms import CartForm
