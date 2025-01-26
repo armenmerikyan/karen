@@ -38,6 +38,7 @@ import urllib.request
 from django.core.files.base import ContentFile
 
 from django.db.models import Q
+from django.db import models
 
 from django.utils import timezone  # Import Django's timezone module
 
