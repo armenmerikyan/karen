@@ -430,7 +430,38 @@ def cart_detail(request, id):
     except Cart.DoesNotExist:
         return HttpResponseBadRequest("Cart not found.")
 
-    
+
+@admin_required
+def payment_form(request, cart_id):
+    cart = get_object_or_404(Cart, id=cart_id)
+
+    if request.method == 'POST':
+        amount = request.POST.get('amount')
+        payment_method = request.POST.get('payment_method')
+
+        if not amount or not payment_method:
+            return HttpResponse("Amount and Payment Method are required.", status=400)
+
+        payment = Payment.objects.create(
+            customer=cart.customer,
+            amount=amount,
+            payment_method=payment_method,
+            status='PENDING',
+        )
+
+        PaymentApplication.objects.create(
+            payment=payment,
+            cart=cart,
+            applied_amount=amount,
+        )
+
+        payment.status = 'COMPLETED'
+        payment.save()
+
+        return redirect('cart_details', cart_id=cart.id)
+
+    return render(request, 'payment_form.html', {'cart': cart})
+
 
 @admin_required
 def cart_list(request):

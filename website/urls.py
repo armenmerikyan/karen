@@ -135,6 +135,8 @@ urlpatterns = [
     path('cart/<int:id>/', views.cart_detail, name='cart_detail'),
     path('cart/<int:id>/edit/', views.cart_edit, name='cart_edit'),
 
+    path('cart/<int:cart_id>/payment/', views.payment_form, name='payment_form'),
+
 ]
 
 
