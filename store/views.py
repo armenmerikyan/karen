@@ -441,6 +441,10 @@ def cart_detail(request, id):
 
 @admin_required
 def payment_form(request, cart_id):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     cart = get_object_or_404(Cart, id=cart_id)
 
     if request.method == 'POST':
@@ -468,7 +472,7 @@ def payment_form(request, cart_id):
 
         return redirect('cart_detail', id=cart.id)
 
-    return render(request, 'payment_form.html', {'cart': cart})
+    return render(request, 'payment_form.html', {'cart': cart, 'profile': profile})
 
 
 @admin_required
