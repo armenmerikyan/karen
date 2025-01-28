@@ -9,7 +9,7 @@
             <h1>Product List</h1>
             {% for product in products %}
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100">
+                    <div class="card h-100 bg-secondary text-white"> <!-- Dark card -->
                         <!-- Product Image -->
                         {% if product.product_image %}
                             <img src="{{ product.product_image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
