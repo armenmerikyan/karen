@@ -6,28 +6,40 @@
     <div class="container mt-5 text-light">         
       <div class="row">
         <div class="col-md-12 text-left">   
-            <h1>Product List</h1>
-            {% for product in products %}
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 bg-secondary text-white"> <!-- Dark card -->
-                        <!-- Product Image -->
-                        {% if product.product_image %}
-                            <img src="{{ product.product_image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
-                        {% else %}
-                            <div class="text-center py-5 bg-light">No Image Available</div>
-                        {% endif %}
-                        <div class="card-body">
-                            <!-- Product Name -->
-                            <h5 class="card-title">{{ product.name }}</h5>
-                            <!-- Product Price -->
-                            <p class="card-text">${{ product.price }}</p>
-                            <!-- Link to Product Details -->
-                            <a href="{% url 'shop_product_detail' product.id %}" class="btn btn-primary">View Details</a>
+            <h1>Product List</h1> 
+                {% for product in products %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 bg-secondary text-white"> <!-- Dark card -->
+                            <!-- Product Image -->
+                            {% if product.product_image %}
+                                <img src="{{ product.product_image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                                <div class="text-center py-5 bg-light">No Image Available</div>
+                            {% endif %}
+                            <div class="card-body">
+                                <!-- Product Name -->
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <!-- Product Price -->
+                                <p class="card-text">${{ product.price }}</p>
+                                <!-- Collapsible Button -->
+                                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ product.id }}" aria-expanded="false" aria-controls="collapse{{ product.id }}">
+                                    View Details
+                                </button>
+                                <!-- Collapsible Content -->
+                                <div class="collapse" id="collapse{{ product.id }}">
+                                    <div class="mt-3">
+                                        <p class="card-text">{{ product.description }}</p>
+                                        <a href="{% url 'shop_product_detail' product.id %}" class="btn btn-success">More Info</a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
-
+                    <!-- Add a new row after every 3 products -->
+                    {% if forloop.counter|divisibleby:3 and not forloop.last %}
+                        </div><div class="row">
+                    {% endif %}
+                {% endfor %} 
         </div>
       </div>      
     </div>
