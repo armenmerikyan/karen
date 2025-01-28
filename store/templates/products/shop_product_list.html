@@ -7,13 +7,26 @@
       <div class="row">
         <div class="col-md-12 text-left">   
             <h1>Product List</h1>
-            <ul>
-                {% for product in products %}
-                    <li>
-                        <a href="{% url 'shop_product_detail' product.id %}">{{ product.name }}</a> - ${{ product.price }}
-                    </li>
-                {% endfor %}
-            </ul>
+            {% for product in products %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <!-- Product Image -->
+                        {% if product.product_image %}
+                            <img src="{{ product.product_image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="text-center py-5 bg-light">No Image Available</div>
+                        {% endif %}
+                        <div class="card-body">
+                            <!-- Product Name -->
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <!-- Product Price -->
+                            <p class="card-text">${{ product.price }}</p>
+                            <!-- Link to Product Details -->
+                            <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
 
         </div>
       </div>      
