@@ -280,16 +280,22 @@ def resend_verification_email(request):
     
 
 def shop_product_list(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
     # Fetch all products from the database
     products = Product.objects.all()
     # Pass the products to the template
-    return render(request, 'products/shop_product_list.html', {'products': products})
+    return render(request, 'products/shop_product_list.html', {'products': products, 'profile': profile})
 
 def shop_product_detail(request, product_id):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
     # Fetch the specific product by its ID
     product = get_object_or_404(Product, id=product_id)
     # Pass the product to the template
-    return render(request, 'products/shop_product_detail.html', {'product': product})
+    return render(request, 'products/shop_product_detail.html', {'product': product, 'profile': profile})
 
 @login_required
 def update_profile(request):
