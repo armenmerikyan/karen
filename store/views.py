@@ -279,6 +279,17 @@ def resend_verification_email(request):
     return render(request, 'resend_verification_email.html')
     
 
+def shop_product_list(request):
+    # Fetch all products from the database
+    products = Product.objects.all()
+    # Pass the products to the template
+    return render(request, 'products/shop_product_list.html', {'products': products})
+
+def shop_product_detail(request, product_id):
+    # Fetch the specific product by its ID
+    product = get_object_or_404(Product, id=product_id)
+    # Pass the product to the template
+    return render(request, 'products/shop_product_detail.html', {'product': product})
 
 @login_required
 def update_profile(request):

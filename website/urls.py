@@ -137,6 +137,10 @@ urlpatterns = [
 
     path('cart/<int:cart_id>/payment/', views.payment_form, name='payment_form'),
 
+    path('shop_products/', views.shop_product_list, name='shop_product_list'),
+    # URL for viewing a specific product's details
+    path('shop_products/<int:product_id>/', views.shop_product_detail, name='shop_product_detail'),
+
 ]
 
 
