@@ -1,46 +1,51 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
 {% block content %}
-<section class="py-0">
-  <div class="container-fluid">
-    <div class="container mt-5 text-light">         
-      <div class="row">
-        <div class="col-md-12 text-left">   
-            <h1>List of Carts</h1>
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>External ID</th>
-                        <th>Date Created</th>
-                        <th>Date Modified</th>
-                        <th>Checked Out</th>
-                        <th>Paid</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for cart in carts %}
-                    <tr>
-                        <td>{{ cart.id }}</td>
-                        <td>{{ cart.external_id }}</td>
-                        <td>{{ cart.date_created }}</td>
-                        <td>{{ cart.date_modified }}</td>
-                        <td>{{ cart.checked_out }}</td>
-                        <td>{{ cart.paid }}</td>
-                        <td>
-                            <a href="{% url 'cart_detail' cart.id %}">View Details</a>
-                            <!-- Add more actions if needed (edit, delete, etc.) -->
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <br>
-            <a href="{% url 'create_cart' %}">Create a new Cart</a>
+<section class="py-5 bg-dark text-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="mb-4">List of Carts</h1>
+        
+        <!-- Bootstrap Table -->
+        <div class="table-responsive">
+          <table class="table table-dark table-striped table-hover">
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">External ID</th>
+                <th scope="col">Date Created</th>
+                <th scope="col">Date Modified</th>
+                <th scope="col">Checked Out</th>
+                <th scope="col">Paid</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for cart in carts %}
+                <tr>
+                  <td>{{ cart.id }}</td>
+                  <td>{{ cart.external_id }}</td>
+                  <td>{{ cart.date_created }}</td>
+                  <td>{{ cart.date_modified }}</td>
+                  <td>{{ cart.checked_out }}</td>
+                  <td>{{ cart.paid }}</td>
+                  <td>
+                    <a href="{% url 'cart_detail' cart.id %}" class="btn btn-sm btn-primary">View Details</a>
+                    <!-- Add more actions if needed (edit, delete, etc.) -->
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
-      </div>      
+
+        <!-- Create New Cart Button -->
+        <div class="mt-4">
+          <a href="{% url 'create_cart' %}" class="btn btn-success">Create a New Cart</a>
+        </div>
+      </div>
     </div>
   </div>
-</section>    
+</section>
 {% endblock %}
