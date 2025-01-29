@@ -348,10 +348,18 @@ def about_us(request):
     return render(request, 'about_us.html', { 'profile': profile})
 
 def terms_of_service(request):
-    return render(request, 'terms_of_service.html')
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
+    return render(request, 'terms_of_service.html', { 'profile': profile})
 
 def privacy_policy(request):
-    return render(request, 'privacy_policy.html')
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
+    return render(request, 'privacy_policy.html', { 'profile': profile})
 
 def upvote_convo_log(request, log_id):
     # Get the ConvoLog object or return a 404 error if it doesn't exist
