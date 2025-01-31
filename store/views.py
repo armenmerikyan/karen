@@ -529,14 +529,20 @@ def product_list_shop(request, cart_id):
 
 def shop_add_to_cart(request):
     cart_id = request.COOKIES.get('cartId')
+    logger.info(f"Cart ID: {cart_id}")
+    
     if request.method == 'POST':
         quantity = request.POST.get('quantity')
+        product_id = request.POST.get('product_id')
+        logger.info(f"Quantity: {quantity}, Product ID: {product_id}")
+        
         if not quantity or quantity == '':
             quantity = 1
-        product_id = request.POST.get('product_id')
+        
         try:
             product = Product.objects.get(id=product_id)
         except Product.DoesNotExist:
+            logger.error(f"Invalid product ID: {product_id}")
             return JsonResponse({'status': 'error', 'message': 'Invalid product id'})
 
         if Cart.objects.filter(external_id=cart_id).exists():
@@ -544,13 +550,14 @@ def shop_add_to_cart(request):
         else:
             cart = Cart.objects.create(external_id=cart_id)
 
-        CartProduct.objects.create(cart=cart, product=product, quantity = quantity, price = product.price)
+        CartProduct.objects.create(cart=cart, product=product, quantity=quantity, price=product.price)
 
         # Set the cart_id in a cookie
         response = JsonResponse({'status': 'success'})
         response.set_cookie('cartId', cart_id)
         return response
     else:
+        logger.error("Invalid request method")
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
     
 @admin_required
