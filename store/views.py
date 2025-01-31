@@ -527,6 +527,32 @@ def product_list_shop(request, cart_id):
     products = Product.objects.all()
     return render(request, 'product_list_shop.html', {'products': products, 'cart': cart, 'profile':profile})
 
+def shop_add_to_cart(request):
+    cart_id = request.COOKIES.get('cartId')
+    if request.method == 'POST':
+        quantity = request.POST.get('quantity')
+        if not quantity or quantity == '':
+            quantity = 1
+        product_id = request.POST.get('product_id')
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Invalid product id'})
+
+        if Cart.objects.filter(external_id=cart_id).exists():
+            cart = Cart.objects.get(external_id=cart_id)
+        else:
+            cart = Cart.objects.create(external_id=cart_id)
+
+        CartProduct.objects.create(cart=cart, product=product, quantity = quantity, price = product.price)
+
+        # Set the cart_id in a cookie
+        response = JsonResponse({'status': 'success'})
+        response.set_cookie('cartId', cart_id)
+        return response
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+    
 @admin_required
 def add_to_cart(request, cart_id, product_id):
     profile = WebsiteProfile.objects.order_by('-created_at').first()

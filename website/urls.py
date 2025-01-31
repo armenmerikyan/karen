@@ -141,6 +141,9 @@ urlpatterns = [
     # URL for viewing a specific product's details
     path('shop_products/<int:product_id>/', views.shop_product_detail, name='shop_product_detail'),
 
+
+    path('add-to-cart/', views.shop_add_to_cart, name='shop_add_to_cart'),
+
 ]
 
 

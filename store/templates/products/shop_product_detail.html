@@ -15,6 +15,14 @@
 
             <HR>
 
+            <!-- Add to Cart Form -->
+            <form id="addToCartForm">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" value="1" min="1">
+                <button type="submit" class="btn btn-primary">Add to Cart</button>
+            </form>
+
             <a href="{% url 'shop_product_list' %}">Back to Product List</a>
 
         </div>
@@ -22,4 +30,39 @@
     </div>
   </div>
 </section>    
+
+<!-- Embedded JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('addToCartForm');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const formData = new FormData(form);
+        const productId = formData.get('product_id');
+        const quantity = formData.get('quantity');
+
+        fetch('{% url "shop_add_to_cart" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}', // Ensure you pass the CSRF token
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `product_id=${productId}&quantity=${quantity}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Product added to cart successfully!');
+            } else {
+                alert('Failed to add product to cart: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+});
+</script>
 {% endblock %}
