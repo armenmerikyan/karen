@@ -528,6 +528,10 @@ def product_list_shop(request, cart_id):
     return render(request, 'product_list_shop.html', {'products': products, 'cart': cart, 'profile':profile})
 
 def shop_add_to_cart(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     cart_id = request.COOKIES.get('cartId')
     logger.info(f"Cart ID: {cart_id}")
     
@@ -550,7 +554,10 @@ def shop_add_to_cart(request):
         else:
             cart = Cart.objects.create(external_id=cart_id)
 
-        CartProduct.objects.create(cart=cart, product=product, quantity=quantity, price=product.price)
+
+        tax_rate = profile.tax_rate if not product.is_labor else 0
+
+        CartProduct.objects.create(cart=cart, product=product, quantity=quantity, price=product.price, tax_rate=tax_rate)
 
         # Set the cart_id in a cookie
         response = JsonResponse({'status': 'success'})
