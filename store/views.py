@@ -1179,7 +1179,10 @@ def toggle_handle_status(request, handle_id):
  
 def index(request):
  
-
+    cart_id = request.COOKIES.get('cartId')
+    if cart_id is None:
+        cart_id = generate_id()
+ 
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
@@ -1189,11 +1192,13 @@ def index(request):
  
     
     context = {
+        'cart_id': cart_id,
         'profile': profile,
         'tokens': tokens, 
     }
     
     response = render(request, 'index.html', context) 
+    response.set_cookie('cartId', cart_id) 
 
     return response
 
