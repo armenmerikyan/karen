@@ -1297,6 +1297,25 @@ def view_game(request, game_id):
 
     return render(request, 'view_game.html', context)
 
+def view_cart_detail_shop_current(request):
+
+    cart_id = request.COOKIES.get('cartId')
+
+    return view_cart_detail_shop(request, cart_id)
+
+def view_cart_detail_shop(request, cart_id):
+    cart = Cart.objects.get(id=cart_id)
+    cart_products = CartProduct.objects.filter(cart=cart)
+    products = []
+    total = 0
+    for cart_product in cart_products:
+        line_item_total = cart_product.product.price * cart_product.quantity
+        total += line_item_total
+        products.append({'product': cart_product.product, 'quantity': cart_product.quantity, 'price': cart_product.price, 'line_item_total': line_item_total, 'id': cart_product.id})
+
+    context = {'cart': cart, 'products': products, 'total': total}
+    return render(request, 'cart_detail_shop.html', context)
+
 def all_games(request):
     games = Game.objects.all().order_by('-date_created')
     #games = Game.objects.filter(game_state='End of Hand').order_by('-date_created')  # Filter games with state "End of Hand"

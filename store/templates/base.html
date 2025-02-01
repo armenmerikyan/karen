@@ -24,7 +24,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
       <a class="navbar-brand" href="/">{{ profile.name }}</a>
-      <ul class="navbar-nav">
+      <ul class="navbar-nav me-auto"> <!-- Use me-auto to push the right-aligned items to the right -->
         <li class="nav-item">
           <a href="{% url 'about_us' %}" class="nav-link">About</a>
         </li>
@@ -49,8 +49,16 @@
           </li>
         {% endif %}
       </ul>
+      <!-- Shopping cart link aligned to the right with Font Awesome icon -->
+      <ul class="navbar-nav ms-auto"> <!-- Use ms-auto to push the shopping cart to the right -->
+        <li class="nav-item">
+          <a href="{% url 'view_cart_detail_shop_current' %}" class="nav-link">
+            <i class="fas fa-shopping-cart"></i> <!-- Font Awesome shopping cart icon -->
+          </a>
+        </li>
+      </ul>
     </div>
-  </nav>
+</nav>
 
   <div class="container-fluid flex-grow-1 mt-2">
     {% block content %}{% endblock %}

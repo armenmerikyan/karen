@@ -144,6 +144,9 @@ urlpatterns = [
 
     path('add-to-cart/', views.shop_add_to_cart, name='shop_add_to_cart'),
 
+    path('cart/<int:cart_id>/', views.view_cart_detail_shop, name='view_cart_detail_shop'),
+    path('current_cart/', views.view_cart_detail_shop_current, name='view_cart_detail_shop_current'),
+    
 ]
 
 
