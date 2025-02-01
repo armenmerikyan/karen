@@ -1304,7 +1304,7 @@ def view_cart_detail_shop_current(request):
     return view_cart_detail_shop(request, cart_id)
 
 def view_cart_detail_shop(request, cart_id):
-    cart = Cart.objects.get(id=cart_id)
+    cart = Cart.objects.get(external_id=cart_id)
     cart_products = CartProduct.objects.filter(cart=cart)
     products = []
     total = 0
