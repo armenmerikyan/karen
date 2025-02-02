@@ -1005,6 +1005,44 @@ def save_twitter_status(request):
         return JsonResponse({"error": "An unexpected error occurred."}, status=500)
 
 
+@login_required(login_url='login')
+def checkout_view(request): 
+    
+    cart_id = request.COOKIES.get('cartId')
+    cart = Cart.objects.get(external_id=cart_id)
+    
+    if not cart:
+        return redirect('current_cart')  # Redirect to the cart page if no cart is found
+
+    # Calculate totals, taxes, etc.
+    subtotal = sum(product.line_item_total for product in cart.products.all())
+    total_tax = subtotal * 0.07  # Example tax calculation
+    total_with_tax = subtotal + total_tax
+    balance_due = total_with_tax
+
+    context = {
+        'cart': cart,
+        'subtotal': subtotal,
+        'total_tax': total_tax,
+        'total_with_tax': total_with_tax,
+        'balance_due': balance_due,
+    }
+
+    return render(request, 'checkout.html', context)
+
+@login_required
+def process_checkout(request):
+    cart_id = request.COOKIES.get('cartId')
+    cart = Cart.objects.get(external_id=cart_id) 
+    
+    if cart:
+        # Process the payment, update the cart, etc.
+        cart.checked_out = True
+        cart.save()
+        return redirect('order_confirmation')  # Redirect to an order confirmation page
+    
+    return redirect('current_cart')  # Redirect back to the cart if something goes wrong
+
 def view_twitter_status(request):
     statuses = TwitterStatus.objects.all()
     return render(request, 'twitter_status_list.html', {'statuses': statuses})

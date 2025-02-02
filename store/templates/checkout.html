@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Checkout</h1>
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="post" action="{% url 'process_checkout' %}">
+                {% csrf_token %}
+                <!-- Add form fields for billing/shipping address, payment info, etc. -->
+                <button type="submit" class="btn btn-primary">Place Order</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
