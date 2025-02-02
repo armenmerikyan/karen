@@ -1039,9 +1039,10 @@ def process_checkout(request):
         # Process the payment, update the cart, etc.
         cart.checked_out = True
         cart.save()
-        return redirect('order_confirmation')  # Redirect to an order confirmation page
+        return render(request, 'order_confirmation.html', {'cart': cart})  # Render order confirmation page
     
     return redirect('current_cart')  # Redirect back to the cart if something goes wrong
+
 
 def view_twitter_status(request):
     statuses = TwitterStatus.objects.all()
