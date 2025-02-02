@@ -1013,19 +1013,19 @@ def login_view(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
-
+        
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
-        logger.info(f"Authenticate returned: {user}")
+        
         if user is not None:
             login(request, user)
-            return redirect('index')
+            next_url = request.GET.get('next', 'index')  # Redirect to the next URL or index
+            return redirect(next_url)
         else:
-            return render(request, 'login.html', {'error': 'Invalid credentials', 'profile': profile})
+            return render(request, 'login.html', {'error': 'Invalid credentials', 'profile': profile})    
     return render(request, 'login.html', {'profile': profile})
-
 
 @csrf_exempt
 @admin_required
