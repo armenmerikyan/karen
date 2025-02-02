@@ -1302,19 +1302,59 @@ def view_cart_detail_shop_current(request):
     cart_id = request.COOKIES.get('cartId')
 
     return view_cart_detail_shop(request, cart_id)
-
+ 
 def view_cart_detail_shop(request, cart_id):
-    cart = Cart.objects.get(external_id=cart_id)
-    cart_products = CartProduct.objects.filter(cart=cart)
-    products = []
-    total = 0
-    for cart_product in cart_products:
-        line_item_total = cart_product.product.price * cart_product.quantity
-        total += line_item_total
-        products.append({'product': cart_product.product, 'quantity': cart_product.quantity, 'price': cart_product.price, 'line_item_total': line_item_total, 'id': cart_product.id})
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
 
-    context = {'cart': cart, 'products': products, 'total': total}
-    return render(request, 'cart_detail_shop.html', context)
+    try:
+        cart = Cart.objects.get(external_id=cart_id)
+        cart_products = CartProduct.objects.filter(cart=cart)
+
+        subtotal = 0
+        total_tax = 0
+        total_with_tax = 0
+        products = []
+
+        for cart_product in cart_products:
+            total_price = cart_product.quantity * cart_product.product.price
+            product_tax = total_price * cart_product.tax_rate / 100
+            total_with_product = total_price + product_tax
+
+            subtotal += total_price
+            total_tax += product_tax
+            total_with_tax += total_with_product
+
+            products.append({
+                'product': cart_product.product,
+                'quantity': cart_product.quantity,
+                'price': cart_product.product.price,
+                'line_item_total': total_price,
+                'tax': product_tax,
+                'total_with_tax': total_with_product,
+                'id': cart_product.id,
+            })
+
+        # Calculate total payments and balance due
+        total_payments = PaymentApplication.objects.filter(cart=cart).aggregate(models.Sum('applied_amount'))['applied_amount__sum'] or 0
+        balance_due = total_with_tax - total_payments
+
+        context = {
+            'cart': cart,
+            'products': products,
+            'subtotal': subtotal,
+            'total_tax': total_tax,
+            'total_with_tax': total_with_tax,
+            'total_payments': total_payments,
+            'balance_due': balance_due,
+            'profile': profile,
+        }
+
+        return render(request, 'cart_detail_shop.html', context)
+
+    except Cart.DoesNotExist:
+        return HttpResponseBadRequest("Cart not found.")
 
 def all_games(request):
     games = Game.objects.all().order_by('-date_created')

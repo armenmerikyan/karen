@@ -48,8 +48,13 @@
 {% endfor %}
 
 <div class="row">
-  <div class="col-sm-12">
-    <p>Total: {{ total }}</p>
+  <div class="col-sm-12"> 
+    <div style="text-align: right;">
+      <h3>Tax: {{ total_tax|floatformat:2|currency }}</h3>
+      <h3>Subtotal: {{ subtotal|floatformat:2|currency }}</h3>
+      <h3>Total with Tax: {{ total_with_tax|floatformat:2|currency }}</h3> 
+      <h3>Balance Due: {{ balance_due|floatformat:2|currency }}</h3>
+    </div>
   </div>
 </div>
 
