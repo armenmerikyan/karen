@@ -3,60 +3,54 @@
 {% block content %}
 
 <div class="container my-5">
-    <h1>Order Info</h1>
-    <div class="container my-5">
-        <div class="row mb-3">
-            <div class="col-sm-3">
-                <p>Order ID:</p>
-            </div>
-            <div class="col-sm-9">
-                <p>{{ cart.id }}</p>
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-sm-3">
-                <p>External ID:</p>
-            </div>
-            <div class="col-sm-9">
-                <p>{{ cart.external_id }}</p>
+    <h1 class="mb-4">Order Info</h1>
+    <div class="card mb-4">
+        <div class="card-body"> 
+            <div class="row mb-3">
+                <div class="col-sm-3">
+                    <p class="fw-bold">Date Created:</p>
+                </div>
+                <div class="col-sm-9">
+                    <p>{{ cart.date_created }}</p>
+                </div>
             </div>
         </div>
-        <div class="row mb-3">
-            <div class="col-sm-3">
-                <p>Date Created:</p>
-            </div>
-            <div class="col-sm-9">
-                <p>{{ cart.date_created }}</p>
-            </div>
-        </div>
-        <!-- Add HTML code to display other fields -->
-    </div> 
-{% for product in products %}
-  <div class="row mb-3">
-    <div class="col-sm-3">
-      <p>{{ product.product.name }}</p>
     </div>
-    <div class="col-sm-3">
-      <p>{{ product.product.price }}</p>
-    </div>
-    <div class="col-sm-3">
-      <p>{{ product.quantity }}</p>
-    </div>
-    <div class="col-sm-3">
-      <p>{{ product.line_item_total }}</p>
-    </div>
-  </div>
-{% endfor %}
 
-<div class="row">
-  <div class="col-sm-12"> 
-    <div style="text-align: right;">
-      <h3>Tax: {{ total_tax|floatformat:2|currency }}</h3>
-      <h3>Subtotal: {{ subtotal|floatformat:2|currency }}</h3>
-      <h3>Total with Tax: {{ total_with_tax|floatformat:2|currency }}</h3> 
-      <h3>Balance Due: {{ balance_due|floatformat:2|currency }}</h3>
+    <h2 class="mb-4">Products</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Line Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.product.name }}</td>
+                    <td>{{ product.product.price|currency }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.line_item_total|currency }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-  </div>
+
+    <div class="row mt-4">
+        <div class="col-sm-12">
+            <div class="text-end">
+                <h4>Subtotal: {{ subtotal|floatformat:2|currency }}</h4>
+                <h4>Tax: {{ total_tax|floatformat:2|currency }}</h4>
+                <h4>Total with Tax: {{ total_with_tax|floatformat:2|currency }}</h4>
+                <h4>Balance Due: {{ balance_due|floatformat:2|currency }}</h4>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
