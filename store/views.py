@@ -1102,7 +1102,46 @@ def process_checkout(request):
         # Process the payment, update the cart, etc.
         cart.checked_out = True
         cart.save()
-        return render(request, 'order_confirmation.html', {'cart': cart})  # Render order confirmation page
+
+        cart_products = CartProduct.objects.filter(cart=cart)
+        subtotal, total_tax, total_with_tax = 0, 0, 0
+        products = []
+
+        for cart_product in cart_products:
+            total_price = cart_product.quantity * cart_product.product.price
+            product_tax = total_price * cart_product.tax_rate / 100
+            total_with_product = total_price + product_tax
+
+            subtotal += total_price
+            total_tax += product_tax
+            total_with_tax += total_with_product
+
+            products.append({
+                'product': cart_product.product,
+                'quantity': cart_product.quantity,
+                'price': cart_product.product.price,
+                'line_item_total': total_price,
+                'tax': product_tax,
+                'total_with_tax': total_with_product,
+                'id': cart_product.id,
+            })
+
+        total_payments = PaymentApplication.objects.filter(cart=cart).aggregate(models.Sum('applied_amount'))['applied_amount__sum'] or 0
+        balance_due = total_with_tax - total_payments
+
+        context = {
+            'cart': cart,
+            'products': products,
+            'subtotal': subtotal,
+            'total_tax': total_tax,
+            'total_with_tax': total_with_tax,
+            'total_payments': total_payments,
+            'balance_due': balance_due,
+            'profile': profile,
+            'form': form,
+        }
+
+        return render(request, 'order_confirmation.html', context)  # Render order confirmation page
     
     return redirect('current_cart')  # Redirect back to the cart if something goes wrong
 
