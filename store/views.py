@@ -1028,27 +1028,27 @@ def checkout_view(request):
                 form.save()
                 return redirect('checkout')
         else:
-            # Pre-fill the form with customer's address if found, but merge with cart data
             if customer:
-                form = ShippingBillingForm(
-                    instance=cart,
-                    initial={
-                        'shipping_address1': customer.address1,
-                        'shipping_address2': customer.address2,
-                        'shipping_city': customer.city,
-                        'shipping_state': customer.state,
-                        'shipping_zip_code': customer.zip_code,
-                        'shipping_country': customer.country,
-                        'billing_address1': customer.address1,
-                        'billing_address2': customer.address2,
-                        'billing_city': customer.city,
-                        'billing_state': customer.state,
-                        'billing_zip_code': customer.zip_code,
-                        'billing_country': customer.country,
-                    }
-                )
-            else:
-                form = ShippingBillingForm(instance=cart)
+                # Fully override the cart data with the customer's address
+                cart.shipping_address1 = customer.address1
+                cart.shipping_address2 = customer.address2
+                cart.shipping_city = customer.city
+                cart.shipping_state = customer.state
+                cart.shipping_zip_code = customer.zip_code
+                cart.shipping_country = customer.country
+
+                cart.billing_address1 = customer.address1
+                cart.billing_address2 = customer.address2
+                cart.billing_city = customer.city
+                cart.billing_state = customer.state
+                cart.billing_zip_code = customer.zip_code
+                cart.billing_country = customer.country
+
+                # Save the cart with the updated information
+                cart.save()
+
+            # Now create the form with the updated cart data
+            form = ShippingBillingForm(instance=cart)
 
         subtotal, total_tax, total_with_tax = 0, 0, 0
         products = []
