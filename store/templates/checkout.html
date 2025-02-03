@@ -3,10 +3,15 @@
 <div class="container my-5">
     <h1 class="mb-4">Checkout</h1>
     <div class="card mb-4">
-        <div class="card-body">
+        <div class="card-body"> 
             <form method="post" action="{% url 'checkout' %}">
                 {% csrf_token %}
                 {{ form.as_p }}
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        {{ form.errors }}
+                    </div>
+                {% endif %}
                 <button type="submit" class="btn btn-primary">Update Details</button>
             </form>
         </div>
