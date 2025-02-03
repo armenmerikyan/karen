@@ -69,8 +69,7 @@ footer a:hover {
 }
 
 /* Navbar Specific Styles */
-.navbar {
-  background-color: rgba(31, 31, 31, 0.9) !important;
+.navbar { 
   color: #00FF00 !important;
 }
 
