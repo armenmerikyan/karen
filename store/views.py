@@ -105,7 +105,7 @@ from .models import CartProduct
 from .models import Payment
 from .models import PaymentApplication
 
-
+from .forms import ShippingBillingForm
 from .forms import CartForm
 from .forms import ProductForm
 from .forms import ProductLifecycleStageForm
