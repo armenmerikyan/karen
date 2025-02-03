@@ -1004,8 +1004,10 @@ def save_twitter_status(request):
         print(f"An error occurred: {e}")
         return JsonResponse({"error": "An unexpected error occurred."}, status=500)
 
+ 
 @login_required(login_url='login')
 def checkout_view(request):
+    form = ShippingBillingForm()  # Default form in case cart doesn't exist
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
@@ -1015,11 +1017,42 @@ def checkout_view(request):
         cart = Cart.objects.get(external_id=cart_id)
         cart_products = CartProduct.objects.filter(cart=cart)
 
-        # Initialize totals
+        # Get the current user email and check for an existing customer
+        customer = None
+        if request.user.is_authenticated:
+            customer = Customer.objects.filter(email=request.user.email).first()
+
+        if request.method == 'POST':
+            form = ShippingBillingForm(request.POST, instance=cart)
+            if form.is_valid():
+                form.save()
+                return redirect('process_checkout')
+        else:
+            if customer:
+                # Fully override the cart data with the customer's address
+                cart.shipping_address_line1 = customer.address1
+                cart.shipping_address_line2 = customer.address2
+                cart.shipping_city = customer.city
+                cart.shipping_state = customer.state
+                cart.shipping_zipcode = customer.zip_code
+                cart.shipping_country = customer.country
+
+                cart.billing_address_line1 = customer.address1
+                cart.billing_address_line2 = customer.address2
+                cart.billing_city = customer.city
+                cart.billing_state = customer.state
+                cart.billing_zipcode = customer.zip_code
+                cart.billing_country = customer.country
+
+                # Save the cart with the updated information
+                cart.save()
+
+            # Now create the form with the updated cart data
+            form = ShippingBillingForm(instance=cart)
+
         subtotal, total_tax, total_with_tax = 0, 0, 0
         products = []
 
-        # Calculate order details for each product in the cart
         for cart_product in cart_products:
             total_price = cart_product.quantity * cart_product.product.price
             product_tax = total_price * cart_product.tax_rate / 100
@@ -1029,7 +1062,6 @@ def checkout_view(request):
             total_tax += product_tax
             total_with_tax += total_with_product
 
-            # Collect detailed product information for display
             products.append({
                 'product': cart_product.product,
                 'quantity': cart_product.quantity,
@@ -1040,11 +1072,9 @@ def checkout_view(request):
                 'id': cart_product.id,
             })
 
-        # Get total payments made and calculate balance due
         total_payments = PaymentApplication.objects.filter(cart=cart).aggregate(models.Sum('applied_amount'))['applied_amount__sum'] or 0
         balance_due = total_with_tax - total_payments
 
-        # Prepare context to pass to the template
         context = {
             'cart': cart,
             'products': products,
@@ -1054,14 +1084,14 @@ def checkout_view(request):
             'total_payments': total_payments,
             'balance_due': balance_due,
             'profile': profile,
+            'form': form,
         }
 
         return render(request, 'checkout_shop.html', context)
     except Cart.DoesNotExist:
-        # Redirect back to the cart if cart doesn't exist
-        return redirect('current_cart')
+        # Ensure form is still passed if cart doesn't exist
+        return redirect('current_cart')  # Redirect back to the cart if something goes wrong
 
- 
  
 @login_required
 def process_checkout(request):
