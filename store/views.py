@@ -1034,7 +1034,7 @@ def checkout_view(request):
                 cart.shipping_address_line2 = customer.address2
                 cart.shipping_city = customer.city
                 cart.shipping_state = customer.state
-                cart.billing_zipcode = customer.zip_code
+                cart.shipping_zipcode = customer.zip_code
                 cart.shipping_country = customer.country
 
                 cart.billing_address_line1 = customer.address1
