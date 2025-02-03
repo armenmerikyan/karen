@@ -1024,6 +1024,7 @@ def checkout_view(request):
         else:
             form = ShippingBillingForm(instance=cart)
 
+        print("Form fields:", form.fields)
         subtotal, total_tax, total_with_tax = 0, 0, 0
         products = []
 
