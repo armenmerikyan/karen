@@ -7,7 +7,9 @@ body {
   font-size: 16px; /* Adjust font size as desired */
   line-height: 1.5; /* Improve readability */
 }
-
+.custom-navbar {
+  background-color: black !important;
+}
 /* Card Body Styles */
 .custom-card-body,
 .custom-card-body .list-group-item {
