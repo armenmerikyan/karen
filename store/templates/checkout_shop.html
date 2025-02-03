@@ -22,11 +22,12 @@
     <div class="card">
         <div class="card-body">
             <h5>Order Summary</h5>
-            <p>Subtotal: ${{ subtotal }}</p>
-            <p>Tax: ${{ total_tax }}</p>
-            <p>Total: ${{ total_with_tax }}</p>
-            <p>Payments Made: ${{ total_payments }}</p>
-            <p>Balance Due: ${{ balance_due }}</p>
+
+            <h4>Subtotal: {{ subtotal|floatformat:2|currency }}</h4>
+            <h4>Tax: {{ total_tax|floatformat:2|currency }}</h4>
+            <h4>Total with Tax: {{ total_with_tax|floatformat:2|currency }}</h4>
+            <h4>Balance Due: {{ balance_due|floatformat:2|currency }}</h4>
+                         
         </div>
     </div> 
 
