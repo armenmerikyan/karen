@@ -1065,7 +1065,7 @@ def checkout_view(request):
         return render(request, 'checkout.html', context)
     except Cart.DoesNotExist:
         # Ensure form is still passed if cart doesn't exist
-        return render(request, 'checkout.html', {'form': form})
+        return redirect('current_cart')  # Redirect back to the cart if something goes wrong
 
 
 @login_required(login_url='login')
