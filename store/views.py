@@ -1030,18 +1030,18 @@ def checkout_view(request):
         else:
             if customer:
                 # Fully override the cart data with the customer's address
-                cart.shipping_address1 = customer.address1
-                cart.shipping_address2 = customer.address2
+                cart.shipping_address_line1 = customer.address1
+                cart.shipping_address_line2 = customer.address2
                 cart.shipping_city = customer.city
                 cart.shipping_state = customer.state
-                cart.shipping_zip_code = customer.zip_code
+                cart.billing_zipcode = customer.zip_code
                 cart.shipping_country = customer.country
 
-                cart.billing_address1 = customer.address1
-                cart.billing_address2 = customer.address2
+                cart.billing_address_line1 = customer.address1
+                cart.billing_address_line2 = customer.address2
                 cart.billing_city = customer.city
                 cart.billing_state = customer.state
-                cart.billing_zip_code = customer.zip_code
+                cart.billing_zipcode = customer.zip_code
                 cart.billing_country = customer.country
 
                 # Save the cart with the updated information
