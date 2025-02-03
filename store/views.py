@@ -1007,6 +1007,7 @@ def save_twitter_status(request):
 
 @login_required(login_url='login')
 def checkout_view(request): 
+    form = ShippingBillingForm()  # Default form in case cart doesn't exist
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
@@ -1020,11 +1021,10 @@ def checkout_view(request):
             form = ShippingBillingForm(request.POST, instance=cart)
             if form.is_valid():
                 form.save()
-                return redirect('checkout')  # Redirect to refresh the page with updated info
+                return redirect('checkout')
         else:
             form = ShippingBillingForm(instance=cart)
 
-        print("Form fields:", form.fields)
         subtotal, total_tax, total_with_tax = 0, 0, 0
         products = []
 
@@ -1064,7 +1064,9 @@ def checkout_view(request):
 
         return render(request, 'checkout.html', context)
     except Cart.DoesNotExist:
-        return redirect('cart')  # Redirect to cart if no cart found
+        # Ensure form is still passed if cart doesn't exist
+        return render(request, 'checkout.html', {'form': form})
+
 
 @login_required(login_url='login')
 def checkout_view(request): 
