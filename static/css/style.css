@@ -29,8 +29,7 @@ body {
 }
 
 /* Navbar and Footer Styling */
-.navbar, footer {
-  background-color: rgba(31, 31, 31, 0.8) !important;
+.navbar, footer { 
   color: #00FF00 !important;
 }
 
