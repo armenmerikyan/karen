@@ -1006,7 +1006,7 @@ def save_twitter_status(request):
 
 
 @login_required(login_url='login')
-def checkout_view(request): 
+def checkout_view(request):
     form = ShippingBillingForm()  # Default form in case cart doesn't exist
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
@@ -1017,12 +1017,33 @@ def checkout_view(request):
         cart = Cart.objects.get(external_id=cart_id)
         cart_products = CartProduct.objects.filter(cart=cart)
 
+        # Get the current user email and check for an existing customer
+        customer = None
+        if request.user.is_authenticated:
+            customer = Customer.objects.filter(email=request.user.email).first()
+
         if request.method == 'POST':
             form = ShippingBillingForm(request.POST, instance=cart)
             if form.is_valid():
                 form.save()
                 return redirect('checkout')
         else:
+            # Pre-fill the form with customer's address if found
+            if customer:
+                form.initial = {
+                    'shipping_address1': customer.address1,
+                    'shipping_address2': customer.address2,
+                    'shipping_city': customer.city,
+                    'shipping_state': customer.state,
+                    'shipping_zip_code': customer.zip_code,
+                    'shipping_country': customer.country,
+                    'billing_address1': customer.address1,
+                    'billing_address2': customer.address2,
+                    'billing_city': customer.city,
+                    'billing_state': customer.state,
+                    'billing_zip_code': customer.zip_code,
+                    'billing_country': customer.country,
+                }
             form = ShippingBillingForm(instance=cart)
 
         subtotal, total_tax, total_with_tax = 0, 0, 0
@@ -1066,7 +1087,6 @@ def checkout_view(request):
     except Cart.DoesNotExist:
         # Ensure form is still passed if cart doesn't exist
         return redirect('current_cart')  # Redirect back to the cart if something goes wrong
-
  
 @login_required
 def process_checkout(request):
