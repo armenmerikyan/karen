@@ -1028,23 +1028,27 @@ def checkout_view(request):
                 form.save()
                 return redirect('checkout')
         else:
-            # Pre-fill the form with customer's address if found
+            # Pre-fill the form with customer's address if found, but merge with cart data
             if customer:
-                form.initial = {
-                    'shipping_address1': customer.address1,
-                    'shipping_address2': customer.address2,
-                    'shipping_city': customer.city,
-                    'shipping_state': customer.state,
-                    'shipping_zip_code': customer.zip_code,
-                    'shipping_country': customer.country,
-                    'billing_address1': customer.address1,
-                    'billing_address2': customer.address2,
-                    'billing_city': customer.city,
-                    'billing_state': customer.state,
-                    'billing_zip_code': customer.zip_code,
-                    'billing_country': customer.country,
-                }
-            form = ShippingBillingForm(instance=cart)
+                form = ShippingBillingForm(
+                    instance=cart,
+                    initial={
+                        'shipping_address1': customer.address1,
+                        'shipping_address2': customer.address2,
+                        'shipping_city': customer.city,
+                        'shipping_state': customer.state,
+                        'shipping_zip_code': customer.zip_code,
+                        'shipping_country': customer.country,
+                        'billing_address1': customer.address1,
+                        'billing_address2': customer.address2,
+                        'billing_city': customer.city,
+                        'billing_state': customer.state,
+                        'billing_zip_code': customer.zip_code,
+                        'billing_country': customer.country,
+                    }
+                )
+            else:
+                form = ShippingBillingForm(instance=cart)
 
         subtotal, total_tax, total_with_tax = 0, 0, 0
         products = []
@@ -1087,6 +1091,7 @@ def checkout_view(request):
     except Cart.DoesNotExist:
         # Ensure form is still passed if cart doesn't exist
         return redirect('current_cart')  # Redirect back to the cart if something goes wrong
+
  
 @login_required
 def process_checkout(request):
