@@ -4,11 +4,22 @@
     <h1 class="mb-4">Checkout</h1>
     <div class="card mb-4">
         <div class="card-body">
-            <form method="post" action="{% url 'process_checkout' %}">
+            <form method="post" action="{% url 'checkout' %}">
                 {% csrf_token %}
-                <!-- Add form fields for billing/shipping address, payment info, etc. -->
-                <button type="submit" class="btn btn-primary">Place Order</button>
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Update Details</button>
             </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5>Order Summary</h5>
+            <p>Subtotal: ${{ subtotal }}</p>
+            <p>Tax: ${{ total_tax }}</p>
+            <p>Total: ${{ total_with_tax }}</p>
+            <p>Payments Made: ${{ total_payments }}</p>
+            <p>Balance Due: ${{ balance_due }}</p>
         </div>
     </div>
 </div>

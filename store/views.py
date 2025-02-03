@@ -1016,6 +1016,66 @@ def checkout_view(request):
         cart = Cart.objects.get(external_id=cart_id)
         cart_products = CartProduct.objects.filter(cart=cart)
 
+        if request.method == 'POST':
+            form = ShippingBillingForm(request.POST, instance=cart)
+            if form.is_valid():
+                form.save()
+                return redirect('checkout')  # Redirect to refresh the page with updated info
+        else:
+            form = ShippingBillingForm(instance=cart)
+
+        subtotal, total_tax, total_with_tax = 0, 0, 0
+        products = []
+
+        for cart_product in cart_products:
+            total_price = cart_product.quantity * cart_product.product.price
+            product_tax = total_price * cart_product.tax_rate / 100
+            total_with_product = total_price + product_tax
+
+            subtotal += total_price
+            total_tax += product_tax
+            total_with_tax += total_with_product
+
+            products.append({
+                'product': cart_product.product,
+                'quantity': cart_product.quantity,
+                'price': cart_product.product.price,
+                'line_item_total': total_price,
+                'tax': product_tax,
+                'total_with_tax': total_with_product,
+                'id': cart_product.id,
+            })
+
+        total_payments = PaymentApplication.objects.filter(cart=cart).aggregate(models.Sum('applied_amount'))['applied_amount__sum'] or 0
+        balance_due = total_with_tax - total_payments
+
+        context = {
+            'cart': cart,
+            'products': products,
+            'subtotal': subtotal,
+            'total_tax': total_tax,
+            'total_with_tax': total_with_tax,
+            'total_payments': total_payments,
+            'balance_due': balance_due,
+            'profile': profile,
+            'form': form,
+        }
+
+        return render(request, 'checkout.html', context)
+    except Cart.DoesNotExist:
+        return redirect('cart')  # Redirect to cart if no cart found
+
+@login_required(login_url='login')
+def checkout_view(request): 
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
+    cart_id = request.COOKIES.get('cartId')
+    try:
+        cart = Cart.objects.get(external_id=cart_id)
+        cart_products = CartProduct.objects.filter(cart=cart)
+
         subtotal = 0
         total_tax = 0
         total_with_tax = 0

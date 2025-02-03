@@ -16,6 +16,15 @@ from store.models import Product
 from .models import TokenMarketingContent
 from store.models import Tweet
 
+
+class ShippingBillingForm(forms.ModelForm):
+    class Meta:
+        model = Cart
+        fields = [
+            'billing_address_line1', 'billing_address_line2', 'billing_city', 'billing_state', 'billing_zipcode', 'billing_country',
+            'shipping_address_line1', 'shipping_address_line2', 'shipping_city', 'shipping_state', 'shipping_zipcode', 'shipping_country'
+        ]
+
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
