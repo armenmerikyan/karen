@@ -1095,6 +1095,10 @@ def checkout_view(request):
  
 @login_required
 def process_checkout(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+        
     cart_id = request.COOKIES.get('cartId')
     cart = Cart.objects.get(external_id=cart_id) 
     
@@ -1137,8 +1141,7 @@ def process_checkout(request):
             'total_with_tax': total_with_tax,
             'total_payments': total_payments,
             'balance_due': balance_due,
-            'profile': profile,
-            'form': form,
+            'profile': profile, 
         }
 
         return render(request, 'order_confirmation.html', context)  # Render order confirmation page
