@@ -3,7 +3,7 @@
 The All-in-One Software
 - Customer Relationship Management
 - Loyalty Program Management
-- Content Streaming Service
+- Streaming and Content Management
 - Sales & Revenue Management
 - Operations & Workflow Automation
 - Financial Management
