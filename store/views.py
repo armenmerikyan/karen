@@ -1457,8 +1457,7 @@ def view_cart_detail_shop(request, cart_id):
         cart = Cart.objects.get(external_id=cart_id)
     except Cart.DoesNotExist:
         # Create a new cart if it doesn't exist
-        cart = Cart.objects.create(external_id=get_random_string(12))  # Adjust the length as needed
-        cart_id = cart.external_id  # Update the cart_id for further use
+        cart = Cart.objects.create(external_id=cart_id)  # Adjust the length as needed 
 
     cart_products = CartProduct.objects.filter(cart=cart)
 
