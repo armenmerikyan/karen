@@ -283,9 +283,17 @@ def shop_product_list(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
-    # Fetch all products from the database
-    products = Product.objects.all()
-    # Pass the products to the template
+    
+    # Get search term from request
+    search_query = request.GET.get('search', '')
+    
+    # Filter products based on search query
+    if search_query:
+        products = Product.objects.filter(Q(name__icontains=search_query) | Q(description__icontains=search_query))
+    else:
+        products = Product.objects.all()
+
+    # Pass the products and profile to the template
     return render(request, 'products/shop_product_list.html', {'products': products, 'profile': profile})
 
 def shop_product_detail(request, product_id):
