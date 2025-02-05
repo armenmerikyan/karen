@@ -1,22 +1,33 @@
 # Karen
 
 The All-in-One Software
-- Customer Relationship Management
-- Loyalty Program Management
-- Streaming and Content Management
-- Sales & Revenue Management
-- Operations & Workflow Automation
-- Financial Management
-- Customer Support & Helpdesk
-- Business Intelligence & Reporting
+- Customer Relationship Management  
+- Loyalty Program Management  
+- Streaming and Content Management  
+- Sales & Revenue Management  
+- Operations & Workflow Automation  
+- Financial Management  
+- Customer Support & Helpdesk  
+- Business Intelligence & Reporting  
+- Inventory & Supply Chain Management  
+- Employee Time Tracking & Scheduling  
+- Human Resources & Payroll  
+- Project & Task Management  
+- Marketing Automation & Campaign Management  
+- Document & File Management  
+- Vendor & Procurement Management  
+- Compliance & Risk Management  
+- Asset & Equipment Tracking  
+- Point of Sale (POS) Integration  
+- Product Lifecycle Management  
+- Training & Development Platforms  
 
-Tech Stack:
-- Frontend: React.js (with Tailwind CSS for styling).
-- Backend: Django for the live-streaming service, Rust for Solana smart contracts.
-- Blockchain: Solana for wallet integration and SPL tokens.
-- Database: PostgreSQL (relational), Redis (caching).
-- APIs: REST or GraphQL.
-- Deployment: Docker, Kubernetes, AWS/GCP.
+Tech Stack: 
+- Backend: Django for the live-streaming service, Rust for Solana smart contracts
+- Blockchain: Solana for wallet integration and SPL tokens
+- Database: PostgreSQL (relational), Redis (caching)
+- APIs: REST
+- Deployment: Docker, Kubernetes, AWS/GCP
 
 
 Karen is a versatile web software designed for everyone—individuals, businesses, organizations, AI agents, and beyond. Whether you're managing customers, processing orders, issuing invoices, or streamlining communication, Karen adapts to your unique operation and helps you run it faster and more cost-effectively.
