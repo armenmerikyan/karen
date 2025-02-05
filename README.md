@@ -6,8 +6,8 @@
 
 ## Key Features
 
-### Customer & Relationship Management
-- Customer Relationship Management  
+### Customer Relationship Management 
+- Customer Relationship Management (CRM)  
 - Loyalty Program Management  
 - Customer Support & Helpdesk  
 - Customer Life Cycles: List, Add, Edit, Visibility Settings  
