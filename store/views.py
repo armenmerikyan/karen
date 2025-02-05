@@ -1092,7 +1092,6 @@ def checkout_view(request):
         # Ensure form is still passed if cart doesn't exist
         return redirect('current_cart')  # Redirect back to the cart if something goes wrong
 
- 
 @login_required
 def process_checkout(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -1144,8 +1143,10 @@ def process_checkout(request):
             'profile': profile, 
         }
 
-        return render(request, 'order_confirmation.html', context)  # Render order confirmation page
-    
+        response = render(request, 'order_confirmation.html', context)
+        response.delete_cookie('cartId')  # Remove the cookie after checkout
+        return response
+
     return redirect('current_cart')  # Redirect back to the cart if something goes wrong
 
 
