@@ -15,11 +15,13 @@
                 </div>
             </div>
         </div>
+        {% if balance_due > 0 %}
         <div class="row">
           <div class="col-sm-12 p-3">
             <a href="{% url 'checkout' %}" class="btn btn-primary">Proceed to Checkout</a>
           </div>
         </div>
+        {% endif %}            
     </div>
 
     <h2 class="mb-4">Products</h2>
