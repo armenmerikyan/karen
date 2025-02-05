@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="flex items-center justify-center min-h-[50vh] bg-gray-800 py-8">
-    <div class="w-full max-w-md bg-white p-6 rounded-lg shadow-lg">
-        <div class="text-center text-gray-800">
+<section class="flex items-center justify-center min-h-[50vh] bg-gray-900 py-8">
+    <div class="w-full max-w-md bg-gray-800 p-6 rounded-lg shadow-lg">
+        <div class="text-center text-white">
             <h4 class="text-2xl font-semibold mb-4">Login</h4>
             {% if error %}
                 <p class="text-red-500 mb-4">{{ error }}</p>
@@ -10,21 +10,21 @@
             <form class="space-y-4" method="post">
                 {% csrf_token %}
                 <div class="form-group">
-                    <input type="text" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" id="username" name="username"
+                    <input type="text" class="w-full p-3 border border-gray-700 bg-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" id="username" name="username"
                            placeholder="Enter username ...">
                 </div>
                 <div class="form-group">
-                    <input type="password" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" id="password" name="password"
+                    <input type="password" class="w-full p-3 border border-gray-700 bg-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" id="password" name="password"
                            placeholder="Password">
                 </div>
                 <div class="form-group flex items-center">
                     <input type="checkbox" class="mr-2 leading-tight" id="customCheck">
-                    <label class="text-sm text-gray-600" for="customCheck">Remember Me</label>
+                    <label class="text-sm text-gray-400" for="customCheck">Remember Me</label>
                 </div>
-                <button type="submit" class="w-full py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition duration-300">Login</button>
+                <button type="submit" class="w-full py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition duration-300">Login</button>
 
                 <br>
-                <a href="{% url 'password_reset' %}" class="text-sm text-blue-500 hover:underline">Forgot Password?</a>
+                <a href="{% url 'password_reset' %}" class="text-sm text-blue-400 hover:underline">Forgot Password?</a>
             </form>
         </div>
     </div>
