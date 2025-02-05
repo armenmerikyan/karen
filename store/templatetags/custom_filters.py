@@ -31,6 +31,7 @@ def currency(value):
     """
     try:
         value = float(value)
+        value = round(value, 2)  # Round to 2 decimal places
         return format_html("${:,.2f}", value)
     except (ValueError, TypeError):
         return value
