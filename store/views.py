@@ -1407,16 +1407,10 @@ def index(request):
     return response
 
 
-@admin_required 
+ 
+@admin_required
 def list_and_add_website_profiles(request):
-
-
-    
     profile = WebsiteProfile.objects.order_by('-created_at').first()
-    if not profile:
-        profile = WebsiteProfile(name="add name", about_us="some info about us")
- 
- 
     
     if request.method == 'POST':
         form = WebsiteProfileForm(request.POST)
@@ -1424,7 +1418,8 @@ def list_and_add_website_profiles(request):
             form.save()
             return redirect('list_and_add_website_profiles')
     else:
-        form = WebsiteProfileForm()
+        initial_data = {'name': profile.name, 'about_us': profile.about_us} if profile else {}
+        form = WebsiteProfileForm(initial=initial_data)
 
     profiles = WebsiteProfile.objects.all()
     return render(request, 'website_profiles.html', {'form': form, 'profiles': profiles, 'profile': profile})
