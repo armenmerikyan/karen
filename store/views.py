@@ -2779,3 +2779,6 @@ def pay_with_stripe(request):
 
 def success(request):
     return render(request, 'success.html')
+
+def failure(request):
+    return render(request, 'failure.html')

@@ -149,6 +149,12 @@ urlpatterns = [
     
     path('checkout/', views.checkout_view, name='checkout'),
     path('process_checkout/', views.process_checkout, name='process_checkout'),
+
+
+    path('pay_with_stripe/', views.pay_with_stripe, name='pay_with_stripe'),
+    # Add additional URLs for success and failure views
+    path('success/', views.success, name='success'),
+    path('failure/', views.failure, name='failure'),
     
 ]
 
