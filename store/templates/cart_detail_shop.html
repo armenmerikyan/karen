@@ -44,7 +44,9 @@
                     <td>{{ product.quantity }}</td>
                     <td>{{ product.line_item_total|currency }}</td>
                     <td> 
-                        <a href="{% url 'delete_product' product.id %}" class="btn btn-danger btn-sm">Remove</a>
+                    <a href="{% url 'delete_product' product.id %}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i> Remove
+                    </a>
                     </td>
                 </tr>
                 {% endfor %}
