@@ -2773,7 +2773,9 @@ def pay_with_stripe(request):
 
 
     context = {'products': cart_products, 'total': total, 'total_in_cents': total_in_cents, 'profile': profile}
-    return render(request, 'pay_with_stripe.html', context)
+    response = render(request, 'pay_with_stripe.html', context)
+    response.set_cookie('cartId', cart_id, max_age=60*60*24*30, secure=True, httponly=True, samesite='Lax')
+
 
 
 
