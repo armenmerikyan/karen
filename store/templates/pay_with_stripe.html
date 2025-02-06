@@ -28,33 +28,43 @@
     </div>
 </section>
 <script>
-  var stripe = Stripe("{{ profile.stripe_publishable_key }}");
-  var elements = stripe.elements();
-  var card = elements.create("card", { style: { base: { color: "#ffffff" } } });
-  card.mount("#card-element");
+  document.addEventListener("DOMContentLoaded", function () {
+      var stripe = Stripe("{{ profile.stripe_publishable_key }}");
+      var elements = stripe.elements();
+      var card = elements.create("card", { style: { base: { color: "#ffffff" } } });
+      card.mount("#card-element");
 
-  var form = document.getElementById("payment-form");
-  var submitButton = document.getElementById("submit");
-  var errorMessage = document.getElementById("card-errors");
+      var form = document.getElementById("payment-form");
+      var submitButton = document.getElementById("submit");
+      var errorMessage = document.getElementById("card-errors");
 
-  form.addEventListener("submit", async function(event) {
-      event.preventDefault();
-      submitButton.disabled = true; // Prevent multiple clicks
+      form.addEventListener("submit", async function (event) {
+          event.preventDefault();
+          submitButton.disabled = true;
 
-      const { token, error } = await stripe.createToken(card);
-      if (error) {
-          errorMessage.textContent = error.message;
-          submitButton.disabled = false;
-      } else {
-          var hiddenInput = document.createElement("input");
-          hiddenInput.setAttribute("type", "hidden");
-          hiddenInput.setAttribute("name", "stripeToken");
-          hiddenInput.setAttribute("value", token.id);
-          form.appendChild(hiddenInput);
-          form.submit(); // Now submits with the Stripe token
-      }
+          const { token, error } = await stripe.createToken(card);
+          if (error) {
+              errorMessage.textContent = error.message;
+              submitButton.disabled = false;
+          } else {
+              // Append Stripe token to form and submit
+              var hiddenInput = document.createElement("input");
+              hiddenInput.setAttribute("type", "hidden");
+              hiddenInput.setAttribute("name", "stripeToken");
+              hiddenInput.setAttribute("value", token.id);
+              form.appendChild(hiddenInput);
+
+              // Ensure form is actually an HTMLFormElement before calling submit()
+              if (typeof form.submit === "function") {
+                  form.submit();
+              } else {
+                  console.error("Form submission failed: form.submit is not a function");
+              }
+          }
+      });
   });
 </script>
+
 
 
 {% endblock %}
