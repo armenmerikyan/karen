@@ -66,7 +66,7 @@
 
                   // Check if the response is successful
                   if (response.ok) {
-                      window.location.href = "{{ url('process_checkout') }}";  // Redirect on success
+                      window.location.href = "{% url 'process_checkout' %}";
                   } else {
                       throw new Error("Payment failed. Please try again.");
                   }
