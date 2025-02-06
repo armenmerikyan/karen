@@ -1418,10 +1418,10 @@ def list_and_add_website_profiles(request):
             form.save()
             return redirect('list_and_add_website_profiles')
     else:
-        initial_data = {'name': profile.name, 'about_us': profile.about_us} if profile else {}
+        initial_data = vars(profile) if profile else {}
         form = WebsiteProfileForm(initial=initial_data)
 
-    profiles = WebsiteProfile.objects.all()
+    profiles = WebsiteProfile.objects.order_by('-created_at')
     return render(request, 'website_profiles.html', {'form': form, 'profiles': profiles, 'profile': profile})
 
 @admin_required 
