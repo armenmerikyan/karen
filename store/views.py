@@ -2746,8 +2746,30 @@ def pay_with_stripe(request):
         return redirect('index')
 
     cart_products = CartProduct.objects.filter(cart=cart)
-    total = sum(cp.product.price * cp.quantity for cp in cart_products)  # Calculate total
-    total_in_cents = int(total * 100)  # Ensure it's always defined
+    subtotal, total_tax, total_with_tax = 0, 0, 0
+    products = []
+
+    # Calculate subtotal, total tax, and total with tax for the cart
+    for cart_product in cart_products:
+        total_price = cart_product.quantity * cart_product.product.price
+        product_tax = total_price * cart_product.tax_rate / 100
+        total_with_product = total_price + product_tax
+
+        subtotal += total_price
+        total_tax += product_tax
+        total_with_tax += total_with_product
+
+        products.append({
+            'product': cart_product.product,
+            'quantity': cart_product.quantity,
+            'price': cart_product.product.price,
+            'line_item_total': total_price,
+            'tax': product_tax,
+            'total_with_tax': total_with_product,
+            'id': cart_product.id,
+        })
+
+    total_in_cents = int(total_with_tax * 100)  # Ensure it's in cents
 
     if request.method == 'POST':
         card_id = request.POST.get('stripeToken')
@@ -2765,20 +2787,33 @@ def pay_with_stripe(request):
             return redirect('failure')
 
         if charge.paid:
+            # Create payment record in the database
+            payment = Payment.objects.create(
+                customer=cart.customer,
+                amount=total_with_tax,
+                payment_method='stripe',
+                status='PENDING',
+            )
+
+            PaymentApplication.objects.create(
+                payment=payment,
+                cart=cart,
+                applied_amount=total_with_tax,
+            )
+
+            # Mark payment as completed and update the cart
+            payment.status = 'COMPLETED'
+            payment.save()
+
             cart.paid_transaction_id = charge.id
             cart.paid = True
             cart.save()
+
             return redirect('process_checkout')
         else:
             return redirect('failure')
 
-
-    context = {'products': cart_products, 'total': total, 'total_in_cents': total_in_cents, 'profile': profile}
-    response = render(request, 'pay_with_stripe.html', context)
-    response.set_cookie('cartId', cart_id, max_age=60*60*24*30, secure=True, httponly=True, samesite='Lax')
-
-    return response 
-
+    return render(request, 'payment_form.html', {'cart': cart, 'profile': profile})
 
 def success(request):
     return render(request, 'success.html')
