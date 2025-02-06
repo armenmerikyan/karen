@@ -34,7 +34,7 @@
       var card = elements.create("card", { style: { base: { color: "#ffffff" } } });
       card.mount("#card-element");
 
-      var form = document.getElementById("payment-form");  // Explicitly select the form
+      var form = document.getElementById("payment-form");  // Ensure correct form selection
       var submitButton = document.getElementById("submit");
       var errorMessage = document.getElementById("card-errors");
 
@@ -54,20 +54,17 @@
               hiddenInput.value = token.id;
               form.appendChild(hiddenInput);
 
-              // Debugging: Log form object to ensure it's correct
-              console.log("Form object:", form);
-              console.log("Is form instanceof HTMLFormElement?", form instanceof HTMLFormElement);
-
-              // Ensure form is submitted only after the token is added
-              if (form && form instanceof HTMLFormElement) {
-                  form.submit();  // Submit the form now that the token is appended
+              // Force submission by triggering a click on the submit button
+              if (submitButton) {
+                  submitButton.click();  // Trigger a button click to submit the form
               } else {
-                  console.error("Error: form is not valid", form);
+                  console.error("Submit button not found", submitButton);
               }
           }
       });
   });
 </script>
+
 
 
 {% endblock %}
