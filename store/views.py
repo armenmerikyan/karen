@@ -516,7 +516,7 @@ def cart_list(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
-    carts = Cart.objects.order_by('-created_at')  # Fetch all carts, newest first
+    carts = Cart.objects.order_by('-date_created')  # Fetch all carts, newest first
     return render(request, 'cart_list.html', {'carts': carts, 'profile': profile})
 
 
