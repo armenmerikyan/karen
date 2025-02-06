@@ -1120,8 +1120,8 @@ def process_checkout(request):
     logger.debug(cart_id)
 
 
-    #cart = Cart.objects.get(external_id=cart_id) 
-    cart = Cart.objects.filter(external_id=cart_id).first()  # Use first() to get only one cart
+    cart = Cart.objects.get(external_id=cart_id) 
+    #cart = Cart.objects.filter(external_id=cart_id).first()  # Use first() to get only one cart
 
     if cart:
         # Process the payment, update the cart, etc.
