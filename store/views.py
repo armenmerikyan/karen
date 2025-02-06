@@ -2868,7 +2868,9 @@ def pay_with_stripe(request):
                 source=card_id,
                 description="Example charge"
             )
-        except stripe.error.CardError:
+        except stripe.error.CardError as e:
+            # Log the error for debugging
+            print(f"Card error: {e.user_message}")
             return redirect('failure')
 
         if charge.paid:
