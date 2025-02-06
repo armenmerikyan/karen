@@ -2739,6 +2739,8 @@ def tweet_add(request):
 
     return response
 
+ 
+
 def pay_with_stripe(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
@@ -2790,16 +2792,18 @@ def pay_with_stripe(request):
                 source=card_id,
                 description="Example charge"
             )
-        except stripe.error.CardError:
+        except stripe.error.CardError as e:
+            # Log the error for debugging
+            print(f"Card error: {e.user_message}")
             return redirect('failure')
 
         if charge.paid:
-            # Create payment record in the database
+            # Save payment details in the database
             payment = Payment.objects.create(
                 customer=cart.customer,
                 amount=total_with_tax,
-                payment_method='stripe',
-                status='PENDING',
+                payment_method='Stripe',
+                status='COMPLETED',
             )
 
             PaymentApplication.objects.create(
@@ -2808,10 +2812,7 @@ def pay_with_stripe(request):
                 applied_amount=total_with_tax,
             )
 
-            # Mark payment as completed and update the cart
-            payment.status = 'COMPLETED'
-            payment.save()
-
+            # Mark cart as paid and save transaction ID
             cart.paid_transaction_id = charge.id
             cart.paid = True
             cart.save()
@@ -2820,8 +2821,18 @@ def pay_with_stripe(request):
         else:
             return redirect('failure')
 
-    return render(request, 'payment_form.html', {'cart': cart, 'profile': profile})
- 
+    context = {
+        'products': products,
+        'subtotal': subtotal,
+        'total_tax': total_tax,
+        'total_with_tax': total_with_tax,
+        'profile': profile,
+    }
+    response = render(request, 'pay_with_stripe.html', context)
+    response.set_cookie('cartId', cart_id, max_age=60*60*24*30, secure=True, httponly=True, samesite='Lax')
+
+    return response
+
 def success(request):
     return render(request, 'success.html')
 
