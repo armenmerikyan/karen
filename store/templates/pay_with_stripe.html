@@ -27,49 +27,34 @@
         <div id="payment-message" class="hidden mt-4 p-3 bg-green-600 rounded-lg text-white text-center"></div>
     </div>
 </section>
-
 <script>
-    var stripe = Stripe("{{ profile.stripe_publishable_key }}");
-    var elements = stripe.elements();
-    var card = elements.create("card", { style: { base: { color: "#ffffff" } } });
-    card.mount("#card-element");
+  var stripe = Stripe("{{ profile.stripe_publishable_key }}");
+  var elements = stripe.elements();
+  var card = elements.create("card", { style: { base: { color: "#ffffff" } } });
+  card.mount("#card-element");
 
-    var form = document.getElementById("payment-form");
-    var submitButton = document.getElementById("submit");
-    var errorMessage = document.getElementById("card-errors");
-    var paymentMessage = document.getElementById("payment-message");
+  var form = document.getElementById("payment-form");
+  var submitButton = document.getElementById("submit");
+  var errorMessage = document.getElementById("card-errors");
 
-    form.addEventListener("submit", async function(event) {
-        event.preventDefault();
-        submitButton.disabled = true; // Disable button to prevent multiple clicks
+  form.addEventListener("submit", async function(event) {
+      event.preventDefault();
+      submitButton.disabled = true; // Prevent multiple clicks
 
-        const { paymentMethod, error } = await stripe.createPaymentMethod({
-            type: "card",
-            card: card,
-        });
-
-        if (error) {
-            errorMessage.textContent = error.message;
-            submitButton.disabled = false;
-        } else {
-            fetch("{% url 'pay_with_stripe' %}", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
-                body: JSON.stringify({ "payment_method_id": paymentMethod.id })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    paymentMessage.textContent = "Payment successful! Redirecting...";
-                    paymentMessage.classList.remove("hidden");
-                    setTimeout(() => window.location.href = "{% url 'process_checkout' %}", 2000);
-                } else {
-                    errorMessage.textContent = "Payment failed. Please try again.";
-                }
-                submitButton.disabled = false;
-            });
-        }
-    });
+      const { token, error } = await stripe.createToken(card);
+      if (error) {
+          errorMessage.textContent = error.message;
+          submitButton.disabled = false;
+      } else {
+          var hiddenInput = document.createElement("input");
+          hiddenInput.setAttribute("type", "hidden");
+          hiddenInput.setAttribute("name", "stripeToken");
+          hiddenInput.setAttribute("value", token.id);
+          form.appendChild(hiddenInput);
+          form.submit(); // Now submits with the Stripe token
+      }
+  });
 </script>
+
 
 {% endblock %}

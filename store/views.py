@@ -2750,6 +2750,9 @@ def pay_with_stripe(request):
 
     if request.method == 'POST':
         card_id = request.POST.get('stripeToken')
+        if not card_id:  # Handle missing token
+            return redirect('failure')
+
         try:
             charge = stripe.Charge.create(
                 amount=total_in_cents,
@@ -2767,6 +2770,7 @@ def pay_with_stripe(request):
             return redirect('process_checkout')
         else:
             return redirect('failure')
+
 
     context = {'products': cart_products, 'total': total, 'total_in_cents': total_in_cents, 'profile': profile}
     return render(request, 'pay_with_stripe.html', context)
