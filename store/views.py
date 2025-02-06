@@ -2731,54 +2731,44 @@ def tweet_add(request):
 
     return response
 
-
 def pay_with_stripe(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
-        profile = WebsiteProfile(name="add name", about_us="some info about us")
+        return JsonResponse({"error": "Stripe keys missing"}, status=400)
 
-    stripe.api_key  = profile.stripe_secret_key
-
-    cart_id = request.COOKIES.get('cartId')
-    try:
-        cart = Cart.objects.get(external_id=cart_id)
-    except Cart.DoesNotExist:
-        return redirect('index')
-    cart_products = CartProduct.objects.filter(cart=cart)
-    products = []
-    total = 0
-    for cart_product in cart_products:
-        line_item_total = cart_product.product.price * cart_product.quantity
-        total += line_item_total
-        products.append({'product': cart_product.product, 'quantity': cart_product.quantity, 'price': cart_product.price, 'line_item_total': line_item_total, 'id': cart_product.id})
-
-    total_in_cents = int(total * 100)
+    stripe.api_key = profile.stripe_secret_key
 
     if request.method == 'POST':
-        card_id = request.POST.get('stripeToken')
+        data = json.loads(request.body)
+        payment_method_id = data.get("payment_method_id")
+
+        cart_id = request.COOKIES.get('cartId')
         try:
-            charge = stripe.Charge.create(
-                amount=total_in_cents,  # Amount in cents
+            cart = Cart.objects.get(external_id=cart_id)
+        except Cart.DoesNotExist:
+            return JsonResponse({"error": "Cart not found"}, status=400)
+
+        total = sum(cp.product.price * cp.quantity for cp in CartProduct.objects.filter(cart=cart))
+        total_in_cents = int(total * 100)
+
+        try:
+            intent = stripe.PaymentIntent.create(
+                amount=total_in_cents,
                 currency="usd",
-                source=card_id,
-                description="Example charge"
+                payment_method=payment_method_id,
+                confirm=True
             )
         except stripe.error.CardError as e:
-            # Handle error
-            return redirect('failure')
+            return JsonResponse({"error": str(e)}, status=400)
 
-        if charge.paid:
-            cart.paid_transaction_id = charge.id
-            cart.paid = True
-            cart.save()
-            response = redirect('process_checkout') 
-            return response
-        else:
-            return redirect('failure')
-    else:
-        int(total * 100)
-        context = {'products': products, 'total': total, 'total_in_cents': total_in_cents, 'profile': profile}
-        return render(request, 'pay_with_stripe.html', context)
+        cart.paid_transaction_id = intent.id
+        cart.paid = True
+        cart.save()
+
+        return JsonResponse({"success": True})
+
+    return render(request, 'pay_with_stripe.html', {"profile": profile, "total_in_cents": total_in_cents})
+
 
 def success(request):
     return render(request, 'success.html')

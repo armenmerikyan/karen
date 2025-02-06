@@ -2,23 +2,42 @@
 
 {% block content %}
 
-<section class="py-5">
-    <div class="container px-4 px-lg-5 mt-5">
-    Pay With Stripe
-    <form action="{% url 'pay_with_stripe' %}" method="post">
-      {% csrf_token %}
-      <script
-        src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-        data-key="{{profile.stripe_publishable_key}}"
-        data-amount="{{ total_in_cents }}"
-        data-name="Example Company"
-        data-description="Example charge"
-        data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
-        data-locale="auto"
-        data-zip-code="true"
-        data-currency="usd">
-      </script>
-    </form>
-  </div>
-</section>
+<form id="payment-form">
+  <div id="card-element"></div>
+  <button id="submit">Pay</button>
+</form>
+<div id="payment-message"></div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  var stripe = Stripe("{{ profile.stripe_publishable_key }}");
+  var elements = stripe.elements();
+  var card = elements.create("card");
+  card.mount("#card-element");
+
+  var form = document.getElementById("payment-form");
+  form.addEventListener("submit", async function(event) {
+      event.preventDefault();
+      const {paymentMethod, error} = await stripe.createPaymentMethod({
+          type: "card",
+          card: card,
+      });
+
+      if (error) {
+          document.getElementById("payment-message").innerText = error.message;
+      } else {
+          fetch("{% url 'pay_with_stripe' %}", {
+              method: "POST",
+              headers: {"Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}"},
+              body: JSON.stringify({"payment_method_id": paymentMethod.id})
+          }).then(response => response.json()).then(data => {
+              if (data.success) {
+                  window.location.href = "{% url 'process_checkout' %}";
+              } else {
+                  document.getElementById("payment-message").innerText = "Payment failed.";
+              }
+          });
+      }
+  });
+</script>
 {% endblock %}
