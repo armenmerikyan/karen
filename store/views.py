@@ -1116,7 +1116,7 @@ def process_checkout(request):
     if cart:
         # Process the payment, update the cart, etc.
         cart.checked_out = True
-        cart.save()
+        #cart.save()
 
         cart_products = CartProduct.objects.filter(cart=cart)
         subtotal, total_tax, total_with_tax = 0, 0, 0
@@ -2814,6 +2814,98 @@ def pay_with_stripe(request):
             return redirect('failure')
 
     return render(request, 'payment_form.html', {'cart': cart, 'profile': profile})
+
+
+
+def pay_with_stripe(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
+    stripe.api_key = profile.stripe_secret_key
+
+    cart_id = request.COOKIES.get('cartId')
+    try:
+        cart = Cart.objects.get(external_id=cart_id)
+    except Cart.DoesNotExist:
+        return redirect('index')
+
+    cart_products = CartProduct.objects.filter(cart=cart)
+    subtotal, total_tax, total_with_tax = 0, 0, 0
+    products = []
+
+    # Calculate subtotal, total tax, and total with tax for the cart
+    for cart_product in cart_products:
+        total_price = cart_product.quantity * cart_product.product.price
+        product_tax = total_price * cart_product.tax_rate / 100
+        total_with_product = total_price + product_tax
+
+        subtotal += total_price
+        total_tax += product_tax
+        total_with_tax += total_with_product
+
+        products.append({
+            'product': cart_product.product,
+            'quantity': cart_product.quantity,
+            'price': cart_product.product.price,
+            'line_item_total': total_price,
+            'tax': product_tax,
+            'total_with_tax': total_with_product,
+            'id': cart_product.id,
+        })
+
+    total_in_cents = int(total_with_tax * 100)  # Ensure it's in cents
+
+    if request.method == 'POST':
+        card_id = request.POST.get('stripeToken')
+        if not card_id:  # Handle missing token
+            return redirect('failure')
+
+        try:
+            charge = stripe.Charge.create(
+                amount=total_in_cents,
+                currency="usd",
+                source=card_id,
+                description="Example charge"
+            )
+        except stripe.error.CardError:
+            return redirect('failure')
+
+        if charge.paid:
+            # Save payment details in the database
+            payment = Payment.objects.create(
+                customer=cart.customer,
+                amount=total_with_tax,
+                payment_method='Stripe',
+                status='COMPLETED',
+            )
+
+            PaymentApplication.objects.create(
+                payment=payment,
+                cart=cart,
+                applied_amount=total_with_tax,
+            )
+
+            # Mark cart as paid and save transaction ID
+            cart.paid_transaction_id = charge.id
+            cart.paid = True
+            cart.save()
+
+            return redirect('process_checkout')
+        else:
+            return redirect('failure')
+
+    context = {
+        'products': products,
+        'subtotal': subtotal,
+        'total_tax': total_tax,
+        'total_with_tax': total_with_tax,
+        'profile': profile,
+    }
+    response = render(request, 'pay_with_stripe.html', context)
+    response.set_cookie('cartId', cart_id, max_age=60*60*24*30, secure=True, httponly=True, samesite='Lax')
+
+    return response
 
 def success(request):
     return render(request, 'success.html')
