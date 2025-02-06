@@ -39,7 +39,7 @@
       var errorMessage = document.getElementById("card-errors");
 
       form.addEventListener("submit", async function (event) {
-          event.preventDefault();
+          event.preventDefault();  // Prevent default form submission
           submitButton.disabled = true;
 
           const { token, error } = await stripe.createToken(card);
@@ -54,16 +54,31 @@
               hiddenInput.value = token.id;
               form.appendChild(hiddenInput);
 
-              // Force submission by triggering a click on the submit button
-              if (submitButton) {
-                  submitButton.click();  // Trigger a button click to submit the form
-              } else {
-                  console.error("Submit button not found", submitButton);
+              // Create a FormData object to submit the form data
+              var formData = new FormData(form);
+              
+              // Use fetch to submit the form data asynchronously
+              try {
+                  const response = await fetch(form.action, {
+                      method: "POST",
+                      body: formData
+                  });
+
+                  // Check if the response is successful
+                  if (response.ok) {
+                      window.location.href = "{{ url('process_checkout') }}";  // Redirect on success
+                  } else {
+                      throw new Error("Payment failed. Please try again.");
+                  }
+              } catch (error) {
+                  errorMessage.textContent = error.message;
+                  submitButton.disabled = false;
               }
           }
       });
   });
 </script>
+
 
 
 
