@@ -174,6 +174,9 @@ from django.core.mail import send_mail
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth import get_user_model
 
+
+import stripe
+
 pokerGPT_version = "00.00.06"
 small_blind_size = 10
 big_blind_size = 20
@@ -2727,3 +2730,52 @@ def tweet_add(request):
 
 
     return response
+
+
+stripe.api_key = os.environ.get('STRIPE_KEY')
+
+def pay_with_stripe(request):
+    cart_id = request.COOKIES.get('cartId')
+    try:
+        cart = Cart.objects.get(external_id=cart_id)
+    except Cart.DoesNotExist:
+        return redirect('index')
+    cart_products = CartProduct.objects.filter(cart=cart)
+    products = []
+    total = 0
+    for cart_product in cart_products:
+        line_item_total = cart_product.product.price * cart_product.quantity
+        total += line_item_total
+        products.append({'product': cart_product.product, 'quantity': cart_product.quantity, 'price': cart_product.price, 'line_item_total': line_item_total, 'id': cart_product.id})
+
+    total_in_cents = int(total * 100)
+
+    if request.method == 'POST':
+        card_id = request.POST.get('stripeToken')
+        try:
+            charge = stripe.Charge.create(
+                amount=total_in_cents,  # Amount in cents
+                currency="usd",
+                source=card_id,
+                description="Example charge"
+            )
+        except stripe.error.CardError as e:
+            # Handle error
+            return redirect('failure')
+
+        if charge.paid:
+            cart.paid_transaction_id = charge.id
+            cart.paid = True
+            cart.save()
+            response = redirect('success')
+            response.delete_cookie("cartId")
+            return response
+        else:
+            return redirect('failure')
+    else:
+        int(total * 100)
+        context = {'products': products, 'total': total, 'total_in_cents': total_in_cents}
+        return render(request, 'pay_with_stripe.html', context)
+
+def success(request):
+    return render(request, 'success.html')

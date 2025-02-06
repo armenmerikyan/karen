@@ -36,6 +36,7 @@ pip install social-auth-app-django
 pip install djangorestframework
 pip install psycopg2-binary
 pip install sendgrid
+pip install stripe
 
 python3 manage.py makemigrations
 python3 manage.py migrate

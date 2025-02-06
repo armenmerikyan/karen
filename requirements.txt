@@ -12,3 +12,4 @@ social-auth-app-django
 djangorestframework
 psycopg2-binary
 sendgrid
+stripe
