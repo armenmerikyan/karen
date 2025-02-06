@@ -1460,7 +1460,7 @@ def view_game(request, game_id):
 def delete_product(request, product_id):
     cart_product = get_object_or_404(CartProduct, id=product_id)
     cart_product.delete()
-    return redirect(reverse('view_cart_detail_shop', args=[cart_product.cart.external_id]))
+    return view_cart_detail_shop_current(request)
 
 def view_cart_detail_shop_current(request):
 
