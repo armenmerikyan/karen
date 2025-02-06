@@ -516,8 +516,9 @@ def cart_list(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
-    carts = Cart.objects.all()  # Fetch all carts from the database
+    carts = Cart.objects.order_by('-created_at')  # Fetch all carts, newest first
     return render(request, 'cart_list.html', {'carts': carts, 'profile': profile})
+
 
 # View to list all products
 @admin_required
