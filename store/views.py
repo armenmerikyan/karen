@@ -1458,7 +1458,8 @@ def view_game(request, game_id):
     return render(request, 'view_game.html', context)
 
 def delete_product(request, product_id):
-    cart_product = get_object_or_404(CartProduct, id=product_id)
+    cart_id = request.COOKIES.get('cartId')
+    cart_product = get_object_or_404(CartProduct, id=product_id, cart__external_id=cart_id)
     cart_product.delete()
     return view_cart_detail_shop_current(request)
 
