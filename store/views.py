@@ -1110,7 +1110,9 @@ def process_checkout(request):
         profile = WebsiteProfile(name="add name", about_us="some info about us")
         
     cart_id = request.COOKIES.get('cartId')
+    
     print('CART ID CHECK OUT')
+
     print(cart_id)
     #cart = Cart.objects.get(external_id=cart_id) 
     cart = Cart.objects.filter(external_id=cart_id).first()  # Use first() to get only one cart
