@@ -5,29 +5,33 @@
 {% block content %}
 
 <!-- Displaying JSON data -->
-<section class="py-0">
-  <div class="container-fluid">
-    <div class="container mt-5 text-light">         
-      <div class="row">
-        <div class="col-md-12 text-left">  
-            <h1>{% if stage %}Edit{% else %}Create{% endif %} Product Lifecycle Stage</h1>
+<section class="py-5 bg-dark text-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <!-- Page Heading -->
+        <h1 class="display-4 mb-4 text-white">
+          {% if stage %}Edit{% else %}Create{% endif %} Product Lifecycle Stage
+        </h1>
 
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">{% if stage %}Save Changes{% else %}Create Stage{% endif %}</button>
-            </form>
-        
-            {% if stage %}
-                <a href="{% url 'product_lifecycle_stages_list' %}">Back to List</a>
-            {% else %}
-                <a href="{% url 'product_lifecycle_stages_list' %}">Cancel</a>
-            {% endif %}   
+        <!-- Form -->
+        <form method="post" class="mb-4">
+          {% csrf_token %}
+          <div class="form-group">
+            {{ form.as_p }}
           </div>
+          <button type="submit" class="btn btn-primary">
+            {% if stage %}Save Changes{% else %}Create Stage{% endif %}
+          </button>
+        </form>
+
+        <!-- Back/Cancel Link -->
+        <a href="{% url 'product_lifecycle_stages_list' %}" class="btn btn-outline-light">
+          {% if stage %}Back to List{% else %}Cancel{% endif %}
+        </a>
       </div>
-      
     </div>
   </div>
-</section>    
+</section>
 
 {% endblock %}
