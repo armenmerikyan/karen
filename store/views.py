@@ -1116,7 +1116,7 @@ def process_checkout(request):
     if cart:
         # Process the payment, update the cart, etc.
         cart.checked_out = True
-        #cart.save()
+        cart.save()
 
         cart_products = CartProduct.objects.filter(cart=cart)
         subtotal, total_tax, total_with_tax = 0, 0, 0
