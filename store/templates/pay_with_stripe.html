@@ -34,7 +34,7 @@
       var card = elements.create("card", { style: { base: { color: "#ffffff" } } });
       card.mount("#card-element");
 
-      var form = document.querySelector("#payment-form");  // Ensure correct form selection
+      var form = document.getElementById("payment-form");  // Explicitly select the form
       var submitButton = document.getElementById("submit");
       var errorMessage = document.getElementById("card-errors");
 
@@ -54,17 +54,20 @@
               hiddenInput.value = token.id;
               form.appendChild(hiddenInput);
 
-              // Ensure form is a valid HTMLFormElement
-              if (form instanceof HTMLFormElement) {
-                  form.submit();
+              // Debugging: Log form object to ensure it's correct
+              console.log("Form object:", form);
+              console.log("Is form instanceof HTMLFormElement?", form instanceof HTMLFormElement);
+
+              // Ensure form is submitted only after the token is added
+              if (form && form instanceof HTMLFormElement) {
+                  form.submit();  // Submit the form now that the token is appended
               } else {
-                  console.error("Error: form is not an HTMLFormElement", form);
+                  console.error("Error: form is not valid", form);
               }
           }
       });
   });
 </script>
-
 
 
 {% endblock %}
