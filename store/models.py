@@ -470,6 +470,17 @@ class WebsiteProfile(models.Model):
         decimal_places=2, 
         help_text="The sales tax rate as a percentage (e.g., 7.25 for 7.25%)."
     )
+    stripe_publishable_key = models.CharField(
+        max_length=255, 
+        help_text="The Stripe publishable key for the website.", 
+        blank=True, 
+        null=True
+    )
+    stripe_secret_key = models.CharField(
+        max_length=255, 
+        help_text="The Stripe secret key for the website.", 
+        blank=True, 
+    )    
     def __str__(self):
         return self.name
     

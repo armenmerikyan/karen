@@ -163,7 +163,7 @@ class CartForm(forms.ModelForm):
 class WebsiteProfileForm(forms.ModelForm):
     class Meta:
         model = WebsiteProfile
-        fields = ['name', 'about_us', 'wallet', 'x_handle', 'tax_rate', 'terms_of_service', 'privacy_policy']
+        fields = ['name', 'about_us', 'wallet', 'x_handle', 'tax_rate', 'terms_of_service', 'privacy_policy', 'stripe_publishable_key', 'stripe_secret_key']
 
 class TokenProfileForm(forms.ModelForm):
     class Meta:

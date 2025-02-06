@@ -51,6 +51,16 @@
                       {{ form.privacy_policy|add_class:"form-control" }}
                       <small class="form-text text-muted">{{ form.privacy_policy.help_text }}</small>
                   </div>
+                  <div class="form-group">
+                      <label for="{{ form.about_us.id_for_label }}" class="form-label">Stripe Publishable Key</label>
+                      {{ form.stripe_publishable_key|add_class:"form-control" }}
+                      <small class="form-text text-muted">{{ form.stripe_publishable_key.help_text }}</small>
+                  </div>
+                  <div class="form-group">
+                      <label for="{{ form.about_us.id_for_label }}" class="form-label">Stripe Secret Key</label>
+                      {{ form.stripe_secret_key|add_class:"form-control" }}
+                      <small class="form-text text-muted">{{ form.stripe_secret_key.help_text }}</small>
+                  </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Add Profile</button>
             </form>
