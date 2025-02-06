@@ -2817,7 +2817,7 @@ def pay_with_stripe(request):
             cart.paid = True
             cart.save()
 
-            return redirect('process_checkout')
+            return redirect('success')
         else:
             return redirect('failure')
 
