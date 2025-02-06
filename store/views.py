@@ -1114,6 +1114,12 @@ def process_checkout(request):
     print('CART ID CHECK OUT')
 
     print(cart_id)
+    logger = logging.getLogger(__name__)
+
+    logger.debug('CART ID CHECK OUT')
+    logger.debug(cart_id)
+
+
     #cart = Cart.objects.get(external_id=cart_id) 
     cart = Cart.objects.filter(external_id=cart_id).first()  # Use first() to get only one cart
 
