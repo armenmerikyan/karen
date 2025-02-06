@@ -2734,40 +2734,43 @@ def tweet_add(request):
 def pay_with_stripe(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
-        return JsonResponse({"error": "Stripe keys missing"}, status=400)
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
 
     stripe.api_key = profile.stripe_secret_key
 
+    cart_id = request.COOKIES.get('cartId')
+    try:
+        cart = Cart.objects.get(external_id=cart_id)
+    except Cart.DoesNotExist:
+        return redirect('index')
+
+    cart_products = CartProduct.objects.filter(cart=cart)
+    total = sum(cp.product.price * cp.quantity for cp in cart_products)  # Calculate total
+    total_in_cents = int(total * 100)  # Ensure it's always defined
+
     if request.method == 'POST':
-        data = json.loads(request.body)
-        payment_method_id = data.get("payment_method_id")
-
-        cart_id = request.COOKIES.get('cartId')
+        card_id = request.POST.get('stripeToken')
         try:
-            cart = Cart.objects.get(external_id=cart_id)
-        except Cart.DoesNotExist:
-            return JsonResponse({"error": "Cart not found"}, status=400)
-
-        total = sum(cp.product.price * cp.quantity for cp in CartProduct.objects.filter(cart=cart))
-        total_in_cents = int(total * 100)
-
-        try:
-            intent = stripe.PaymentIntent.create(
+            charge = stripe.Charge.create(
                 amount=total_in_cents,
                 currency="usd",
-                payment_method=payment_method_id,
-                confirm=True
+                source=card_id,
+                description="Example charge"
             )
-        except stripe.error.CardError as e:
-            return JsonResponse({"error": str(e)}, status=400)
+        except stripe.error.CardError:
+            return redirect('failure')
 
-        cart.paid_transaction_id = intent.id
-        cart.paid = True
-        cart.save()
+        if charge.paid:
+            cart.paid_transaction_id = charge.id
+            cart.paid = True
+            cart.save()
+            return redirect('process_checkout')
+        else:
+            return redirect('failure')
 
-        return JsonResponse({"success": True})
+    context = {'products': cart_products, 'total': total, 'total_in_cents': total_in_cents, 'profile': profile}
+    return render(request, 'pay_with_stripe.html', context)
 
-    return render(request, 'pay_with_stripe.html', {"profile": profile, "total_in_cents": total_in_cents})
 
 
 def success(request):
