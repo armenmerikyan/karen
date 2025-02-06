@@ -156,6 +156,8 @@ urlpatterns = [
     path('success/', views.success, name='success'),
     path('failure/', views.failure, name='failure'),
     
+    path('delete-product/<int:product_id>/', views.delete_product, name='delete_product'),
+
 ]
 
 

@@ -33,6 +33,7 @@
                     <th scope="col">Price</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Line Total</th>
+                    <th scope="col">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -42,6 +43,10 @@
                     <td>{{ product.product.price|currency }}</td>
                     <td>{{ product.quantity }}</td>
                     <td>{{ product.line_item_total|currency }}</td>
+                    <td>
+                        <a href="{% url 'add_product' product.product.id %}" class="btn btn-success btn-sm">Add</a>
+                        <a href="{% url 'delete_product' product.id %}" class="btn btn-danger btn-sm">Remove</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
