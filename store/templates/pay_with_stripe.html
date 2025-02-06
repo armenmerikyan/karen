@@ -34,7 +34,7 @@
       var card = elements.create("card", { style: { base: { color: "#ffffff" } } });
       card.mount("#card-element");
 
-      var form = document.getElementById("payment-form");
+      var form = document.querySelector("#payment-form");  // Ensure correct form selection
       var submitButton = document.getElementById("submit");
       var errorMessage = document.getElementById("card-errors");
 
@@ -47,18 +47,18 @@
               errorMessage.textContent = error.message;
               submitButton.disabled = false;
           } else {
-              // Append Stripe token to form and submit
+              console.log("Token received:", token.id); // Debugging step
               var hiddenInput = document.createElement("input");
-              hiddenInput.setAttribute("type", "hidden");
-              hiddenInput.setAttribute("name", "stripeToken");
-              hiddenInput.setAttribute("value", token.id);
+              hiddenInput.type = "hidden";
+              hiddenInput.name = "stripeToken";
+              hiddenInput.value = token.id;
               form.appendChild(hiddenInput);
 
-              // Ensure form is actually an HTMLFormElement before calling submit()
-              if (typeof form.submit === "function") {
+              // Ensure form is a valid HTMLFormElement
+              if (form instanceof HTMLFormElement) {
                   form.submit();
               } else {
-                  console.error("Form submission failed: form.submit is not a function");
+                  console.error("Error: form is not an HTMLFormElement", form);
               }
           }
       });
