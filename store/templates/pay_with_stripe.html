@@ -2,42 +2,74 @@
 
 {% block content %}
 
-<form id="payment-form">
-  <div id="card-element"></div>
-  <button id="submit">Pay</button>
-</form>
-<div id="payment-message"></div>
-
+<!-- Load Stripe.js -->
 <script src="https://js.stripe.com/v3/"></script>
+
+<!-- Payment Form -->
+<section class="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+    <div class="w-full max-w-md p-6 bg-gray-800 rounded-2xl shadow-lg">
+        <h2 class="text-2xl font-semibold text-center mb-4">Secure Payment</h2>
+        <form id="payment-form" class="space-y-4">
+            <!-- Card Input -->
+            <label for="card-element" class="text-sm font-medium">Card Details</label>
+            <div id="card-element" class="p-3 bg-gray-700 rounded-lg border border-gray-600"></div>
+
+            <!-- Error Message -->
+            <div id="card-errors" class="text-red-400 text-sm mt-2"></div>
+
+            <!-- Submit Button -->
+            <button id="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition disabled:opacity-50">
+                Pay Now
+            </button>
+        </form>
+
+        <!-- Success Message -->
+        <div id="payment-message" class="hidden mt-4 p-3 bg-green-600 rounded-lg text-white text-center"></div>
+    </div>
+</section>
+
 <script>
-  var stripe = Stripe("{{ profile.stripe_publishable_key }}");
-  var elements = stripe.elements();
-  var card = elements.create("card");
-  card.mount("#card-element");
+    var stripe = Stripe("{{ profile.stripe_publishable_key }}");
+    var elements = stripe.elements();
+    var card = elements.create("card", { style: { base: { color: "#ffffff" } } });
+    card.mount("#card-element");
 
-  var form = document.getElementById("payment-form");
-  form.addEventListener("submit", async function(event) {
-      event.preventDefault();
-      const {paymentMethod, error} = await stripe.createPaymentMethod({
-          type: "card",
-          card: card,
-      });
+    var form = document.getElementById("payment-form");
+    var submitButton = document.getElementById("submit");
+    var errorMessage = document.getElementById("card-errors");
+    var paymentMessage = document.getElementById("payment-message");
 
-      if (error) {
-          document.getElementById("payment-message").innerText = error.message;
-      } else {
-          fetch("{% url 'pay_with_stripe' %}", {
-              method: "POST",
-              headers: {"Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}"},
-              body: JSON.stringify({"payment_method_id": paymentMethod.id})
-          }).then(response => response.json()).then(data => {
-              if (data.success) {
-                  window.location.href = "{% url 'process_checkout' %}";
-              } else {
-                  document.getElementById("payment-message").innerText = "Payment failed.";
-              }
-          });
-      }
-  });
+    form.addEventListener("submit", async function(event) {
+        event.preventDefault();
+        submitButton.disabled = true; // Disable button to prevent multiple clicks
+
+        const { paymentMethod, error } = await stripe.createPaymentMethod({
+            type: "card",
+            card: card,
+        });
+
+        if (error) {
+            errorMessage.textContent = error.message;
+            submitButton.disabled = false;
+        } else {
+            fetch("{% url 'pay_with_stripe' %}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
+                body: JSON.stringify({ "payment_method_id": paymentMethod.id })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    paymentMessage.textContent = "Payment successful! Redirecting...";
+                    paymentMessage.classList.remove("hidden");
+                    setTimeout(() => window.location.href = "{% url 'process_checkout' %}", 2000);
+                } else {
+                    errorMessage.textContent = "Payment failed. Please try again.";
+                }
+                submitButton.disabled = false;
+            });
+        }
+    });
 </script>
+
 {% endblock %}
