@@ -1037,7 +1037,7 @@ def checkout_view(request):
             form = ShippingBillingForm(request.POST, instance=cart)
             if form.is_valid():
                 form.save()
-                return redirect('process_checkout')
+                return redirect('pay_with_stripe')
         else:
             if customer:
                 # Fully override the cart data with the customer's address
@@ -1115,7 +1115,7 @@ def process_checkout(request):
     if cart:
         # Process the payment, update the cart, etc.
         cart.checked_out = True
-        cart.save()
+        #cart.save()
 
         cart_products = CartProduct.objects.filter(cart=cart)
         subtotal, total_tax, total_with_tax = 0, 0, 0
@@ -2732,9 +2732,13 @@ def tweet_add(request):
     return response
 
 
-stripe.api_key = os.environ.get('STRIPE_KEY')
-
 def pay_with_stripe(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
+    stripe.api_key  = profile.stripe_secret_key
+
     cart_id = request.COOKIES.get('cartId')
     try:
         cart = Cart.objects.get(external_id=cart_id)
@@ -2767,14 +2771,13 @@ def pay_with_stripe(request):
             cart.paid_transaction_id = charge.id
             cart.paid = True
             cart.save()
-            response = redirect('success')
-            response.delete_cookie("cartId")
+            response = redirect('process_checkout') 
             return response
         else:
             return redirect('failure')
     else:
         int(total * 100)
-        context = {'products': products, 'total': total, 'total_in_cents': total_in_cents}
+        context = {'products': products, 'total': total, 'total_in_cents': total_in_cents, 'profile': profile}
         return render(request, 'pay_with_stripe.html', context)
 
 def success(request):

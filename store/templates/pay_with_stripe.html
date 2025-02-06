@@ -9,7 +9,7 @@
       {% csrf_token %}
       <script
         src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-        data-key="pk_test_51M09iMISYLwUfEoWod1oSDQaOl3iAe1gvmm52sr2FA23P9KL4IQ6Z285LozhWmHl5fCCR2E1Z5JqnPQ3daOzDRLU00zxsdcMBD"
+        data-key="{{profile.stripe_publishable_key}}"
         data-amount="{{ total_in_cents }}"
         data-name="Example Company"
         data-description="Example charge"
