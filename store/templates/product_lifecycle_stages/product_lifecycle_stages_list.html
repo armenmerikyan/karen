@@ -5,12 +5,12 @@
 {% block content %}
 
 <!-- Displaying JSON data -->
-<section class="py-5 bg-light">
+<section class="py-5 bg-dark text-light">
   <div class="container">
     <div class="row">
       <div class="col-md-12">
         <!-- Page Heading -->
-        <h1 class="display-4 mb-4 text-dark">Product Lifecycle Stages</h1>
+        <h1 class="display-4 mb-4 text-white">Product Lifecycle Stages</h1>
 
         <!-- Create New Stage Button -->
         <a href="{% url 'product_lifecycle_stages_create' %}" class="btn btn-primary mb-4">
@@ -20,16 +20,16 @@
         <!-- List of Stages -->
         <div class="list-group">
           {% for stage in stages %}
-            <div class="list-group-item list-group-item-action flex-column align-items-start mb-2 shadow-sm">
+            <div class="list-group-item list-group-item-action flex-column align-items-start mb-2 bg-secondary text-white border-dark shadow">
               <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1 text-dark">{{ stage.name }}</h5>
-                <small class="text-muted">Rank: {{ stage.rank }}</small>
+                <h5 class="mb-1 text-white">{{ stage.name }}</h5>
+                <small class="text-light">Rank: {{ stage.rank }}</small>
               </div>
               <p class="mb-1">
                 {% if stage.is_visible %}
                   <span class="badge badge-success">Visible</span>
                 {% else %}
-                  <span class="badge badge-secondary">Hidden</span>
+                  <span class="badge badge-danger">Hidden</span>
                 {% endif %}
               </p>
               <a href="{% url 'product_lifecycle_stages_edit' stage.pk %}" class="btn btn-sm btn-outline-warning">
@@ -37,8 +37,8 @@
               </a>
             </div>
           {% empty %}
-            <div class="list-group-item">
-              <p class="mb-0 text-muted">No stages available.</p>
+            <div class="list-group-item bg-secondary text-white border-dark">
+              <p class="mb-0 text-light">No stages available.</p>
             </div>
           {% endfor %}
         </div>
