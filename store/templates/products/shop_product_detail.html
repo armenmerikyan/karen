@@ -6,25 +6,27 @@
     <div class="container mt-5 text-light">         
       <div class="row">
         <div class="col-md-12 text-left">   
-            <h1>{{ product.name }}</h1>
-            <p><strong>Description:</strong> {{ product.description }}</p>
-            <p><strong>Price:</strong> ${{ product.price }}</p>
+            <h1 class="mb-4">{{ product.name }}</h1>  <!-- Added margin bottom -->
+            <p class="mb-3"><strong>Description:</strong> {{ product.description }}</p>  <!-- Added margin bottom -->
+            <p class="mb-3"><strong>Price:</strong> ${{ product.price }}</p>  <!-- Added margin bottom -->
             {% if product.product_image %}
-                <img src="{{ product.product_image.url }}" alt="{{ product.name }}" width="200">
+                <img src="{{ product.product_image.url }}" alt="{{ product.name }}" width="200" class="mb-4">
             {% endif %}
 
-            <HR>
+            <hr class="my-4"> <!-- Added margin to horizontal rule -->
 
             <!-- Add to Cart Form -->
-            <form id="addToCartForm">
-                {% csrf_token %} <!-- Add the CSRF token here -->
+            <form id="addToCartForm" class="mb-4">  <!-- Added margin bottom -->
+                {% csrf_token %}
                 <input type="hidden" name="product_id" value="{{ product.id }}">
-                <label for="quantity">Quantity:</label>
-                <input type="number" id="quantity" name="quantity" value="1" min="1">
+                <div class="mb-3">  <!-- Added margin bottom for the quantity field -->
+                    <label for="quantity" class="form-label">Quantity:</label>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1" class="form-control">
+                </div>
                 <button type="submit" class="btn btn-primary">Add to Cart</button>
             </form>
 
-            <a href="{% url 'shop_product_list' %}">Back to Product List</a>
+            <a href="{% url 'shop_product_list' %}" class="btn btn-link">Back to Product List</a>  <!-- Added button class for consistent styling -->
 
             <!-- Bootstrap Alert for messages -->
             <div id="cartMessage" class="alert d-none" role="alert"></div>
