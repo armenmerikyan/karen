@@ -36,20 +36,25 @@
         document.getElementById('solanaPaymentForm').addEventListener('submit', async function(event) {
             event.preventDefault();
 
+            // Check if Phantom Wallet is installed
             if (!window.solana || !window.solana.isPhantom) {
                 alert("Please install Phantom Wallet");
                 return;
             }
 
             try {
+                // Connect Phantom Wallet
                 await window.solana.connect();
                 const provider = window.solana;
                 const customerWallet = provider.publicKey;
+
+                console.log("Connected wallet:", customerWallet.toString());
 
                 const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
                 const merchantPublicKey = new solanaWeb3.PublicKey("{{ profile.wallet }}");
                 const amountInLamports = {{ total_in_lamports }};
 
+                // Create the transaction
                 let transaction = new solanaWeb3.Transaction().add(
                     solanaWeb3.SystemProgram.transfer({
                         fromPubkey: customerWallet,
@@ -61,12 +66,15 @@
                 transaction.feePayer = customerWallet;
                 transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
+                // Sign the transaction using Phantom Wallet
                 const signedTransaction = await provider.signTransaction(transaction);
                 const serializedTransaction = signedTransaction.serialize();
 
+                // Set the form values
                 document.getElementById('customerPublicKey').value = customerWallet.toString();
                 document.getElementById('signedTransaction').value = Buffer.from(serializedTransaction).toString('hex');
 
+                // Submit the form to the backend
                 const formData = new FormData(document.getElementById('solanaPaymentForm'));
                 const response = await fetch('{% url "pay_with_solana" %}', {
                     method: 'POST',
@@ -81,6 +89,7 @@
                     alert('Payment failed: ' + result.error);
                 }
             } catch (error) {
+                console.error("Error during transaction:", error);
                 alert("Transaction failed: " + error.message);
             }
         });
