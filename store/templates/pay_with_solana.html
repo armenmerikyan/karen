@@ -23,15 +23,17 @@
         document.getElementById('connectButton').addEventListener('click', async () => {
             if (window.solana && window.solana.isPhantom) {
                 try {
+                    // Connect to Phantom wallet
                     const response = await window.solana.connect();
                     customerWallet = response.publicKey;
                     document.getElementById('walletAddress').textContent = `Connected wallet: ${customerWallet.toString()}`;
                     document.getElementById('payButton').disabled = false; // Enable the pay button once connected
                 } catch (error) {
                     console.error('Error connecting to Phantom wallet:', error);
+                    alert('Error connecting to Phantom wallet. Please try again.');
                 }
             } else {
-                alert('Please install Phantom Wallet');
+                alert('Please install Phantom Wallet extension.');
             }
         });
 
@@ -46,19 +48,24 @@
                 const amountInLamports = {{ total_in_lamports }}; // Amount in lamports (1 SOL = 1,000,000,000 lamports)
                 const merchantPublicKey = "{{ profile.wallet }}"; // Merchant's wallet address
 
-                // Construct the transaction data as required by Phantom
+                // Construct the transaction data
                 const transaction = {
                     fromPubkey: customerWallet.toString(),
                     toPubkey: merchantPublicKey,
                     lamports: amountInLamports,
                 };
 
-                // Send the transaction directly using Phantom Wallet's signTransaction and sendTransaction
-                const { signature } = await window.solana.signAndSendTransaction(transaction);
+                // Ensure Phantom Wallet is correctly set up
+                if (window.solana && window.solana.isPhantom) {
+                    // Send the transaction using Phantom Wallet
+                    const { signature } = await window.solana.signAndSendTransaction(transaction);
 
-                // Handle the result
-                console.log('Transaction signature:', signature);
-                alert('Payment Successful! Transaction Signature: ' + signature);
+                    // Handle the result
+                    console.log('Transaction signature:', signature);
+                    alert('Payment Successful! Transaction Signature: ' + signature);
+                } else {
+                    alert('Phantom Wallet is not available.');
+                }
             } catch (error) {
                 console.error('Transaction failed:', error);
                 alert('Transaction failed: ' + error.message);
