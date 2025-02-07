@@ -1,110 +1,85 @@
-{% extends 'base.html' %}
-{% block content %}
-<section class="d-flex align-items-center justify-content-center" style="min-height: 50vh;">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 text-center text-light">
-                <h4>Pay for Your Order</h4>
-                <form id="solanaPaymentForm">
-                    {% csrf_token %}
-                    <p>Subtotal: ${{ subtotal }}</p>
-                    <p>Total Tax: ${{ total_tax }}</p>
-                    <p>Total with Tax: ${{ total_with_tax }}</p>
-                    <button type="submit" id="payButton" class="btn btn-primary">Pay with Solana</button>
-                </form>
-                <HR>
-                <p>Wallet: {{ user.sol_wallet_address }} </p>
-                <p><div id="walletAddress"></div></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solana Payment</title>
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+</head>
+<body>
+    <h4>Pay for Your Order</h4>
+    <p>Subtotal: ${{ subtotal }}</p>
+    <p>Total Tax: ${{ total_tax }}</p>
+    <p>Total with Tax: ${{ total_with_tax }}</p>
+    <button id="connectButton" class="btn btn-primary">Connect to Phantom</button>
+    <button id="payButton" class="btn btn-primary" disabled>Pay with Solana</button>
 
-                <p><button id="connectButton" class="btn btn-primary">Connect to Phantom</button></p> 
-            </div>
-        </div>
-    </div>
-</section>
+    <p>Wallet Address: <span id="walletAddress"></span></p>
 
-<!-- Include Solana Web3.js -->
-<script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.js"></script>
+    <script>
+        let customerWallet = null;
 
-<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
-<script>
-    document.getElementById('connectButton').addEventListener('click', async () => {
-        if (window.solana && window.solana.isPhantom) {
-            try {
-                // Connect to Phantom wallet
-                const response = await window.solana.connect();
-                console.log('Connected to Phantom wallet');
-                document.getElementById('walletAddress').textContent = `Connected wallet: ${response.publicKey.toString()}`;
-            } catch (error) {
-                console.error('Error connecting to Phantom wallet:', error);
+        // Check if Phantom is available and connect
+        document.getElementById('connectButton').addEventListener('click', async () => {
+            if (window.solana && window.solana.isPhantom) {
+                try {
+                    const response = await window.solana.connect();
+                    customerWallet = response.publicKey;
+                    document.getElementById('walletAddress').textContent = `Connected wallet: ${customerWallet.toString()}`;
+                    document.getElementById('payButton').disabled = false; // Enable the pay button once connected
+                } catch (error) {
+                    console.error('Error connecting to Phantom wallet:', error);
+                }
+            } else {
+                alert('Please install Phantom Wallet');
             }
-        } else {
-            alert('Please install Phantom Wallet');
-        }
-    });
-
-    document.getElementById('solanaPaymentForm').addEventListener('submit', async function(event) {
-    event.preventDefault();
-
-    if (!window.solana || !window.solana.isPhantom) {
-        alert("Please install Phantom Wallet");
-        return;
-    }
-
-    try {
-        await window.solana.connect();
-        const provider = window.solana;
-        const customerWallet = provider.publicKey;
-
-        console.log("Customer wallet:", customerWallet.toString());
-
-        const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
-        const merchantPublicKey = new solanaWeb3.PublicKey("{{ profile.wallet }}");
-        const amountInLamports = {{ total_in_lamports }}; // Amount in lamports (not SOL)
-
-        // Create a transfer transaction
-        const transaction = new solanaWeb3.Transaction().add(
-            solanaWeb3.SystemProgram.transfer({
-                fromPubkey: customerWallet,
-                toPubkey: merchantPublicKey,
-                lamports: amountInLamports,
-            })
-        );
-
-        // Set the fee payer and recent blockhash
-        transaction.feePayer = customerWallet;
-        transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-
-        // Sign the transaction with Phantom
-        const signedTransaction = await provider.signTransaction(transaction);
-
-        // Instead of converting to base64, we'll send the serialized transaction as a binary array
-        const serializedTransaction = signedTransaction.serialize();
-        
-        // Send the signed transaction directly as a binary payload
-        const formData = new FormData();
-        formData.append('signedTransaction', serializedTransaction);
-        formData.append('customerPublicKey', customerWallet.toString());
-        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
-
-        const response = await fetch("{% url 'pay_with_solana' %}", {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}', // Include CSRF token in headers
-            },
         });
 
-        const result = await response.json();
-        if (result.success) {
-            window.location.href = '{% url "success" %}';
-        } else {
-            alert('Payment failed: ' + result.error);
-        }
-    } catch (error) {
-        console.error("Transaction failed:", error);
-        alert("Transaction failed: " + error.message);
-    }
-});
+        // Handle payment
+        document.getElementById('payButton').addEventListener('click', async () => {
+            if (!customerWallet) {
+                alert('Please connect your wallet first');
+                return;
+            }
 
-</script>
-{% endblock %}
+            try {
+                const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'), 'confirmed');
+                const merchantPublicKey = new solanaWeb3.PublicKey("{{ profile.wallet }}"); // Merchant's wallet address
+                const amountInLamports = {{ total_in_lamports }}; // Amount in lamports
+
+                // Create transaction
+                const transaction = new solanaWeb3.Transaction().add(
+                    solanaWeb3.SystemProgram.transfer({
+                        fromPubkey: customerWallet,
+                        toPubkey: merchantPublicKey,
+                        lamports: amountInLamports,
+                    })
+                );
+
+                // Get recent blockhash
+                const { blockhash } = await connection.getLatestBlockhash();
+                transaction.recentBlockhash = blockhash;
+                transaction.feePayer = customerWallet;
+
+                // Sign the transaction with Phantom wallet
+                const signedTransaction = await window.solana.signTransaction(transaction);
+
+                // Serialize the transaction
+                const serializedTransaction = signedTransaction.serialize();
+
+                // Send the transaction to the Solana network
+                const txid = await connection.sendRawTransaction(serializedTransaction, {
+                    skipPreflight: false,
+                    preflightCommitment: 'confirmed',
+                });
+
+                console.log('Transaction successful with ID:', txid);
+                alert('Payment Successful! Transaction ID: ' + txid);
+            } catch (error) {
+                console.error('Transaction failed:', error);
+                alert('Transaction failed: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
