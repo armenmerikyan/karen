@@ -4,37 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solana Payment</title>
+    <script>
+        if (typeof solanaWeb3 === 'undefined') {
+            var solanaWeb3 = window.solanaWeb3;
+        }
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/solana-web3.js/1.75.0/solanaWeb3.min.js"></script>
+    
 </head>
 <body>
     <h4>Pay for Your Order</h4>
     <p>Subtotal: $10.00</p>
     <p>Total Tax: $1.00</p>
     <p>Total with Tax: $11.00</p>
-    
-    <button id="connectButton">Connect to Phantom</button>
-    <button id="payButton" disabled>Pay with Solana</button>
+     
+    <button id="payButton" >Pay with Solana</button>
 
     <p>Wallet Address: <span id="walletAddress"></span></p>
 
     <script>
-        let customerWallet = null;
-        console.log(window.solanaWeb3);
-
-        document.getElementById('connectButton').addEventListener('click', async () => {
-            if (window.solana && window.solana.isPhantom) {
-                try {
-                    const response = await window.solana.connect();
-                    customerWallet = response.publicKey;
-                    document.getElementById('walletAddress').textContent = `Connected wallet: ${customerWallet.toString()}`;
-                    document.getElementById('payButton').disabled = false;
-                } catch (error) {
-                    console.error('Error connecting to Phantom wallet:', error);
-                }
-            } else {
-                alert('Please install Phantom Wallet');
-            }
-        });
+        const { Connection, Transaction, SystemProgram, PublicKey } = solanaWeb3;
 
         document.getElementById('payButton').addEventListener('click', async () => {
             if (!customerWallet) {
@@ -43,17 +32,17 @@
             }
 
             try {
-                const rpcUrl = 'https://worldchain-mainnet.g.alchemy.com/v2/t7AGL7qRXHF4jvodUVH7gWn3lvSfk_jl'; // Replace with your QuickNode URL
+                const rpcUrl = 'https://worldchain-mainnet.g.alchemy.com/v2/t7AGL7qRXHF4jvodUVH7gWn3lvSfk_jl';
                 console.log('RPC URL:', rpcUrl);
-                const connection = new solanaWeb3.Connection(rpcUrl);
 
-                const transaction = new window.solanaWeb3.Transaction();
-                const recipientPublicKey = new window.solanaWeb3.PublicKey("{{profile.wallet}}");
+                const connection = new Connection(rpcUrl);
+                const transaction = new Transaction();
+                const recipientPublicKey = new PublicKey("{{profile.wallet}}");
 
-                const instruction = window.solanaWeb3.SystemProgram.transfer({
+                const instruction = SystemProgram.transfer({
                     fromPubkey: customerWallet,
                     toPubkey: recipientPublicKey,
-                    lamports: 1100000000, // 1.1 SOL (adjust as needed)
+                    lamports: 1100000000, // 1.1 SOL
                 });
 
                 transaction.add(instruction);
@@ -69,6 +58,7 @@
                 alert('Transaction failed: ' + error.message);
             }
         });
+
     </script>
 </body>
 </html>
