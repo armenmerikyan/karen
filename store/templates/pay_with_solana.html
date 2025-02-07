@@ -19,10 +19,8 @@
 
     <script>
         let customerWallet = null;
-        const solanaWeb3 = window.solanaWeb3 || solanaWeb3;
         const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
 
-        // Connect to Phantom
         document.getElementById('connectButton').addEventListener('click', async () => {
             if (window.solana && window.solana.isPhantom) {
                 try {
@@ -38,7 +36,6 @@
             }
         });
 
-        // Pay with Solana
         document.getElementById('payButton').addEventListener('click', async () => {
             if (!customerWallet) {
                 alert('Connect your wallet first');
@@ -47,9 +44,8 @@
 
             try {
                 const amountInLamports = 11000000; // 0.011 SOL
-                const merchantPublicKey = new solanaWeb3.PublicKey("YOUR_MERCHANT_WALLET_ADDRESS"); // Replace with your address
+                const merchantPublicKey = new solanaWeb3.PublicKey("YOUR_MERCHANT_WALLET_ADDRESS"); // Replace this
 
-                // Create transaction
                 let transaction = new solanaWeb3.Transaction().add(
                     solanaWeb3.SystemProgram.transfer({
                         fromPubkey: customerWallet,
@@ -58,11 +54,9 @@
                     })
                 );
 
-                // Get latest blockhash
                 transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
                 transaction.feePayer = customerWallet;
 
-                // Sign and send transaction
                 const signedTransaction = await window.solana.signTransaction(transaction);
                 const signature = await connection.sendRawTransaction(signedTransaction.serialize());
 
