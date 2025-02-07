@@ -42,9 +42,12 @@
             }
 
             try {
-                const connection = new window.solanaWeb3.Connection(window.solanaWeb3.clusterApiUrl('mainnet-beta'));
+                const rpcUrl = 'https://worldchain-mainnet.g.alchemy.com/v2/t7AGL7qRXHF4jvodUVH7gWn3lvSfk_jl'; // Replace with your QuickNode URL
+                console.log('RPC URL:', rpcUrl);
+                const connection = new solanaWeb3.Connection(rpcUrl);
+
                 const transaction = new window.solanaWeb3.Transaction();
-                const recipientPublicKey = new window.solanaWeb3.PublicKey("YOUR_MERCHANT_WALLET_ADDRESS");
+                const recipientPublicKey = new window.solanaWeb3.PublicKey("{{profile.wallet}}");
 
                 const instruction = window.solanaWeb3.SystemProgram.transfer({
                     fromPubkey: customerWallet,
