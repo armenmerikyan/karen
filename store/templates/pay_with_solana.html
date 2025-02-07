@@ -42,11 +42,11 @@
             }
 
             try {
-                const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-                const transaction = new solanaWeb3.Transaction();
-                const recipientPublicKey = new solanaWeb3.PublicKey("{{profile.wallet}}");
+                const connection = new window.solanaWeb3.Connection(window.solanaWeb3.clusterApiUrl('mainnet-beta'));
+                const transaction = new window.solanaWeb3.Transaction();
+                const recipientPublicKey = new window.solanaWeb3.PublicKey("YOUR_MERCHANT_WALLET_ADDRESS");
 
-                const instruction = solanaWeb3.SystemProgram.transfer({
+                const instruction = window.solanaWeb3.SystemProgram.transfer({
                     fromPubkey: customerWallet,
                     toPubkey: recipientPublicKey,
                     lamports: 1100000000, // 1.1 SOL (adjust as needed)
