@@ -2855,7 +2855,7 @@ def select_payment_type(request):
             return redirect('pay_with_stripe')
         else:
             # Handle invalid payment type
-            return render(request, 'payment/select_payment.html', {'error': 'Invalid payment type'})
+            return render(request, 'select_payment.html', {'error': 'Invalid payment type'})
     
     # Render the payment selection form
-    return render(request, 'payment/select_payment.html')
+    return render(request, 'select_payment.html')
