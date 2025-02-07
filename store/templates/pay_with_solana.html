@@ -23,7 +23,6 @@
         document.getElementById('connectButton').addEventListener('click', async () => {
             if (window.solana && window.solana.isPhantom) {
                 try {
-                    // Connect to Phantom wallet
                     const response = await window.solana.connect();
                     customerWallet = response.publicKey;
                     document.getElementById('walletAddress').textContent = `Connected wallet: ${customerWallet.toString()}`;
@@ -55,9 +54,9 @@
                     lamports: amountInLamports,
                 };
 
-                // Ensure Phantom Wallet is correctly set up
+                // Send the transaction using Phantom Wallet's signTransaction and sendTransaction
                 if (window.solana && window.solana.isPhantom) {
-                    // Send the transaction using Phantom Wallet
+                    // Phantom Wallet handles the signing and sending automatically
                     const { signature } = await window.solana.signAndSendTransaction(transaction);
 
                     // Handle the result
