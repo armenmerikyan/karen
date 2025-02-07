@@ -45,7 +45,7 @@
             try {
                 const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'), 'confirmed');
                 const merchantPublicKey = new solanaWeb3.PublicKey("{{ profile.wallet }}"); // Merchant's wallet address
-                const amountInLamports = {{ total_in_lamports }}; // Amount in lamports
+                const amountInLamports = {{ total_in_lamports }}; // Amount in lamports (1 SOL = 1,000,000,000 lamports)
 
                 // Create transaction
                 const transaction = new solanaWeb3.Transaction().add(
@@ -64,7 +64,7 @@
                 // Sign the transaction with Phantom wallet
                 const signedTransaction = await window.solana.signTransaction(transaction);
 
-                // Serialize the transaction
+                // Serialize the transaction (use Uint8Array)
                 const serializedTransaction = signedTransaction.serialize();
 
                 // Send the transaction to the Solana network
