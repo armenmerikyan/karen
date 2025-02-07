@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solana Payment App</title>
-    <!-- Include Buffer polyfill and initialize it -->
-    <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.min.js"></script>
-    <script>
-        // Initialize Buffer globally
-        window.Buffer = Buffer;
-    </script>
-    <!-- Include Solana Web3.js -->
-    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+    <!-- Include Solana Wallet Adapter and Web3.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-base@0.9.11/lib/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-wallets@0.15.6/lib/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-phantom@0.9.11/lib/index.min.js"></script>
 </head>
 <body>
     <h1>Solana Payment App</h1>
@@ -27,9 +24,7 @@
 
         // Wallet and payment variables
         let wallet;
-
-        // Use your version of the recipient address
-        const recipientWalletAddress = '{{profile.wallet}}'; // Replace this with your dynamic value
+        const recipientWalletAddress = '{{profile.wallet}}'; // Replace with your dynamic value
         let recipient;
         try {
             recipient = new PublicKey(recipientWalletAddress);
