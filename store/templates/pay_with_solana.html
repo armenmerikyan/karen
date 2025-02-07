@@ -18,47 +18,9 @@
     <p>Total Tax: $1.00</p>
     <p>Total with Tax: $11.00</p>
      
-    <button id="payButton" >Pay with Solana</button>
+    <button id="payButton" >Pay with Solana</button> 
+    
+    <a href="solana:{{profile.wallet}}?amount=0.1">Pay with Solana</a>
 
-    <p>Wallet Address: <span id="walletAddress"></span></p>
-
-    <script>
-        const { Connection, Transaction, SystemProgram, PublicKey } = solanaWeb3;
-
-        document.getElementById('payButton').addEventListener('click', async () => {
-            if (!customerWallet) {
-                alert('Please connect your wallet first');
-                return;
-            }
-
-            try {
-                const rpcUrl = 'https://worldchain-mainnet.g.alchemy.com/v2/t7AGL7qRXHF4jvodUVH7gWn3lvSfk_jl';
-                console.log('RPC URL:', rpcUrl);
-
-                const connection = new Connection(rpcUrl);
-                const transaction = new Transaction();
-                const recipientPublicKey = new PublicKey("{{profile.wallet}}");
-
-                const instruction = SystemProgram.transfer({
-                    fromPubkey: customerWallet,
-                    toPubkey: recipientPublicKey,
-                    lamports: 1100000000, // 1.1 SOL
-                });
-
-                transaction.add(instruction);
-                transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-                transaction.feePayer = customerWallet;
-
-                const signedTransaction = await window.solana.signTransaction(transaction);
-                const signature = await connection.sendRawTransaction(signedTransaction.serialize());
-
-                alert('Transaction Successful! Signature: ' + signature);
-            } catch (error) {
-                console.error('Transaction failed:', error);
-                alert('Transaction failed: ' + error.message);
-            }
-        });
-
-    </script>
 </body>
 </html>
