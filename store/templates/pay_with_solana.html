@@ -63,16 +63,15 @@
                 // Sign the transaction using Phantom Wallet
                 const signedTransaction = await provider.signTransaction(transaction);
 
-                // Serialize the transaction (hexadecimal format)
+                // Serialize the transaction using Uint8Array
                 const serializedTransaction = signedTransaction.serialize();
-                const uint8ArrayTransaction = new Uint8Array(serializedTransaction);
-                const hexTransaction = Array.from(uint8ArrayTransaction)
-                    .map(byte => byte.toString(16).padStart(2, '0'))
-                    .join('');
+                
+                // Convert the serialized transaction into a base64 string
+                const base64Transaction = btoa(String.fromCharCode(...new Uint8Array(serializedTransaction)));
 
                 // Set the form values
                 document.getElementById('customerPublicKey').value = customerWallet.toString();
-                document.getElementById('signedTransaction').value = hexTransaction;
+                document.getElementById('signedTransaction').value = base64Transaction;
 
                 // Submit the form to the backend (Django)
                 const formData = new FormData(document.getElementById('solanaPaymentForm'));
