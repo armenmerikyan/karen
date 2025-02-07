@@ -27,7 +27,9 @@
 
         // Wallet and payment variables
         let wallet;
-        const recipientWalletAddress = 'RECIPIENT_WALLET_ADDRESS'; // Replace with your dynamic value
+        const recipientWalletAddress = '{{profile.wallet}}'; // Replace this with your dynamic value
+        const recipient = new PublicKey(recipientWalletAddress);
+
         let recipient;
         try {
             recipient = new PublicKey(recipientWalletAddress);
