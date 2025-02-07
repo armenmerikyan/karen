@@ -16,9 +16,6 @@
 
     <p>Wallet Address: <span id="walletAddress"></span></p>
 
-    <!-- Include Solana Web3.js -->
-    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
-
     <script>
         let customerWallet = null;
 
@@ -47,30 +44,19 @@
 
             try {
                 const amountInLamports = {{ total_in_lamports }}; // Amount in lamports (1 SOL = 1,000,000,000 lamports)
-                const merchantPublicKey = new solanaWeb3.PublicKey("{{ profile.wallet }}"); // Merchant's wallet address
+                const merchantPublicKey = "{{ profile.wallet }}"; // Merchant's wallet address
 
-                // Create the Solana transaction using solanaWeb3.js
-                const transaction = new solanaWeb3.Transaction().add(
-                    solanaWeb3.SystemProgram.transfer({
-                        fromPubkey: customerWallet,
-                        toPubkey: merchantPublicKey,
-                        lamports: amountInLamports,
-                    })
-                );
+                // Construct the transaction data as required by Phantom
+                const transaction = {
+                    fromPubkey: customerWallet.toString(),
+                    toPubkey: merchantPublicKey,
+                    lamports: amountInLamports,
+                };
 
-                // Set fee payer and recent blockhash
-                transaction.feePayer = customerWallet;
-                const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-                const { blockhash } = await connection.getLatestBlockhash();
-                transaction.recentBlockhash = blockhash;
+                // Send the transaction directly using Phantom Wallet's signTransaction and sendTransaction
+                const { signature } = await window.solana.signAndSendTransaction(transaction);
 
-                // Use Phantom Wallet to sign the transaction
-                const signedTransaction = await window.solana.signTransaction(transaction);
-
-                // Send the signed transaction to Phantom
-                const { signature } = await window.solana.sendTransaction(signedTransaction, connection);
-
-                // Once the transaction is signed and sent, handle the result
+                // Handle the result
                 console.log('Transaction signature:', signature);
                 alert('Payment Successful! Transaction Signature: ' + signature);
             } catch (error) {
