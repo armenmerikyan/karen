@@ -30,7 +30,7 @@
             event.preventDefault();
 
             const solana = window.solanaWeb3;
-            const connection = new solana.Connection("https://api.mainnet-beta.solana.com");
+            const connection = new solana.Connection("https://worldchain-mainnet.g.alchemy.com/v2/t7AGL7qRXHF4jvodUVH7gWn3lvSfk_jl");
             const customerWallet = solana.Keypair.generate(); // Replace with actual customer wallet
 
             const merchantPublicKey = new solana.PublicKey("{{ profile.wallet }}");
