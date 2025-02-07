@@ -10,8 +10,8 @@
         // Initialize Buffer globally
         window.Buffer = Buffer;
     </script>
-    <!-- Include Solana Web3.js (browser-compatible version) -->
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+    <!-- Include Solana Web3.js -->
+    <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
 </head>
 <body>
     <h1>Solana Payment App</h1>
@@ -27,7 +27,7 @@
 
         // Wallet and payment variables
         let wallet;
-        const recipientWalletAddress = '{{profile.wallet}}'; // Replace with your dynamic value
+        const recipientWalletAddress = 'RECIPIENT_WALLET_ADDRESS'; // Replace with your dynamic value
         let recipient;
         try {
             recipient = new PublicKey(recipientWalletAddress);
@@ -95,4 +95,4 @@
         });
     </script>
 </body>
-</html
+</html>
