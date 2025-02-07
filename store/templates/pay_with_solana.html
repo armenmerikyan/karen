@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solana Payment</title>
-    <!-- Changed CDN URL to another mirror -->
+    <!-- Solana Web3.js library -->
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.75.0/lib/index.iife.min.js"></script>
 </head>
 <body>
@@ -27,48 +27,44 @@
 
             const { Connection, Transaction, SystemProgram, PublicKey } = solanaWeb3;
 
-            // Ensure Phantom wallet is connected
-            if (window.phantom) {
-                window.phantom.on('connect', (walletAddress) => {
-                    document.getElementById('walletAddress').textContent = walletAddress;
+            // Check if Phantom wallet is installed
+            if (window.solana && window.solana.isPhantom) {
+                // Connect to Phantom wallet
+                document.getElementById('payButton').addEventListener('click', async () => {
+                    try {
+                        // Request wallet connection
+                        const response = await window.solana.connect();
+                        document.getElementById('walletAddress').textContent = response.publicKey.toString();
+
+                        const rpcUrl = 'https://api.mainnet-beta.solana.com';  // Solana mainnet RPC URL
+                        const connection = new Connection(rpcUrl);
+                        const customerWallet = response.publicKey;
+                        const recipientPublicKey = new PublicKey("{{profile.wallet}}");  // Replace with recipient wallet address
+
+                        const transaction = new Transaction();
+                        const instruction = SystemProgram.transfer({
+                            fromPubkey: customerWallet,
+                            toPubkey: recipientPublicKey,
+                            lamports: 1100000000, // 1.1 SOL
+                        });
+
+                        transaction.add(instruction);
+                        transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+                        transaction.feePayer = customerWallet;
+
+                        // Request signature using Phantom wallet
+                        const signedTransaction = await window.solana.signTransaction(transaction);
+                        const signature = await connection.sendRawTransaction(signedTransaction.serialize());
+
+                        alert('Transaction Successful! Signature: ' + signature);
+                    } catch (error) {
+                        console.error('Transaction failed:', error);
+                        alert('Transaction failed: ' + error.message);
+                    }
                 });
             } else {
-                alert('Phantom wallet is not installed.');
+                alert('Phantom wallet is not installed or available.');
             }
-
-            document.getElementById('payButton').addEventListener('click', async () => {
-                if (!window.phantom || !window.phantom.isConnected) {
-                    alert('Please connect your wallet first');
-                    return;
-                }
-
-                try {
-                    const rpcUrl = 'https://api.mainnet-beta.solana.com';  // Use Solana mainnet RPC URL
-                    const connection = new Connection(rpcUrl);
-                    const customerWallet = new PublicKey(window.phantom.selectedAddress);
-                    const recipientPublicKey = new PublicKey("{{profile.wallet}}");  // Replace with recipient wallet address
-
-                    const transaction = new Transaction();
-                    const instruction = SystemProgram.transfer({
-                        fromPubkey: customerWallet,
-                        toPubkey: recipientPublicKey,
-                        lamports: 1100000000, // 1.1 SOL
-                    });
-
-                    transaction.add(instruction);
-                    transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-                    transaction.feePayer = customerWallet;
-
-                    // Request signature using Phantom wallet
-                    const signedTransaction = await window.phantom.signTransaction(transaction);
-                    const signature = await connection.sendRawTransaction(signedTransaction.serialize());
-
-                    alert('Transaction Successful! Signature: ' + signature);
-                } catch (error) {
-                    console.error('Transaction failed:', error);
-                    alert('Transaction failed: ' + error.message);
-                }
-            });
         });
     </script>
 </body>
