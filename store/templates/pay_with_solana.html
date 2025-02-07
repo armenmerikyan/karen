@@ -105,7 +105,7 @@
         }
     });
 
-    // Convert Uint8Array to Base64 for transmission
+    // Convert Uint8Array to Base64 for transmission (browser-compatible)
     function arrayBufferToBase64(buffer) {
         let binary = '';
         const bytes = new Uint8Array(buffer);
