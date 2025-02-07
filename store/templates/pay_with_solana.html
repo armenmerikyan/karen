@@ -4,18 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solana Payment</title>
-
-    <!-- Load the required buffer polyfill for browser support -->
-    <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.min.js"></script>
-    
-    <!-- Load Solana Web3.js -->
-    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
 </head>
 <body>
     <h4>Pay for Your Order</h4>
     <p>Subtotal: ${{ subtotal }}</p>
     <p>Total Tax: ${{ total_tax }}</p>
     <p>Total with Tax: ${{ total_with_tax }}</p>
+    
     <button id="connectButton" class="btn btn-primary">Connect to Phantom</button>
     <button id="payButton" class="btn btn-primary" disabled>Pay with Solana</button>
 
@@ -48,38 +43,22 @@
             }
 
             try {
-                const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'), 'confirmed');
-                const merchantPublicKey = new solanaWeb3.PublicKey("{{ profile.wallet }}"); // Merchant's wallet address
                 const amountInLamports = {{ total_in_lamports }}; // Amount in lamports (1 SOL = 1,000,000,000 lamports)
+                const merchantPublicKey = new solanaWeb3.PublicKey("{{ profile.wallet }}"); // Merchant's wallet address
+                
+                // Create the transaction payload in Phantom format
+                const transaction = {
+                    fromPubkey: customerWallet.toString(),
+                    toPubkey: merchantPublicKey.toString(),
+                    lamports: amountInLamports,
+                };
 
-                // Create transaction
-                const transaction = new solanaWeb3.Transaction().add(
-                    solanaWeb3.SystemProgram.transfer({
-                        fromPubkey: customerWallet,
-                        toPubkey: merchantPublicKey,
-                        lamports: amountInLamports,
-                    })
-                );
-
-                // Get recent blockhash
-                const { blockhash } = await connection.getLatestBlockhash();
-                transaction.recentBlockhash = blockhash;
-                transaction.feePayer = customerWallet;
-
-                // Sign the transaction with Phantom wallet
-                const signedTransaction = await window.solana.signTransaction(transaction);
-
-                // Serialize the transaction (use Uint8Array)
-                const serializedTransaction = signedTransaction.serialize();
-
-                // Send the transaction to the Solana network
-                const txid = await connection.sendRawTransaction(serializedTransaction, {
-                    skipPreflight: false,
-                    preflightCommitment: 'confirmed',
-                });
-
-                console.log('Transaction successful with ID:', txid);
-                alert('Payment Successful! Transaction ID: ' + txid);
+                // Send the transaction to Phantom wallet
+                const { signature } = await window.solana.signAndSendTransaction(transaction);
+                
+                // Once the transaction is signed and sent, handle the result
+                console.log('Transaction signature:', signature);
+                alert('Payment Successful! Transaction Signature: ' + signature);
             } catch (error) {
                 console.error('Transaction failed:', error);
                 alert('Transaction failed: ' + error.message);
