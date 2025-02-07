@@ -1038,7 +1038,7 @@ def checkout_view(request):
             form = ShippingBillingForm(request.POST, instance=cart)
             if form.is_valid():
                 form.save()
-                return redirect('select_payment_type')
+                return redirect('select_payment')
         else:
             if customer:
                 # Fully override the cart data with the customer's address
