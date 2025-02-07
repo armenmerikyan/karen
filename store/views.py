@@ -205,7 +205,8 @@ from django.conf import settings
 
 
 from solana.rpc.api import Client
-from solana.transaction import Transaction
+from solders.transaction import Transaction
+
 from solana.system_program import TransferParams, transfer
 from solana.publickey import PublicKey
 from solana.keypair import Keypair
