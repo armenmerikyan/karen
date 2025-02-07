@@ -107,11 +107,11 @@
 
     // Convert Uint8Array to Base64 for transmission (browser-compatible)
     function arrayBufferToBase64(buffer) {
-        let binary = '';
         const bytes = new Uint8Array(buffer);
-        for (let i = 0; i < bytes.byteLength; i++) {
-            binary += String.fromCharCode(bytes[i]);
-        }
+        let binary = '';
+        bytes.forEach(byte => {
+            binary += String.fromCharCode(byte);
+        });
         return window.btoa(binary);
     }
 </script>
