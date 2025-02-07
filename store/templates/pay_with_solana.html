@@ -29,8 +29,7 @@
         let wallet;
         const recipientWalletAddress = '{{profile.wallet}}'; // Replace this with your dynamic value
         const recipient = new PublicKey(recipientWalletAddress);
-
-        let recipient;
+ 
         try {
             recipient = new PublicKey(recipientWalletAddress);
             console.log('Recipient address is valid:', recipient.toBase58());
