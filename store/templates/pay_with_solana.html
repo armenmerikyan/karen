@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pay with Solana</title>
     
-    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+    <script src="https://unpkg.com/@solana/web3.js@1.48.0/lib/index.iife.js"></script>
 </head>
 <body>
     <h1>Pay with Solana</h1>
@@ -30,14 +30,12 @@
         document.getElementById('solanaPaymentForm').addEventListener('submit', async function(event) {
             event.preventDefault();
 
-            // Check if Phantom Wallet is installed
             if (!window.solana || !window.solana.isPhantom) {
                 alert("Please install Phantom Wallet");
                 return;
             }
 
             try {
-                // Connect Phantom Wallet
                 await window.solana.connect();
                 const provider = window.solana;
                 const customerWallet = provider.publicKey;
@@ -48,7 +46,6 @@
                 const merchantPublicKey = new solanaWeb3.PublicKey("{{ profile.wallet }}");
                 const amountInLamports = {{ total_in_lamports }};
 
-                // Create the transaction
                 let transaction = new solanaWeb3.Transaction().add(
                     solanaWeb3.SystemProgram.transfer({
                         fromPubkey: customerWallet,
@@ -60,20 +57,18 @@
                 transaction.feePayer = customerWallet;
                 transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
-                // Sign the transaction using Phantom Wallet
                 const signedTransaction = await provider.signTransaction(transaction);
 
-                // Serialize the transaction using Uint8Array
+                // Serialize the transaction using Uint8Array (avoid Buffer)
                 const serializedTransaction = signedTransaction.serialize();
-                
-                // Convert the serialized transaction into a base64 string
-                const base64Transaction = btoa(String.fromCharCode(...new Uint8Array(serializedTransaction)));
+                const serializedArray = new Uint8Array(serializedTransaction);
 
-                // Set the form values
+                // Convert the serialized transaction into a base64 string (preferred for transmission)
+                const base64Transaction = btoa(String.fromCharCode(...serializedArray));
+
                 document.getElementById('customerPublicKey').value = customerWallet.toString();
                 document.getElementById('signedTransaction').value = base64Transaction;
 
-                // Submit the form to the backend (Django)
                 const formData = new FormData(document.getElementById('solanaPaymentForm'));
                 const response = await fetch("{% url 'pay_with_solana' %}", {
                     method: "POST",
