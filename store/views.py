@@ -208,8 +208,9 @@ from solana.rpc.api import Client
 from solders.transaction import Transaction
 from solders.system_program import TransferParams, transfer
 from solders.pubkey import Pubkey
-from solana.keypair import Keypair
-from solana.rpc.types import TxOpts
+from solders.keypair import Keypair
+from solders.rpc.config import RpcSendTransactionConfig as TxOpts
+
  
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
