@@ -22,7 +22,8 @@
     </div>
 </section>
 
-<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script> <!-- Solana Web3.js -->
+<!-- Include Solana Web3.js -->
+<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
 
 <script>
     document.getElementById('connectButton').addEventListener('click', async () => {
@@ -79,7 +80,7 @@
             const serializedTransaction = signedTransaction.serialize();
             const base64Transaction = arrayBufferToBase64(serializedTransaction);
 
-            // Send the signed transaction to your server
+            // Send the signed transaction to your Django backend
             const formData = new FormData();
             formData.append('signedTransaction', base64Transaction);
             formData.append('customerPublicKey', customerWallet.toString());
@@ -88,6 +89,9 @@
             const response = await fetch("{% url 'pay_with_solana' %}", {
                 method: 'POST',
                 body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}', // Include CSRF token in headers
+                },
             });
 
             const result = await response.json();
