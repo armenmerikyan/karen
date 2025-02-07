@@ -24,7 +24,6 @@
 
 <!-- Include Solana Web3.js -->
 <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
-
 <script>
     document.getElementById('connectButton').addEventListener('click', async () => {
         if (window.solana && window.solana.isPhantom) {
@@ -106,12 +105,11 @@
         }
     });
 
-    // Convert ArrayBuffer to Base64 for transmission
+    // Convert Uint8Array to Base64 for transmission
     function arrayBufferToBase64(buffer) {
         let binary = '';
         const bytes = new Uint8Array(buffer);
-        const len = bytes.byteLength;
-        for (let i = 0; i < len; i++) {
+        for (let i = 0; i < bytes.byteLength; i++) {
             binary += String.fromCharCode(bytes[i]);
         }
         return window.btoa(binary);
