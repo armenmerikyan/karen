@@ -4,54 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solana Payment</title>
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest"></script> <!-- Import Solana Web3 -->
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest"></script>
 </head>
 <body>
     <h4>Pay for Your Order</h4>
-    <p>Subtotal: ${{ subtotal }}</p>
-    <p>Total Tax: ${{ total_tax }}</p>
-    <p>Total with Tax: ${{ total_with_tax }}</p>
+    <p>Subtotal: $10</p>
+    <p>Total Tax: $1</p>
+    <p>Total with Tax: $11</p>
     
-    <button id="connectButton" class="btn btn-primary">Connect to Phantom</button>
-    <button id="payButton" class="btn btn-primary" disabled>Pay with Solana</button>
+    <button id="connectButton">Connect to Phantom</button>
+    <button id="payButton" disabled>Pay with Solana</button>
 
-    <p>Wallet Address: <span id="walletAddress"></span></p>
+    <p>Wallet Address: <span id="walletAddress">Not connected</span></p>
 
     <script>
         let customerWallet = null;
+        const solanaWeb3 = window.solanaWeb3 || solanaWeb3;
+        const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
 
-        // Connect to Phantom Wallet
+        // Connect to Phantom
         document.getElementById('connectButton').addEventListener('click', async () => {
             if (window.solana && window.solana.isPhantom) {
                 try {
                     const response = await window.solana.connect();
                     customerWallet = response.publicKey;
-                    document.getElementById('walletAddress').textContent = `Connected wallet: ${customerWallet.toString()}`;
-                    document.getElementById('payButton').disabled = false; // Enable pay button
+                    document.getElementById('walletAddress').textContent = customerWallet.toString();
+                    document.getElementById('payButton').disabled = false;
                 } catch (error) {
-                    console.error('Error connecting to Phantom wallet:', error);
-                    alert('Error connecting to Phantom wallet. Please try again.');
+                    console.error('Connection failed:', error);
                 }
             } else {
-                alert('Please install Phantom Wallet extension.');
+                alert('Please install Phantom Wallet');
             }
         });
 
-        // Send SOL Payment
+        // Pay with Solana
         document.getElementById('payButton').addEventListener('click', async () => {
             if (!customerWallet) {
-                alert('Please connect your wallet first');
+                alert('Connect your wallet first');
                 return;
             }
 
             try {
-                const amountInLamports = {{ total_in_lamports }}; // Amount in lamports (1 SOL = 1,000,000,000 lamports)
-                const merchantPublicKey = new solanaWeb3.PublicKey("{{ profile.wallet }}"); // Merchant's wallet address
-                
-                // Connect to Solana cluster
-                const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
+                const amountInLamports = 11000000; // 0.011 SOL
+                const merchantPublicKey = new solanaWeb3.PublicKey("YOUR_MERCHANT_WALLET_ADDRESS"); // Replace with your address
 
-                // Create a transaction
+                // Create transaction
                 let transaction = new solanaWeb3.Transaction().add(
                     solanaWeb3.SystemProgram.transfer({
                         fromPubkey: customerWallet,
@@ -60,25 +58,19 @@
                     })
                 );
 
-                // Get the latest blockhash
-                const { blockhash } = await connection.getLatestBlockhash();
-                transaction.recentBlockhash = blockhash;
+                // Get latest blockhash
+                transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
                 transaction.feePayer = customerWallet;
 
-                // Sign the transaction
+                // Sign and send transaction
                 const signedTransaction = await window.solana.signTransaction(transaction);
-
-                // Send the signed transaction
                 const signature = await connection.sendRawTransaction(signedTransaction.serialize());
 
-                // Confirm the transaction
-                await connection.confirmTransaction(signature, "processed");
-
-                console.log("Transaction Signature:", signature);
-                alert("Payment Successful! Transaction Signature: " + signature);
+                alert('Payment Successful! Transaction Signature: ' + signature);
+                console.log('Transaction signature:', signature);
             } catch (error) {
-                console.error("Transaction failed:", error);
-                alert("Transaction failed: " + error.message);
+                console.error('Transaction failed:', error);
+                alert('Transaction failed: ' + error.message);
             }
         });
     </script>
