@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solana Payment</title>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest"></script> <!-- Import Solana Web3 -->
 </head>
 <body>
     <h4>Pay for Your Order</h4>
@@ -19,14 +20,14 @@
     <script>
         let customerWallet = null;
 
-        // Check if Phantom is available and connect
+        // Connect to Phantom Wallet
         document.getElementById('connectButton').addEventListener('click', async () => {
             if (window.solana && window.solana.isPhantom) {
                 try {
                     const response = await window.solana.connect();
                     customerWallet = response.publicKey;
                     document.getElementById('walletAddress').textContent = `Connected wallet: ${customerWallet.toString()}`;
-                    document.getElementById('payButton').disabled = false; // Enable the pay button once connected
+                    document.getElementById('payButton').disabled = false; // Enable pay button
                 } catch (error) {
                     console.error('Error connecting to Phantom wallet:', error);
                     alert('Error connecting to Phantom wallet. Please try again.');
@@ -36,7 +37,7 @@
             }
         });
 
-        // Handle payment
+        // Send SOL Payment
         document.getElementById('payButton').addEventListener('click', async () => {
             if (!customerWallet) {
                 alert('Please connect your wallet first');
@@ -45,24 +46,39 @@
 
             try {
                 const amountInLamports = {{ total_in_lamports }}; // Amount in lamports (1 SOL = 1,000,000,000 lamports)
-                const merchantPublicKey = "{{ profile.wallet }}"; // Merchant's wallet address
+                const merchantPublicKey = new solanaWeb3.PublicKey("{{ profile.wallet }}"); // Merchant's wallet address
+                
+                // Connect to Solana cluster
+                const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
 
-                // Construct the transaction object (Phantom handles this directly)
-                const transaction = {
-                    fromPubkey: customerWallet,
-                    toPubkey: new solanaWeb3.PublicKey(merchantPublicKey),
-                    lamports: amountInLamports,
-                };
+                // Create a transaction
+                let transaction = new solanaWeb3.Transaction().add(
+                    solanaWeb3.SystemProgram.transfer({
+                        fromPubkey: customerWallet,
+                        toPubkey: merchantPublicKey,
+                        lamports: amountInLamports,
+                    })
+                );
 
-                // Send the transaction using Phantom Wallet's signTransaction and sendTransaction
-                const { signature } = await window.solana.signAndSendTransaction(transaction);
+                // Get the latest blockhash
+                const { blockhash } = await connection.getLatestBlockhash();
+                transaction.recentBlockhash = blockhash;
+                transaction.feePayer = customerWallet;
 
-                // Handle the result
-                console.log('Transaction signature:', signature);
-                alert('Payment Successful! Transaction Signature: ' + signature);
+                // Sign the transaction
+                const signedTransaction = await window.solana.signTransaction(transaction);
+
+                // Send the signed transaction
+                const signature = await connection.sendRawTransaction(signedTransaction.serialize());
+
+                // Confirm the transaction
+                await connection.confirmTransaction(signature, "processed");
+
+                console.log("Transaction Signature:", signature);
+                alert("Payment Successful! Transaction Signature: " + signature);
             } catch (error) {
-                console.error('Transaction failed:', error);
-                alert('Transaction failed: ' + error.message);
+                console.error("Transaction failed:", error);
+                alert("Transaction failed: " + error.message);
             }
         });
     </script>
