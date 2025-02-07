@@ -158,6 +158,8 @@ urlpatterns = [
     
     path('delete-product/<int:product_id>/', views.delete_product, name='delete_product'),
 
+
+    path('select-payment/', views.select_payment_type, name='select_payment'),
 ]
 
 

@@ -1038,7 +1038,7 @@ def checkout_view(request):
             form = ShippingBillingForm(request.POST, instance=cart)
             if form.is_valid():
                 form.save()
-                return redirect('pay_with_stripe')
+                return redirect('select_payment_type')
         else:
             if customer:
                 # Fully override the cart data with the customer's address
@@ -2841,3 +2841,21 @@ def success(request):
 
 def failure(request):
     return render(request, 'failure.html')
+
+
+
+def select_payment_type(request):
+    if request.method == 'POST':
+        payment_type = request.POST.get('payment_type')
+        if payment_type == 'solana':
+            # Redirect to Solana payment page or process Solana payment
+            return redirect('pay_with_stripe')
+        elif payment_type == 'stripe':
+            # Redirect to Stripe payment page or process Stripe payment
+            return redirect('pay_with_stripe')
+        else:
+            # Handle invalid payment type
+            return render(request, 'payment/select_payment.html', {'error': 'Invalid payment type'})
+    
+    # Render the payment selection form
+    return render(request, 'payment/select_payment.html')
