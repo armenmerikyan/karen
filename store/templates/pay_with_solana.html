@@ -47,24 +47,19 @@
                 const amountInLamports = {{ total_in_lamports }}; // Amount in lamports (1 SOL = 1,000,000,000 lamports)
                 const merchantPublicKey = "{{ profile.wallet }}"; // Merchant's wallet address
 
-                // Construct the transaction data
+                // Construct the transaction object (Phantom handles this directly)
                 const transaction = {
-                    fromPubkey: customerWallet.toString(),
-                    toPubkey: merchantPublicKey,
+                    fromPubkey: customerWallet,
+                    toPubkey: new solanaWeb3.PublicKey(merchantPublicKey),
                     lamports: amountInLamports,
                 };
 
                 // Send the transaction using Phantom Wallet's signTransaction and sendTransaction
-                if (window.solana && window.solana.isPhantom) {
-                    // Phantom Wallet handles the signing and sending automatically
-                    const { signature } = await window.solana.signAndSendTransaction(transaction);
+                const { signature } = await window.solana.signAndSendTransaction(transaction);
 
-                    // Handle the result
-                    console.log('Transaction signature:', signature);
-                    alert('Payment Successful! Transaction Signature: ' + signature);
-                } else {
-                    alert('Phantom Wallet is not available.');
-                }
+                // Handle the result
+                console.log('Transaction signature:', signature);
+                alert('Payment Successful! Transaction Signature: ' + signature);
             } catch (error) {
                 console.error('Transaction failed:', error);
                 alert('Transaction failed: ' + error.message);
