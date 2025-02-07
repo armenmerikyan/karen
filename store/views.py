@@ -2960,6 +2960,10 @@ def pay_with_solana(request):
                 return JsonResponse({'error': 'Transaction failed'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
+    
+    sol_to_usd_rate = 200
+
+    total_in_lamports = int(total_with_tax / sol_to_usd_rate * 10**9) 
 
     context = {
         'products': products,
@@ -2967,6 +2971,7 @@ def pay_with_solana(request):
         'total_tax': total_tax,
         'total_with_tax': total_with_tax,
         'profile': profile,
+        'total_in_lamports': total_in_lamports,  # Add this line
     }
     response = render(request, 'pay_with_solana.html', context)
     response.set_cookie('cartId', cart_id, max_age=60*60*24*30, secure=True, httponly=True, samesite='Lax')
