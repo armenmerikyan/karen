@@ -207,9 +207,7 @@ from django.conf import settings
 from solana.rpc.api import Client
 from solders.transaction import Transaction
 from solders.system_program import TransferParams, transfer
-
- 
-from solana.publickey import PublicKey
+from solders.pubkey import Pubkey
 from solana.keypair import Keypair
 from solana.rpc.types import TxOpts
  
@@ -2917,12 +2915,12 @@ def pay_with_solana(request):
         solana_client = Client("https://api.mainnet-beta.solana.com")
 
         # Merchant's wallet (where the payment will be sent)
-        merchant_wallet = PublicKey(profile.wallet)
+        merchant_wallet = PubKey(profile.wallet)
 
         # Create a transaction
         transaction = Transaction()
         transaction.add(transfer(TransferParams(
-            from_pubkey=PublicKey(customer_public_key),
+            from_pubkey=PubKey(customer_public_key),
             to_pubkey=merchant_wallet,
             lamports=total_in_lamports
         )))
