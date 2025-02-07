@@ -44,7 +44,7 @@
 
             try {
                 const amountInLamports = 11000000; // 0.011 SOL
-                const merchantPublicKey = new solanaWeb3.PublicKey("YOUR_MERCHANT_WALLET_ADDRESS"); // Replace this
+                const merchantPublicKey = new solanaWeb3.PublicKey("{{profile.wallet}}"); // Replace this
 
                 let transaction = new solanaWeb3.Transaction().add(
                     solanaWeb3.SystemProgram.transfer({
