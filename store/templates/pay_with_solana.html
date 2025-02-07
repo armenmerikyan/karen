@@ -79,10 +79,9 @@
             // Request Phantom wallet to sign the transaction
             const signedTransaction = await provider.signTransaction(transaction);
 
-            // Serialize the signed transaction and convert to base64
+            // Convert the signed transaction to a base64 string for transmission to the server
             const serializedTransaction = signedTransaction.serialize();
-            const serializedArray = new Uint8Array(serializedTransaction);
-            const base64Transaction = btoa(String.fromCharCode(...serializedArray));
+            const base64Transaction = arrayBufferToBase64(serializedTransaction);
 
             // Send the signed transaction to the server
             const formData = new FormData();
@@ -106,5 +105,16 @@
             alert("Transaction failed: " + error.message);
         }
     });
+
+    // Convert ArrayBuffer to Base64 for use in the request
+    function arrayBufferToBase64(buffer) {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return window.btoa(binary);
+    }
 </script>
 {% endblock %}
