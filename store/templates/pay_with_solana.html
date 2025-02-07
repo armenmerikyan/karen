@@ -33,7 +33,7 @@
             const connection = new solana.Connection("https://api.mainnet-beta.solana.com");
             const customerWallet = solana.Keypair.generate(); // Replace with actual customer wallet
 
-            const merchantPublicKey = new solana.PublicKey("{{ profile.solana_merchant_wallet }}");
+            const merchantPublicKey = new solana.PublicKey("{{ profile.wallet }}");
             const amountInLamports = {{ total_in_lamports }};
 
             const transaction = new solana.Transaction().add(
