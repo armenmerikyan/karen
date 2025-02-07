@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solana Payment App</title> 
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.75.0/lib/index.iife.min.js"></script>
+    <title>Solana Payment App</title>
+    <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.min.js"></script>
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
 </head>
 <body>
     <h1>Solana Payment App</h1>
@@ -13,7 +14,7 @@
 
     <script>
         // Solana Web3.js is available as `solanaWeb3` globally
-        const { Connection, PublicKey, Transaction, SystemProgram, sendAndConfirmTransaction } = solanaWeb3;
+        const { Connection, PublicKey, Transaction, SystemProgram } = solanaWeb3;
 
         // Connect to Solana Mainnet (or Devnet for testing)
         const connection = new Connection("https://api.mainnet-beta.solana.com");
