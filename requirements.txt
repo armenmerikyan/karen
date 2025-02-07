@@ -13,3 +13,4 @@ djangorestframework
 psycopg2-binary
 sendgrid
 stripe
+solana

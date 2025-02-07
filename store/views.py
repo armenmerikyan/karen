@@ -202,6 +202,14 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect 
 from django.conf import settings 
+
+
+from solana.rpc.api import Client
+from solana.transaction import Transaction
+from solana.system_program import TransferParams, transfer
+from solana.publickey import PublicKey
+from solana.keypair import Keypair
+from solana.rpc.types import TxOpts
  
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -2849,7 +2857,7 @@ def select_payment_type(request):
         payment_type = request.POST.get('payment_type')
         if payment_type == 'solana':
             # Redirect to Solana payment page or process Solana payment
-            return redirect('pay_with_stripe')
+            return redirect('pay_with_solana')
         elif payment_type == 'stripe':
             # Redirect to Stripe payment page or process Stripe payment
             return redirect('pay_with_stripe')
@@ -2859,3 +2867,107 @@ def select_payment_type(request):
     
     # Render the payment selection form
     return render(request, 'select_payment.html')
+
+def pay_with_solana(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
+    cart_id = request.COOKIES.get('cartId')
+    try:
+        cart = Cart.objects.get(external_id=cart_id)
+    except Cart.DoesNotExist:
+        return redirect('index')
+
+    cart_products = CartProduct.objects.filter(cart=cart)
+    subtotal, total_tax, total_with_tax = 0, 0, 0
+    products = []
+
+    # Calculate subtotal, total tax, and total with tax for the cart
+    for cart_product in cart_products:
+        total_price = cart_product.quantity * cart_product.product.price
+        product_tax = total_price * cart_product.tax_rate / 100
+        total_with_product = total_price + product_tax
+
+        subtotal += total_price
+        total_tax += product_tax
+        total_with_tax += total_with_product
+
+        products.append({
+            'product': cart_product.product,
+            'quantity': cart_product.quantity,
+            'price': cart_product.product.price,
+            'line_item_total': total_price,
+            'tax': product_tax,
+            'total_with_tax': total_with_product,
+            'id': cart_product.id,
+        })
+
+    total_in_lamports = int(total_with_tax * 10**9)  # Convert to lamports (1 SOL = 10^9 lamports)
+
+    if request.method == 'POST':
+        # Assuming the frontend sends the customer's Solana public key
+        customer_public_key = request.POST.get('customerPublicKey')
+        if not customer_public_key:
+            return JsonResponse({'error': 'Customer public key is required'}, status=400)
+
+        # Initialize Solana client
+        solana_client = Client("https://api.mainnet-beta.solana.com")
+
+        # Merchant's wallet (where the payment will be sent)
+        merchant_wallet = PublicKey(profile.wallet)
+
+        # Create a transaction
+        transaction = Transaction()
+        transaction.add(transfer(TransferParams(
+            from_pubkey=PublicKey(customer_public_key),
+            to_pubkey=merchant_wallet,
+            lamports=total_in_lamports
+        )))
+
+        # Sign and send the transaction
+        try:
+            # Assuming the customer signs the transaction on the frontend
+            signed_transaction = request.POST.get('signedTransaction')
+            if not signed_transaction:
+                return JsonResponse({'error': 'Signed transaction is required'}, status=400)
+
+            # Send the transaction
+            txid = solana_client.send_raw_transaction(signed_transaction, opts=TxOpts(skip_confirmation=False))
+            if txid:
+                # Save payment details in the database
+                payment = Payment.objects.create(
+                    customer=cart.customer,
+                    amount=total_with_tax,
+                    payment_method='Solana',
+                    status='COMPLETED',
+                )
+
+                PaymentApplication.objects.create(
+                    payment=payment,
+                    cart=cart,
+                    applied_amount=total_with_tax,
+                )
+
+                # Mark cart as paid and save transaction ID
+                cart.paid_transaction_id = txid
+                cart.paid = True
+                cart.save()
+
+                return JsonResponse({'success': True, 'txid': txid})
+            else:
+                return JsonResponse({'error': 'Transaction failed'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    context = {
+        'products': products,
+        'subtotal': subtotal,
+        'total_tax': total_tax,
+        'total_with_tax': total_with_tax,
+        'profile': profile,
+    }
+    response = render(request, 'pay_with_solana.html', context)
+    response.set_cookie('cartId', cart_id, max_age=60*60*24*30, secure=True, httponly=True, samesite='Lax')
+
+    return response

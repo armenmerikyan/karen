@@ -160,6 +160,9 @@ urlpatterns = [
 
 
     path('select-payment/', views.select_payment_type, name='select_payment'),
+
+
+    path('pay-with-solana/', pay_with_solana, name='pay_with_solana'),
 ]
 
 

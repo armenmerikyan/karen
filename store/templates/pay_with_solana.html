@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay with Solana</title>
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+</head>
+<body>
+    <h1>Pay with Solana</h1>
+    <div>
+        <h2>Cart Summary</h2>
+        <ul>
+            {% for product in products %}
+            <li>{{ product.product.name }} - {{ product.quantity }} x ${{ product.price }} = ${{ product.line_item_total }}</li>
+            {% endfor %}
+        </ul>
+        <p>Subtotal: ${{ subtotal }}</p>
+        <p>Total Tax: ${{ total_tax }}</p>
+        <p>Total with Tax: ${{ total_with_tax }}</p>
+    </div>
+    <form id="solanaPaymentForm">
+        <input type="hidden" id="customerPublicKey" name="customerPublicKey">
+        <input type="hidden" id="signedTransaction" name="signedTransaction">
+        <button type="submit">Pay with Solana</button>
+    </form>
+
+    <script>
+        document.getElementById('solanaPaymentForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const solana = window.solanaWeb3;
+            const connection = new solana.Connection("https://api.mainnet-beta.solana.com");
+            const customerWallet = solana.Keypair.generate(); // Replace with actual customer wallet
+
+            const merchantPublicKey = new solana.PublicKey("{{ profile.solana_merchant_wallet }}");
+            const amountInLamports = {{ total_in_lamports }};
+
+            const transaction = new solana.Transaction().add(
+                solana.SystemProgram.transfer({
+                    fromPubkey: customerWallet.publicKey,
+                    toPubkey: merchantPublicKey,
+                    lamports: amountInLamports,
+                })
+            );
+
+            transaction.feePayer = customerWallet.publicKey;
+            transaction.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
+
+            const signedTransaction = await solana.signTransaction(transaction, customerWallet);
+            const serializedTransaction = signedTransaction.serialize();
+
+            document.getElementById('customerPublicKey').value = customerWallet.publicKey.toString();
+            document.getElementById('signedTransaction').value = serializedTransaction.toString('hex');
+
+            const formData = new FormData(document.getElementById('solanaPaymentForm'));
+            const response = await fetch('{% url "pay_with_solana" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                window.location.href = '{% url "success" %}';
+            } else {
+                alert('Payment failed: ' + result.error);
+            }
+        });
+    </script>
+</body>
+</html>
