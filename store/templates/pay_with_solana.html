@@ -44,18 +44,18 @@
 
             try {
                 const amountInLamports = {{ total_in_lamports }}; // Amount in lamports (1 SOL = 1,000,000,000 lamports)
-                const merchantPublicKey = new solanaWeb3.PublicKey("{{ profile.wallet }}"); // Merchant's wallet address
-                
-                // Create the transaction payload in Phantom format
+                const merchantPublicKey = "{{ profile.wallet }}"; // Merchant's wallet address
+
+                // Construct the transaction to send Solana
                 const transaction = {
                     fromPubkey: customerWallet.toString(),
-                    toPubkey: merchantPublicKey.toString(),
+                    toPubkey: merchantPublicKey,
                     lamports: amountInLamports,
                 };
 
-                // Send the transaction to Phantom wallet
+                // Use Phantom Wallet to sign and send the transaction
                 const { signature } = await window.solana.signAndSendTransaction(transaction);
-                
+
                 // Once the transaction is signed and sent, handle the result
                 console.log('Transaction signature:', signature);
                 alert('Payment Successful! Transaction Signature: ' + signature);
