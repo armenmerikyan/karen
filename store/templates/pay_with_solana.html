@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6 text-center text-light">
-                <h4>Payment</h4>
+                <h4>Pay for Your Order</h4>
                 <form id="solanaPaymentForm">
                     {% csrf_token %}
                     <p>Subtotal: ${{ subtotal }}</p>
@@ -13,10 +13,10 @@
                     <button type="submit" id="payButton" class="btn btn-primary">Pay with Solana</button>
                 </form>
                 <HR>
-                <p>Wallet: {{user.sol_wallet_address}} </p>
-                <p><div id="walletAddress"></div> </p>
+                <p>Wallet: {{ user.sol_wallet_address }} </p>
+                <p><div id="walletAddress"></div></p>
 
-                <p><button id="connectButton" class="btn btn-primary">Connect to Phantom</button> </p> 
+                <p><button id="connectButton" class="btn btn-primary">Connect to Phantom</button></p> 
             </div>
         </div>
     </div>
@@ -31,14 +31,12 @@
                 // Connect to Phantom wallet
                 const response = await window.solana.connect();
                 console.log('Connected to Phantom wallet');
-
-                // Update the page with the connected wallet address
                 document.getElementById('walletAddress').textContent = `Connected wallet: ${response.publicKey.toString()}`;
             } catch (error) {
                 console.error('Error connecting to Phantom wallet:', error);
             }
         } else {
-            alert('Phantom wallet not found');
+            alert('Please install Phantom Wallet');
         }
     });
 
@@ -51,20 +49,18 @@
         }
 
         try {
-            // Connect to Phantom wallet
             await window.solana.connect();
             const provider = window.solana;
             const customerWallet = provider.publicKey;
 
-            console.log("Connected wallet:", customerWallet.toString());
+            console.log("Customer wallet:", customerWallet.toString());
 
-            // Create a transaction (for example, a transfer to the merchant)
             const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
             const merchantPublicKey = new solanaWeb3.PublicKey("{{ profile.wallet }}");
-            const amountInLamports = {{ total_in_lamports }};
+            const amountInLamports = {{ total_in_lamports }}; // Amount in lamports (not SOL)
 
-            // Create the transaction
-            let transaction = new solanaWeb3.Transaction().add(
+            // Create a transfer transaction
+            const transaction = new solanaWeb3.Transaction().add(
                 solanaWeb3.SystemProgram.transfer({
                     fromPubkey: customerWallet,
                     toPubkey: merchantPublicKey,
@@ -72,18 +68,18 @@
                 })
             );
 
-            // Add fee payer and recent blockhash
+            // Set the fee payer and recent blockhash
             transaction.feePayer = customerWallet;
             transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
-            // Request Phantom wallet to sign the transaction
+            // Sign the transaction with Phantom
             const signedTransaction = await provider.signTransaction(transaction);
 
-            // Convert the signed transaction to a base64 string for transmission to the server
+            // Serialize the transaction and convert to base64
             const serializedTransaction = signedTransaction.serialize();
             const base64Transaction = arrayBufferToBase64(serializedTransaction);
 
-            // Send the signed transaction to the server
+            // Send the signed transaction to your server
             const formData = new FormData();
             formData.append('signedTransaction', base64Transaction);
             formData.append('customerPublicKey', customerWallet.toString());
@@ -106,7 +102,7 @@
         }
     });
 
-    // Convert ArrayBuffer to Base64 for use in the request
+    // Convert ArrayBuffer to Base64 for transmission
     function arrayBufferToBase64(buffer) {
         let binary = '';
         const bytes = new Uint8Array(buffer);
