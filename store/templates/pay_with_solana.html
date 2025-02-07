@@ -5,13 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pay with Solana</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.min.js"></script>
-    <script>
-        // Polyfill Buffer
-        window.Buffer = window.buffer.Buffer;
-    </script>
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
-
 </head>
 <body>
     <h1>Pay with Solana</h1>
@@ -68,16 +62,22 @@
 
                 // Sign the transaction using Phantom Wallet
                 const signedTransaction = await provider.signTransaction(transaction);
+
+                // Serialize the transaction (hexadecimal format)
                 const serializedTransaction = signedTransaction.serialize();
+                const uint8ArrayTransaction = new Uint8Array(serializedTransaction);
+                const hexTransaction = Array.from(uint8ArrayTransaction)
+                    .map(byte => byte.toString(16).padStart(2, '0'))
+                    .join('');
 
                 // Set the form values
                 document.getElementById('customerPublicKey').value = customerWallet.toString();
-                document.getElementById('signedTransaction').value = Buffer.from(serializedTransaction).toString('hex');
+                document.getElementById('signedTransaction').value = hexTransaction;
 
-                // Submit the form to the backend
+                // Submit the form to the backend (Django)
                 const formData = new FormData(document.getElementById('solanaPaymentForm'));
-                const response = await fetch('{% url "pay_with_solana" %}', {
-                    method: 'POST',
+                const response = await fetch("{% url 'pay_with_solana' %}", {
+                    method: "POST",
                     body: formData,
                     headers: { 'X-CSRFToken': '{{ csrf_token }}' },
                 });
