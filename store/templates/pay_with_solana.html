@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solana Payment App</title>
+    <!-- Include Buffer polyfill and initialize it -->
     <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.min.js"></script>
     <script>
         // Initialize Buffer globally
         window.Buffer = Buffer;
     </script>
+    <!-- Include Solana Web3.js -->
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
 </head>
 <body>
@@ -25,11 +27,7 @@
 
         // Wallet and payment variables
         let wallet;
-
-        // Dynamically set the recipient wallet address
-        const recipientWalletAddress = '{{profile.wallet}}'; // Replace this with your dynamic value
-        const recipient = new PublicKey(recipientWalletAddress);
-
+        const recipient = new PublicKey('RECIPIENT_WALLET_ADDRESS'); // Replace with recipient's wallet address
         const amount = 1 * 1000000000; // 1 SOL in lamports (1 SOL = 1,000,000,000 lamports)
 
         // Connect Wallet Button
