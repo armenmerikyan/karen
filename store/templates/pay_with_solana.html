@@ -4,8 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pay with Solana</title>
-    
+
+    <!-- Solana Web3.js -->
     <script src="https://unpkg.com/@solana/web3.js@1.48.0/lib/index.iife.js"></script>
+
+    <!-- Phantom Wallet Polyfill -->
+    <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.min.js"></script>
+    <script>
+        // Polyfill Buffer for the browser
+        window.Buffer = window.buffer.Buffer;
+    </script>
 </head>
 <body>
     <h1>Pay with Solana</h1>
@@ -36,16 +44,19 @@
             }
 
             try {
+                // Connect to Phantom wallet
                 await window.solana.connect();
                 const provider = window.solana;
                 const customerWallet = provider.publicKey;
 
                 console.log("Connected wallet:", customerWallet.toString());
 
+                // Define connection to the Solana network
                 const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
                 const merchantPublicKey = new solanaWeb3.PublicKey("{{ profile.wallet }}");
                 const amountInLamports = {{ total_in_lamports }};
 
+                // Create the transaction
                 let transaction = new solanaWeb3.Transaction().add(
                     solanaWeb3.SystemProgram.transfer({
                         fromPubkey: customerWallet,
@@ -54,21 +65,23 @@
                     })
                 );
 
+                // Add fee payer and recent blockhash
                 transaction.feePayer = customerWallet;
                 transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
+                // Request the wallet to sign the transaction
                 const signedTransaction = await provider.signTransaction(transaction);
 
-                // Serialize the transaction using Uint8Array (avoid Buffer)
+                // Serialize the signed transaction and convert to base64 for transmission
                 const serializedTransaction = signedTransaction.serialize();
                 const serializedArray = new Uint8Array(serializedTransaction);
-
-                // Convert the serialized transaction into a base64 string (preferred for transmission)
                 const base64Transaction = btoa(String.fromCharCode(...serializedArray));
 
+                // Set the values for hidden form fields to send to the server
                 document.getElementById('customerPublicKey').value = customerWallet.toString();
                 document.getElementById('signedTransaction').value = base64Transaction;
 
+                // Create a FormData object and send the data to the server
                 const formData = new FormData(document.getElementById('solanaPaymentForm'));
                 const response = await fetch("{% url 'pay_with_solana' %}", {
                     method: "POST",
