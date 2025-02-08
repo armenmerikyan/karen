@@ -29,7 +29,7 @@
         let wallet;
 
         // Use your version of the recipient address
-        let recipientWalletAddress = '{{profile.wallet}}'; // Replace this with your dynamic value
+        const recipientWalletAddress = '{{profile.wallet}}'; // Replace this with your dynamic value
         let recipient;
         try {
             recipient = new PublicKey(recipientWalletAddress);
