@@ -117,12 +117,14 @@
                 // Confirm the transaction
                 const confirmation = await window.solana.confirmTransaction(signature);
                 if (confirmation.value.err) {
+                    console.error('Transaction Error:', confirmation.value.err);
                     throw new Error('Transaction failed');
                 } else {
                     console.log('Transaction successful');
                     transactionStatusElement.textContent = `Successfully sent ${amountInSol} SOL!`;
                     tokenBalanceElement.textContent = `Token balance: Updated (if applicable)`;
                 }
+
 
             } catch (error) {
                 console.error('Error sending transaction:', error);
