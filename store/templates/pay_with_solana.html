@@ -51,22 +51,29 @@
                 return;
             }
 
-            // Phantom's API lets you build a SOL transfer transaction
+            // Prepare the transaction using the system program to transfer SOL
             const transaction = {
-                to: recipient,
-                amount: amount * 1000000000, // Convert SOL to lamports (1 SOL = 1 billion lamports)
+                recentBlockhash: (await window.solana.request({ method: "getRecentBlockhash" })).blockhash,
+                feePayer: wallet,
+                instructions: [{
+                    keys: [
+                        { pubkey: wallet, isSigner: true, isWritable: true },
+                        { pubkey: recipient, isSigner: false, isWritable: true }
+                    ],
+                    programId: "11111111111111111111111111111111", // System Program ID (for transfers)
+                    data: new Uint8Array([2, ...new TextEncoder().encode(amount.toString())])
+                }]
             };
 
             try {
-                // Request Phantom Wallet to create and sign the transaction
-                const signedTransaction = await window.solana.request({
-                    method: 'solana_sendTransaction',
-                    params: [transaction],
-                });
+                // Sign the transaction using Phantom Wallet
+                const signedTransaction = await window.solana.signTransaction(transaction);
+                
+                // Send the signed transaction
+                const signature = await window.solana.request({ method: "sendTransaction", params: [signedTransaction] });
 
-                // Show the transaction link after sending
                 document.getElementById("transaction-link").innerHTML = 
-                    `Transaction sent! <a href="https://solscan.io/tx/${signedTransaction}" target="_blank">View on Solscan</a>`;
+                    `Transaction sent! <a href="https://solscan.io/tx/${signature}" target="_blank">View on Solscan</a>`;
             } catch (err) {
                 console.error("Transaction failed", err);
                 alert("Transaction failed!");
