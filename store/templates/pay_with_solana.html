@@ -1,46 +1,25 @@
-{% extends 'base.html' %}
-{% block content %}
-<section class="d-flex align-items-center justify-content-center" style="min-height: 50vh;">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 text-center text-light">
-                <!-- Content for the right column goes here -->
-                <h4>Update Profile</h4> 
-                <form method="POST">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit">Update Profile</button>
-                </form>
-                <HR>
-                <p>Wallet: {{user.sol_wallet_address}} </p>
-                <p><div id="walletAddress"></div></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solana Payment</title>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.64.0/dist/solana-web3.iife.min.js"></script>
+</head>
+<body>
 
-                <p><button id="connectButton" class="btn btn-primary">Connect to Phantom</button></p>
-                <p><div id="tokenBalance"></div></p> <!-- Token balance display -->
+<button id="connectButton">Connect Phantom Wallet</button>
+<div id="walletAddress"></div>
+<div id="tokenBalance"></div>
 
-                <!-- Additional section for sending SOL -->
-                <div id="sendSolSection" class="mt-4">
-                    <h5>Send SOL</h5>
-                    <form id="sendSolForm">
-                        <div class="form-group">
-                            <label for="recipientAddress">Recipient Address:</label>
-                            <input type="text" class="form-control" id="recipientAddress" placeholder="Enter recipient address" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="amount">Amount in SOL:</label>
-                            <input type="number" class="form-control" id="amount" placeholder="Enter amount in SOL" step="0.000000001" required>
-                        </div>
-                        <button type="submit" class="btn btn-success mt-2">Send SOL</button>
-                    </form>
-                    <p id="transactionStatus"></p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js"></script>
+<form id="sendSolForm">
+    <input type="text" id="recipientAddress" placeholder="Recipient Address" required>
+    <input type="number" id="amount" placeholder="Amount in SOL" required>
+    <button type="submit">Send SOL</button>
+</form>
+
+<div id="transactionStatus"></div>
+
 <script>
     // Function to convert ArrayBuffer to Base64
     function arrayBufferToBase64(buffer) {
@@ -136,4 +115,5 @@
     });
 </script>
 
-{% endblock %}
+</body>
+</html>
