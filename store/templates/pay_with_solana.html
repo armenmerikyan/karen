@@ -7,22 +7,19 @@
 </head>
 <body>
     <h2>Send SOL with Phantom Wallet</h2>
-    <button id="connect">Connect Wallet</button>
+    <button onclick="connectWallet()">Connect Wallet</button>
     <p id="wallet-status">Not connected</p>
 
-    <input type="text" id="recipient" placeholder="Recipient Address" value="{{profile.wallet}}"/>
+    <input type="text" id="recipient" placeholder="Recipient Address" value="{{profile.wallet}}" />
     <input type="number" id="amount" placeholder="Amount (SOL)" step="0.001" />
-    <button id="send">Send SOL</button>
+    <button onclick="sendSOL()">Send SOL</button>
 
     <p id="transaction-link"></p>
 
-    <!-- Load Solana Web3.js from a more reliable CDN -->
-    <script type="module">
-        import { Connection, Transaction, SystemProgram, PublicKey, clusterApiUrl } from "https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/lib/index.browser.esm.js";
-
+    <script>
         let wallet = null;
 
-        document.getElementById("connect").addEventListener("click", async () => {
+        async function connectWallet() {
             if (window.solana && window.solana.isPhantom) {
                 try {
                     const response = await window.solana.connect();
@@ -34,9 +31,9 @@
             } else {
                 alert("Phantom Wallet not found! Please install it.");
             }
-        });
+        }
 
-        document.getElementById("send").addEventListener("click", async () => {
+        async function sendSOL() {
             if (!wallet) {
                 alert("Connect your wallet first!");
                 return;
@@ -50,23 +47,19 @@
                 return;
             }
 
-            const connection = new Connection(clusterApiUrl("mainnet-beta"), "confirmed");
-            const sender = window.solana.publicKey;
-
-            const transaction = new Transaction().add(
-                SystemProgram.transfer({
-                    fromPubkey: sender,
-                    toPubkey: new PublicKey(recipient),
-                    lamports: amount * 1e9, // Convert SOL to lamports
-                })
-            );
-
-            transaction.feePayer = sender;
-            transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+            const transaction = {
+                recentBlockhash: (await window.solana.request({ method: "getRecentBlockhash" })).blockhash,
+                feePayer: wallet,
+                instructions: [{
+                    keys: [{ pubkey: wallet, isSigner: true, isWritable: true }, { pubkey: recipient, isSigner: false, isWritable: true }],
+                    programId: "11111111111111111111111111111111", // System Program
+                    data: new Uint8Array([2, ...new TextEncoder().encode(amount.toString())])
+                }]
+            };
 
             try {
                 const signedTransaction = await window.solana.signTransaction(transaction);
-                const signature = await connection.sendRawTransaction(signedTransaction.serialize());
+                const signature = await window.solana.request({ method: "sendTransaction", params: [signedTransaction] });
 
                 document.getElementById("transaction-link").innerHTML = 
                     `Transaction sent! <a href="https://solscan.io/tx/${signature}" target="_blank">View on Solscan</a>`;
@@ -74,7 +67,7 @@
                 console.error("Transaction failed", err);
                 alert("Transaction failed!");
             }
-        });
+        }
     </script>
 </body>
 </html>
