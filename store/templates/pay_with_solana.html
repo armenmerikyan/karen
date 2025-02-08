@@ -20,7 +20,7 @@
     <script>
         let wallet = null;
 
-        // Check and connect Phantom wallet
+        // Check for Phantom wallet and connect
         async function connectWallet() {
             if (window.solana && window.solana.isPhantom) {
                 try {
@@ -51,10 +51,19 @@
                 return;
             }
 
+            // Convert SOL to lamports (1 SOL = 10^9 lamports)
+            const lamports = amount * 1000000000;
+
+            console.log(`Sending ${amount} SOL (${lamports} lamports) to ${recipient}`);
+
             try {
-                // Create a transaction instruction for sending SOL
+                // Request the recent blockhash to include it in the transaction
+                const recentBlockhash = await window.solana.request({ method: "getRecentBlockhash" });
+                console.log("Recent Blockhash:", recentBlockhash);
+
+                // Prepare transaction data
                 const transaction = {
-                    recentBlockhash: (await window.solana.request({ method: "getRecentBlockhash" })).blockhash,
+                    recentBlockhash: recentBlockhash.blockhash,
                     feePayer: wallet,
                     instructions: [
                         {
@@ -63,24 +72,26 @@
                                 { pubkey: recipient, isSigner: false, isWritable: true }
                             ],
                             programId: "11111111111111111111111111111111", // System Program (transfer SOL)
-                            data: new Uint8Array(0) // No data is required for this transfer
+                            data: new Uint8Array(0) // No additional data is required for simple transfers
                         }
                     ]
                 };
 
-                // Add the amount of SOL to send in the transaction
-                transaction.instructions[0].data = window.solana.utils.encodeInstructionData({
-                    amount: amount * 1000000000 // Converting SOL to lamports (1 SOL = 10^9 lamports)
-                });
+                console.log("Transaction data:", transaction);
 
-                // Sign and send the transaction
+                // Sign the transaction
                 const signedTransaction = await window.solana.signTransaction(transaction);
+                console.log("Signed Transaction:", signedTransaction);
+
+                // Send the transaction
                 const signature = await window.solana.request({
                     method: "sendTransaction",
                     params: [signedTransaction]
                 });
 
-                // Show the transaction link
+                console.log("Transaction signature:", signature);
+
+                // Display the transaction link
                 document.getElementById("transaction-link").innerHTML = 
                     `Transaction sent! <a href="https://solscan.io/tx/${signature}" target="_blank">View on Solscan</a>`;
             } catch (err) {
