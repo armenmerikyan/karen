@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Send SOL with Phantom</title>
+    <title>Send SOL with Phantom Wallet</title>
 </head>
 <body>
     <h2>Send SOL with Phantom Wallet</h2>
     <button onclick="connectWallet()">Connect Wallet</button>
     <p id="wallet-status">Not connected</p>
 
-    <!-- Use dynamic wallet address as default -->
+    <!-- Pre-filled recipient wallet address -->
     <input type="text" id="recipient" placeholder="Recipient Address" value="{{profile.wallet}}" />
     <input type="number" id="amount" placeholder="Amount (SOL)" step="0.001" />
     <button onclick="sendSOL()">Send SOL</button>
@@ -20,7 +20,7 @@
     <script>
         let wallet = null;
 
-        // Connect the Phantom wallet
+        // Check for Phantom wallet and connect
         async function connectWallet() {
             if (window.solana && window.solana.isPhantom) {
                 try {
@@ -50,26 +50,24 @@
                 return;
             }
 
-            const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"), "confirmed");
-
-            // Create the transaction
-            const transaction = new solanaWeb3.Transaction().add(
-                solanaWeb3.SystemProgram.transfer({
-                    fromPubkey: new solanaWeb3.PublicKey(wallet),
-                    toPubkey: new solanaWeb3.PublicKey(recipient),
-                    lamports: amount * 1e9, // Convert SOL to lamports
-                })
-            );
-
-            // Get recent blockhash for the transaction
-            const { blockhash } = await connection.getLatestBlockhash();
-            transaction.recentBlockhash = blockhash;
-            transaction.feePayer = new solanaWeb3.PublicKey(wallet);
+            // Prepare the transaction data
+            const transaction = {
+                recentBlockhash: await window.solana.request({ method: "getRecentBlockhash" }),
+                feePayer: wallet,
+                instructions: [{
+                    keys: [
+                        { pubkey: wallet, isSigner: true, isWritable: true },
+                        { pubkey: recipient, isSigner: false, isWritable: true }
+                    ],
+                    programId: "11111111111111111111111111111111", // System Program
+                    data: new Uint8Array([2, ...new TextEncoder().encode(amount.toString())])
+                }]
+            };
 
             try {
                 // Sign and send the transaction
                 const signedTransaction = await window.solana.signTransaction(transaction);
-                const signature = await connection.sendRawTransaction(signedTransaction.serialize());
+                const signature = await window.solana.request({ method: "sendTransaction", params: [signedTransaction] });
 
                 document.getElementById("transaction-link").innerHTML = 
                     `Transaction sent! <a href="https://solscan.io/tx/${signature}" target="_blank">View on Solscan</a>`;
@@ -79,7 +77,5 @@
             }
         }
     </script>
-    <!-- Import Solana Web3.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest"></script>
 </body>
 </html>
