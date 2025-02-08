@@ -11,7 +11,7 @@
     <button onclick="connectWallet()">Connect Wallet</button>
     <p id="wallet-status">Not connected</p>
 
-    <input type="text" id="recipient" placeholder="Recipient Address" />
+    <input type="text" id="recipient" placeholder="Recipient Address" value="{{profile.wallet}}" />
     <input type="number" id="amount" placeholder="Amount (SOL)" step="0.001" />
     <button onclick="sendSOL()">Send SOL</button>
 
