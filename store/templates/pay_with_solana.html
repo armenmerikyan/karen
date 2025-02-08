@@ -62,20 +62,16 @@
                 console.log("Recent Blockhash:", recentBlockhash);
 
                 // Prepare transaction data
-                const transaction = {
-                    recentBlockhash: recentBlockhash.blockhash,
-                    feePayer: wallet,
-                    instructions: [
-                        {
-                            keys: [
-                                { pubkey: wallet, isSigner: true, isWritable: true },
-                                { pubkey: recipient, isSigner: false, isWritable: true }
-                            ],
-                            programId: "11111111111111111111111111111111", // System Program (transfer SOL)
-                            data: new Uint8Array(0) // No additional data is required for simple transfers
-                        }
-                    ]
-                };
+                const transaction = new Transaction().add(
+                    SystemProgram.transfer({
+                        fromPubkey: wallet,
+                        toPubkey: recipient,
+                        lamports: lamports,
+                    })
+                );
+
+                transaction.recentBlockhash = recentBlockhash.blockhash;
+                transaction.feePayer = wallet;
 
                 console.log("Transaction data:", transaction);
 
