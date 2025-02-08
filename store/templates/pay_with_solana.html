@@ -20,7 +20,7 @@
     <script>
         let wallet = null;
 
-        // Connect Phantom wallet
+        // Check and connect Phantom wallet
         async function connectWallet() {
             if (window.solana && window.solana.isPhantom) {
                 try {
@@ -51,25 +51,33 @@
                 return;
             }
 
-            // Create the transaction
             try {
-                // Request Phantom to sign and send the transaction
-                const transaction = await window.solana.request({
-                    method: "signTransaction",
-                    params: [{
-                        instructions: [{
-                            keys: [{ pubkey: wallet, isSigner: true, isWritable: true },
-                                { pubkey: recipient, isSigner: false, isWritable: true }],
-                            programId: "11111111111111111111111111111111", // System Program
-                            data: new TextEncoder().encode(amount.toString())
-                        }]
-                    }]
+                // Create a transaction instruction for sending SOL
+                const transaction = {
+                    recentBlockhash: (await window.solana.request({ method: "getRecentBlockhash" })).blockhash,
+                    feePayer: wallet,
+                    instructions: [
+                        {
+                            keys: [
+                                { pubkey: wallet, isSigner: true, isWritable: true },
+                                { pubkey: recipient, isSigner: false, isWritable: true }
+                            ],
+                            programId: "11111111111111111111111111111111", // System Program (transfer SOL)
+                            data: new Uint8Array(0) // No data is required for this transfer
+                        }
+                    ]
+                };
+
+                // Add the amount of SOL to send in the transaction
+                transaction.instructions[0].data = window.solana.utils.encodeInstructionData({
+                    amount: amount * 1000000000 // Converting SOL to lamports (1 SOL = 10^9 lamports)
                 });
 
-                // Send the transaction
+                // Sign and send the transaction
+                const signedTransaction = await window.solana.signTransaction(transaction);
                 const signature = await window.solana.request({
                     method: "sendTransaction",
-                    params: [transaction]
+                    params: [signedTransaction]
                 });
 
                 // Show the transaction link
