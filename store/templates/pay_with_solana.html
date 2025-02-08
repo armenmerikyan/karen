@@ -61,19 +61,21 @@
                 const recentBlockhash = await window.solana.request({ method: "getRecentBlockhash" });
                 console.log("Recent Blockhash:", recentBlockhash);
 
-                // Prepare transaction data
-                const transaction = new Transaction().add(
-                    SystemProgram.transfer({
-                        fromPubkey: wallet,
-                        toPubkey: recipient,
-                        lamports: lamports,
-                    })
-                );
-
-                transaction.recentBlockhash = recentBlockhash.blockhash;
-                transaction.feePayer = wallet;
-
-                console.log("Transaction data:", transaction);
+                // Create a basic transaction with transfer instruction
+                const transaction = {
+                    recentBlockhash: recentBlockhash.blockhash,
+                    feePayer: wallet,
+                    instructions: [
+                        {
+                            programId: "11111111111111111111111111111111", // System Program
+                            keys: [
+                                { pubkey: wallet, isSigner: true, isWritable: true },
+                                { pubkey: recipient, isSigner: false, isWritable: true }
+                            ],
+                            data: new Uint8Array([2, ...new TextEncoder().encode(amount.toString())]) // transfer instruction data
+                        }
+                    ]
+                };
 
                 // Sign the transaction
                 const signedTransaction = await window.solana.signTransaction(transaction);
