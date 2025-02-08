@@ -20,7 +20,7 @@
     <script>
         let wallet = null;
 
-        // Check for Phantom wallet and connect
+        // Connect Phantom wallet
         async function connectWallet() {
             if (window.solana && window.solana.isPhantom) {
                 try {
@@ -51,25 +51,115 @@
                 return;
             }
 
-            // Check if Phantom wallet is connected
-            if (!window.solana || !window.solana.isPhantom) {
-                alert("Please install Phantom wallet.");
-                return;
-            }
-
+            // Create the transaction
             try {
-                // Construct the transaction
+                // Request Phantom to sign and send the transaction
                 const transaction = await window.solana.request({
-                    method: "sendTransaction",
+                    method: "signTransaction",
                     params: [{
-                        recipient: recipient,
-                        amount: amount,
+                        instructions: [{
+                            keys: [{ pubkey: wallet, isSigner: true, isWritable: true },
+                                { pubkey: recipient, isSigner: false, isWritable: true }],
+                            programId: "11111111111111111111111111111111", // System Program
+                            data: new TextEncoder().encode(amount.toString())
+                        }]
                     }]
                 });
 
-                // After successful transaction, show the transaction link
+                // Send the transaction
+                const signature = await window.solana.request({
+                    method: "sendTransaction",
+                    params: [transaction]
+                });
+
+                // Show the transaction link
                 document.getElementById("transaction-link").innerHTML = 
-                    `Transaction sent! <a href="https://solscan.io/tx/${transaction}" target="_blank">View on Solscan</a>`;
+                    `Transaction sent! <a href="https://solscan.io/tx/${signature}" target="_blank">View on Solscan</a>`;
+            } catch (err) {
+                console.error("Transaction failed", err);
+                alert("Transaction failed. Please try again.");
+            }
+        }
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send SOL with Phantom Wallet</title>
+</head>
+<body>
+    <h2>Send SOL with Phantom Wallet</h2>
+    <button onclick="connectWallet()">Connect Wallet</button>
+    <p id="wallet-status">Not connected</p>
+
+    <!-- Pre-filled recipient wallet address -->
+    <input type="text" id="recipient" placeholder="Recipient Address" value="RecipientWalletAddressHere" />
+    <input type="number" id="amount" placeholder="Amount (SOL)" step="0.001" value="0.1" />
+    <button onclick="sendSOL()">Send SOL</button>
+
+    <p id="transaction-link"></p>
+
+    <script>
+        let wallet = null;
+
+        // Connect Phantom wallet
+        async function connectWallet() {
+            if (window.solana && window.solana.isPhantom) {
+                try {
+                    const response = await window.solana.connect();
+                    wallet = response.publicKey.toString();
+                    document.getElementById("wallet-status").innerText = `Connected: ${wallet}`;
+                } catch (err) {
+                    console.error("Connection failed", err);
+                    alert("Connection failed.");
+                }
+            } else {
+                alert("Phantom Wallet not found! Please install it.");
+            }
+        }
+
+        // Send SOL from the connected wallet
+        async function sendSOL() {
+            if (!wallet) {
+                alert("Connect your wallet first!");
+                return;
+            }
+
+            const recipient = document.getElementById("recipient").value;
+            const amount = parseFloat(document.getElementById("amount").value);
+
+            if (!recipient || isNaN(amount) || amount <= 0) {
+                alert("Enter a valid recipient address and amount.");
+                return;
+            }
+
+            // Create the transaction
+            try {
+                // Request Phantom to sign and send the transaction
+                const transaction = await window.solana.request({
+                    method: "signTransaction",
+                    params: [{
+                        instructions: [{
+                            keys: [{ pubkey: wallet, isSigner: true, isWritable: true },
+                                { pubkey: recipient, isSigner: false, isWritable: true }],
+                            programId: "11111111111111111111111111111111", // System Program
+                            data: new TextEncoder().encode(amount.toString())
+                        }]
+                    }]
+                });
+
+                // Send the transaction
+                const signature = await window.solana.request({
+                    method: "sendTransaction",
+                    params: [transaction]
+                });
+
+                // Show the transaction link
+                document.getElementById("transaction-link").innerHTML = 
+                    `Transaction sent! <a href="https://solscan.io/tx/${signature}" target="_blank">View on Solscan</a>`;
             } catch (err) {
                 console.error("Transaction failed", err);
                 alert("Transaction failed. Please try again.");
