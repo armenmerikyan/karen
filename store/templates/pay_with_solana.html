@@ -12,8 +12,7 @@
 
     <!-- Pre-filled recipient wallet address -->
     <input type="text" id="recipient" placeholder="Recipient Address" value="{{profile.wallet}}" />
-    
-    <input type="number" id="amount" placeholder="Amount (SOL)" step="0.001" />
+    <input type="number" id="amount" placeholder="Amount (SOL)" step="0.001" value="0.1" />
     <button onclick="sendSOL()">Send SOL</button>
 
     <p id="transaction-link"></p>
@@ -52,22 +51,22 @@
                 return;
             }
 
-            try {
-                // Prepare the transaction using Phantom's API
-                const transaction = {
-                    recipient: recipient,
-                    amount: amount * 1000000000 // Convert SOL to lamports
-                };
+            // Phantom's API lets you build a SOL transfer transaction
+            const transaction = {
+                to: recipient,
+                amount: amount * 1000000000, // Convert SOL to lamports (1 SOL = 1 billion lamports)
+            };
 
-                // Phantom will automatically handle the signing and sending
-                const transactionSignature = await window.solana.request({
-                    method: "solana_sendTransaction",
+            try {
+                // Request Phantom Wallet to create and sign the transaction
+                const signedTransaction = await window.solana.request({
+                    method: 'solana_sendTransaction',
                     params: [transaction],
                 });
 
-                // If transaction is successful, display the transaction link
+                // Show the transaction link after sending
                 document.getElementById("transaction-link").innerHTML = 
-                    `Transaction sent! <a href="https://solscan.io/tx/${transactionSignature}" target="_blank">View on Solscan</a>`;
+                    `Transaction sent! <a href="https://solscan.io/tx/${signedTransaction}" target="_blank">View on Solscan</a>`;
             } catch (err) {
                 console.error("Transaction failed", err);
                 alert("Transaction failed!");
