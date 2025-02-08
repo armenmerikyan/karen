@@ -4,23 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send SOL with Phantom</title>
-    <script src="https://unpkg.com/@solana/web3.js@latest"></script>
 </head>
 <body>
     <h2>Send SOL with Phantom Wallet</h2>
-    <button onclick="connectWallet()">Connect Wallet</button>
+    <button id="connect">Connect Wallet</button>
     <p id="wallet-status">Not connected</p>
 
     <input type="text" id="recipient" placeholder="Recipient Address" value="{{profile.wallet}}"/>
     <input type="number" id="amount" placeholder="Amount (SOL)" step="0.001" />
-    <button onclick="sendSOL()">Send SOL</button>
+    <button id="send">Send SOL</button>
 
     <p id="transaction-link"></p>
 
-    <script>
+    <!-- Import @solana/web3.js as an ES module -->
+    <script type="module">
+        import { Connection, Transaction, SystemProgram, PublicKey, clusterApiUrl } from "https://unpkg.com/@solana/web3.js@latest?module";
+
         let wallet = null;
 
-        async function connectWallet() {
+        document.getElementById("connect").addEventListener("click", async () => {
             if (window.solana && window.solana.isPhantom) {
                 try {
                     const response = await window.solana.connect();
@@ -32,9 +34,9 @@
             } else {
                 alert("Phantom Wallet not found! Please install it.");
             }
-        }
+        });
 
-        async function sendSOL() {
+        document.getElementById("send").addEventListener("click", async () => {
             if (!wallet) {
                 alert("Connect your wallet first!");
                 return;
@@ -48,13 +50,13 @@
                 return;
             }
 
-            const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"), "confirmed");
+            const connection = new Connection(clusterApiUrl("mainnet-beta"), "confirmed");
             const sender = window.solana.publicKey;
 
-            const transaction = new solanaWeb3.Transaction().add(
-                solanaWeb3.SystemProgram.transfer({
+            const transaction = new Transaction().add(
+                SystemProgram.transfer({
                     fromPubkey: sender,
-                    toPubkey: new solanaWeb3.PublicKey(recipient),
+                    toPubkey: new PublicKey(recipient),
                     lamports: amount * 1e9, // Convert SOL to lamports
                 })
             );
@@ -72,7 +74,7 @@
                 console.error("Transaction failed", err);
                 alert("Transaction failed!");
             }
-        }
+        });
     </script>
 </body>
 </html>
