@@ -11,7 +11,7 @@
     <p id="wallet-status">Not connected</p>
 
     <!-- Pre-filled recipient wallet address -->
-    <input type="text" id="recipient" placeholder="Recipient Address" value="{{profile.wallet}}" />
+    <input type="text" id="recipient" placeholder="Recipient Address" value="RecipientWalletAddressHere" />
     <input type="number" id="amount" placeholder="Amount (SOL)" step="0.001" value="0.1" />
     <button onclick="sendSOL()">Send SOL</button>
 
@@ -51,32 +51,28 @@
                 return;
             }
 
-            // Prepare the transaction using the system program to transfer SOL
-            const transaction = {
-                recentBlockhash: (await window.solana.request({ method: "getRecentBlockhash" })).blockhash,
-                feePayer: wallet,
-                instructions: [{
-                    keys: [
-                        { pubkey: wallet, isSigner: true, isWritable: true },
-                        { pubkey: recipient, isSigner: false, isWritable: true }
-                    ],
-                    programId: "11111111111111111111111111111111", // System Program ID (for transfers)
-                    data: new Uint8Array([2, ...new TextEncoder().encode(amount.toString())])
-                }]
-            };
+            // Check if Phantom wallet is connected
+            if (!window.solana || !window.solana.isPhantom) {
+                alert("Please install Phantom wallet.");
+                return;
+            }
 
             try {
-                // Sign the transaction using Phantom Wallet
-                const signedTransaction = await window.solana.signTransaction(transaction);
-                
-                // Send the signed transaction
-                const signature = await window.solana.request({ method: "sendTransaction", params: [signedTransaction] });
+                // Construct the transaction
+                const transaction = await window.solana.request({
+                    method: "sendTransaction",
+                    params: [{
+                        recipient: recipient,
+                        amount: amount,
+                    }]
+                });
 
+                // After successful transaction, show the transaction link
                 document.getElementById("transaction-link").innerHTML = 
-                    `Transaction sent! <a href="https://solscan.io/tx/${signature}" target="_blank">View on Solscan</a>`;
+                    `Transaction sent! <a href="https://solscan.io/tx/${transaction}" target="_blank">View on Solscan</a>`;
             } catch (err) {
                 console.error("Transaction failed", err);
-                alert("Transaction failed!");
+                alert("Transaction failed. Please try again.");
             }
         }
     </script>
