@@ -3,98 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solana Payment App</title>
-    <!-- Include Buffer polyfill and initialize it -->
-    <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.min.js"></script>
-    <script>
-        // Initialize Buffer globally
-        window.Buffer = Buffer;
-    </script>
-    <!-- Include Solana Web3.js -->
-    <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+    <title>Send SOL with Phantom</title>
+    <script src="https://unpkg.com/@solana/web3.js@latest"></script>
 </head>
 <body>
-    <h1>Solana Payment App</h1>
-    <button id="connectWallet">Connect Wallet</button>
-    <button id="makePayment" disabled>Pay with Solana</button>
+    <h2>Send SOL with Phantom Wallet</h2>
+    <button onclick="connectWallet()">Connect Wallet</button>
+    <p id="wallet-status">Not connected</p>
+
+    <input type="text" id="recipient" placeholder="Recipient Address" />
+    <input type="number" id="amount" placeholder="Amount (SOL)" step="0.001" />
+    <button onclick="sendSOL()">Send SOL</button>
+
+    <p id="transaction-link"></p>
 
     <script>
-        // Solana Web3.js is available as `solanaWeb3` globally
-        const { Connection, PublicKey, Transaction, SystemProgram } = solanaWeb3;
+        let wallet = null;
 
-        // Connect to Solana Mainnet (or Devnet for testing)
-        const connection = new Connection("https://api.mainnet-beta.solana.com");
-
-        // Wallet and payment variables
-        let wallet;
-
-        // Use your version of the recipient address
-        const recipientWalletAddress = '{{profile.wallet}}'; // Replace this with your dynamic value
-        let recipient;
-        try {
-            recipient = new PublicKey(recipientWalletAddress);
-            console.log('Recipient address is valid:', recipient.toBase58());
-        } catch (err) {
-            console.error('Invalid recipient address:', err);
-            alert('Invalid recipient address. Please check the address and try again.');
-        }
-
-        const amount = 1 * 1000000000; // 1 SOL in lamports (1 SOL = 1,000,000,000 lamports)
-
-        // Connect Wallet Button
-        document.getElementById('connectWallet').addEventListener('click', async () => {
+        async function connectWallet() {
             if (window.solana && window.solana.isPhantom) {
-                wallet = window.solana;
                 try {
-                    await wallet.connect();
-                    alert('Wallet connected!');
-                    document.getElementById('makePayment').disabled = false;
+                    const response = await window.solana.connect();
+                    wallet = response.publicKey.toString();
+                    document.getElementById("wallet-status").innerText = `Connected: ${wallet}`;
                 } catch (err) {
-                    console.error('Failed to connect wallet:', err);
-                    alert('Failed to connect wallet.');
+                    console.error("Connection failed", err);
                 }
             } else {
-                alert('Phantom wallet not detected. Please install Phantom.');
+                alert("Phantom Wallet not found! Please install it.");
             }
-        });
+        }
 
-        // Make Payment Button
-        document.getElementById('makePayment').addEventListener('click', async () => {
+        async function sendSOL() {
             if (!wallet) {
-                alert('Please connect your wallet first.');
+                alert("Connect your wallet first!");
                 return;
             }
 
-            if (!recipient) {
-                alert('Invalid recipient address. Please check the address and try again.');
+            const recipient = document.getElementById("recipient").value;
+            const amount = parseFloat(document.getElementById("amount").value);
+
+            if (!recipient || isNaN(amount) || amount <= 0) {
+                alert("Enter a valid recipient address and amount.");
                 return;
             }
+
+            const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"));
+            const sender = window.solana.publicKey;
+
+            const transaction = new solanaWeb3.Transaction().add(
+                solanaWeb3.SystemProgram.transfer({
+                    fromPubkey: sender,
+                    toPubkey: new solanaWeb3.PublicKey(recipient),
+                    lamports: amount * 1e9, // Convert SOL to lamports
+                })
+            );
+
+            transaction.feePayer = sender;
+            transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
             try {
-                // Create a transaction
-                const transaction = new Transaction().add(
-                    SystemProgram.transfer({
-                        fromPubkey: wallet.publicKey,
-                        toPubkey: recipient,
-                        lamports: amount,
-                    })
-                );
-
-                // Set recent blockhash and fee payer
-                const { blockhash } = await connection.getRecentBlockhash();
-                transaction.recentBlockhash = blockhash;
-                transaction.feePayer = wallet.publicKey;
-
-                // Sign and send the transaction
-                const signedTransaction = await wallet.signTransaction(transaction);
+                const signedTransaction = await window.solana.signTransaction(transaction);
                 const signature = await connection.sendRawTransaction(signedTransaction.serialize());
 
-                alert(`Payment successful! Transaction signature: ${signature}`);
+                document.getElementById("transaction-link").innerHTML = 
+                    `Transaction sent! <a href="https://solscan.io/tx/${signature}" target="_blank">View on Solscan</a>`;
             } catch (err) {
-                console.error('Payment failed:', err);
-                alert('Payment failed. Please try again.');
+                console.error("Transaction failed", err);
+                alert("Transaction failed!");
             }
-        });
+        }
     </script>
 </body>
 </html>
