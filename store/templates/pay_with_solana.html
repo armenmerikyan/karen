@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send SOL with Phantom Wallet</title>
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
 </head>
 <body>
     <h2>Send SOL with Phantom Wallet</h2>
@@ -19,14 +20,17 @@
 
     <script>
         let wallet = null;
-
+        const rpcUrl = 'https://worldchain-mainnet.g.alchemy.com/v2/t7AGL7qRXHF4jvodUVH7gWn3lvSfk_jl'; // Replace with your QuickNode URL
+        console.log('RPC URL:', rpcUrl);
+        const connection = new solanaWeb3.Connection(rpcUrl);
+ 
         // Check for Phantom wallet and connect
         async function connectWallet() {
             if (window.solana && window.solana.isPhantom) {
                 try {
                     const response = await window.solana.connect();
-                    wallet = response.publicKey.toString();
-                    document.getElementById("wallet-status").innerText = `Connected: ${wallet}`;
+                    wallet = new solanaWeb3.PublicKey(response.publicKey.toString());
+                    document.getElementById("wallet-status").innerText = `Connected: ${wallet.toString()}`;
                 } catch (err) {
                     console.error("Connection failed", err);
                     alert("Connection failed.");
@@ -52,44 +56,34 @@
             }
 
             // Convert SOL to lamports (1 SOL = 10^9 lamports)
-            const lamports = amount * 1000000000;
+            const lamports = amount * solanaWeb3.LAMPORTS_PER_SOL;
 
             console.log(`Sending ${amount} SOL (${lamports} lamports) to ${recipient}`);
 
             try {
-                // Request the recent blockhash to include it in the transaction
-                const recentBlockhash = await window.solana.request({ method: "getRecentBlockhash" });
-                console.log("Recent Blockhash:", recentBlockhash);
+                const recipientPubkey = new solanaWeb3.PublicKey(recipient);
 
-                // Create a basic transaction with transfer instruction
-                const transaction = {
-                    recentBlockhash: recentBlockhash.blockhash,
-                    feePayer: wallet,
-                    instructions: [
-                        {
-                            programId: "11111111111111111111111111111111", // System Program (transfers SOL)
-                            keys: [
-                                { pubkey: wallet, isSigner: true, isWritable: true },
-                                { pubkey: recipient, isSigner: false, isWritable: true }
-                            ],
-                            data: new Uint8Array([]) // No extra data for a simple SOL transfer
-                        }
-                    ]
-                };
+                // Create a transfer instruction
+                const transferInstruction = solanaWeb3.SystemProgram.transfer({
+                    fromPubkey: wallet,
+                    toPubkey: recipientPubkey,
+                    lamports: lamports,
+                });
 
-                // Log transaction for debugging
-                console.log("Transaction:", transaction);
+                // Create a transaction and add the instruction
+                const transaction = new solanaWeb3.Transaction().add(transferInstruction);
 
-                // Sign the transaction
+                // Get the recent blockhash
+                const { blockhash } = await connection.getRecentBlockhash();
+                transaction.recentBlockhash = blockhash;
+                transaction.feePayer = wallet;
+
+                // Sign the transaction with Phantom Wallet
                 const signedTransaction = await window.solana.signTransaction(transaction);
                 console.log("Signed Transaction:", signedTransaction);
 
                 // Send the transaction
-                const signature = await window.solana.request({
-                    method: "sendTransaction",
-                    params: [signedTransaction]
-                });
-
+                const signature = await connection.sendRawTransaction(signedTransaction.serialize());
                 console.log("Transaction signature:", signature);
 
                 // Display the transaction link
