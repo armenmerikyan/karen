@@ -67,15 +67,18 @@
                     feePayer: wallet,
                     instructions: [
                         {
-                            programId: "11111111111111111111111111111111", // System Program
+                            programId: "11111111111111111111111111111111", // System Program (transfers SOL)
                             keys: [
                                 { pubkey: wallet, isSigner: true, isWritable: true },
                                 { pubkey: recipient, isSigner: false, isWritable: true }
                             ],
-                            data: new Uint8Array([2, ...new TextEncoder().encode(amount.toString())]) // transfer instruction data
+                            data: new Uint8Array([]) // No extra data for a simple SOL transfer
                         }
                     ]
                 };
+
+                // Log transaction for debugging
+                console.log("Transaction:", transaction);
 
                 // Sign the transaction
                 const signedTransaction = await window.solana.signTransaction(transaction);
