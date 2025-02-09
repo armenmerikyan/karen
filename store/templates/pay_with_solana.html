@@ -21,6 +21,14 @@
 <div id="transactionStatus"></div>
 
 <script>
+    window.onload = function () {
+        console.log(solanaWeb3); // Check if it's defined
+        if (typeof solanaWeb3 !== "undefined") {
+            console.log("Solana Web3 is ready");
+        } else {
+            console.error("Solana Web3 is not defined");
+        }
+    };
     // Function to convert ArrayBuffer to Base64
     function arrayBufferToBase64(buffer) {
         let binary = '';
