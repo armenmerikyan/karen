@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solana Payment</title>
+    <title>Send SOL with Phantom</title>
     <!-- Include Solana Web3.js -->
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.64.0/dist/solana-web3.iife.min.js"></script>
 </head>
@@ -77,7 +77,8 @@
                     );
 
                     // Set the recent blockhash and fee payer
-                    transaction.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
+                    const { blockhash } = await connection.getRecentBlockhash();
+                    transaction.recentBlockhash = blockhash;
                     transaction.feePayer = publicKey;
 
                     // Sign and send the transaction
