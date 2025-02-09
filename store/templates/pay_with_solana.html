@@ -4,63 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solana Payment</title>
+    <!-- Include Solana Web3.js -->
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.64.0/dist/solana-web3.iife.min.js"></script>
 </head>
 <body>
+    <button id="connectButton">Connect Phantom Wallet</button>
+    <div id="walletAddress"></div>
+    <div id="solBalance"></div>
 
-<button id="connectButton">Connect Phantom Wallet</button>
-<div id="walletAddress"></div>
-<div id="tokenBalance"></div>
+    <form id="sendSolForm">
+        <input type="text" id="recipientAddress" placeholder="Recipient Address" required>
+        <input type="number" id="amount" placeholder="Amount in SOL" required>
+        <button type="submit">Send SOL</button>
+    </form>
 
-<form id="sendSolForm">
-    <input type="text" id="recipientAddress" placeholder="Recipient Address" required>
-    <input type="number" id="amount" placeholder="Amount in SOL" required>
-    <button type="submit">Send SOL</button>
-</form>
+    <div id="transactionStatus"></div>
 
-<div id="transactionStatus"></div>
+    <script>
+        // Ensure solanaWeb3 is correctly referenced
+        const solanaWeb3 = window.solanaWeb3;
 
-<script>
-    window.onload = function () {
-        console.log(window.solanaWeb3); // Ensure Solana Web3 is loaded
-    };
+        // Connect to Phantom Wallet
+        document.getElementById('connectButton').addEventListener('click', async () => {
+            if (window.solana && window.solana.isPhantom) {
+                try {
+                    // Connect to Phantom
+                    const response = await window.solana.connect();
+                    const publicKey = response.publicKey.toString();
+                    console.log('Connected to Phantom wallet:', publicKey);
+                    document.getElementById('walletAddress').textContent = `Connected wallet: ${publicKey}`;
 
-    document.getElementById('connectButton').addEventListener('click', async () => {
-        if (window.solana && window.solana.isPhantom) {
-            try {
-                const response = await window.solana.connect();
-                console.log('Connected to Phantom wallet');
-                document.getElementById('walletAddress').textContent = `Connected wallet: ${response.publicKey.toString()}`;
+                    // Fetch SOL balance
+                    const rpcUrl = 'https://api.mainnet-beta.solana.com'; // Mainnet RPC URL
+                    const connection = new solanaWeb3.Connection(rpcUrl, 'confirmed');
+                    const balance = await connection.getBalance(response.publicKey);
+                    const solBalance = balance / solanaWeb3.LAMPORTS_PER_SOL; // Convert lamports to SOL
+                    document.getElementById('solBalance').textContent = `SOL Balance: ${solBalance}`;
 
-                const rpcUrl = 'https://worldchain-mainnet.g.alchemy.com/v2/t7AGL7qRXHF4jvodUVH7gWn3lvSfk_jl';
-                const connection = new solanaWeb3.Connection(rpcUrl, 'confirmed');
-
-                const tokenBalanceElement = document.getElementById('tokenBalance');
-                const tokenMintAddress = '{{MY_TOKEN}}'; // Replace with your SPL token
-                const tokenAccounts = await connection.getParsedTokenAccountsByOwner(response.publicKey, {
-                    programId: new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
-                });
-
-                let tokenBalance = 0;
-                tokenAccounts.value.forEach(account => {
-                    if (account.account.data.parsed.info.mint === tokenMintAddress) {
-                        tokenBalance += account.account.data.parsed.info.tokenAmount.uiAmount;
-                    }
-                });
-                tokenBalanceElement.textContent = `Token balance: ${tokenBalance}`;
-
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error connecting to Phantom wallet');
+                } catch (error) {
+                    console.error('Error connecting to Phantom wallet:', error);
+                    alert('Error connecting to Phantom wallet');
+                }
+            } else {
+                alert('Phantom wallet not found. Please install Phantom Wallet.');
             }
-        } else {
-            alert('Phantom wallet not found');
-        }
-    });
+        });
 
-    // Ensure solanaWeb3 is correctly referenced
-    const solanaWeb3 = window.solanaWeb3 || solanaWeb3;
-</script>
+        // Send SOL
+        document.getElementById('sendSolForm').addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent form submission
 
+            const recipientAddress = document.getElementById('recipientAddress').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+
+            if (!recipientAddress || isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid recipient address and amount.');
+                return;
+            }
+
+            if (window.solana && window.solana.isPhantom) {
+                try {
+                    const connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com', 'confirmed');
+                    const publicKey = window.solana.publicKey;
+
+                    // Create a transaction
+                    const transaction = new solanaWeb3.Transaction().add(
+                        solanaWeb3.SystemProgram.transfer({
+                            fromPubkey: publicKey,
+                            toPubkey: new solanaWeb3.PublicKey(recipientAddress),
+                            lamports: amount * solanaWeb3.LAMPORTS_PER_SOL, // Convert SOL to lamports
+                        })
+                    );
+
+                    // Set the recent blockhash and fee payer
+                    transaction.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
+                    transaction.feePayer = publicKey;
+
+                    // Sign and send the transaction
+                    const signedTransaction = await window.solana.signTransaction(transaction);
+                    const signature = await connection.sendRawTransaction(signedTransaction.serialize());
+                    await connection.confirmTransaction(signature, 'confirmed');
+
+                    console.log('Transaction successful:', signature);
+                    document.getElementById('transactionStatus').textContent = `Transaction successful: ${signature}`;
+
+                } catch (error) {
+                    console.error('Error sending SOL:', error);
+                    document.getElementById('transactionStatus').textContent = `Error: ${error.message}`;
+                }
+            } else {
+                alert('Phantom wallet not connected.');
+            }
+        });
+    </script>
 </body>
 </html>
