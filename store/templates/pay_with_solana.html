@@ -21,9 +21,6 @@
     <div id="transactionStatus"></div>
 
     <script>
-        // Ensure solanaWeb3 is correctly referenced
-        const solanaWeb3 = window.solanaWeb3;
-
         // Connect to Phantom Wallet
         document.getElementById('connectButton').addEventListener('click', async () => {
             if (window.solana && window.solana.isPhantom) {
@@ -36,9 +33,9 @@
 
                     // Fetch SOL balance
                     const rpcUrl = 'https://api.mainnet-beta.solana.com'; // Mainnet RPC URL
-                    const connection = new solanaWeb3.Connection(rpcUrl, 'confirmed');
+                    const connection = new window.solanaWeb3.Connection(rpcUrl, 'confirmed');
                     const balance = await connection.getBalance(response.publicKey);
-                    const solBalance = balance / solanaWeb3.LAMPORTS_PER_SOL; // Convert lamports to SOL
+                    const solBalance = balance / window.solanaWeb3.LAMPORTS_PER_SOL; // Convert lamports to SOL
                     document.getElementById('solBalance').textContent = `SOL Balance: ${solBalance}`;
 
                 } catch (error) {
@@ -64,15 +61,15 @@
 
             if (window.solana && window.solana.isPhantom) {
                 try {
-                    const connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com', 'confirmed');
+                    const connection = new window.solanaWeb3.Connection('https://api.mainnet-beta.solana.com', 'confirmed');
                     const publicKey = window.solana.publicKey;
 
                     // Create a transaction
-                    const transaction = new solanaWeb3.Transaction().add(
-                        solanaWeb3.SystemProgram.transfer({
+                    const transaction = new window.solanaWeb3.Transaction().add(
+                        window.solanaWeb3.SystemProgram.transfer({
                             fromPubkey: publicKey,
-                            toPubkey: new solanaWeb3.PublicKey(recipientAddress),
-                            lamports: amount * solanaWeb3.LAMPORTS_PER_SOL, // Convert SOL to lamports
+                            toPubkey: new window.solanaWeb3.PublicKey(recipientAddress),
+                            lamports: amount * window.solanaWeb3.LAMPORTS_PER_SOL, // Convert SOL to lamports
                         })
                     );
 
