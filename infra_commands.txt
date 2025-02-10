@@ -37,8 +37,14 @@ pip install djangorestframework
 pip install psycopg2-binary
 pip install sendgrid
 pip install stripe
+pip install solana
 
 python3 manage.py makemigrations
 python3 manage.py migrate
 python3 manage.py runserver
 python manage.py createsuperuser
+
+
+sudo apt update
+sudo apt install nodejs
+sudo apt install npm
