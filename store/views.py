@@ -2904,11 +2904,11 @@ def pay_with_solana(request):
             'id': cart_product.id,
         })
 
-    total_in_lamports = int(total_with_tax * 10**9)  # Convert to lamports (1 SOL = 10^9 lamports)
- 
-        # Redirect to the Solana payment URL immediately for GET request
-    amount_in_sol = total_with_tax / 10**9  # Convert total_with_tax back to SOL
+    # Convert total_with_tax to SOL (1 SOL = 10^9 lamports)
+    total_in_sol = total_with_tax / 10**9  # This gives the total in SOL
+
+    # Redirect to the Solana payment URL immediately for GET request
     recipient = profile.wallet
-    return redirect(f'/solana_payment/?amount={amount_in_sol:.8f}&recipient={recipient}')
+    return redirect(f'/solana_payment/?amount={total_in_sol:.8f}&recipient={recipient}')
 
      
