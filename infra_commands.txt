@@ -48,3 +48,6 @@ python manage.py createsuperuser
 sudo apt update
 sudo apt install nodejs
 sudo apt install npm
+
+
+sudo vi /etc/systemd/system/solpay.service
