@@ -2905,75 +2905,10 @@ def pay_with_solana(request):
         })
 
     total_in_lamports = int(total_with_tax * 10**9)  # Convert to lamports (1 SOL = 10^9 lamports)
+ 
+        # Redirect to the Solana payment URL immediately for GET request
+    amount_in_sol = total_with_tax / 10**9  # Convert total_with_tax back to SOL
+    recipient = profile.wallet
+    return redirect(f'/solana_payment/?amount={amount_in_sol:.8f}&recipient={recipient}')
 
-    if request.method == 'POST':
-        # Assuming the frontend sends the customer's Solana public key
-        customer_public_key = request.POST.get('customerPublicKey')
-        if not customer_public_key:
-            return JsonResponse({'error': 'Customer public key is required'}, status=400)
-
-        # Initialize Solana client
-        solana_client = Client("https://api.mainnet-beta.solana.com")
-
-        # Merchant's wallet (where the payment will be sent)
-        merchant_wallet = PubKey(profile.wallet)
-
-        # Create a transaction
-        transaction = Transaction()
-        transaction.add(transfer(TransferParams(
-            from_pubkey=PubKey(customer_public_key),
-            to_pubkey=merchant_wallet,
-            lamports=total_in_lamports
-        )))
-
-        # Sign and send the transaction
-        try:
-            # Assuming the customer signs the transaction on the frontend
-            signed_transaction = request.POST.get('signedTransaction')
-            if not signed_transaction:
-                return JsonResponse({'error': 'Signed transaction is required'}, status=400)
-
-            # Send the transaction
-            txid = solana_client.send_raw_transaction(signed_transaction, opts=TxOpts(skip_confirmation=False))
-            if txid:
-                # Save payment details in the database
-                payment = Payment.objects.create(
-                    customer=cart.customer,
-                    amount=total_with_tax,
-                    payment_method='Solana',
-                    status='COMPLETED',
-                )
-
-                PaymentApplication.objects.create(
-                    payment=payment,
-                    cart=cart,
-                    applied_amount=total_with_tax,
-                )
-
-                # Mark cart as paid and save transaction ID
-                cart.paid_transaction_id = txid
-                cart.paid = True
-                cart.save()
-
-                return JsonResponse({'success': True, 'txid': txid})
-            else:
-                return JsonResponse({'error': 'Transaction failed'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
-    
-    sol_to_usd_rate = 200
-
-    total_in_lamports = int(total_with_tax / sol_to_usd_rate * 10**9) 
-
-    context = {
-        'products': products,
-        'subtotal': subtotal,
-        'total_tax': total_tax,
-        'total_with_tax': total_with_tax,
-        'profile': profile,
-        'total_in_lamports': total_in_lamports,  # Add this line
-    }
-    response = render(request, 'pay_with_solana.html', context)
-    response.set_cookie('cartId', cart_id, max_age=60*60*24*30, secure=True, httponly=True, samesite='Lax')
-
-    return response
+     

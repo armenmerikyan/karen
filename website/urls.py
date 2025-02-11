@@ -163,8 +163,7 @@ urlpatterns = [
 
 
     path('pay-with-solana/', views.pay_with_solana, name='pay_with_solana'),
-]
-
+] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
