@@ -2904,8 +2904,22 @@ def pay_with_solana(request):
             'id': cart_product.id,
         })
 
+    url = "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"
+
+    # Send a GET request to the API
+    response = requests.get(url)
+
+    # Parse the response JSON
+    data = response.json()
+
+    # Extract Solana price in USD
+    solana_price = data['solana']['usd']
+
+    # Print the price
+    print(f"The current price of Solana (SOL) is ${solana_price}")
+
     # Assume that you have a known conversion rate from SOL to USD (this is just an example rate)
-    sol_to_usd_rate = 200  # 1 SOL = 200 USD (you can adjust this rate based on actual market rate)
+    sol_to_usd_rate = float(solana_price)  # 1 SOL = 200 USD (you can adjust this rate based on actual market rate)
 
     # Convert the total price in USD to SOL based on the exchange rate
     total_in_sol = total_with_tax / sol_to_usd_rate  # Convert total_with_tax (USD) to SOL
