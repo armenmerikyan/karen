@@ -2904,10 +2904,13 @@ def pay_with_solana(request):
             'id': cart_product.id,
         })
 
-    # Convert total_with_tax to SOL (1 SOL = 10^9 lamports)
-    total_in_sol = total_with_tax / 10**9  # This gives the total in SOL
+    # Assume that you have a known conversion rate from SOL to USD (this is just an example rate)
+    sol_to_usd_rate = 200  # 1 SOL = 200 USD (you can adjust this rate based on actual market rate)
 
-    # Redirect to the Solana payment URL immediately for GET request
+    # Convert the total price in USD to SOL based on the exchange rate
+    total_in_sol = total_with_tax / sol_to_usd_rate  # Convert total_with_tax (USD) to SOL
+
+    # Redirect to the Solana payment URL with the correct SOL amount
     recipient = profile.wallet
     return redirect(f'/solana_payment/?amount={total_in_sol:.8f}&recipient={recipient}')
 
