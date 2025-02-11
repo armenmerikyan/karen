@@ -177,6 +177,8 @@ from django.contrib.auth import get_user_model
 
 import stripe
 
+from decimal import Decimal
+
 pokerGPT_version = "00.00.06"
 small_blind_size = 10
 big_blind_size = 20
