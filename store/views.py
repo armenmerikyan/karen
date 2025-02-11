@@ -2922,7 +2922,7 @@ def pay_with_solana(request):
     sol_to_usd_rate = float(solana_price)  # 1 SOL = 200 USD (you can adjust this rate based on actual market rate)
 
     # Convert the total price in USD to SOL based on the exchange rate
-    total_in_sol = total_with_tax / sol_to_usd_rate  # Convert total_with_tax (USD) to SOL
+    total_in_sol = Decimal(total_with_tax) / Decimal(sol_to_usd_rate)  # Convert total_with_tax (USD) to SOL
 
     # Redirect to the Solana payment URL with the correct SOL amount
     recipient = profile.wallet
