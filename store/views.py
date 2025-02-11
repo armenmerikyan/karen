@@ -2906,24 +2906,39 @@ def pay_with_solana(request):
             'id': cart_product.id,
         })
 
+    # Handle Solana payment
+    txn = request.GET.get('txn')
+    if txn:
+        # Assume the transaction is successful and apply payment (simulate with a SOL payment)
+        # Here, you can save the payment details as you did in the Stripe example
+
+        payment = Payment.objects.create(
+            customer=cart.customer,
+            amount=total_with_tax,
+            payment_method='Solana',
+            status='COMPLETED',
+        )
+
+        PaymentApplication.objects.create(
+            payment=payment,
+            cart=cart,
+            applied_amount=total_with_tax,
+        )
+
+        # Mark cart as paid and save transaction ID (here txn is used as a placeholder)
+        cart.paid_transaction_id = txn
+        cart.paid = True
+        cart.save()
+
+        return redirect('process_checkout')
+
+    # Fetch Solana price in USD (using an external API)
     url = "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"
-
-    # Send a GET request to the API
     response = requests.get(url)
-
-    # Parse the response JSON
     data = response.json()
 
-    # Extract Solana price in USD
     solana_price = data['solana']['usd']
-
-    # Print the price
-    print(f"The current price of Solana (SOL) is ${solana_price}")
-
-    # Assume that you have a known conversion rate from SOL to USD (this is just an example rate)
-    sol_to_usd_rate = float(solana_price)  # 1 SOL = 200 USD (you can adjust this rate based on actual market rate)
-
-    # Convert the total price in USD to SOL based on the exchange rate
+    sol_to_usd_rate = float(solana_price)  # 1 SOL = price in USD (based on the current market rate)
     total_in_sol = Decimal(total_with_tax) / Decimal(sol_to_usd_rate)  # Convert total_with_tax (USD) to SOL
 
     # Redirect to the Solana payment URL with the correct SOL amount
