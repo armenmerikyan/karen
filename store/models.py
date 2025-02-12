@@ -486,7 +486,13 @@ class WebsiteProfile(models.Model):
         help_text="The BirdEye API key for the website.",
         blank=True,
         null=True
-    )    
+    )   
+    deepseek_api_key = models.CharField(
+        max_length=255,
+        help_text="The Deepseek API key for the website.",
+        blank=True,
+        null=True
+    )   
     def __str__(self):
         return self.name
     
