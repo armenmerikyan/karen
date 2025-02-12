@@ -51,7 +51,9 @@
                     {% endif %}
                   </td>  
                   <td>
-                    <a href="{% url 'cart_detail' cart.id %}" class="btn btn-sm btn-primary">View Details</a>
+                    <a href="{% url 'cart_detail' cart.id %}" class="btn btn-sm btn-primary">
+                      <i class="fas fa-eye"></i> View Details
+                    </a>
                     <!-- Add more actions if needed (edit, delete, etc.) -->
                   </td>
                 </tr>
