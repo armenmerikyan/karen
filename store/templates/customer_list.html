@@ -17,6 +17,23 @@
           <i class="fas fa-plus-circle"></i> Add New Customer
         </a>
 
+        <!-- Lifecycle Stage Filter -->
+        <form method="get" class="mb-4">
+          <div class="row">
+            <div class="col-md-6">
+              <select name="lifecycle_stage" class="form-control">
+                <option value="">-- Select Lifecycle Stage --</option>
+                {% for stage in lifecycle_stages %}
+                  <option value="{{ stage.id }}" {% if selected_stage == stage.id|stringformat:'s' %}selected{% endif %}>{{ stage.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+          </div>
+        </form>
+
         <!-- Customer List -->
         <div class="list-group">
           {% for customer in customers %}

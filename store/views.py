@@ -662,16 +662,32 @@ def product_edit(request, pk):
 
     return render(request, 'product_form.html', {'form': form, 'action': 'Edit', 'profile': profile})
 
-# List customers
 @admin_required
 def customer_list(request):
+    # Get all lifecycle stages for the dropdown filter
+    lifecycle_stages = LifecycleStage.objects.all()
 
+    # Get the profile info (if available)
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
 
-    customers = Customer.objects.all()
-    return render(request, 'customer_list.html', {'customers': customers, 'profile': profile })
+    # Check if a lifecycle stage filter was applied
+    selected_stage = request.GET.get('lifecycle_stage')
+    if selected_stage:
+        # Filter customers by the selected lifecycle stage
+        customers = Customer.objects.filter(lifecycle_stage_id=selected_stage)
+    else:
+        # Get all customers if no filter is selected
+        customers = Customer.objects.all()
+
+    return render(request, 'customer_list.html', {
+        'customers': customers,
+        'profile': profile,
+        'lifecycle_stages': lifecycle_stages,  # Pass lifecycle stages to the template
+        'selected_stage': selected_stage,  # Keep track of the selected filter
+    })
+
 
 # Add new customer
 @admin_required 
