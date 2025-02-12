@@ -17,6 +17,7 @@
                 <th scope="col">Date Created</th>
                 <th scope="col">Date Modified</th>
                 <th scope="col">Checked Out</th>
+                <th scope="col">Processed</th>
                 <th scope="col">Paid</th>
                 <th scope="col">Actions</th>
               </tr>
@@ -29,6 +30,7 @@
                   <td>{{ cart.date_created }}</td>
                   <td>{{ cart.date_modified }}</td>
                   <td>{{ cart.checked_out }}</td>
+                  <td>{{ cart.is_processed }}</td>
                   <td>{{ cart.paid }}</td>
                   <td>
                     <a href="{% url 'cart_detail' cart.id %}" class="btn btn-sm btn-primary">View Details</a>
