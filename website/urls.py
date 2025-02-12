@@ -163,6 +163,8 @@ urlpatterns = [
 
 
     path('pay-with-solana/', views.pay_with_solana, name='pay_with_solana'),
+    path('pay-with-token/<str:token_address>/', views.pay_with_token, name='pay_with_token'),
+        
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

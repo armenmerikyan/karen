@@ -2854,17 +2854,16 @@ def failure(request):
     return render(request, 'failure.html')
 
 
- 
-def select_payment_type(request):
-    tokens = TokenProfile.objects.filter(visible=True)  # Only show visible tokens
+ def select_payment_type(request):
+    tokens = TokenProfile.objects.filter(visible=True)
 
     if request.method == 'POST':
         payment_type = request.POST.get('payment_type')
-        token_address = request.POST.get('token_address')  # Get selected token
-        
+        token_address = request.POST.get('token_address')
+
         if payment_type == 'solana':
             return redirect('pay_with_solana')
-        elif payment_type == 'token' and token_address:
+        elif payment_type == 'solana_token' and token_address:
             return redirect('pay_with_token', token_address=token_address)
         elif payment_type == 'stripe':
             return redirect('pay_with_stripe')
@@ -2875,8 +2874,7 @@ def select_payment_type(request):
             })
 
     return render(request, 'select_payment.html', {'tokens': tokens})
-
-
+ 
 def pay_with_token(request, token_address):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
