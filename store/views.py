@@ -521,15 +521,18 @@ def payment_form(request, cart_id):
 
     return render(request, 'payment_form.html', {'cart': cart, 'profile': profile})
 
-
 @admin_required
 def cart_list(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
+    
     carts = Cart.objects.order_by('-date_created')  # Fetch all carts, newest first
-    return render(request, 'cart_list.html', {'carts': carts, 'profile': profile})
+    paginator = Paginator(carts, 10)  # 10 carts per page
+    page_number = request.GET.get('page')  # Get the current page number from query parameters
+    page_obj = paginator.get_page(page_number)  # Get the page object
 
+    return render(request, 'cart_list.html', {'page_obj': page_obj, 'profile': profile})
 
 # View to list all products
 @admin_required
