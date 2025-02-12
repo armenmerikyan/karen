@@ -2889,7 +2889,6 @@ def pay_with_token(request, token_address):
     subtotal, total_tax, total_with_tax = 0, 0, 0
     products = []
 
-    # Calculate subtotal, total tax, and total with tax for the cart
     for cart_product in cart_products:
         total_price = cart_product.quantity * cart_product.product.price
         product_tax = total_price * cart_product.tax_rate / 100
@@ -2909,12 +2908,8 @@ def pay_with_token(request, token_address):
             'id': cart_product.id,
         })
 
-    # Handle Solana payment
     txn = request.GET.get('txn')
     if txn:
-        # Assume the transaction is successful and apply payment (simulate with a SOL payment)
-        # Here, you can save the payment details as you did in the Stripe example
-
         payment = Payment.objects.create(
             customer=cart.customer,
             amount=total_with_tax,
@@ -2928,25 +2923,28 @@ def pay_with_token(request, token_address):
             applied_amount=total_with_tax,
         )
 
-        # Mark cart as paid and save transaction ID (here txn is used as a placeholder)
         cart.paid_transaction_id = txn
         cart.paid = True
         cart.save()
 
         return redirect('process_checkout')
 
-    # Fetch Solana price in USD (using an external API)
-    url = "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"
-    response = requests.get(url)
+    # Fetch token price from the new service
+    url = f"https://public-api.birdeye.so/defi/price?address={token_address}"
+    headers = {
+        'X-API-KEY': profile.bird_eye_api_key,
+        'accept': 'application/json',
+        'x-chain': 'solana'
+    }
+    response = requests.get(url, headers=headers)
     data = response.json()
 
-    solana_price = data['solana']['usd']
-    sol_to_usd_rate = float(solana_price)  # 1 SOL = price in USD (based on the current market rate)
-    total_in_sol = Decimal(total_with_tax) / Decimal(sol_to_usd_rate)  # Convert total_with_tax (USD) to SOL
+    token_price = data['data']['value']
+    token_to_usd_rate = Decimal(token_price)
+    total_in_token = Decimal(total_with_tax) / token_to_usd_rate
 
-    # Redirect to the Solana payment URL with the correct SOL amount
     recipient = profile.wallet
-    return redirect(f'/solana_payment/?amount={total_in_sol:.8f}&recipient={recipient}')
+    return redirect(f'/solana_payment/?amount={total_in_token:.8f}&recipient={recipient}')
 
 def pay_with_solana(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
