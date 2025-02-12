@@ -587,6 +587,7 @@ class Cart(models.Model):
     shipping_country = models.CharField(max_length=255, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='carts', null=True, blank=True)
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, related_name='carts', null=True, blank=True)  # Added field
+    is_processed = models.BooleanField(default=False)  # Renamed processed to is_processed
     def __str__(self):
         return self.cart_id
 

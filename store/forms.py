@@ -146,6 +146,7 @@ class CartForm(forms.ModelForm):
             "shipping_state",
             "shipping_zipcode",
             "shipping_country",
+            "is_processed",
         ]
 
     def __init__(self, *args, **kwargs):
