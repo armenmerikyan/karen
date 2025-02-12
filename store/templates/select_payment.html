@@ -13,26 +13,21 @@
                 {% csrf_token %}
 
                 <label>
-                    <input type="radio" name="payment_type" value="solana" required onchange="toggleTokenSelection()"> Solana
-                </label>
-                <br>
-                <label>
-                    <input type="radio" name="payment_type" value="solana_token" required onchange="toggleTokenSelection()"> Solana with Token
-                </label>
-                <br>
-                <label>
-                    <input type="radio" name="payment_type" value="stripe" required onchange="toggleTokenSelection()"> Stripe
+                    <input type="radio" name="payment_type" value="solana" required> Solana
                 </label>
                 <br>
 
-                <!-- Token Selection (Only for Solana with Token) -->
-                <label for="token_address">Select a Token:</label>
-                <select name="token_address" id="token_address" disabled required>
-                    <option value="">-- Select Token --</option>
-                    {% for token in tokens %}
-                        <option value="{{ token.address }}">{{ token.name }}</option>
-                    {% endfor %}
-                </select>
+                <!-- Merge Tokens into the Radio Button List -->
+                {% for token in tokens %}
+                    <label>
+                        <input type="radio" name="payment_type" value="{{ token.address }}" required> {{ token.name }} (Solana)
+                    </label>
+                    <br>
+                {% endfor %}
+
+                <label>
+                    <input type="radio" name="payment_type" value="stripe" required> Stripe
+                </label>
                 <br>
 
                 <button type="submit">Continue</button>
@@ -42,18 +37,4 @@
     </div>
   </div>
 </section>    
-
-<script>
-    function toggleTokenSelection() {
-        let solanaTokenOption = document.querySelector('input[value="solana_token"]');
-        let tokenDropdown = document.getElementById("token_address");
-
-        if (solanaTokenOption.checked) {
-            tokenDropdown.removeAttribute("disabled");
-        } else {
-            tokenDropdown.setAttribute("disabled", "true");
-            tokenDropdown.value = "";
-        }
-    }
-</script>
 {% endblock %}

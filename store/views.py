@@ -2859,12 +2859,11 @@ def select_payment_type(request):
 
     if request.method == 'POST':
         payment_type = request.POST.get('payment_type')
-        token_address = request.POST.get('token_address')
 
         if payment_type == 'solana':
             return redirect('pay_with_solana')
-        elif payment_type == 'solana_token' and token_address:
-            return redirect('pay_with_token', token_address=token_address)
+        elif payment_type in [token.address for token in tokens]:
+            return redirect('pay_with_token', token_address=payment_type)
         elif payment_type == 'stripe':
             return redirect('pay_with_stripe')
         else:
