@@ -126,6 +126,18 @@ server {
 	index index.html index.htm index.nginx-debian.html;
 
 	server_name www.YOURDOMANNAME.com YOURDOMANNAME.com;
+
+    location /solana_payment/ {
+        proxy_pass http://127.0.0.1:8080;  # Forward requests to the service on port 8081
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-CSRFToken $http_x_csrftoken;
+        proxy_set_header X-CSRF-TOKEN $http_x_csrf_token;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 600s;
+    }
+        
     location / {
         proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
