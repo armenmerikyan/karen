@@ -2944,7 +2944,8 @@ def pay_with_token(request, token_address):
     total_in_token = Decimal(total_with_tax) / token_to_usd_rate
 
     recipient = profile.wallet
-    return redirect(f'/solana_payment/?amount={total_in_token:.8f}&recipient={recipient}')
+    return redirect(f'/solana_payment/?amount={total_in_token:.8f}&recipient={recipient}&splToken={token_address}')
+
 
 def pay_with_solana(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
