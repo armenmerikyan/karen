@@ -2854,22 +2854,102 @@ def failure(request):
     return render(request, 'failure.html')
 
 
-
+ 
 def select_payment_type(request):
+    tokens = TokenProfile.objects.filter(visible=True)  # Only show visible tokens
+
     if request.method == 'POST':
         payment_type = request.POST.get('payment_type')
+        token_address = request.POST.get('token_address')  # Get selected token
+        
         if payment_type == 'solana':
-            # Redirect to Solana payment page or process Solana payment
             return redirect('pay_with_solana')
+        elif payment_type == 'token' and token_address:
+            return redirect('pay_with_token', token_address=token_address)
         elif payment_type == 'stripe':
-            # Redirect to Stripe payment page or process Stripe payment
             return redirect('pay_with_stripe')
         else:
-            # Handle invalid payment type
-            return render(request, 'select_payment.html', {'error': 'Invalid payment type'})
-    
-    # Render the payment selection form
-    return render(request, 'select_payment.html')
+            return render(request, 'select_payment.html', {
+                'tokens': tokens,
+                'error': 'Invalid selection'
+            })
+
+    return render(request, 'select_payment.html', {'tokens': tokens})
+
+
+def pay_with_token(request, token_address):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
+    cart_id = request.COOKIES.get('cartId')
+    try:
+        cart = Cart.objects.get(external_id=cart_id)
+    except Cart.DoesNotExist:
+        return redirect('index')
+
+    cart_products = CartProduct.objects.filter(cart=cart)
+    subtotal, total_tax, total_with_tax = 0, 0, 0
+    products = []
+
+    # Calculate subtotal, total tax, and total with tax for the cart
+    for cart_product in cart_products:
+        total_price = cart_product.quantity * cart_product.product.price
+        product_tax = total_price * cart_product.tax_rate / 100
+        total_with_product = total_price + product_tax
+
+        subtotal += total_price
+        total_tax += product_tax
+        total_with_tax += total_with_product
+
+        products.append({
+            'product': cart_product.product,
+            'quantity': cart_product.quantity,
+            'price': cart_product.product.price,
+            'line_item_total': total_price,
+            'tax': product_tax,
+            'total_with_tax': total_with_product,
+            'id': cart_product.id,
+        })
+
+    # Handle Solana payment
+    txn = request.GET.get('txn')
+    if txn:
+        # Assume the transaction is successful and apply payment (simulate with a SOL payment)
+        # Here, you can save the payment details as you did in the Stripe example
+
+        payment = Payment.objects.create(
+            customer=cart.customer,
+            amount=total_with_tax,
+            payment_method='Solana',
+            status='COMPLETED',
+        )
+
+        PaymentApplication.objects.create(
+            payment=payment,
+            cart=cart,
+            applied_amount=total_with_tax,
+        )
+
+        # Mark cart as paid and save transaction ID (here txn is used as a placeholder)
+        cart.paid_transaction_id = txn
+        cart.paid = True
+        cart.save()
+
+        return redirect('process_checkout')
+
+    # Fetch Solana price in USD (using an external API)
+    url = "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"
+    response = requests.get(url)
+    data = response.json()
+
+    solana_price = data['solana']['usd']
+    sol_to_usd_rate = float(solana_price)  # 1 SOL = price in USD (based on the current market rate)
+    total_in_sol = Decimal(total_with_tax) / Decimal(sol_to_usd_rate)  # Convert total_with_tax (USD) to SOL
+
+    # Redirect to the Solana payment URL with the correct SOL amount
+    recipient = profile.wallet
+    return redirect(f'/solana_payment/?amount={total_in_sol:.8f}&recipient={recipient}')
 
 def pay_with_solana(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()

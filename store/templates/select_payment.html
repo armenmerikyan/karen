@@ -6,13 +6,13 @@
     <div class="container mt-5 text-light">         
       <div class="row">
         <div class="col-md-12 text-left">   
-
             <h1>Select Payment Type</h1>
             {% if error %}
                 <p style="color: red;">{{ error }}</p>
             {% endif %}
             <form method="post" action="{% url 'select_payment' %}">
                 {% csrf_token %}
+
                 <label>
                     <input type="radio" name="payment_type" value="solana" required> Solana
                 </label>
@@ -21,6 +21,17 @@
                     <input type="radio" name="payment_type" value="stripe" required> Stripe
                 </label>
                 <br>
+
+                <!-- Token Selection (Only for Solana) -->
+                <label for="token_address">Select a Token:</label>
+                <select name="token_address" id="token_address" required>
+                    <option value="">-- Select Token --</option>
+                    {% for token in tokens %}
+                        <option value="{{ token.address }}">{{ token.name }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+
                 <button type="submit">Continue</button>
             </form>
         </div>
