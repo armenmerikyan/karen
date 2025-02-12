@@ -47,7 +47,7 @@ class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer 
         fields = ['first_name', 'last_name', 'email', 'phone_number', 
-                  'address1', 'address2', 'city', 'state', 'zip_code', 'country', 'lifecycle_stage']
+                  'address1', 'address2', 'city', 'state', 'zip_code', 'country', 'lifecycle_stage', 'notes']
  
         
 class LifecycleStageForm(forms.ModelForm):

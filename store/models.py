@@ -567,6 +567,9 @@ class Customer(models.Model):
         null=True,  # Allowing null for existing customers who may not have a stage
         blank=True,  # Optional field, allowing customers without a stage
     )
+    
+    # New Notes Field
+    notes = models.TextField(blank=True, null=True)  # Notes for the customer
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
