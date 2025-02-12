@@ -2858,6 +2858,10 @@ def failure(request):
 
 
 def select_payment_type(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     tokens = TokenProfile.objects.filter(visible=True)
 
     if request.method == 'POST':
@@ -2875,7 +2879,7 @@ def select_payment_type(request):
                 'error': 'Invalid selection'
             })
 
-    return render(request, 'select_payment.html', {'tokens': tokens})
+    return render(request, 'select_payment.html', {'tokens': tokens, 'profile': profile})
  
 def pay_with_token(request, token_address):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
