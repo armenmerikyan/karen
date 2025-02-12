@@ -29,15 +29,27 @@
                   <td>{{ cart.external_id }}</td>
                   <td>{{ cart.date_created }}</td>
                   <td>{{ cart.date_modified }}</td>
-                  <td>{{ cart.checked_out }}</td>
+                  <td>
+                    {% if cart.checked_out %}
+                      <i class="fas fa-check-circle" style="color: green;"></i>
+                    {% else %}
+                      <i class="fas fa-times-circle" style="color: red;"></i>
+                    {% endif %}
+                  </td>  
                   <td>
                     {% if cart.is_processed %}
                       <i class="fas fa-check-circle" style="color: green;"></i>
                     {% else %}
                       <i class="fas fa-times-circle" style="color: red;"></i>
                     {% endif %}
-                  </td>                  
-                  <td>{{ cart.paid }}</td>
+                  </td>                   
+                  <td>
+                    {% if cart.paid %}
+                      <i class="fas fa-check-circle" style="color: green;"></i>
+                    {% else %}
+                      <i class="fas fa-times-circle" style="color: red;"></i>
+                    {% endif %}
+                  </td>  
                   <td>
                     <a href="{% url 'cart_detail' cart.id %}" class="btn btn-sm btn-primary">View Details</a>
                     <!-- Add more actions if needed (edit, delete, etc.) -->
