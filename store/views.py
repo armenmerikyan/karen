@@ -2854,7 +2854,7 @@ def failure(request):
     return render(request, 'failure.html')
 
 
- def select_payment_type(request):
+def select_payment_type(request):
     tokens = TokenProfile.objects.filter(visible=True)
 
     if request.method == 'POST':
