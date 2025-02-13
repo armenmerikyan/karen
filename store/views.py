@@ -3165,7 +3165,7 @@ def generate_message_chatgpt(request, customer_id, touchpoint_id):
     """
 
     # Call OpenAI ChatGPT API
-    api_key = profile.openai_api_key
+    api_key = profile.chatgpt_api_key
     url = "https://api.openai.com/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {api_key}",
