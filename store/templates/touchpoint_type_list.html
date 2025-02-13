@@ -1,0 +1,18 @@
+<h2>TouchPoint Types</h2>
+<a href="{% url 'touchpoint_type_add' %}">Add New TouchPoint Type</a>
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Lifecycle Stage</th>
+        <th>Visible</th>
+        <th>Actions</th>
+    </tr>
+    {% for touchpoint_type in touchpoint_types %}
+    <tr>
+        <td>{{ touchpoint_type.name }}</td>
+        <td>{{ touchpoint_type.lifecycle_stage }}</td>
+        <td>{{ touchpoint_type.is_visible|yesno:"Yes,No" }}</td>
+        <td><a href="{% url 'touchpoint_type_edit' touchpoint_type.pk %}">Edit</a></td>
+    </tr>
+    {% endfor %}
+</table>
