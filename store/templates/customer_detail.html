@@ -18,6 +18,9 @@
                 <button onclick="generateMessage({{ customer.id }}, {{ touchpoint.id }})">
                     {{ touchpoint.name }}
                 </button>
+                <button onclick="generateMessageChatGpt({{ customer.id }}, {{ touchpoint.id }})">
+                    ChatGPT
+                </button>
             </li>
         {% endfor %}
     </ul>
@@ -27,6 +30,25 @@
     <script>
         function generateMessage(customerId, touchpointId) {
             fetch(`/generate-message/${customerId}/${touchpointId}/`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    document.getElementById('message-result').innerText = data.message;
+                } else if (data.error) {
+                    document.getElementById('message-result').innerText = "Error: " + data.error;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        function generateMessageChatGpt(customerId, touchpointId) {
+            fetch(`/generate-message-chatgpt/${customerId}/${touchpointId}/`, {
                 method: 'GET',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'

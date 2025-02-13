@@ -3137,3 +3137,50 @@ def generate_message(request, customer_id, touchpoint_id):
         return JsonResponse({"message": generated_message})
     else:
         return JsonResponse({"error": "Failed to generate message"}, status=500)
+    
+@admin_required
+def generate_message_chatgpt(request, customer_id, touchpoint_id):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
+    customer = get_object_or_404(Customer, id=customer_id)
+    touchpoint = get_object_or_404(TouchPointType, id=touchpoint_id)
+
+    # Prepare the prompt for OpenAI ChatGPT API
+    prompt = f"""
+    Customer Information:
+    - Name: {customer.first_name} {customer.last_name}
+    - Email: {customer.email}
+    - Phone: {customer.phone_number}
+    - Address: {customer.address1}, {customer.city}, {customer.state}, {customer.zip_code}, {customer.country}
+
+    TouchPoint Information:
+    - Type: {touchpoint.name}
+    - Objective: {touchpoint.objective}
+    - Instructions: {touchpoint.instructions}
+    - Format: {touchpoint.touchpoint_format}
+
+    Generate a personalized message for the customer based on the above information.
+    """
+
+    # Call OpenAI ChatGPT API
+    api_key = profile.openai_api_key
+    url = "https://api.openai.com/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "model": "gpt-4",  # Replace with the appropriate GPT model
+        "messages": [
+            {"role": "user", "content": prompt}
+        ]
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 200:
+        generated_message = response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+        return JsonResponse({"message": generated_message})
+    else:
+        return JsonResponse({"error": "Failed to generate message"}, status=500)    
