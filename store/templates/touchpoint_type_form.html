@@ -1,7 +1,21 @@
-<h2>{% if form.instance.pk %}Edit{% else %}Add{% endif %} TouchPoint Type</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save</button>
-</form>
-<a href="{% url 'touchpoint_type_list' %}">Back to list</a>
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">   
+            <h2>{% if form.instance.pk %}Edit{% else %}Add{% endif %} TouchPoint Type</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Save</button>
+            </form>
+            <a href="{% url 'touchpoint_type_list' %}">Back to list</a>
+        </div>
+      </div>      
+    </div>
+  </div>
+</section>    
+{% endblock %}
