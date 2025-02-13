@@ -3137,7 +3137,7 @@ def generate_message(request, customer_id, touchpoint_id):
         return JsonResponse({"message": generated_message})
     else:
         return JsonResponse({"error": "Failed to generate message"}, status=500)
-    
+
 @admin_required
 def generate_message_chatgpt(request, customer_id, touchpoint_id):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -3149,6 +3149,15 @@ def generate_message_chatgpt(request, customer_id, touchpoint_id):
 
     # Prepare the prompt for OpenAI ChatGPT API
     prompt = f"""
+    Website Information:
+    - Name: {profile.name}
+    - About Us: {profile.about_us}
+    - Wallet: {profile.wallet}
+    - x Handle: {profile.x_handle}
+    - Email: {profile.email}
+    - Phone: {profile.phone}
+    - Address: {profile.address1}, {profile.city}, {profile.state}, {profile.zip_code}, {profile.country}
+
     Customer Information:
     - Name: {customer.first_name} {customer.last_name}
     - Email: {customer.email}
@@ -3166,7 +3175,6 @@ def generate_message_chatgpt(request, customer_id, touchpoint_id):
 
     # Call OpenAI ChatGPT API
     api_key = profile.chatgpt_api_key
-    print(api_key)
     url = "https://api.openai.com/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {api_key}",
