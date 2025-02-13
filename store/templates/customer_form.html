@@ -8,15 +8,29 @@
     <div class="container mt-5 text-light">
       <div class="row">
         <div class="col-md-12 text-left">
-            <h1>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Customer</h1>
-            <form method="POST">
-                {% csrf_token %}
-                {{ form.as_p }}
- 
-                <button type="submit">{% if form.instance.pk %}Save Changes{% else %}Add Customer{% endif %}</button>
-            </form>
-            <br>
-            <a href="{% url 'customer_list' %}">Back to Customer List</a>
+          <h1>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Customer</h1>
+          <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit">{% if form.instance.pk %}Save Changes{% else %}Add Customer{% endif %}</button>
+          </form>
+          <br>
+          <a href="{% url 'customer_list' %}">Back to Customer List</a>
+
+          <!-- Add TouchPoint Links -->
+          {% if form.instance.pk %}
+            <h2 class="mt-5">Generate TouchPoint Message</h2>
+            <ul>
+              {% for touchpoint in touchpoints %}
+                <li>
+                  <a href="{% url 'generate_message' form.instance.pk touchpoint.id %}">
+                    {{ touchpoint.name }}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
         </div>
       </div>
     </div>

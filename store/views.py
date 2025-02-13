@@ -716,6 +716,7 @@ def customer_edit(request, customer_id):
         profile = WebsiteProfile(name="add name", about_us="some info about us")
 
     customer = get_object_or_404(Customer, id=customer_id)
+
     if request.method == 'POST':
         form = CustomerForm(request.POST, instance=customer)
         if form.is_valid():
@@ -723,7 +724,10 @@ def customer_edit(request, customer_id):
             return redirect('customer_list')
     else:
         form = CustomerForm(instance=customer)
-    return render(request, 'customer_form.html', {'form': form, 'profile': profile })
+    
+
+    touchpoints = TouchPointType.objects.filter(is_visible=True)
+    return render(request, 'customer_form.html', {'form': form, 'profile': profile, 'touchpoints': touchpoints })
 
 # List all ProductLifecycleStages
 @admin_required
@@ -3086,3 +3090,46 @@ def touchpoint_type_edit(request, pk):
     else:
         form = TouchPointTypeForm(instance=touchpoint_type)
     return render(request, 'touchpoint_type_form.html', {'form': form, 'profile': profile})     
+
+@admin_required
+def generate_message(request, customer_id, touchpoint_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+    touchpoint = get_object_or_404(TouchPointType, id=touchpoint_id)
+
+    # Prepare the prompt for DeepSeek API
+    prompt = f"""
+    Customer Information:
+    - Name: {customer.first_name} {customer.last_name}
+    - Email: {customer.email}
+    - Phone: {customer.phone_number}
+    - Address: {customer.address1}, {customer.city}, {customer.state}, {customer.zip_code}, {customer.country}
+
+    TouchPoint Information:
+    - Type: {touchpoint.name}
+    - Objective: {touchpoint.objective}
+    - Instructions: {touchpoint.instructions}
+    - Format: {touchpoint.touchpoint_format}
+
+    Generate a personalized message for the customer based on the above information.
+    """
+
+    # Call DeepSeek API
+    api_key = "your_deepseek_api_key_here"
+    url = "https://api.deepseek.com/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "model": "deepseek-v3",  # Replace with the correct model name
+        "messages": [
+            {"role": "user", "content": prompt}
+        ]
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 200:
+        generated_message = response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+        return JsonResponse({"message": generated_message})
+    else:
+        return JsonResponse({"error": "Failed to generate message"}, status=500)
