@@ -24,19 +24,36 @@
             <ul>
               {% for touchpoint in touchpoints %}
                 <li>
-                  <a href="{% url 'generate_message' form.instance.pk touchpoint.id %}">
+                  <a href="#" onclick="generateMessage('{% url 'generate_message' form.instance.pk touchpoint.id %}')">
                     {{ touchpoint.name }}
                   </a>
-                  <a href="{% url 'generate_message_chatgpt' form.instance.pk touchpoint.id %}">
+                  <a href="#" onclick="generateMessage('{% url 'generate_message_chatgpt' form.instance.pk touchpoint.id %}')">
                     ChatGPT
                   </a>
                 </li>
               {% endfor %}
             </ul>
           {% endif %}
+
+          <!-- Textarea for Response -->
+          <h2 class="mt-4">Generated Message</h2>
+          <textarea id="generatedMessage" class="form-control" rows="5" readonly></textarea>
+
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<script>
+  function generateMessage(url) {
+    fetch(url)
+      .then(response => response.text())  // Assuming the response is plain text
+      .then(data => {
+        document.getElementById('generatedMessage').value = data;
+      })
+      .catch(error => console.error('Error:', error));
+  }
+</script>
+
 {% endblock %}
