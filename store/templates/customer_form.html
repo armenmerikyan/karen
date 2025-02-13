@@ -26,11 +26,11 @@
                 <li>
                   {{ touchpoint.name }}
                   <HR>
-                  <a href="#" onclick="generateMessage('{% url 'generate_message' form.instance.pk touchpoint.id %}')">
+                  <a href="#generatedMessageAnchor" onclick="generateMessage('{% url 'generate_message' form.instance.pk touchpoint.id %}')">
                     Deepseek
                   </a>
                   - 
-                  <a href="#" onclick="generateMessage('{% url 'generate_message_chatgpt' form.instance.pk touchpoint.id %}')">
+                  <a href="#generatedMessageAnchor" onclick="generateMessage('{% url 'generate_message_chatgpt' form.instance.pk touchpoint.id %}')">
                     ChatGPT
                   </a>
                 </li>
@@ -39,7 +39,7 @@
           {% endif %}
 
           <!-- Textarea for Response -->
-          <h2 class="mt-4">Generated Message</h2>
+          <h2 id="generatedMessageAnchor" class="mt-4">Generated Message</h2>
           <textarea id="generatedMessage" class="form-control" rows="5" readonly></textarea>
 
         </div>
