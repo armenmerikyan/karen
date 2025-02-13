@@ -13,12 +13,13 @@
             {% csrf_token %}
             {{ form.as_p }}
 
-            <button type="submit">{% if form.instance.pk %}Save Changes{% else %}Add Customer{% endif %}</button>
+            <button type="submit" class="btn btn-primary">
+              {% if form.instance.pk %}Save Changes{% else %}Add Customer{% endif %}
+            </button>
           </form>
           <br>
           <a href="{% url 'customer_list' %}">Back to Customer List</a>
 
-          <!-- Add TouchPoint Links -->
           {% if form.instance.pk %}
             <h2 class="mt-5">Generate TouchPoint Message</h2>
             <ul>
@@ -26,11 +27,11 @@
                 <li>
                   {{ touchpoint.name }}
                   <HR>
-                  <a href="#generatedMessageAnchor" onclick="generateMessage('{% url 'generate_message' form.instance.pk touchpoint.id %}')">
+                  <a href="#generatedMessageAnchor" onclick="generateMessage('{% url 'generate_message' form.instance.pk touchpoint.id %}', this)">
                     Deepseek
                   </a>
                   - 
-                  <a href="#generatedMessageAnchor" onclick="generateMessage('{% url 'generate_message_chatgpt' form.instance.pk touchpoint.id %}')">
+                  <a href="#generatedMessageAnchor" onclick="generateMessage('{% url 'generate_message_chatgpt' form.instance.pk touchpoint.id %}', this)">
                     ChatGPT
                   </a>
                 </li>
@@ -38,10 +39,13 @@
             </ul>
           {% endif %}
 
-          <!-- Textarea for Response -->
           <h2 id="generatedMessageAnchor" class="mt-4">Generated Message</h2>
-          <textarea id="generatedMessage" class="form-control" rows="5" readonly></textarea>
-
+          <div class="position-relative">
+            <textarea id="generatedMessage" class="form-control" rows="5" readonly></textarea>
+            <div id="loadingSpinner" class="spinner-border text-primary position-absolute top-50 start-50 translate-middle d-none" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -49,22 +53,26 @@
 </section>
 
 <script>
-  function generateMessage(url) {
+  function generateMessage(url, element) {
+    let spinner = document.getElementById('loadingSpinner');
+    let messageBox = document.getElementById('generatedMessage');
+    
+    spinner.classList.remove('d-none'); // Show spinner
+    messageBox.value = ""; // Clear previous message
+
     fetch(url)
-      .then(response => response.json())  // Parse JSON response
+      .then(response => response.json())
       .then(data => {
-        if (data.message) {
-          document.getElementById('generatedMessage').value = data.message; // Display message
-        } else {
-          document.getElementById('generatedMessage').value = "Error: Message not found.";
-        }
+        messageBox.value = data.message ? data.message : "Error: Message not found.";
       })
       .catch(error => {
         console.error('Error:', error);
-        document.getElementById('generatedMessage').value = "Error: Unable to fetch message.";
+        messageBox.value = "Error: Unable to fetch message.";
+      })
+      .finally(() => {
+        spinner.classList.add('d-none'); // Hide spinner
       });
   }
 </script>
-
 
 {% endblock %}
