@@ -48,12 +48,20 @@
 <script>
   function generateMessage(url) {
     fetch(url)
-      .then(response => response.text())  // Assuming the response is plain text
+      .then(response => response.json())  // Parse JSON response
       .then(data => {
-        document.getElementById('generatedMessage').value = data;
+        if (data.message) {
+          document.getElementById('generatedMessage').value = data.message; // Display message
+        } else {
+          document.getElementById('generatedMessage').value = "Error: Message not found.";
+        }
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('generatedMessage').value = "Error: Unable to fetch message.";
+      });
   }
 </script>
+
 
 {% endblock %}
