@@ -104,7 +104,9 @@ from .models import Cart
 from .models import CartProduct
 from .models import Payment
 from .models import PaymentApplication
+from .models import TouchPointType
 
+from .forms import TouchPointTypeForm
 from .forms import ShippingBillingForm
 from .forms import CartForm
 from .forms import ProductForm
