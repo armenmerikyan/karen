@@ -3050,12 +3050,18 @@ def pay_with_solana(request):
 # List all touchpoint types
 @admin_required
 def touchpoint_type_list(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
     touchpoint_types = TouchPointType.objects.all()
-    return render(request, 'touchpoint_type_list.html', {'touchpoint_types': touchpoint_types})
+    return render(request, 'touchpoint_type_list.html', {'touchpoint_types': touchpoint_types, 'profile': profile})
 
 # Add a new touchpoint type
 @admin_required
 def touchpoint_type_add(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
     if request.method == "POST":
         form = TouchPointTypeForm(request.POST)
         if form.is_valid():
@@ -3063,11 +3069,14 @@ def touchpoint_type_add(request):
             return redirect('touchpoint_type_list')
     else:
         form = TouchPointTypeForm()
-    return render(request, 'touchpoint_type_form.html', {'form': form})
+    return render(request, 'touchpoint_type_form.html', {'form': form, 'profile': profile})
 
 # Edit an existing touchpoint type
 @admin_required
 def touchpoint_type_edit(request, pk):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
     touchpoint_type = get_object_or_404(TouchPointType, pk=pk)
     if request.method == "POST":
         form = TouchPointTypeForm(request.POST, instance=touchpoint_type)
@@ -3076,4 +3085,4 @@ def touchpoint_type_edit(request, pk):
             return redirect('touchpoint_type_list')
     else:
         form = TouchPointTypeForm(instance=touchpoint_type)
-    return render(request, 'touchpoint_type_form.html', {'form': form})     
+    return render(request, 'touchpoint_type_form.html', {'form': form, 'profile': profile})     
