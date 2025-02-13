@@ -3183,4 +3183,5 @@ def generate_message_chatgpt(request, customer_id, touchpoint_id):
         generated_message = response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
         return JsonResponse({"message": generated_message})
     else:
-        return JsonResponse({"error": "Failed to generate message"}, status=500)    
+        print("Error response:", response.text)  # Log the error response
+        return JsonResponse({"error": "Failed to generate message"}, status=500)
