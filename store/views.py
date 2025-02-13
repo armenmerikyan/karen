@@ -3173,7 +3173,7 @@ def generate_message_chatgpt(request, customer_id, touchpoint_id):
         "Content-Type": "application/json"
     }
     data = {
-        "model": "gpt-4o",  # Replace with the appropriate GPT model
+        "model": "gpt-4",  # Replace with the appropriate GPT model
         "messages": [
             {"role": "user", "content": prompt}
         ]
