@@ -567,7 +567,7 @@ class Customer(models.Model):
         null=True,  # Allowing null for existing customers who may not have a stage
         blank=True,  # Optional field, allowing customers without a stage
     )
-    
+
     # New Notes Field
     notes = models.TextField(blank=True, null=True)  # Notes for the customer
 
@@ -683,3 +683,14 @@ class CartProduct(models.Model):
         decimal_places=2, 
         help_text="The sales tax rate as a percentage (e.g., 7.25 for 7.25%)."
     )    
+
+class TouchPointType(models.Model):
+    name = models.CharField(max_length=255, unique=True)  # Name of the touchpoint type
+    instructions = models.TextField()  # Instructions for AI to generate correspondence
+    lifecycle_stage = models.ForeignKey('LifecycleStage', on_delete=models.CASCADE)  # Related lifecycle stage
+    is_visible = models.BooleanField(default=True)  # Whether this touchpoint type is visible in the system
+    created_at = models.DateTimeField(auto_now_add=True)  
+    updated_at = models.DateTimeField(auto_now=True)  
+
+    def __str__(self):
+        return self.name

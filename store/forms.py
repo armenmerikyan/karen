@@ -14,8 +14,13 @@ from store.models import Customer
 from store.models import ProductLifecycleStage
 from store.models import Product 
 from .models import TokenMarketingContent
-from store.models import Tweet
+from store.models import Tweet 
+from .models import TouchPointType
 
+class TouchPointTypeForm(forms.ModelForm):
+    class Meta:
+        model = TouchPointType
+        fields = ['name', 'instructions', 'lifecycle_stage', 'is_visible']
 
 class ShippingBillingForm(forms.ModelForm):
     class Meta:

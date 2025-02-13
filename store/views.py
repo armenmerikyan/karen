@@ -3045,3 +3045,33 @@ def pay_with_solana(request):
     return redirect(f'/solana_payment/?amount={total_in_sol:.8f}&recipient={recipient}')
 
      
+# List all touchpoint types
+@admin_required
+def touchpoint_type_list(request):
+    touchpoint_types = TouchPointType.objects.all()
+    return render(request, 'touchpoint_type_list.html', {'touchpoint_types': touchpoint_types})
+
+# Add a new touchpoint type
+@admin_required
+def touchpoint_type_add(request):
+    if request.method == "POST":
+        form = TouchPointTypeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('touchpoint_type_list')
+    else:
+        form = TouchPointTypeForm()
+    return render(request, 'touchpoint_type_form.html', {'form': form})
+
+# Edit an existing touchpoint type
+@admin_required
+def touchpoint_type_edit(request, pk):
+    touchpoint_type = get_object_or_404(TouchPointType, pk=pk)
+    if request.method == "POST":
+        form = TouchPointTypeForm(request.POST, instance=touchpoint_type)
+        if form.is_valid():
+            form.save()
+            return redirect('touchpoint_type_list')
+    else:
+        form = TouchPointTypeForm(instance=touchpoint_type)
+    return render(request, 'touchpoint_type_form.html', {'form': form})     

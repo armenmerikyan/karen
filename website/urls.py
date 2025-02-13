@@ -164,6 +164,11 @@ urlpatterns = [
 
     path('pay-with-solana/', views.pay_with_solana, name='pay_with_solana'),
     path('pay-with-token/<str:token_address>/', views.pay_with_token, name='pay_with_token'),
+
+    path('touchpoint-types/', views.touchpoint_type_list, name='touchpoint_type_list'),
+    path('touchpoint-types/add/', views.touchpoint_type_add, name='touchpoint_type_add'),
+    path('touchpoint-types/edit/<int:pk>/', views.touchpoint_type_edit, name='touchpoint_type_edit'),
+
         
 ] 
 
