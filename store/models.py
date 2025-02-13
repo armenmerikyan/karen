@@ -493,6 +493,12 @@ class WebsiteProfile(models.Model):
         blank=True,
         null=True
     )   
+    chatgpt_api_key = models.CharField(
+        max_length=255,
+        help_text="The ChatGPT API key for the website.",
+        blank=True,
+        null=True
+    )  
     def __str__(self):
         return self.name
     
