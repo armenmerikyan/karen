@@ -3093,6 +3093,10 @@ def touchpoint_type_edit(request, pk):
 
 @admin_required
 def generate_message(request, customer_id, touchpoint_id):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     customer = get_object_or_404(Customer, id=customer_id)
     touchpoint = get_object_or_404(TouchPointType, id=touchpoint_id)
 
@@ -3114,7 +3118,7 @@ def generate_message(request, customer_id, touchpoint_id):
     """
 
     # Call DeepSeek API
-    api_key = "your_deepseek_api_key_here"
+    api_key = profile.deepseek_api_key
     url = "https://api.deepseek.com/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {api_key}",
