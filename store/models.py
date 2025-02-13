@@ -688,6 +688,10 @@ class TouchPointType(models.Model):
     name = models.CharField(max_length=255, unique=True)  # Name of the touchpoint type
     instructions = models.TextField()  # Instructions for AI to generate correspondence
     lifecycle_stage = models.ForeignKey('LifecycleStage', on_delete=models.CASCADE)  # Related lifecycle stage
+    objective = models.TextField()  # Purpose of the touchpoint
+    touchpoint_format = models.TextField()  # How the touchpoint is structured
+    integration = models.TextField()  # Where and how it is implemented
+    outcome = models.TextField()  # Expected results and actions
     is_visible = models.BooleanField(default=True)  # Whether this touchpoint type is visible in the system
     created_at = models.DateTimeField(auto_now_add=True)  
     updated_at = models.DateTimeField(auto_now=True)  

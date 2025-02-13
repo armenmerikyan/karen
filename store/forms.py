@@ -20,7 +20,7 @@ from .models import TouchPointType
 class TouchPointTypeForm(forms.ModelForm):
     class Meta:
         model = TouchPointType
-        fields = ['name', 'instructions', 'lifecycle_stage', 'is_visible']
+        fields = ['name', 'instructions', 'lifecycle_stage', 'objective', 'touchpoint_format', 'integration', 'outcome', 'is_visible']
 
 class ShippingBillingForm(forms.ModelForm):
     class Meta:
