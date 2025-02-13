@@ -24,9 +24,12 @@
             <ul>
               {% for touchpoint in touchpoints %}
                 <li>
+                  {{ touchpoint.name }}
+                  <HR>
                   <a href="#" onclick="generateMessage('{% url 'generate_message' form.instance.pk touchpoint.id %}')">
-                    {{ touchpoint.name }}
+                    Deepseek
                   </a>
+                  - 
                   <a href="#" onclick="generateMessage('{% url 'generate_message_chatgpt' form.instance.pk touchpoint.id %}')">
                     ChatGPT
                   </a>
