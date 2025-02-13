@@ -44,16 +44,21 @@ class ProductLifecycleStageForm(forms.ModelForm):
 
 class CustomerForm(forms.ModelForm):
     lifecycle_stage = forms.ModelChoiceField(
-        queryset=LifecycleStage.objects.filter(is_visible=True),  # Only visible stages
+        queryset=LifecycleStage.objects.filter(is_visible=True),
         empty_label="Select Lifecycle Stage",
         widget=forms.Select(attrs={'class': 'form-control'})
     )
 
     class Meta:
-        model = Customer 
-        fields = ['first_name', 'last_name', 'email', 'phone_number', 
-                  'address1', 'address2', 'city', 'state', 'zip_code', 'country', 'lifecycle_stage', 'notes']
- 
+        model = Customer
+        fields = [
+            'first_name', 'last_name', 'email', 'phone_number', 
+            'address1', 'address2', 'city', 'state', 'zip_code', 'country', 
+            'linkedin_url', 'twitter_handle', 'facebook_url', 'instagram_url',  # Added Instagram
+            'photo',  # Added photo
+            'lifecycle_stage', 'notes'
+        ]
+
         
 class LifecycleStageForm(forms.ModelForm):
     class Meta:
@@ -176,7 +181,7 @@ class WebsiteProfileForm(forms.ModelForm):
             'stripe_publishable_key', 'stripe_secret_key', 
             'bird_eye_api_key', 'deepseek_api_key', 'chatgpt_api_key'
         ]
-        
+
 class TokenProfileForm(forms.ModelForm):
     class Meta:
         model = TokenProfile
