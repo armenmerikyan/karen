@@ -456,11 +456,22 @@ class Account(models.Model):
         db_table = 'accounts'  # Explicitly define the table name
         ordering = ['-created_at']  # Optional: order by newest created first
 
+ 
 class WebsiteProfile(models.Model):
     name = models.CharField(max_length=255, help_text="The name of the website.")
     about_us = models.TextField(help_text="Information about the website.")
-    wallet = models.CharField(max_length=255, help_text="The address of the Soalan Wallet.")
+    wallet = models.CharField(max_length=255, help_text="The address of the Solana Wallet.")
     x_handle = models.CharField(max_length=255, help_text="The x.com handle.")
+    email = models.EmailField(max_length=255, help_text="The contact email address.", blank=True, null=True)
+    phone = models.CharField(max_length=20, help_text="The contact phone number.", blank=True, null=True)
+
+    address1 = models.CharField(max_length=255, help_text="Address line 1.", blank=True, null=True)
+    address2 = models.CharField(max_length=255, help_text="Address line 2 (optional).", blank=True, null=True)
+    city = models.CharField(max_length=100, help_text="City.", blank=True, null=True)
+    state = models.CharField(max_length=100, help_text="State/Province.", blank=True, null=True)
+    zip_code = models.CharField(max_length=20, help_text="ZIP/Postal code.", blank=True, null=True)
+    country = models.CharField(max_length=100, help_text="Country.", blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True, help_text="The date and time when the profile was created.")
     updated_at = models.DateTimeField(auto_now=True, help_text="The date and time when the profile was last updated.")
     terms_of_service = models.TextField(help_text="The terms of service for the website.", blank=True, null=True)
@@ -499,9 +510,11 @@ class WebsiteProfile(models.Model):
         blank=True,
         null=True
     )  
+
     def __str__(self):
         return self.name
-    
+
+
 class TokenProfile(models.Model):
     name = models.CharField(max_length=100, unique=True, help_text="Name of the token")
     description = models.TextField(blank=True, help_text="Description of the token")

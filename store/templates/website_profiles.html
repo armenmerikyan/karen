@@ -19,6 +19,55 @@
                       {{ form.name|add_class:"form-control" }}
                       <small class="form-text text-muted">{{ form.name.help_text }}</small>
                   </div>
+
+                  <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                    {{ form.email|add_class:"form-control" }}
+                    <small class="form-text text-muted">{{ form.email.help_text }}</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.phone.id_for_label }}" class="form-label">Phone</label>
+                    {{ form.phone|add_class:"form-control" }}
+                    <small class="form-text text-muted">{{ form.phone.help_text }}</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.address1.id_for_label }}" class="form-label">Address Line 1</label>
+                    {{ form.address1|add_class:"form-control" }}
+                    <small class="form-text text-muted">{{ form.address1.help_text }}</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.address2.id_for_label }}" class="form-label">Address Line 2</label>
+                    {{ form.address2|add_class:"form-control" }}
+                    <small class="form-text text-muted">{{ form.address2.help_text }}</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.city.id_for_label }}" class="form-label">City</label>
+                    {{ form.city|add_class:"form-control" }}
+                    <small class="form-text text-muted">{{ form.city.help_text }}</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.state.id_for_label }}" class="form-label">State/Province</label>
+                    {{ form.state|add_class:"form-control" }}
+                    <small class="form-text text-muted">{{ form.state.help_text }}</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.zip_code.id_for_label }}" class="form-label">ZIP/Postal Code</label>
+                    {{ form.zip_code|add_class:"form-control" }}
+                    <small class="form-text text-muted">{{ form.zip_code.help_text }}</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.country.id_for_label }}" class="form-label">Country</label>
+                    {{ form.country|add_class:"form-control" }}
+                    <small class="form-text text-muted">{{ form.country.help_text }}</small>
+                </div>
+                
                   
                   <div class="form-group">
                       <label for="{{ form.about_us.id_for_label }}" class="form-label">About Us</label>
