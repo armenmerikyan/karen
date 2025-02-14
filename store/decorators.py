@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 from functools import wraps
 from django.http import HttpResponse
+from django.template.response import TemplateResponse
 
 from .models import WebsiteProfile
 
