@@ -14,24 +14,4 @@ def staff_required(view_func):
             return HttpResponseForbidden("You are not authorized to view this page.")
         return view_func(request, *args, **kwargs)
     return _wrapped_view
-
-def add_profile_to_context(view_func):
-    @wraps(view_func)
-    def wrapper(request, *args, **kwargs):
-        profile = WebsiteProfile.objects.order_by('-created_at').first()
-        if not profile:
-            profile = WebsiteProfile(name="add name", about_us="some info about us")
-        
-        # Call the original view function
-        response = view_func(request, *args, **kwargs)
-        
-        # Add the profile to the context if the response is a TemplateResponse or HttpResponse
-        if isinstance(response, (HttpResponse, TemplateResponse)):
-            if hasattr(response, 'context_data'):
-                response.context_data['profile'] = profile
-            else:
-                # If it's an HttpResponse, create a new context
-                response.context_data = {'profile': profile}
-        
-        return response
-    return wrapper
+ 
