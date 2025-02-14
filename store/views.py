@@ -1475,7 +1475,8 @@ def list_and_add_website_profiles(request):
     return render(request, 'website_profiles.html', {'form': form, 'profiles': profiles, 'profile': profile})
 
  
-@staff_member_required
+ 
+@staff_required
 def admin_panel(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
