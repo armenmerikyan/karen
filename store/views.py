@@ -3197,22 +3197,26 @@ def generate_message_chatgpt(request, customer_id, touchpoint_id):
         print("Error response:", response.text)  # Log the error response
         return JsonResponse({"error": "Failed to generate message"}, status=500)
 
-@admin_required
+@csrf_exempt  # Remove this if CSRF protection is correctly handled in your frontend
+@login_required
 def save_generated_message(request):
     if request.method == "POST":
         customer_id = request.POST.get("customer_id")
         touchpoint_id = request.POST.get("touchpoint_id")
         message_text = request.POST.get("message")
+
+        try:
+            customer = get_object_or_404(Customer, id=customer_id)
+            touchpoint = get_object_or_404(TouchPoint, id=touchpoint_id)  # Fixed model reference
+
+            message = GeneratedMessage.objects.create(
+                customer=customer,
+                touchpoint=touchpoint,
+                message=message_text
+            )
+            return JsonResponse({"status": "success", "message_id": message.id})
         
-        customer = Customer.objects.get(id=customer_id)
-        touchpoint = TouchPointType.objects.get(id=touchpoint_id)
-        
-        message = GeneratedMessage.objects.create(
-            customer=customer,
-            touchpoint=touchpoint,
-            message=message_text
-        )
-        
-        return JsonResponse({"status": "success", "message_id": message.id})
-    
-    return JsonResponse({"status": "error"}, status=400)
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+    return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
