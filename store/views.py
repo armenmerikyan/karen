@@ -3249,6 +3249,22 @@ def customer_messages(request, customer_id):
     return render(request, 'customer_messages.html', {'customer': customer, 'messages': messages})
 
 @login_required
+def customer_messages(request, customer_id):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+    customer = get_object_or_404(Customer, id=customer_id)
+    messages = GeneratedMessage.objects.filter(customer=customer).order_by('-created_at')
+    
+    context = {
+        'profile': profile,
+        'customer': customer,
+        'messages': messages,
+    }
+    
+    return render(request, 'customer_messages.html', context)
+
+@login_required
 def update_generated_message(request, pk):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
