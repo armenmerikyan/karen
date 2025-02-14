@@ -1485,7 +1485,6 @@ def admin_panel(request):
 
     return render(request, 'admin.html', {'profile': profile, 'cart_count': cart_count})
 
-
 def generate_id():
     return uuid.uuid4().hex
 
