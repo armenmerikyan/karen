@@ -1,4 +1,4 @@
-# The All-in-One Software Solution
+# The All-in-One Solution
 
 **Karen** is a versatile web software platform designed for individuals, businesses, organizations, and even AI agents. Whether you're managing customers, processing orders, issuing invoices, or streamlining communications, Karen adapts to your unique operations and helps you run them faster and more cost-effectively.
 
