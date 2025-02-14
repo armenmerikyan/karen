@@ -219,6 +219,7 @@ from solders.keypair import Keypair
 from solders.rpc.config import RpcSendTransactionConfig as TxOpts
 
 from .decorators import staff_required
+from .decorators import add_profile_to_context
  
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
