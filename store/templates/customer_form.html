@@ -27,11 +27,11 @@
                 <li>
                   {{ touchpoint.name }}
                   <HR>
-                  <a href="#generatedMessageAnchor" onclick="generateMessage('{% url 'generate_message' form.instance.pk touchpoint.id %}', this)">
+                  <a href="#generatedMessageAnchor" onclick="generateMessage('{% url 'generate_message' form.instance.pk touchpoint.id %}', {{ touchpoint.id }})">
                     Deepseek
                   </a>
                   - 
-                  <a href="#generatedMessageAnchor" onclick="generateMessage('{% url 'generate_message_chatgpt' form.instance.pk touchpoint.id %}', this)">
+                  <a href="#generatedMessageAnchor" onclick="generateMessage('{% url 'generate_message_chatgpt' form.instance.pk touchpoint.id %}', {{ touchpoint.id }})">
                     ChatGPT
                   </a>
                 </li>
@@ -49,6 +49,9 @@
               <span class="visually-hidden">Loading...</span>
             </div>
           </div>
+
+          <!-- Hidden input field to store the touchpoint ID -->
+          <input type="hidden" id="touchpoint_id" name="touchpoint_id">
         </div>
       </div>
     </div>
@@ -58,7 +61,7 @@
 function saveMessage() {
   let message = document.getElementById('generatedMessage').value;
   let customerId = "{{ form.instance.pk }}"; 
-  let touchpointId = "{{ touchpoint.id }}";
+  let touchpointId = document.getElementById('touchpoint_id').value; // Get touchpoint ID from the hidden field
 
   if (!message.trim()) {
     alert("No message to save!");
@@ -91,10 +94,13 @@ function saveMessage() {
 </script>
 
 <script>
-  function generateMessage(url, element) {
+  function generateMessage(url, touchpointId) {
     let spinner = document.getElementById('loadingSpinner');
     let messageBox = document.getElementById('generatedMessage');
     
+    // Set the touchpoint ID in the hidden field
+    document.getElementById('touchpoint_id').value = touchpointId;
+
     spinner.classList.remove('d-none'); // Show spinner
     messageBox.value = ""; // Clear previous message
 
