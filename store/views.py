@@ -218,6 +218,7 @@ from solders.pubkey import Pubkey
 from solders.keypair import Keypair
 from solders.rpc.config import RpcSendTransactionConfig as TxOpts
 
+from .decorators import staff_required
  
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -1473,7 +1474,9 @@ def list_and_add_website_profiles(request):
     profiles = WebsiteProfile.objects.order_by('-created_at')
     return render(request, 'website_profiles.html', {'form': form, 'profiles': profiles, 'profile': profile})
 
-@admin_required 
+ 
+
+@staff_required
 def admin_panel(request):
 
 
