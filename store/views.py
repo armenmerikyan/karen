@@ -108,6 +108,7 @@ from .models import TouchPointType
 from .models import GeneratedMessage
 
 
+from .forms import GeneratedMessageForm
 from .forms import TouchPointTypeForm
 from .forms import ShippingBillingForm
 from .forms import CartForm
@@ -3246,3 +3247,17 @@ def customer_messages(request, customer_id):
     messages = GeneratedMessage.objects.filter(customer=customer).order_by('-created_at')
 
     return render(request, 'customer_messages.html', {'customer': customer, 'messages': messages})
+
+@login_required
+def update_generated_message(request, pk):
+    message = get_object_or_404(GeneratedMessage, pk=pk)
+    
+    if request.method == 'POST':
+        form = GeneratedMessageForm(request.POST, instance=message)
+        if form.is_valid():
+            form.save()
+            return redirect('customer_detail', pk=message.customer.id)  # Redirect to customer detail page
+    else:
+        form = GeneratedMessageForm(instance=message)
+    
+    return render(request, 'generated_message_update.html', {'form': form, 'message': message})

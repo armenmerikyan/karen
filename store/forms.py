@@ -15,7 +15,13 @@ from store.models import ProductLifecycleStage
 from store.models import Product 
 from .models import TokenMarketingContent
 from store.models import Tweet 
-from .models import TouchPointType
+from .models import TouchPointType 
+from .models import GeneratedMessage
+
+class GeneratedMessageForm(forms.ModelForm):
+    class Meta:
+        model = GeneratedMessage
+        fields = ['message', 'sent_social_media', 'sent_email', 'sent_text', 'sent_linkedin', 'sent_x', 'sent_instagram']
 
 class TouchPointTypeForm(forms.ModelForm):
     class Meta:

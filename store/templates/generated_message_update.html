@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 text-light">
+    <h1>Edit Message</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_message" class="form-label">Message</label>
+            {{ form.message }}
+        </div>
+        <div class="form-check">
+            {{ form.sent_social_media }} <label class="form-check-label">Sent to Social Media</label>
+        </div>
+        <div class="form-check">
+            {{ form.sent_email }} <label class="form-check-label">Sent via Email</label>
+        </div>
+        <div class="form-check">
+            {{ form.sent_text }} <label class="form-check-label">Sent via Text</label>
+        </div>
+        <div class="form-check">
+            {{ form.sent_linkedin }} <label class="form-check-label">Sent via LinkedIn</label>
+        </div>
+        <div class="form-check">
+            {{ form.sent_x }} <label class="form-check-label">Sent via X</label>
+        </div>
+        <div class="form-check">
+            {{ form.sent_instagram }} <label class="form-check-label">Sent via Instagram</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a href="{% url 'customer_detail' message.customer.id %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

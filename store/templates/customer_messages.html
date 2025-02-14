@@ -12,6 +12,7 @@
                 <th>Message</th>
                 <th>Created At</th>
                 <th>Sent (Social, Email, Text, LinkedIn, X, Instagram)</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -27,6 +28,9 @@
                     {{ message.sent_linkedin|yesno:"✔,✘" }},
                     {{ message.sent_x|yesno:"✔,✘" }},
                     {{ message.sent_instagram|yesno:"✔,✘" }}
+                </td>
+                <td>
+                    <a href="{% url 'generated_message_update' message.id %}" class="btn btn-primary btn-sm">Edit</a>
                 </td>
             </tr>
             {% empty %}

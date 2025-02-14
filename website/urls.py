@@ -176,6 +176,7 @@ urlpatterns = [
     path('save-message/', views.save_generated_message, name='save_generated_message'),
 
     path('customer/<int:customer_id>/messages/', views.customer_messages, name='customer_messages'),
+    path('generated-message/<int:pk>/edit/', views.update_generated_message, name='generated_message_update'),
 
 ] 
 
