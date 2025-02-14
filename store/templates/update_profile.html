@@ -8,6 +8,7 @@
                 <!-- Content for the right column goes here -->
                 <h4>Update Profile</h4> 
                 <form method="POST">
+                    <p>Username: {{ user.username }}</p>
                     {% csrf_token %}
                     {{ form.as_p }}
                     <button type="submit">Update Profile</button>
