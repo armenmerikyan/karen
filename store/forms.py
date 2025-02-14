@@ -45,7 +45,7 @@ class ProductForm(forms.ModelForm):
 class ProductLifecycleStageForm(forms.ModelForm):
     class Meta:
         model = ProductLifecycleStage
-        fields = ['name', 'rank', 'description', 'is_visible']
+        fields = ['name', 'rank', 'description', 'is_visible', 'is_sellable']
 
 
 class CustomerForm(forms.ModelForm):
