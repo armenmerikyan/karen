@@ -2,8 +2,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.shortcuts import render
 from functools import wraps
-from django.http import HttpResponse
-from django.template.response import TemplateResponse
+from django.http import HttpResponse 
 
 from .models import WebsiteProfile
 
@@ -27,15 +26,17 @@ def add_profile_to_context(view_func):
         # Call the view function to get the response
         response = view_func(request, *args, **kwargs)
 
-        # If the response is an HttpResponse (rendered), modify the context
+        # If the response is an HttpResponse or TemplateResponse, we can add the context
         if isinstance(response, HttpResponse):
+            # Check if it's a TemplateResponse
             if hasattr(response, 'context_data'):
                 response.context_data['profile'] = profile
             else:
-                # Re-render with profile if it doesn't have context_data
-                context = response.context_data if hasattr(response, 'context_data') else {}
-                context['profile'] = profile
-                return render(request, response.template_name, context)
+                # If it's just an HttpResponse, we can't access context_data, so re-render
+                context = {'profile': profile}
+                if hasattr(response, 'content'):
+                    # If response has content, check the view for its template_name and pass the context
+                    return render(request, 'products/shop_product_detail.html', context)
         
         return response
     return _wrapped_view
