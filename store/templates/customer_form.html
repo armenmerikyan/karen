@@ -42,6 +42,9 @@
           <h2 id="generatedMessageAnchor" class="mt-4">Generated Message</h2>
           <div class="position-relative">
             <textarea id="generatedMessage" class="form-control" rows="5" readonly></textarea>
+            <button id="saveMessageBtn" class="btn btn-success mt-3" onclick="saveMessage()">Save Message</button>
+            <p id="saveMessageStatus" class="mt-2 text-success d-none">Message saved successfully!</p>
+            
             <div id="loadingSpinner" class="spinner-border text-primary position-absolute top-50 start-50 translate-middle d-none" role="status">
               <span class="visually-hidden">Loading...</span>
             </div>
@@ -51,6 +54,39 @@
     </div>
   </div>
 </section>
+<script>
+  function saveMessage() {
+    let message = document.getElementById('generatedMessage').value;
+    let customerId = "{{ form.instance.pk }}"; 
+    let touchpointId = "{{ touchpoint.id }}";
+
+    if (!message.trim()) {
+      alert("No message to save!");
+      return;
+    }
+
+    fetch("{% url 'save_generated_message' %}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-CSRFToken": "{{ csrf_token }}"
+      },
+      body: `customer_id=${customerId}&touchpoint_id=${touchpointId}&message=${encodeURIComponent(message)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === "success") {
+        document.getElementById('saveMessageStatus').classList.remove('d-none');
+      } else {
+        alert("Error saving message!");
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      alert("Failed to save message.");
+    });
+  }
+</script>
 
 <script>
   function generateMessage(url, element) {
