@@ -55,37 +55,43 @@
   </div>
 </section>
 <script>
-  function saveMessage() {
-    let message = document.getElementById('generatedMessage').value;
-    let customerId = "{{ form.instance.pk }}"; 
-    let touchpointId = "{{ touchpoint.id }}";
+function saveMessage() {
+  let message = document.getElementById('generatedMessage').value;
+  let customerId = "{{ form.instance.pk }}"; 
+  let touchpointId = "{{ touchpoint.id }}";
 
-    if (!message.trim()) {
-      alert("No message to save!");
-      return;
-    }
-
-    fetch("{% url 'save_generated_message' %}", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "X-CSRFToken": "{{ csrf_token }}"
-      },
-      body: `customer_id=${customerId}&touchpoint_id=${touchpointId}&message=${encodeURIComponent(message)}`
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === "success") {
-        document.getElementById('saveMessageStatus').classList.remove('d-none');
-      } else {
-        alert("Error saving message!");
-      }
-    })
-    .catch(error => {
-      console.error("Error:", error);
-      alert("Failed to save message.");
-    });
+  if (!message.trim()) {
+    alert("No message to save!");
+    return;
   }
+
+  let formData = new URLSearchParams();
+  formData.append("customer_id", customerId);
+  formData.append("touchpoint_id", touchpointId);
+  formData.append("message", message);
+
+  fetch("{% url 'save_generated_message' %}", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "X-CSRFToken": "{{ csrf_token }}"
+    },
+    body: formData.toString()
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === "success") {
+      document.getElementById('saveMessageStatus').classList.remove('d-none');
+    } else {
+      alert("Error saving message!");
+    }
+  })
+  .catch(error => {
+    console.error("Error:", error);
+    alert("Failed to save message.");
+  });
+}
+
 </script>
 
 <script>
