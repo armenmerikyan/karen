@@ -35,20 +35,20 @@
                 </tr>
               </thead>
               <tbody>
+
                 {% for product in cart_products %}
-                  {% with total_price=product.quantity|multiply:product.price %}
-                    {% with total_tax=total_price|multiply:product.tax_rate|add:0 %}
-                      {% with total_with_product=total_price|add:total_tax %}
-                        <tr>
-                          <td><strong>{{ product.product.name }}</strong></td>
-                          <td>{{ product.quantity }}</td>
-                          <td>{{ product.price|currency }}</td>
-                          <td>{{ total_price|floatformat:2|currency }}</td> 
-                        </tr>
-                      {% endwith %}
-                    {% endwith %}
-                  {% endwith %}
-                {% endfor %}
+                <tr>
+                    <td>{{ product.product.name }}</td>
+                    <td>{{ product.product.price|currency }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.line_item_total|currency }}</td>
+                    <td> 
+                    <a href="{% url 'delete_product' product.id %}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                    </td>
+                </tr>
+                {% endfor %} 
               </tbody>
             </table>
             
