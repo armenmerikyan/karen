@@ -566,6 +566,11 @@ class ProductLifecycleStage(models.Model):
     def __str__(self):
         return f"{self.name} (Rank {self.rank})"
 
+def customer_upload_to(instance, filename):
+    # Generate a custom file name using the customer's ID
+    name, ext = os.path.splitext(filename)
+    return f"customer_photos/{instance.id}_{name}{ext}"
+
 class Customer(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
