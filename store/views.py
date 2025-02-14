@@ -3201,6 +3201,8 @@ def generate_message_chatgpt(request, customer_id, touchpoint_id):
 @login_required
 def save_generated_message(request):
     if request.method == "POST":
+        print(f"Raw POST data: {request.POST}")  # Debugging
+
         customer_id = request.POST.get("customer_id")
         touchpoint_id = request.POST.get("touchpoint_id")
         message_text = request.POST.get("message")
@@ -3213,7 +3215,7 @@ def save_generated_message(request):
         try:
             customer = get_object_or_404(Customer, id=customer_id)
             touchpoint = get_object_or_404(TouchPointType, id=touchpoint_id)
-            
+
             print(f"Found customer: {customer}, touchpoint: {touchpoint}")
 
             message = GeneratedMessage.objects.create(
@@ -3229,3 +3231,4 @@ def save_generated_message(request):
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
     return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
+
