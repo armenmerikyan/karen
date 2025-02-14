@@ -3250,6 +3250,10 @@ def customer_messages(request, customer_id):
 
 @login_required
 def update_generated_message(request, pk):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
     message = get_object_or_404(GeneratedMessage, pk=pk)
     
     if request.method == 'POST':
@@ -3260,4 +3264,4 @@ def update_generated_message(request, pk):
     else:
         form = GeneratedMessageForm(instance=message)
     
-    return render(request, 'generated_message_update.html', {'form': form, 'message': message})
+    return render(request, 'generated_message_update.html', {'form': form, 'message': message, 'profile': profile})
