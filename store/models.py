@@ -735,7 +735,7 @@ class TouchPointType(models.Model):
     
 class GeneratedMessage(models.Model):
     customer = models.ForeignKey('Customer', on_delete=models.CASCADE)
-    touchpoint = models.ForeignKey('TouchPoint', on_delete=models.CASCADE)
+    touchpoint = models.ForeignKey('TouchPointType', on_delete=models.CASCADE)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     sent_social_media = models.BooleanField(default=False)
