@@ -544,6 +544,7 @@ class LifecycleStage(models.Model):
 class ProductLifecycleStage(models.Model):
     name = models.CharField(max_length=255)
     rank = models.PositiveIntegerField()
+    description = models.TextField(blank=True, null=True)
     is_visible = models.BooleanField(default=True)
     is_sellable = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -554,6 +555,7 @@ class ProductLifecycleStage(models.Model):
     
     def __str__(self):
         return f"{self.name} (Rank {self.rank})"
+
 
 
 def customer_upload_to(instance, filename):
