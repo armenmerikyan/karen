@@ -10,25 +10,42 @@
     <div class="container mt-5 text-light">         
       <div class="row">
         <div class="col-md-12 text-left">    
-             <HR>
-            <a href="{% url 'admin:index' %}" class="nav-link">System Administration</a>    
-            <HR>
-            <a href="{% url 'list_and_add_website_profiles' %}" class="nav-link">Profile Information</a>                       
-            <HR>
-            <a href="{% url 'token_list' %}" class="nav-link">Tokens</a>
-            <HR>
-            <a href="{% url 'lifecycle_stage_list' %}" class="nav-link">Customer Lifecycles</a>         
-            <HR>
-            <a href="{% url 'customer_list' %}" class="nav-link">Customers</a>                  
-            <HR>
-            <a href="{% url 'product_lifecycle_stages_list' %}" class="nav-link">Product Lifecycles</a>      
-            <HR>
-            <a href="{% url 'product_list' %}" class="nav-link">Products</a>       
-            <HR>
-            <a href="{% url 'cart_list' %}" class="nav-link">Carts</a>      
-            <HR>
-            <a href="{% url 'touchpoint_type_list' %}" class="nav-link">Touchpoint Types</a>      
-            
+          <HR>
+          <a href="{% url 'admin:index' %}" class="nav-link">
+            <i class="fas fa-cogs"></i> System Administration
+          </a>    
+          <HR>
+          <a href="{% url 'list_and_add_website_profiles' %}" class="nav-link">
+            <i class="fas fa-user"></i> Profile Information
+          </a>                       
+          <HR>
+          <a href="{% url 'token_list' %}" class="nav-link">
+            <i class="fas fa-key"></i> Tokens
+          </a>
+          <HR>
+          <a href="{% url 'lifecycle_stage_list' %}" class="nav-link">
+            <i class="fas fa-chart-line"></i> Customer Lifecycles
+          </a>         
+          <HR>
+          <a href="{% url 'customer_list' %}" class="nav-link">
+            <i class="fas fa-users"></i> Customers
+          </a>                  
+          <HR>
+          <a href="{% url 'product_lifecycle_stages_list' %}" class="nav-link">
+            <i class="fas fa-sync-alt"></i> Product Lifecycles
+          </a>      
+          <HR>
+          <a href="{% url 'product_list' %}" class="nav-link">
+            <i class="fas fa-box"></i> Products
+          </a>       
+          <HR>
+          <a href="{% url 'cart_list' %}" class="nav-link">
+            <i class="fas fa-shopping-cart"></i> Carts
+          </a>      
+          <HR>
+          <a href="{% url 'touchpoint_type_list' %}" class="nav-link">
+            <i class="fas fa-handshake"></i> Touchpoint Types
+          </a>      
         </div>
       </div>      
     </div>
