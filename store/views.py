@@ -473,6 +473,10 @@ def cart_detail(request, id):
             product_tax = total_price * cart_product.tax_rate / 100
             total_with_product = total_price + product_tax
 
+            # Log values for debugging
+            logger.debug(f"Product: {cart_product.product.name}, Quantity: {cart_product.quantity}, Price: {cart_product.product.price}, Tax Rate: {cart_product.tax_rate}")
+            logger.debug(f"Total Price: {total_price}, Product Tax: {product_tax}, Total With Product: {total_with_product}")
+
             subtotal += total_price
             total_tax += product_tax
             total_with_tax += total_with_product
