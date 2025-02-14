@@ -3232,3 +3232,9 @@ def save_generated_message(request):
 
     return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
 
+@login_required
+def customer_messages(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+    messages = GeneratedMessage.objects.filter(customer=customer).order_by('-created_at')
+
+    return render(request, 'customer_messages.html', {'customer': customer, 'messages': messages})
