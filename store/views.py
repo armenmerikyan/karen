@@ -721,7 +721,8 @@ def customer_edit(request, customer_id):
     customer = get_object_or_404(Customer, id=customer_id)
 
     if request.method == 'POST':
-        form = CustomerForm(request.POST, instance=customer)
+        form = CustomerForm(request.POST, request.FILES, instance=customer)
+
         if form.is_valid():
             form.save()
             return redirect('customer_list')
