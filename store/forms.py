@@ -79,12 +79,12 @@ class TokenMarketingContentForm(forms.ModelForm):
 class UserProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['first_name', 'last_name' ]
         
 class UserCreationForm(UserCreationForm): 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name']
+        fields = ['username', 'email', 'first_name', 'last_name']
  
 
 class TweetForm(forms.ModelForm):
