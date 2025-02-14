@@ -27,8 +27,15 @@ def add_profile_to_context(view_func):
         # Call the view function to get the response
         response = view_func(request, *args, **kwargs)
 
-        # Check if the response is an instance of HttpResponse or TemplateResponse
-        if isinstance(response, (HttpResponse, TemplateResponse)):
-            response.context_data['profile'] = profile
+        # If the response is an HttpResponse (rendered), modify the context
+        if isinstance(response, HttpResponse):
+            if hasattr(response, 'context_data'):
+                response.context_data['profile'] = profile
+            else:
+                # Re-render with profile if it doesn't have context_data
+                context = response.context_data if hasattr(response, 'context_data') else {}
+                context['profile'] = profile
+                return render(request, response.template_name, context)
+        
         return response
     return _wrapped_view
