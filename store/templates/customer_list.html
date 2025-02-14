@@ -48,6 +48,9 @@
                 <a href="{% url 'cart_create' customer.id %}" class="btn btn-sm btn-outline-info">
                   <i class="fas fa-shopping-cart"></i> Create Cart
                 </a>
+                <a href="{% url 'customer_messages' customer.id %}" class="btn btn-sm btn-outline-light">
+                  <i class="fas fa-envelope"></i> View Messages
+                </a>
               </div>
             </div>
           {% empty %}
