@@ -592,7 +592,7 @@ class Customer(models.Model):
     instagram_url = models.URLField(max_length=255, blank=True, null=True)  # Instagram URL
 
     # Photo Field
-    photo = models.ImageField(upload_to=customer_upload_to, blank=True, null=True)  # Profile photo
+    photo = models.ImageField(upload_to='customer_photos/', null=True, blank=True)
 
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)
