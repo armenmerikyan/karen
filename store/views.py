@@ -465,21 +465,18 @@ def cart_detail(request, id):
         cart = Cart.objects.get(id=id)
         cart_products = CartProduct.objects.filter(cart=cart)
 
+        # Calculate subtotal, tax, and total with tax
         subtotal = 0
         total_tax = 0
         total_with_tax = 0
+
         for cart_product in cart_products:
             total_price = cart_product.quantity * cart_product.product.price
-            product_tax = total_price * cart_product.tax_rate / 100
-            total_with_product = total_price + product_tax
+            subtotal += total_price  # Add product total to subtotal
 
-            # Log values for debugging
-            logger.debug(f"Product: {cart_product.product.name}, Quantity: {cart_product.quantity}, Price: {cart_product.product.price}, Tax Rate: {cart_product.tax_rate}")
-            logger.debug(f"Total Price: {total_price}, Product Tax: {product_tax}, Total With Product: {total_with_product}")
-
-            subtotal += total_price
-            total_tax += product_tax
-            total_with_tax += total_with_product
+        # Calculate tax on subtotal
+        total_tax = subtotal * cart_products.first().tax_rate / 100  # Assuming tax rate is the same for all products
+        total_with_tax = subtotal + total_tax  # Add tax to subtotal for total_with_tax
 
         # Calculate total payments and balance due
         total_payments = PaymentApplication.objects.filter(cart=cart).aggregate(models.Sum('applied_amount'))['applied_amount__sum'] or 0
@@ -488,11 +485,11 @@ def cart_detail(request, id):
         return render(request, 'cart_detail.html', {
             'cart': cart,
             'cart_products': cart_products,
-            'subtotal': subtotal,
-            'total_tax': total_tax,
-            'total_with_tax': total_with_tax,
+            'subtotal': round(subtotal, 2),  # Round for display
+            'total_tax': round(total_tax, 2),  # Round for display
+            'total_with_tax': round(total_with_tax, 2),  # Round for display
             'total_payments': total_payments,
-            'balance_due': balance_due,
+            'balance_due': round(balance_due, 2),  # Round for display
             'profile': profile,
         })
     except Cart.DoesNotExist:
