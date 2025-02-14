@@ -65,7 +65,7 @@ function saveMessage() {
     return;
   }
 
-  let formData = new URLSearchParams();
+  let formData = new FormData();
   formData.append("customer_id", customerId);
   formData.append("touchpoint_id", touchpointId);
   formData.append("message", message);
@@ -73,25 +73,21 @@ function saveMessage() {
   fetch("{% url 'save_generated_message' %}", {
     method: "POST",
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
       "X-CSRFToken": "{{ csrf_token }}"
     },
-    body: formData.toString()
+    body: formData
   })
   .then(response => response.json())
   .then(data => {
+    console.log("Server Response:", data);
     if (data.status === "success") {
       document.getElementById('saveMessageStatus').classList.remove('d-none');
     } else {
-      alert("Error saving message!");
+      alert("Error: " + data.message);
     }
   })
-  .catch(error => {
-    console.error("Error:", error);
-    alert("Failed to save message.");
-  });
+  .catch(error => console.error("Fetch Error:", error));
 }
-
 </script>
 
 <script>
