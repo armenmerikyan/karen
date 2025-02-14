@@ -3207,7 +3207,7 @@ def save_generated_message(request):
 
         try:
             customer = get_object_or_404(Customer, id=customer_id)
-            touchpoint = get_object_or_404(TouchPoint, id=touchpoint_id)  # Fixed model reference
+            touchpoint = get_object_or_404(TouchPointType, id=touchpoint_id)  # Fixed model reference
 
             message = GeneratedMessage.objects.create(
                 customer=customer,
