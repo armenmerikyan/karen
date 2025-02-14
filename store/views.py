@@ -726,10 +726,18 @@ def customer_edit(request, customer_id):
             return redirect('customer_list')
     else:
         form = CustomerForm(instance=customer)
-    
 
-    touchpoints = TouchPointType.objects.filter(is_visible=True)
-    return render(request, 'customer_form.html', {'form': form, 'profile': profile, 'touchpoints': touchpoints })
+    touchpoints = TouchPointType.objects.filter(
+        is_visible=True, 
+        lifecycle_stage=customer.lifecycle_stage
+    ) if customer.lifecycle_stage else TouchPointType.objects.none()
+
+    return render(request, 'customer_form.html', {
+        'form': form,
+        'profile': profile,
+        'touchpoints': touchpoints
+    })
+
 
 # List all ProductLifecycleStages
 @admin_required
