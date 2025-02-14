@@ -1,6 +1,5 @@
 from django.contrib.auth import authenticate, login, logout, get_backends
-from django.shortcuts import render, redirect, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, HttpResponseRedirect, get_object_or_404
 from django.template import loader
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
@@ -465,31 +464,41 @@ def cart_detail(request, id):
         cart = Cart.objects.get(id=id)
         cart_products = CartProduct.objects.filter(cart=cart)
 
-        # Calculate subtotal, tax, and total with tax
         subtotal = 0
         total_tax = 0
         total_with_tax = 0
+        products = []
 
         for cart_product in cart_products:
             total_price = cart_product.quantity * cart_product.product.price
-            subtotal += total_price  # Add product total to subtotal
+            product_tax = total_price * cart_product.tax_rate / 100  # Calculate tax for each product
+            total_with_product = total_price + product_tax
 
-        # Calculate tax on subtotal
-        total_tax = subtotal * cart_products.first().tax_rate / 100  # Assuming tax rate is the same for all products
-        total_with_tax = subtotal + total_tax  # Add tax to subtotal for total_with_tax
+            subtotal += total_price
+            total_tax += product_tax
+            total_with_tax += total_with_product
 
-        # Calculate total payments and balance due
+            products.append({
+                'product': cart_product.product,
+                'quantity': cart_product.quantity,
+                'price': cart_product.product.price,
+                'line_item_total': total_price,
+                'tax': product_tax,
+                'total_with_tax': total_with_product,
+                'id': cart_product.id,
+            })
+
         total_payments = PaymentApplication.objects.filter(cart=cart).aggregate(models.Sum('applied_amount'))['applied_amount__sum'] or 0
         balance_due = total_with_tax - total_payments
 
         return render(request, 'cart_detail.html', {
             'cart': cart,
-            'cart_products': cart_products,
-            'subtotal': round(subtotal, 2),  # Round for display
-            'total_tax': round(total_tax, 2),  # Round for display
-            'total_with_tax': round(total_with_tax, 2),  # Round for display
+            'cart_products': products,  # Use the detailed products list
+            'subtotal': round(subtotal, 2),
+            'total_tax': round(total_tax, 2),
+            'total_with_tax': round(total_with_tax, 2),
             'total_payments': total_payments,
-            'balance_due': round(balance_due, 2),  # Round for display
+            'balance_due': round(balance_due, 2),
             'profile': profile,
         })
     except Cart.DoesNotExist:
