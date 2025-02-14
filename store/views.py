@@ -298,7 +298,6 @@ def resend_verification_email(request):
 
     return render(request, 'resend_verification_email.html')
     
-
 def shop_product_list(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
@@ -307,14 +306,18 @@ def shop_product_list(request):
     # Get search term from request
     search_query = request.GET.get('search', '')
     
-    # Filter products based on search query
+    # Filter products based on search query and lifecycle stage (sellable)
     if search_query:
-        products = Product.objects.filter(Q(name__icontains=search_query) | Q(description__icontains=search_query))
+        products = Product.objects.filter(
+            Q(name__icontains=search_query) | Q(description__icontains=search_query),
+            lifecycle_stage__is_sellable=True  # Only products in a sellable stage
+        )
     else:
-        products = Product.objects.all()
+        products = Product.objects.filter(lifecycle_stage__is_sellable=True)
 
     # Pass the products and profile to the template
     return render(request, 'products/shop_product_list.html', {'products': products, 'profile': profile})
+ 
 
 def shop_product_detail(request, product_id):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
