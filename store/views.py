@@ -219,7 +219,6 @@ from solders.keypair import Keypair
 from solders.rpc.config import RpcSendTransactionConfig as TxOpts
 
 from .decorators import staff_required
-from .decorators import add_profile_to_context
  
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -320,13 +319,15 @@ def shop_product_list(request):
     return render(request, 'products/shop_product_list.html', {'products': products, 'profile': profile})
  
 
-@add_profile_to_context
+ 
 def shop_product_detail(request, product_id):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
     # Fetch the specific product by its ID
     product = get_object_or_404(Product, id=product_id)
-    
     # Pass the product to the template
-    return render(request, 'products/shop_product_detail.html', {'product': product})
+    return render(request, 'products/shop_product_detail.html', {'product': product, 'profile': profile})
 
 @login_required
 def update_profile(request):
