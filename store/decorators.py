@@ -1,5 +1,6 @@
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
+from django.shortcuts import render
 from functools import wraps
 
 from .models import WebsiteProfile
