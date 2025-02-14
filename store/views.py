@@ -1475,7 +1475,7 @@ def list_and_add_website_profiles(request):
     return render(request, 'website_profiles.html', {'form': form, 'profiles': profiles, 'profile': profile})
 
  
- 
+
 @staff_required
 def admin_panel(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -1488,13 +1488,18 @@ def admin_panel(request):
     processed_count = Cart.objects.filter(is_processed=True).count()
     paid_count = Cart.objects.filter(paid=True).count()
 
+    # Counting total products
+    total_products = Product.objects.count()
+
     return render(request, 'admin.html', {
         'profile': profile,
         'total_carts': total_carts,
         'checked_out_count': checked_out_count,
         'processed_count': processed_count,
-        'paid_count': paid_count
+        'paid_count': paid_count,
+        'total_products': total_products
     })
+
 
 
 def generate_id():
