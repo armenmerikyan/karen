@@ -171,6 +171,9 @@ urlpatterns = [
 
     path('generate-message/<int:customer_id>/<int:touchpoint_id>/', views.generate_message, name='generate_message'),   
     path('generate-message-chatgpt/<int:customer_id>/<int:touchpoint_id>/', views.generate_message_chatgpt, name='generate_message_chatgpt'),      
+
+
+    path('save-message/', views.save_generated_message, name='save_generated_message'),
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

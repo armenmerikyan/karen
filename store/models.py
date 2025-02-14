@@ -732,3 +732,18 @@ class TouchPointType(models.Model):
 
     def __str__(self):
         return self.name
+    
+class GeneratedMessage(models.Model):
+    customer = models.ForeignKey('Customer', on_delete=models.CASCADE)
+    touchpoint = models.ForeignKey('TouchPoint', on_delete=models.CASCADE)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    sent_social_media = models.BooleanField(default=False)
+    sent_email = models.BooleanField(default=False)
+    sent_text = models.BooleanField(default=False)
+    sent_linkedin = models.BooleanField(default=False)
+    sent_x = models.BooleanField(default=False)
+    sent_instagram = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Message for {self.customer} - {self.touchpoint}"

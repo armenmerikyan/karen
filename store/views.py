@@ -105,6 +105,8 @@ from .models import CartProduct
 from .models import Payment
 from .models import PaymentApplication
 from .models import TouchPointType
+from .models import GeneratedMessage
+
 
 from .forms import TouchPointTypeForm
 from .forms import ShippingBillingForm
@@ -3194,3 +3196,23 @@ def generate_message_chatgpt(request, customer_id, touchpoint_id):
     else:
         print("Error response:", response.text)  # Log the error response
         return JsonResponse({"error": "Failed to generate message"}, status=500)
+
+@admin_required
+def save_generated_message(request):
+    if request.method == "POST":
+        customer_id = request.POST.get("customer_id")
+        touchpoint_id = request.POST.get("touchpoint_id")
+        message_text = request.POST.get("message")
+        
+        customer = Customer.objects.get(id=customer_id)
+        touchpoint = TouchPoint.objects.get(id=touchpoint_id)
+        
+        message = GeneratedMessage.objects.create(
+            customer=customer,
+            touchpoint=touchpoint,
+            message=message_text
+        )
+        
+        return JsonResponse({"status": "success", "message_id": message.id})
+    
+    return JsonResponse({"status": "error"}, status=400)
