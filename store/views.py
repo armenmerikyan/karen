@@ -3197,6 +3197,7 @@ def generate_message_chatgpt(request, customer_id, touchpoint_id):
         print("Error response:", response.text)  # Log the error response
         return JsonResponse({"error": "Failed to generate message"}, status=500)
 
+@csrf_exempt
 @login_required
 def save_generated_message(request):
     if request.method == "POST":
