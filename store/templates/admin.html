@@ -46,10 +46,13 @@
           </a>       
           <p>Manage the list of products and their details.</p>
           <HR>
-          <a href="{% url 'cart_list' %}" class="nav-link">
-            <i class="fas fa-shopping-cart"></i> Carts
-            <span class="badge bg-danger">{{ cart_count }}</span>
-          </a>      
+            <a href="{% url 'cart_list' %}" class="nav-link">
+              <i class="fas fa-shopping-cart"></i> Carts 
+              <span class="badge bg-dark">{{ total_carts }}</span> <!-- Black: Total -->
+              <span class="badge bg-danger">{{ checked_out_count }}</span> <!-- Red: Checked Out -->
+              <span class="badge bg-warning text-dark">{{ processed_count }}</span> <!-- Yellow: Processed -->
+              <span class="badge bg-success">{{ paid_count }}</span> <!-- Green: Paid -->
+            </a>
           <p>View and manage customer shopping carts.</p>
           <HR>
           <a href="{% url 'touchpoint_type_list' %}" class="nav-link">

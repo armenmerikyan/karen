@@ -1475,15 +1475,26 @@ def list_and_add_website_profiles(request):
     return render(request, 'website_profiles.html', {'form': form, 'profiles': profiles, 'profile': profile})
 
  
-@staff_required
+@staff_member_required
 def admin_panel(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
 
-    cart_count = Cart.objects.count()  # Count all carts
+    # Counting carts
+    total_carts = Cart.objects.count()
+    checked_out_count = Cart.objects.filter(checked_out=True).count()
+    processed_count = Cart.objects.filter(is_processed=True).count()
+    paid_count = Cart.objects.filter(paid=True).count()
 
-    return render(request, 'admin.html', {'profile': profile, 'cart_count': cart_count})
+    return render(request, 'admin.html', {
+        'profile': profile,
+        'total_carts': total_carts,
+        'checked_out_count': checked_out_count,
+        'processed_count': processed_count,
+        'paid_count': paid_count
+    })
+
 
 def generate_id():
     return uuid.uuid4().hex
