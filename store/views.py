@@ -3205,7 +3205,7 @@ def save_generated_message(request):
         message_text = request.POST.get("message")
         
         customer = Customer.objects.get(id=customer_id)
-        touchpoint = TouchPoint.objects.get(id=touchpoint_id)
+        touchpoint = TouchPointType.objects.get(id=touchpoint_id)
         
         message = GeneratedMessage.objects.create(
             customer=customer,
