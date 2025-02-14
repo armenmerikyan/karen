@@ -3260,7 +3260,7 @@ def update_generated_message(request, pk):
         form = GeneratedMessageForm(request.POST, instance=message)
         if form.is_valid():
             form.save()
-            return redirect('customer_detail', pk=message.customer.id)  # Redirect to customer detail page
+            return redirect('customer_edit', pk=message.customer.id)  # Redirect to customer detail page
     else:
         form = GeneratedMessageForm(instance=message)
     
