@@ -28,7 +28,7 @@
             {{ form.sent_instagram }} <label class="form-check-label">Sent via Instagram</label>
         </div>
         <button type="submit" class="btn btn-primary">Update</button>
-        <a href="{% url 'customer_detail' message.customer.id %}" class="btn btn-secondary">Cancel</a>
+        <a href="{% url 'customer_edit' message.customer.id %}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
 {% endblock %}
