@@ -223,7 +223,7 @@ from solders.rpc.config import RpcSendTransactionConfig as TxOpts
 from .decorators import staff_required
  
 import PyPDF2
- 
+
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
@@ -3371,14 +3371,13 @@ def replace_text_in_pdf(request):
                 reader = PyPDF2.PdfReader(pdf_file)
                 writer = PyPDF2.PdfWriter()
 
-                # Modify each page
                 for page in reader.pages:
                     text = page.extract_text()
                     if text:
                         modified_text = text.replace("first_name", customer.first_name)
 
                         # Create a new page with the modified text
-                        new_page = PyPDF2.pdf.PageObject.create_blank_page(width=page.mediabox.width, height=page.mediabox.height)
+                        new_page = PyPDF2._page.PageObject.create_blank_page(width=page.mediabox.width, height=page.mediabox.height)
                         writer.add_page(new_page)
 
                 output_stream = BytesIO()
