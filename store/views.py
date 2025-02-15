@@ -3396,24 +3396,29 @@ def replace_text_in_pdf(request):
             input_pdf = pdfrw.PdfReader(pdf_path)
             writer = pdfrw.PdfWriter()
 
-            # Loop through each page
+            # Loop through each page and overlay modified text
             for page_num, page in enumerate(input_pdf.pages):
-                content = page["/Contents"].stream
-
-                # If the content is in bytes, we don't need to decode it. Proceed directly with string replacement.
-                content_str = content  # It's already a string.
-                new_content = content_str
+                # Create a temporary PDF with reportlab to overlay new text
+                packet = BytesIO()
+                can = canvas.Canvas(packet)
+                
+                # Draw the original content (text replacement only where needed)
                 for element in text_elements:
                     old_text = "first_name"
                     if old_text in element["text"]:
-                        # Replace the old text with the new one
-                        modified_text = element["text"].replace(old_text, customer.first_name)
-                        # Replace text in the content stream (ensure correct encoding)
-                        new_content = new_content.replace(element["text"], modified_text)
+                        new_text = element["text"].replace(old_text, customer.first_name)
+                        can.drawString(element["x0"], element["y0"], new_text)  # Replace at the same position
 
-                # Re-encode the new content back to bytes
-                page["/Contents"].stream = new_content.encode('latin1')
-                writer.addpage(page)
+                can.save()
+
+                # Merge the overlay PDF with the original PDF
+                packet.seek(0)
+                overlay_pdf = pdfrw.PdfReader(packet)
+                original_page = page
+                original_page.merge_page(overlay_pdf.pages[0])
+
+                # Add the modified page to the writer
+                writer.addpage(original_page)
 
             # Output the modified PDF
             output_stream = BytesIO()
