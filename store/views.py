@@ -227,6 +227,9 @@ import PyPDF2
 from PyPDF2 import PdfReader, PdfWriter
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
+   
+import pdfminer
+from pdfminer.high_level import extract_text
 
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -3376,15 +3379,18 @@ def replace_text_in_pdf(request):
                 writer = PdfWriter()
 
                 for page in reader.pages:
+                    # Extract text using pdfminer
+                    extracted_text = extract_text(pdf_path, page_numbers=[reader.pages.index(page)])
+
                     # Create a BytesIO buffer to hold the new page with modified text
                     packet = BytesIO()
                     can = canvas.Canvas(packet, pagesize=letter)
 
-                    # Modify text (this is a basic example, you might need to adjust it to your PDF)
-                    text = page.extract_text()
-                    if text:
-                        modified_text = text.replace("first_name", customer.first_name)
-                        can.drawString(100, 750, modified_text)  # Adjust position accordingly
+                    # Check if the text contains 'first_name' and replace it
+                    modified_text = extracted_text.replace("first_name", customer.first_name)
+
+                    # Here you might need to adjust the position based on your extracted text's position
+                    can.drawString(100, 750, modified_text)  # Adjust position accordingly
 
                     # Save the canvas to the buffer
                     can.save()

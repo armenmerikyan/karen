@@ -16,3 +16,4 @@ stripe
 solana
 pymupdf
 PyPDF2
+reportlab
