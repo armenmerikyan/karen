@@ -30,11 +30,21 @@
               {% for touchpoint in touchpoints %}
                 <li>
                   {{ touchpoint.name }}
-                  <br>
-                  <a href="#generatedMessageAnchor" onclick="generateMessage('{% url 'generate_message' form.instance.pk touchpoint.id %}', {{ touchpoint.id }})">Deepseek</a>
-                  <br>                   
-                  <a href="#generatedMessageAnchor" onclick="generateMessage('{% url 'generate_message_chatgpt' form.instance.pk touchpoint.id %}', {{ touchpoint.id }})">ChatGPT</a>
-                  <HR>
+                  <div class="d-flex gap-2 my-2">
+                      <a href="#generatedMessageAnchor" 
+                        class="btn btn-primary" 
+                        onclick="generateMessage('{% url 'generate_message' form.instance.pk touchpoint.id %}', {{ touchpoint.id }})">
+                        Deepseek
+                      </a>
+                      
+                      <a href="#generatedMessageAnchor" 
+                        class="btn btn-secondary" 
+                        onclick="generateMessage('{% url 'generate_message_chatgpt' form.instance.pk touchpoint.id %}', {{ touchpoint.id }})">
+                        ChatGPT
+                      </a>
+                  </div>
+                  <hr>
+
                 </li>
               {% endfor %}
             </ul>
