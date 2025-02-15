@@ -3435,3 +3435,8 @@ def replace_text_in_pdf(request):
             response = HttpResponse(output_stream, content_type='application/pdf')
             response['Content-Disposition'] = f'attachment; filename="{customer.first_name}_document.pdf"'
             return response
+
+    else:
+        form = CustomerPDFForm()
+
+    return render(request, 'replace_pdf.html', {'form': form})
