@@ -18,3 +18,4 @@ pymupdf
 PyPDF2
 reportlab
 pdfminer.six
+pdfrw

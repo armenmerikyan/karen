@@ -40,6 +40,10 @@ pip install stripe
 pip install solana
 pip install pymupdf
 pip install PyPDF2
+pip install reportlab
+pip install pdfminer.six
+pip install pdfrw
+
 
 python3 manage.py makemigrations
 python3 manage.py migrate

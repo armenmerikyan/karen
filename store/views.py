@@ -3400,18 +3400,19 @@ def replace_text_in_pdf(request):
             for page_num, page in enumerate(input_pdf.pages):
                 content = page["/Contents"].stream
 
-                # Replace text in the content stream
-                new_content = content
+                # Decode content to string, replace the text, and re-encode it
+                content_str = content.decode('latin1')  # Use 'latin1' to avoid encoding issues
+                new_content = content_str
                 for element in text_elements:
                     old_text = "first_name"
                     if old_text in element["text"]:
                         # Replace the old text with the new one
                         modified_text = element["text"].replace(old_text, customer.first_name)
-                        # You might need to modify the content stream to directly replace this text
-                        new_content = new_content.replace(element["text"].encode(), modified_text.encode())
+                        # Replace text in the content stream (ensure correct encoding)
+                        new_content = new_content.replace(element["text"], modified_text)
 
-                # Update the page with the new content
-                page["/Contents"].stream = new_content
+                # Re-encode the new content back to bytes
+                page["/Contents"].stream = new_content.encode('latin1')
                 writer.addpage(page)
 
             # Output the modified PDF
