@@ -3367,7 +3367,8 @@ def edit_pdf(request, pk):
         form = PDFDocumentForm(instance=pdf)
     return render(request, 'edit_pdf.html', {'form': form, 'pdf': pdf})
  
- 
+
+# Extract text and its position from the PDF
 def extract_text_with_position(pdf_path):
     text_elements = []
     for page_layout in extract_pages(pdf_path):
@@ -3382,7 +3383,7 @@ def extract_text_with_position(pdf_path):
                 })
     return text_elements
 
-@admin_required
+# Function to replace text in PDF
 def replace_text_in_pdf(request):
     if request.method == 'POST':
         form = CustomerPDFForm(request.POST)
@@ -3403,16 +3404,21 @@ def replace_text_in_pdf(request):
                     packet = BytesIO()
                     can = canvas.Canvas(packet, pagesize=letter)
 
-                    # Draw the original page (you need to adjust position and formatting)
+                    # Set the font for the new text
                     can.setFont("Helvetica", 12)
 
+                    # For each text element, check if it matches the text to be replaced
                     for element in text_elements:
                         text = element["text"]
+                        x0, y0 = element["x0"], element["y0"]
+
+                        # If the text contains "first_name", replace it
                         if "first_name" in text:
+                            # Replace with customer first name
                             text = text.replace("first_name", customer.first_name)
 
-                        # Draw text at the same position as the original
-                        can.drawString(element["x0"], element["y0"], text)
+                            # Draw the new text at the same position as the old text
+                            can.drawString(x0, y0, text)
 
                     can.save()
 
