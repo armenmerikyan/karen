@@ -105,8 +105,10 @@ from .models import Payment
 from .models import PaymentApplication
 from .models import TouchPointType
 from .models import GeneratedMessage
+from .models import PDFDocument
+ 
 
-
+from .forms import PDFDocumentForm
 from .forms import GeneratedMessageForm
 from .forms import TouchPointTypeForm
 from .forms import ShippingBillingForm
