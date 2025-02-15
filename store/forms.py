@@ -19,7 +19,10 @@ from .models import TouchPointType
 from .models import GeneratedMessage
 from .models import PDFDocument
 
-
+class CustomerPDFForm(forms.Form):
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), label="Select Customer")
+    pdf_document = forms.ModelChoiceField(queryset=PDFDocument.objects.all(), label="Select PDF")
+    
 class PDFDocumentForm(forms.ModelForm):
     class Meta:
         model = PDFDocument

@@ -108,6 +108,7 @@ from .models import GeneratedMessage
 from .models import PDFDocument
  
 
+from .forms import CustomerPDFForm
 from .forms import PDFDocumentForm
 from .forms import GeneratedMessageForm
 from .forms import TouchPointTypeForm
@@ -3353,3 +3354,40 @@ def edit_pdf(request, pk):
     else:
         form = PDFDocumentForm(instance=pdf)
     return render(request, 'edit_pdf.html', {'form': form, 'pdf': pdf})
+
+@admin_required
+def replace_text_in_pdf(request):
+    if request.method == 'POST':
+        form = CustomerPDFForm(request.POST)
+        if form.is_valid():
+            customer = form.cleaned_data['customer']
+            pdf_document = form.cleaned_data['pdf_document']
+
+            # Open the original PDF
+            pdf_path = pdf_document.file.path
+            with open(pdf_path, "rb") as pdf_file:
+                reader = PyPDF2.PdfReader(pdf_file)
+                writer = PyPDF2.PdfWriter()
+
+                # Modify each page
+                for page in reader.pages:
+                    text = page.extract_text()
+                    if text:
+                        modified_text = text.replace("first_name", customer.first_name)
+
+                        # Create a new page with the modified text
+                        new_page = PyPDF2.pdf.PageObject.create_blank_page(width=page.mediabox.width, height=page.mediabox.height)
+                        writer.add_page(new_page)
+
+                output_stream = BytesIO()
+                writer.write(output_stream)
+                output_stream.seek(0)
+
+            response = HttpResponse(output_stream, content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="{customer.first_name}_document.pdf"'
+            return response
+
+    else:
+        form = CustomerPDFForm()
+
+    return render(request, 'replace_pdf.html', {'form': form})
