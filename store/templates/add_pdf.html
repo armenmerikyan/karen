@@ -1,17 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add PDF</title>
-</head>
-<body>
-    <h1>Upload PDF</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Upload</button>
-    </form>
-    <a href="{% url 'pdf_list' %}">Back to List</a>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">   
+            <h1>Upload PDF</h1>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Upload</button>
+            </form>
+            <a href="{% url 'pdf_list' %}">Back to List</a>
+
+        </div>
+      </div>      
+    </div>
+  </div>
+</section>    
+{% endblock %}

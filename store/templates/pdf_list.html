@@ -1,24 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Library</title>
-</head>
-<body>
-    <h1>PDF Library</h1>
-    <a href="{% url 'add_pdf' %}">Upload New PDF</a>
-    <ul>
-        {% for pdf in pdfs %}
-            {% if pdf.is_visible %}
-                <li>
-                    <a href="{% url 'view_pdf' pdf.pk %}">{{ pdf.title }}</a> - {{ pdf.description }}
-                    <a href="{% url 'edit_pdf' pdf.pk %}">Edit</a>
-                </li>
-            {% endif %}
-        {% empty %}
-            <p>No PDFs available.</p>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">   
+            <h1>PDF Library</h1>
+            <a href="{% url 'add_pdf' %}">Upload New PDF</a>
+            <ul>
+                {% for pdf in pdfs %}
+                    {% if pdf.is_visible %}
+                        <li>
+                            <a href="{% url 'view_pdf' pdf.pk %}">{{ pdf.title }}</a> - {{ pdf.description }}
+                            <a href="{% url 'edit_pdf' pdf.pk %}">Edit</a>
+                        </li>
+                    {% endif %}
+                {% empty %}
+                    <p>No PDFs available.</p>
+                {% endfor %}
+            </ul>
+        </div>
+      </div>      
+    </div>
+  </div>
+</section>    
+{% endblock %}
