@@ -178,6 +178,12 @@ urlpatterns = [
     path('customer/<int:customer_id>/messages/', views.customer_messages, name='customer_messages'),
     path('generated-message/<int:pk>/edit/', views.update_generated_message, name='generated_message_update'),
 
+
+    path('pdf_list', views.pdf_list, name='pdf_list'),
+    path('pdf/<int:pk>/', views.view_pdf, name='view_pdf'),
+    path('pdf/add/', views.add_pdf, name='add_pdf'),
+    path('pdf/edit/<int:pk>/', views.edit_pdf, name='edit_pdf'),    
+
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

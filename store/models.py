@@ -744,3 +744,14 @@ class GeneratedMessage(models.Model):
 
     def __str__(self):
         return f"Message for {self.customer} - {self.touchpoint}"
+    
+class PDFDocument(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)  # Added description field
+    file = models.FileField(upload_to='pdfs/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    lifecycle_stage = models.ForeignKey(LifecycleStage, on_delete=models.SET_NULL, null=True, blank=True)
+    is_visible = models.BooleanField(default=True)  # Whether this PDF should be visible
+
+    def __str__(self):
+        return self.title

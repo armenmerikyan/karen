@@ -3313,3 +3313,41 @@ def update_generated_message(request, pk):
         form = GeneratedMessageForm(instance=message)
     
     return render(request, 'generated_message_update.html', {'form': form, 'message': message, 'profile': profile})
+
+
+# View to upload and display PDFs
+@admin_required
+def pdf_list(request):
+    pdfs = PDFDocument.objects.all()
+    return render(request, 'pdf_list.html', {'pdfs': pdfs})
+
+# View to serve a PDF
+@admin_required
+def view_pdf(request, pk):
+    pdf = get_object_or_404(PDFDocument, pk=pk)
+    return FileResponse(pdf.file.open('rb'), content_type='application/pdf')
+
+# View to add a new PDF
+@admin_required
+def add_pdf(request):
+    if request.method == 'POST':
+        form = PDFDocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('pdf_list')
+    else:
+        form = PDFDocumentForm()
+    return render(request, 'add_pdf.html', {'form': form})
+
+# View to edit an existing PDF
+@admin_required
+def edit_pdf(request, pk):
+    pdf = get_object_or_404(PDFDocument, pk=pk)
+    if request.method == 'POST':
+        form = PDFDocumentForm(request.POST, request.FILES, instance=pdf)
+        if form.is_valid():
+            form.save()
+            return redirect('pdf_list')
+    else:
+        form = PDFDocumentForm(instance=pdf)
+    return render(request, 'edit_pdf.html', {'form': form, 'pdf': pdf})

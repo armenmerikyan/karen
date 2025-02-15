@@ -17,6 +17,13 @@ from .models import TokenMarketingContent
 from store.models import Tweet 
 from .models import TouchPointType 
 from .models import GeneratedMessage
+from .models import PDFDocument
+
+
+class PDFDocumentForm(ModelForm):
+    class Meta:
+        model = PDFDocument
+        fields = ['title', 'description', 'file', 'lifecycle_stage', 'is_visible']
 
 class GeneratedMessageForm(forms.ModelForm):
     class Meta:
