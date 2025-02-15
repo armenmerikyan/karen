@@ -3381,23 +3381,26 @@ def replace_text_in_pdf(request):
                 for idx, page in enumerate(reader.pages):
                     # Extract text using pdfminer
                     extracted_text = extract_text(pdf_path, page_numbers=[idx])
-
-                    # Create a BytesIO buffer to hold the new page with modified text
-                    packet = BytesIO()
-                    can = canvas.Canvas(packet, pagesize=letter)
-
-                    # Check if the text contains 'first_name' and replace it
+                    
+                    # Example of searching for 'first_name' in extracted text
                     modified_text = extracted_text.replace("first_name", customer.first_name)
 
-                    # Here you might need to adjust the position based on your extracted text's position
-                    can.drawString(100, 750, modified_text)  # Adjust position accordingly
+                    # Create a new PDF page with reportlab
+                    packet = BytesIO()
+                    can = canvas.Canvas(packet, pagesize=letter)
+                    
+                    # Overlay the modified text
+                    can.setFont("Helvetica", 12)  # Set font and size
+                    can.drawString(100, 750, modified_text)  # Adjust position as needed
 
                     # Save the canvas to the buffer
                     can.save()
 
-                    # Merge the modified content with the original PDF page
+                    # Create a new PDF from the reportlab output
                     packet.seek(0)
                     new_pdf = PdfReader(packet)
+
+                    # Merge the new content with the original PDF page
                     original_page = page
                     original_page.merge_page(new_pdf.pages[0])
 
