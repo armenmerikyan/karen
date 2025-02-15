@@ -224,6 +224,10 @@ from .decorators import staff_required
  
 import PyPDF2
 
+from PyPDF2 import PdfReader, PdfWriter
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
@@ -3368,18 +3372,33 @@ def replace_text_in_pdf(request):
             # Open the original PDF
             pdf_path = pdf_document.file.path
             with open(pdf_path, "rb") as pdf_file:
-                reader = PyPDF2.PdfReader(pdf_file)
-                writer = PyPDF2.PdfWriter()
+                reader = PdfReader(pdf_file)
+                writer = PdfWriter()
 
                 for page in reader.pages:
+                    # Create a BytesIO buffer to hold the new page with modified text
+                    packet = BytesIO()
+                    can = canvas.Canvas(packet, pagesize=letter)
+
+                    # Modify text (this is a basic example, you might need to adjust it to your PDF)
                     text = page.extract_text()
                     if text:
                         modified_text = text.replace("first_name", customer.first_name)
+                        can.drawString(100, 750, modified_text)  # Adjust position accordingly
 
-                        # Create a new page with the modified text
-                        new_page = PyPDF2._page.PageObject.create_blank_page(width=page.mediabox.width, height=page.mediabox.height)
-                        writer.add_page(new_page)
+                    # Save the canvas to the buffer
+                    can.save()
 
+                    # Merge the modified content with the original PDF page
+                    packet.seek(0)
+                    new_pdf = PdfReader(packet)
+                    original_page = page
+                    original_page.merge_page(new_pdf.pages[0])
+
+                    # Add the modified page to the writer
+                    writer.add_page(original_page)
+
+                # Output the modified PDF
                 output_stream = BytesIO()
                 writer.write(output_stream)
                 output_stream.seek(0)
