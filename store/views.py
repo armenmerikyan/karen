@@ -233,6 +233,7 @@ from pdfminer.high_level import extract_text
 
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTTextContainer
+import pdfrw
 
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -3367,7 +3368,6 @@ def edit_pdf(request, pk):
         form = PDFDocumentForm(instance=pdf)
     return render(request, 'edit_pdf.html', {'form': form, 'pdf': pdf})
  
-# Extract text and coordinates using pdfminer
 def extract_text_with_position(pdf_path):
     text_elements = []
     for page_layout in extract_pages(pdf_path):
@@ -3382,7 +3382,6 @@ def extract_text_with_position(pdf_path):
                 })
     return text_elements
 
-# Function to replace text in PDF
 def replace_text_in_pdf(request):
     if request.method == 'POST':
         form = CustomerPDFForm(request.POST)
@@ -3393,50 +3392,32 @@ def replace_text_in_pdf(request):
             pdf_path = pdf_document.file.path
             text_elements = extract_text_with_position(pdf_path)
 
-            # Open the original PDF to modify
-            with open(pdf_path, "rb") as pdf_file:
-                reader = PdfReader(pdf_file)
-                writer = PdfWriter()
+            # Read the original PDF with pdfrw
+            input_pdf = pdfrw.PdfReader(pdf_path)
+            writer = pdfrw.PdfWriter()
 
-                # Loop through all pages
-                for idx, page in enumerate(reader.pages):
-                    packet = BytesIO()
-                    can = canvas.Canvas(packet, pagesize=letter)
+            # Loop through each page
+            for page_num, page in enumerate(input_pdf.pages):
+                content = page["/Contents"].stream
 
-                    # Loop through all text blocks and overlay white rectangles
-                    for element in text_elements:
-                        text = element["text"]
-                        x0, y0 = element["x0"], element["y0"]
+                # Replace text in the content stream
+                new_content = content
+                for element in text_elements:
+                    old_text = "first_name"
+                    if old_text in element["text"]:
+                        # Replace the old text with the new one
+                        modified_text = element["text"].replace(old_text, customer.first_name)
+                        # You might need to modify the content stream to directly replace this text
+                        new_content = new_content.replace(element["text"].encode(), modified_text.encode())
 
-                        # If the text contains "first_name", we need to replace it
-                        if "first_name" in text:
-                            # Overlay a white rectangle to clear the space (erase old text)
-                            can.setFillColorRGB(1, 1, 1)  # White color to clear old text
-                            can.rect(x0, y0, element["x1"] - element["x0"], element["y1"] - element["y0"], fill=True)
+                # Update the page with the new content
+                page["/Contents"].stream = new_content
+                writer.addpage(page)
 
-                            # Replace "first_name" with the actual customer name
-                            text = text.replace("first_name", customer.first_name)
-
-                            # Draw the new text at the same position
-                            can.setFillColorRGB(0, 0, 0)  # Black color for new text
-                            can.setFont("Helvetica", 12)  # Set font to Helvetica, size 12
-                            can.drawString(x0, y0, text)
-
-                    can.save()
-
-                    # Get the new PDF with the overlayed text
-                    packet.seek(0)
-                    new_pdf = PdfReader(packet)
-                    original_page = page
-                    original_page.merge_page(new_pdf.pages[0])
-
-                    # Add the modified page to the writer
-                    writer.add_page(original_page)
-
-                # Output the modified PDF
-                output_stream = BytesIO()
-                writer.write(output_stream)
-                output_stream.seek(0)
+            # Output the modified PDF
+            output_stream = BytesIO()
+            writer.write(output_stream)
+            output_stream.seek(0)
 
             response = HttpResponse(output_stream, content_type='application/pdf')
             response['Content-Disposition'] = f'attachment; filename="{customer.first_name}_document.pdf"'
