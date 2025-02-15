@@ -222,6 +222,8 @@ from solders.rpc.config import RpcSendTransactionConfig as TxOpts
 
 from .decorators import staff_required
  
+import PyPDF2
+ 
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
