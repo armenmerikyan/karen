@@ -3378,9 +3378,9 @@ def replace_text_in_pdf(request):
                 reader = PdfReader(pdf_file)
                 writer = PdfWriter()
 
-                for page in reader.pages:
+                for idx, page in enumerate(reader.pages):
                     # Extract text using pdfminer
-                    extracted_text = extract_text(pdf_path, page_numbers=[reader.pages.index(page)])
+                    extracted_text = extract_text(pdf_path, page_numbers=[idx])
 
                     # Create a BytesIO buffer to hold the new page with modified text
                     packet = BytesIO()
