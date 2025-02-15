@@ -20,7 +20,7 @@ from .models import GeneratedMessage
 from .models import PDFDocument
 
 
-class PDFDocumentForm(ModelForm):
+class PDFDocumentForm(forms.ModelForm):
     class Meta:
         model = PDFDocument
         fields = ['title', 'description', 'file', 'lifecycle_stage', 'is_visible']
