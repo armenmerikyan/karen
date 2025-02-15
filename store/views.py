@@ -3400,8 +3400,8 @@ def replace_text_in_pdf(request):
             for page_num, page in enumerate(input_pdf.pages):
                 content = page["/Contents"].stream
 
-                # Decode content to string, replace the text, and re-encode it
-                content_str = content.decode('latin1')  # Use 'latin1' to avoid encoding issues
+                # If the content is in bytes, we don't need to decode it. Proceed directly with string replacement.
+                content_str = content  # It's already a string.
                 new_content = content_str
                 for element in text_elements:
                     old_text = "first_name"
