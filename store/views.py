@@ -3366,8 +3366,8 @@ def edit_pdf(request, pk):
     else:
         form = PDFDocumentForm(instance=pdf)
     return render(request, 'edit_pdf.html', {'form': form, 'pdf': pdf})
-
-@admin_required
+ 
+ 
 def extract_text_with_position(pdf_path):
     text_elements = []
     for page_layout in extract_pages(pdf_path):
