@@ -231,6 +231,9 @@ from reportlab.lib.pagesizes import letter
 import pdfminer
 from pdfminer.high_level import extract_text
 
+from pdfminer.high_level import extract_pages
+from pdfminer.layout import LTTextContainer
+
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
@@ -3365,42 +3368,57 @@ def edit_pdf(request, pk):
     return render(request, 'edit_pdf.html', {'form': form, 'pdf': pdf})
 
 @admin_required
+def extract_text_with_position(pdf_path):
+    text_elements = []
+    for page_layout in extract_pages(pdf_path):
+        for element in page_layout:
+            if isinstance(element, LTTextContainer):
+                text_elements.append({
+                    "text": element.get_text(),
+                    "x0": element.x0,
+                    "y0": element.y0,
+                    "x1": element.x1,
+                    "y1": element.y1
+                })
+    return text_elements
+
+@admin_required
 def replace_text_in_pdf(request):
     if request.method == 'POST':
         form = CustomerPDFForm(request.POST)
         if form.is_valid():
             customer = form.cleaned_data['customer']
             pdf_document = form.cleaned_data['pdf_document']
-
-            # Open the original PDF
+            
             pdf_path = pdf_document.file.path
+            text_elements = extract_text_with_position(pdf_path)
+
+            # Open the original PDF to modify
             with open(pdf_path, "rb") as pdf_file:
                 reader = PdfReader(pdf_file)
                 writer = PdfWriter()
 
+                # Loop through all pages
                 for idx, page in enumerate(reader.pages):
-                    # Extract text using pdfminer
-                    extracted_text = extract_text(pdf_path, page_numbers=[idx])
-                    
-                    # Example of searching for 'first_name' in extracted text
-                    modified_text = extracted_text.replace("first_name", customer.first_name)
-
-                    # Create a new PDF page with reportlab
                     packet = BytesIO()
                     can = canvas.Canvas(packet, pagesize=letter)
-                    
-                    # Overlay the modified text
-                    can.setFont("Helvetica", 12)  # Set font and size
-                    can.drawString(100, 750, modified_text)  # Adjust position as needed
 
-                    # Save the canvas to the buffer
+                    # Draw the original page (you need to adjust position and formatting)
+                    can.setFont("Helvetica", 12)
+
+                    for element in text_elements:
+                        text = element["text"]
+                        if "first_name" in text:
+                            text = text.replace("first_name", customer.first_name)
+
+                        # Draw text at the same position as the original
+                        can.drawString(element["x0"], element["y0"], text)
+
                     can.save()
 
-                    # Create a new PDF from the reportlab output
+                    # Get the new PDF with the overlayed text
                     packet.seek(0)
                     new_pdf = PdfReader(packet)
-
-                    # Merge the new content with the original PDF page
                     original_page = page
                     original_page.merge_page(new_pdf.pages[0])
 
