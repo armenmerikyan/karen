@@ -3367,7 +3367,6 @@ def edit_pdf(request, pk):
         form = PDFDocumentForm(instance=pdf)
     return render(request, 'edit_pdf.html', {'form': form, 'pdf': pdf})
  
-
 # Extract text and coordinates using pdfminer
 def extract_text_with_position(pdf_path):
     text_elements = []
@@ -3411,7 +3410,7 @@ def replace_text_in_pdf(request):
 
                         # If the text contains "first_name", we need to replace it
                         if "first_name" in text:
-                            # Overlay a white rectangle to clear the space
+                            # Overlay a white rectangle to clear the space (erase old text)
                             can.setFillColorRGB(1, 1, 1)  # White color to clear old text
                             can.rect(x0, y0, element["x1"] - element["x0"], element["y1"] - element["y0"], fill=True)
 
