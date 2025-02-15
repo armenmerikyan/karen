@@ -31,13 +31,9 @@
                 <li>
                   {{ touchpoint.name }}
                   <br>
-                  <a href="#generatedMessageAnchor" onclick="generateMessage('{% url 'generate_message' form.instance.pk touchpoint.id %}', {{ touchpoint.id }})">
-                    Deepseek
-                  </a>
-                   
-                  <a href="#generatedMessageAnchor" onclick="generateMessage('{% url 'generate_message_chatgpt' form.instance.pk touchpoint.id %}', {{ touchpoint.id }})">
-                    ChatGPT
-                  </a>
+                  <a href="#generatedMessageAnchor" onclick="generateMessage('{% url 'generate_message' form.instance.pk touchpoint.id %}', {{ touchpoint.id }})">Deepseek</a>
+                  <br>                   
+                  <a href="#generatedMessageAnchor" onclick="generateMessage('{% url 'generate_message_chatgpt' form.instance.pk touchpoint.id %}', {{ touchpoint.id }})">ChatGPT</a>
                   <HR>
                 </li>
               {% endfor %}
