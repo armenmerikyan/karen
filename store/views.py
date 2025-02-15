@@ -224,7 +224,8 @@ from .decorators import staff_required
  
 import PyPDF2
 
-from PyPDF2 import PdfReader, PdfWriter
+from PyPDF2 import PdfReader, PdfWriter 
+
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
    
@@ -3400,18 +3401,24 @@ def replace_text_in_pdf(request):
             for page_num, page in enumerate(input_pdf.pages):
                 # Create a temporary PDF with reportlab to overlay new text
                 packet = BytesIO()
-                can = canvas.Canvas(packet)
-                
-                # Draw the original content (text replacement only where needed)
-                for element in text_elements:
-                    old_text = "first_name"
-                    if old_text in element["text"]:
-                        new_text = element["text"].replace(old_text, customer.first_name)
-                        can.drawString(element["x0"], element["y0"], new_text)  # Replace at the same position
+                print("Before creating canvas object")
 
-                can.save()
+                try:
+                    can = canvas.Canvas(packet)
+                    print("Canvas created successfully")
+                    
+                    # Draw the original content (text replacement only where needed)
+                    for element in text_elements:
+                        old_text = "first_name"
+                        if old_text in element["text"]:
+                            new_text = element["text"].replace(old_text, customer.first_name)
+                            can.drawString(element["x0"], element["y0"], new_text)  # Replace at the same position
 
-                # Merge the overlay PDF with the original PDF
+                    can.save()
+
+                except Exception as e:
+                    print(f"Error in creating canvas: {e}")
+
                 packet.seek(0)
                 overlay_pdf = pdfrw.PdfReader(packet)
                 original_page = page
@@ -3428,8 +3435,3 @@ def replace_text_in_pdf(request):
             response = HttpResponse(output_stream, content_type='application/pdf')
             response['Content-Disposition'] = f'attachment; filename="{customer.first_name}_document.pdf"'
             return response
-
-    else:
-        form = CustomerPDFForm()
-
-    return render(request, 'replace_pdf.html', {'form': form})
