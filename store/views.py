@@ -15,6 +15,8 @@ from django.views.generic.edit import CreateView
 from django.views.generic import View
 
 
+from os.path import join
+
 from django.core.paginator import Paginator
 from django import template
 from urllib.parse import quote
