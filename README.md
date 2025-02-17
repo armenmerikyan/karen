@@ -126,6 +126,10 @@ server {
 	index index.html index.htm index.nginx-debian.html;
 
 	server_name www.YOURDOMANNAME.com YOURDOMANNAME.com;
+    
+    location /media/product_files/ {
+        deny all;
+    }
 
     location /solana_payment/ {
         proxy_pass http://127.0.0.1:8080;  # Forward requests to the service on port 8081

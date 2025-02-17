@@ -184,6 +184,8 @@ urlpatterns = [
     path('pdf/add/', views.add_pdf, name='add_pdf'),
     path('pdf/edit/<int:pk>/', views.edit_pdf, name='edit_pdf'),    
  
+    path('download/<int:product_id>/', views.secure_download, name='secure_download'),
+
 
 ] 
 

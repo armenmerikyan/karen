@@ -3369,3 +3369,27 @@ def edit_pdf(request, pk):
         form = PDFDocumentForm(instance=pdf)
     return render(request, 'edit_pdf.html', {'form': form, 'pdf': pdf})
   
+@login_required
+def secure_download(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+
+    # Check if the user has a cart containing this product and if the cart is paid
+    try:
+        cart = Cart.objects.get(user=request.user, checked_out=True, paid=True)  # Ensure the cart is paid
+    except Cart.DoesNotExist:
+        return HttpResponseForbidden("You don't have an active, paid cart.")
+
+    # Check if the product exists in the cart
+    cart_product = CartProduct.objects.filter(cart=cart, product=product).first()
+    if not cart_product:
+        return HttpResponseForbidden("You have not purchased this product.")
+
+    # Construct the path to the digital file in the media folder
+    file_path = join(settings.MEDIA_ROOT, 'product_files', product.digital_file.name)
+
+    # Ensure the file exists
+    if not product.digital_file:
+        return HttpResponseForbidden("The product does not have a digital file.")
+
+    # Serve the file securely
+    return FileResponse(open(file_path, 'rb'), as_attachment=True)
