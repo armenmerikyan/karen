@@ -14,7 +14,21 @@
                 <h2>Order Summary</h2>
                 <ul>
                     {% for product in products %}
-                        <li>{{ product.product.name }} - {{ product.quantity }} x {{ product.price|currency }} = {{ product.line_item_total|currency }}</li>
+                        <li>
+                            {{ product.product.name }} - 
+                            {{ product.quantity }} x 
+                            {{ product.price|currency }} = 
+                            {{ product.line_item_total|currency }}
+
+                            {% if product.product.digital_file %}
+                                <br>
+                                <a href="{{ product.product.digital_file.url }}" 
+                                   class="btn btn-success mt-2" 
+                                   download>
+                                   Download {{ product.product.name }}
+                                </a>
+                            {% endif %}
+                        </li>
                     {% endfor %}
                 </ul>
                 <p>Subtotal: {{ subtotal|currency }}</p>

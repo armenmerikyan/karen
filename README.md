@@ -136,6 +136,7 @@ server {
         proxy_set_header X-CSRF-TOKEN $http_x_csrf_token;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_read_timeout 600s;
+        client_max_body_size 1G;
     }
         
     location / {
