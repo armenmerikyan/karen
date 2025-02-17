@@ -183,8 +183,7 @@ urlpatterns = [
     path('pdf/<int:pk>/', views.view_pdf, name='view_pdf'),
     path('pdf/add/', views.add_pdf, name='add_pdf'),
     path('pdf/edit/<int:pk>/', views.edit_pdf, name='edit_pdf'),    
-
-    path('replace-pdf/', views.replace_text_in_pdf, name='replace_pdf'),
+ 
 
 ] 
 

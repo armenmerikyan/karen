@@ -12,7 +12,6 @@ from store.models import TokenProfile
 from store.models import LifecycleStage
 from store.models import Customer
 from store.models import ProductLifecycleStage
-from store.models import Product 
 from .models import TokenMarketingContent
 from store.models import Tweet 
 from .models import TouchPointType 
@@ -49,7 +48,7 @@ class ShippingBillingForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'description', 'price', 'wholesale_price', 'your_price', 'source_upload', 'product_image', 'display_priority', 'quantity', 'lifecycle_stage', 'is_labor']
+        fields = ['name', 'description', 'price', 'wholesale_price', 'your_price', 'source_upload', 'product_image', 'display_priority', 'quantity', 'lifecycle_stage', 'is_labor', 'digital_file']
 
 
 class ProductLifecycleStageForm(forms.ModelForm):

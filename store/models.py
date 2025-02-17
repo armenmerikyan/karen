@@ -685,7 +685,9 @@ class Product(models.Model):
     display_priority = models.IntegerField(null=True, blank=True)
     quantity = models.IntegerField()
     is_labor = models.BooleanField(default=False)  # New field added
-    
+
+    digital_file = models.FileField(upload_to='product_files/', null=True, blank=True)  # New field for digital files
+
     # Foreign keys for category, brand, and lifecycle stage
     #category = models.ForeignKey('Category', on_delete=models.CASCADE)
     #brand = models.ForeignKey('Brand', on_delete=models.CASCADE)
