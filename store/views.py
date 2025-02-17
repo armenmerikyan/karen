@@ -3375,21 +3375,22 @@ def secure_download(request, product_id):
 
     # Check if the user has a cart containing this product and if the cart is paid
     try:
-        cart = Cart.objects.get(user=request.user, checked_out=True, paid=True)  # Ensure the cart is paid
+        cart = Cart.objects.get(user=request.user, checked_out=True, paid=True)
     except Cart.DoesNotExist:
+        logger.error(f"User {request.user} does not have a paid, checked-out cart.")
         return HttpResponseForbidden("You don't have an active, paid cart.")
 
     # Check if the product exists in the cart
     cart_product = CartProduct.objects.filter(cart=cart, product=product).first()
     if not cart_product:
+        logger.error(f"User {request.user} does not have product {product_id} in their cart.")
         return HttpResponseForbidden("You have not purchased this product.")
 
-    # Construct the path to the digital file in the media folder
-    file_path = join(settings.MEDIA_ROOT, 'product_files', product.digital_file.name)
-
-    # Ensure the file exists
-    if not product.digital_file:
-        return HttpResponseForbidden("The product does not have a digital file.")
-
     # Serve the file securely
+    file_path = join(settings.MEDIA_ROOT, 'product_files', product.digital_file.name)
+    if not product.digital_file:
+        logger.error(f"Product {product_id} does not have a digital file.")
+        return HttpResponseForbidden("The product does not have a digital file.")
+    
+    logger.info(f"Serving digital file for product {product_id}.")
     return FileResponse(open(file_path, 'rb'), as_attachment=True)
