@@ -3393,7 +3393,7 @@ def secure_download(request, product_id):
         return HttpResponseForbidden("You have not purchased this product.")
 
     # Serve the file securely
-    file_path = join(settings.MEDIA_ROOT, 'product_files', product.digital_file.name)
+    file_path = join(settings.MEDIA_ROOT, product.digital_file.name)
     if not product.digital_file:
         logger.error(f"Product {product_id} does not have a digital file.")
         return HttpResponseForbidden("The product does not have a digital file.")
