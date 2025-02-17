@@ -1113,6 +1113,10 @@ def checkout_view(request):
         if request.user.is_authenticated:
             customer = Customer.objects.filter(email=request.user.email).first()
 
+        if request.user.is_authenticated:
+            cart.user = request.user
+            cart.save()
+
         if request.method == 'POST':
             form = ShippingBillingForm(request.POST, instance=cart)
             if form.is_valid():
