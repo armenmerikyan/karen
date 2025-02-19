@@ -117,6 +117,23 @@ document.getElementById("user-input").addEventListener("keypress", function (eve
   if (event.key === "Enter") sendMessage();
 });
 
+// Toggle chat window visibility
+document.getElementById("chat-icon").addEventListener("click", function () {
+  document.getElementById("chat-window").style.display = "flex"; // Show chat window
+  document.getElementById("chat-icon").style.display = "none"; // Hide chat icon
+});
+
+document.getElementById("close-button").addEventListener("click", function () {
+  document.getElementById("chat-window").style.display = "none"; // Hide chat window
+  document.getElementById("chat-icon").style.display = "block"; // Show chat icon
+});
+
+// Send message functionality
+document.getElementById("send-button").addEventListener("click", sendMessage);
+document.getElementById("user-input").addEventListener("keypress", function (event) {
+  if (event.key === "Enter") sendMessage();
+});
+
 function sendMessage() {
   const userInput = document.getElementById("user-input");
   const message = userInput.value.trim();
