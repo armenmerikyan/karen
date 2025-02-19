@@ -135,7 +135,6 @@ function sendMessage() {
     .then((data) => appendMessage("bot", data.response))
     .catch((error) => appendMessage("bot", "Error: Unable to get response"));
 }
-
 function appendMessage(sender, text) {
   const chatBox = document.getElementById("chat-box");
   const msgDiv = document.createElement("div");
@@ -148,6 +147,7 @@ function appendMessage(sender, text) {
   // Scroll to the bottom of the chat box
   chatBox.scrollTop = chatBox.scrollHeight;
 }
+ 
 </script>
 </body>
 </html>

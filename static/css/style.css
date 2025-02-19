@@ -189,13 +189,13 @@ a.terminal-green:hover {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   margin-top: 10px; /* Space between icon and chat window */
 }
- 
+  
 #chat-box {
   flex: 1;
   padding: 10px;
-  overflow-y: auto;
+  overflow-y: auto; /* Enable scrolling */
   display: flex;
-  flex-direction: column-reverse; /* Ensures scroll starts from the bottom */
+  flex-direction: column; /* Normal column layout (top to bottom) */
   max-height: 350px;
 }
 
