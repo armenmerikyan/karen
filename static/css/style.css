@@ -173,7 +173,6 @@ a.terminal-green:hover {
   background: #222;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 #chat-box {
@@ -182,6 +181,7 @@ a.terminal-green:hover {
   overflow-y: auto;
   display: flex;
   flex-direction: column-reverse;
+  max-height: 350px;
 }
 .message {
   padding: 8px 12px;
