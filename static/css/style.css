@@ -161,3 +161,57 @@ a.terminal-green:hover {
   background-color: #28a745;
   color: #FFFFFF !important;
 }
+
+#chat-container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 300px;
+  height: 400px;
+  border: 1px solid #444;
+  border-radius: 10px;
+  background: #222;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+#chat-box {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.message {
+  padding: 8px 12px;
+  margin: 5px;
+  border-radius: 5px;
+}
+.user {
+  align-self: flex-end;
+  background: #0078ff;
+}
+.bot {
+  align-self: flex-start;
+  background: #555;
+}
+#input-container {
+  display: flex;
+  border-top: 1px solid #444;
+}
+#user-input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+  background: #333;
+  color: white;
+}
+#send-button {
+  padding: 10px;
+  border: none;
+  background: #0078ff;
+  color: white;
+  cursor: pointer;
+}
