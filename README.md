@@ -1,6 +1,6 @@
 # The All-in-One Solution
 
-**Karen** is your all-in-one tool for managing customers, orders, invoices, and communication. It’s intuitive, seamless, and built to make your work simpler and faster.
+**Karen** is a customer relationship management app at its core, with everything you need to manage customers, orders, invoices, and media. Simple, powerful, and designed to grow with you.
 
 ---
 
