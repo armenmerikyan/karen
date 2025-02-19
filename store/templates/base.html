@@ -87,5 +87,37 @@
     gtag('js', new Date());
     gtag('config', 'G-85WVET5H6J');
   </script>
+
+<div id="chat-container">
+  <div id="chat-box"></div>
+  <div id="input-container">
+      <input type="text" id="user-input" placeholder="Type a message...">
+      <button id="send-button">Send</button>
+  </div>
+</div>
+<script>
+  document.getElementById("send-button").addEventListener("click", sendMessage);
+  document.getElementById("user-input").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") sendMessage();
+  });
+
+  function sendMessage() {
+      const userInput = document.getElementById("user-input");
+      const message = userInput.value.trim();
+      if (!message) return;
+      appendMessage("user", message);
+      userInput.value = "";
+      setTimeout(() => appendMessage("bot", "I'm a bot!"), 1000);
+  }
+
+  function appendMessage(sender, text) {
+      const chatBox = document.getElementById("chat-box");
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message", sender);
+      msgDiv.textContent = text;
+      chatBox.appendChild(msgDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+  }
+</script>
 </body>
 </html>
