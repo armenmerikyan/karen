@@ -181,7 +181,7 @@ a.terminal-green:hover {
   padding: 10px;
   overflow-y: auto;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
 }
 .message {
   padding: 8px 12px;
