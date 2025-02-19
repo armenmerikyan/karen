@@ -107,7 +107,15 @@
       if (!message) return;
       appendMessage("user", message);
       userInput.value = "";
-      setTimeout(() => appendMessage("bot", "I'm a bot!"), 1000);
+      
+      fetch("/chatbot-response/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: message })
+      })
+      .then(response => response.json())
+      .then(data => appendMessage("bot", data.response))
+      .catch(error => appendMessage("bot", "Error: Unable to get response"));
   }
 
   function appendMessage(sender, text) {
