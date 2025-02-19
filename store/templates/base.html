@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="/static/css/style.css?v=42">
+  <link rel="stylesheet" href="/static/css/style.css?v=43">
 </head>
 <body class="d-flex flex-column min-vh-100 mx-5" data-bs-theme="dark">
   <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
@@ -99,6 +99,7 @@
   </div>
 </div>
 <script>
+
 // Toggle chat window visibility
 document.getElementById("chat-icon").addEventListener("click", function () {
   document.getElementById("chat-window").style.display = "flex"; // Show chat window
@@ -139,6 +140,7 @@ function appendMessage(sender, text) {
   chatBox.appendChild(msgDiv); // Append new messages at the bottom
   chatBox.scrollTop = chatBox.scrollHeight;
 }
+
 </script>
 </body>
 </html>
