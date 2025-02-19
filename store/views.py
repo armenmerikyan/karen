@@ -3418,21 +3418,30 @@ def chatbot_response(request):
         if not api_key:
             return JsonResponse({"error": "API key not found in profile"}, status=400)
 
+        # Gather context for the ChatGPT conversation
+        context = [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "system", "content": f"About us: {profile.about_us}"},
+            {"role": "user", "content": user_message}
+        ]
+
+        # Optionally, you can retrieve previous interactions for better context
+        # previous_messages = retrieve_previous_conversations(user_id)
+        # context.extend(previous_messages)
+
         # Call OpenAI ChatGPT API
         url = "https://api.openai.com/v1/chat/completions"
         headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json"
         }
-        data = {
+        request_data = {
             "model": "gpt-4-turbo",  # Replace with the appropriate GPT model
-            "messages": [
-                {"role": "user", "content": user_message}
-            ]
+            "messages": context
         }
 
         try:
-            response = requests.post(url, headers=headers, json=data)
+            response = requests.post(url, headers=headers, json=request_data)
             response.raise_for_status()  # Raise an error for bad status codes
             bot_reply = response.json()['choices'][0]['message']['content']
         except requests.exceptions.RequestException as e:
