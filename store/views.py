@@ -3418,16 +3418,11 @@ def chatbot_response(request):
         if not api_key:
             return JsonResponse({"error": "API key not found in profile"}, status=400)
 
-        # Gather context for the ChatGPT conversation
+        # Include business context about 'About Us'
         context = [
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "system", "content": f"About us: {profile.about_us}"},
-            {"role": "user", "content": user_message}
+            {"role": "system", "content": f"You are a helpful assistant for a company. Here is some information about the company: {profile.about_us}"},
+            {"role": "user", "content": user_message}  # Include the user's message that requests information
         ]
-
-        # Optionally, you can retrieve previous interactions for better context
-        # previous_messages = retrieve_previous_conversations(user_id)
-        # context.extend(previous_messages)
 
         # Call OpenAI ChatGPT API
         url = "https://api.openai.com/v1/chat/completions"
@@ -3436,7 +3431,7 @@ def chatbot_response(request):
             "Content-Type": "application/json"
         }
         request_data = {
-            "model": "gpt-4-turbo",  # Replace with the appropriate GPT model
+            "model": "gpt-4-turbo",  # Use GPT-4 or other models as needed
             "messages": context
         }
 
@@ -3449,3 +3444,4 @@ def chatbot_response(request):
 
         return JsonResponse({"response": bot_reply})
     return JsonResponse({"error": "Invalid request"}, status=400)
+
