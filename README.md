@@ -1,6 +1,6 @@
 # The All-in-One Solution
 
-**Karen** is a versatile web platform designed for individuals, businesses, organizations, and even AI agents. Whether you're managing customers, processing orders, issuing invoices, or streamlining communications, Karen adapts to your unique operations and helps you run them faster and more cost-effectively.
+**Karen** is a simple, powerful platform that helps you manage customers, orders, invoices, and communication – all in one place. It’s designed to work for anyone, making your operations faster and more efficient.
 
 ---
 
