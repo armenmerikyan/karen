@@ -87,45 +87,58 @@
     gtag('js', new Date());
     gtag('config', 'G-85WVET5H6J');
   </script>
-
 <div id="chat-container">
-  <div id="chat-box"></div>
-  <div id="input-container">
+  <div id="chat-icon">💬</div> <!-- Chat icon -->
+  <div id="chat-window"> <!-- Chat window (initially hidden via CSS) -->
+    <div id="chat-box"></div>
+    <div id="input-container">
       <input type="text" id="user-input" placeholder="Type a message...">
       <button id="send-button">Send</button>
+    </div>
+    <button id="close-button">Close</button> <!-- Close button -->
   </div>
 </div>
 <script>
-  document.getElementById("send-button").addEventListener("click", sendMessage);
-  document.getElementById("user-input").addEventListener("keypress", function(event) {
-      if (event.key === "Enter") sendMessage();
-  });
+// Toggle chat window visibility
+document.getElementById("chat-icon").addEventListener("click", function () {
+  document.getElementById("chat-window").style.display = "flex"; // Show chat window
+});
 
-  function sendMessage() {
-      const userInput = document.getElementById("user-input");
-      const message = userInput.value.trim();
-      if (!message) return;
-      appendMessage("user", message);
-      userInput.value = "";
-      
-      fetch("/chatbot-response/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: message })
-      })
-      .then(response => response.json())
-      .then(data => appendMessage("bot", data.response))
-      .catch(error => appendMessage("bot", "Error: Unable to get response"));
-  }
+document.getElementById("close-button").addEventListener("click", function () {
+  document.getElementById("chat-window").style.display = "none"; // Hide chat window
+});
 
-  function appendMessage(sender, text) {
-      const chatBox = document.getElementById("chat-box");
-      const msgDiv = document.createElement("div");
-      msgDiv.classList.add("message", sender);
-      msgDiv.textContent = text;
-      chatBox.insertBefore(msgDiv, chatBox.firstChild);
-      chatBox.scrollTop = chatBox.scrollHeight;
-  }
+// Send message functionality
+document.getElementById("send-button").addEventListener("click", sendMessage);
+document.getElementById("user-input").addEventListener("keypress", function (event) {
+  if (event.key === "Enter") sendMessage();
+});
+
+function sendMessage() {
+  const userInput = document.getElementById("user-input");
+  const message = userInput.value.trim();
+  if (!message) return;
+  appendMessage("user", message);
+  userInput.value = "";
+
+  fetch("/chatbot-response/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: message }),
+  })
+    .then((response) => response.json())
+    .then((data) => appendMessage("bot", data.response))
+    .catch((error) => appendMessage("bot", "Error: Unable to get response"));
+}
+
+function appendMessage(sender, text) {
+  const chatBox = document.getElementById("chat-box");
+  const msgDiv = document.createElement("div");
+  msgDiv.classList.add("message", sender);
+  msgDiv.textContent = text;
+  chatBox.appendChild(msgDiv); // Append new messages at the bottom
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
 </script>
 </body>
 </html>
