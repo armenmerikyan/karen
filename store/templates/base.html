@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="/static/css/style.css?v=43">
+  <link rel="stylesheet" href="/static/css/style.css?v=44">
 </head>
 <body class="d-flex flex-column min-vh-100 mx-5" data-bs-theme="dark">
   <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
@@ -87,6 +87,7 @@
     gtag('js', new Date());
     gtag('config', 'G-85WVET5H6J');
   </script>
+
 <div id="chat-container">
   <div id="chat-icon">💬</div> <!-- Chat icon -->
   <div id="chat-window"> <!-- Chat window (initially hidden via CSS) -->
@@ -98,6 +99,7 @@
     <button id="close-button">Close</button> <!-- Close button -->
   </div>
 </div>
+
 <script>
 
 // Toggle chat window visibility
@@ -140,7 +142,6 @@ function appendMessage(sender, text) {
   chatBox.appendChild(msgDiv); // Append new messages at the bottom
   chatBox.scrollTop = chatBox.scrollHeight;
 }
-
 </script>
 </body>
 </html>
