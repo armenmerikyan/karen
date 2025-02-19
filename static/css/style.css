@@ -190,11 +190,6 @@ a.terminal-green:hover {
   margin-top: 10px; /* Space between icon and chat window */
 }
 
-/* Hide the chat icon when the chat window is visible */
-#chat-window:not([style*="display: none"]) + #chat-icon {
-  display: none;
-}
-
 #chat-box {
   flex: 1;
   padding: 10px;
