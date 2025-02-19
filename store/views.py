@@ -3401,6 +3401,7 @@ def secure_download(request, product_id):
     logger.info(f"Serving digital file for product {product_id}.")
     return FileResponse(open(file_path, 'rb'), as_attachment=True)
 
+@csrf_exempt
 def chatbot_response(request):
     if request.method == "POST":
         data = json.loads(request.body)
