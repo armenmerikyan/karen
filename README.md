@@ -1,6 +1,6 @@
 # The All-in-One Solution
 
-**Karen** is a customer relationship management app at its core, with everything you need to manage customers, orders, invoices, and media. Simple, powerful, and designed to grow with you.
+**Karen** is a customer relationship management app at its core, with powerful add-ons like shopping cart, invoicing, and media library. It’s everything you need to manage relationships, streamline processes, and grow your community effortlessly.
 
 ---
 
