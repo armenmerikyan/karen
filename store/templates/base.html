@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="/static/css/style.css?v=45">
+  <link rel="stylesheet" href="/static/css/style.css?v=46">
 </head>
 <body class="d-flex flex-column min-vh-100 mx-5" data-bs-theme="dark">
   <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
@@ -105,21 +105,6 @@
 // Toggle chat window visibility
 document.getElementById("chat-icon").addEventListener("click", function () {
   document.getElementById("chat-window").style.display = "flex"; // Show chat window
-});
-
-document.getElementById("close-button").addEventListener("click", function () {
-  document.getElementById("chat-window").style.display = "none"; // Hide chat window
-});
-
-// Send message functionality
-document.getElementById("send-button").addEventListener("click", sendMessage);
-document.getElementById("user-input").addEventListener("keypress", function (event) {
-  if (event.key === "Enter") sendMessage();
-});
-
-// Toggle chat window visibility
-document.getElementById("chat-icon").addEventListener("click", function () {
-  document.getElementById("chat-window").style.display = "flex"; // Show chat window
   document.getElementById("chat-icon").style.display = "none"; // Hide chat icon
 });
 
@@ -156,7 +141,11 @@ function appendMessage(sender, text) {
   const msgDiv = document.createElement("div");
   msgDiv.classList.add("message", sender);
   msgDiv.textContent = text;
-  chatBox.appendChild(msgDiv); // Append new messages at the bottom
+
+  // Append the new message at the bottom of the chat box
+  chatBox.appendChild(msgDiv);
+
+  // Scroll to the bottom of the chat box
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 </script>
