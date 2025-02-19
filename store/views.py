@@ -3406,6 +3406,37 @@ def chatbot_response(request):
     if request.method == "POST":
         data = json.loads(request.body)
         user_message = data.get("message", "")
-        bot_reply = f"You said: {user_message}"  # Replace with actual bot logic
+
+        # Get the latest profile or create a new one if it doesn't exist
+        profile = WebsiteProfile.objects.order_by('-created_at').first()
+        if not profile:
+            profile = WebsiteProfile(name="add name", about_us="some info about us")
+            profile.save()  # Save the new profile to the database
+
+        api_key = profile.chatgpt_api_key  # Fetch the API key from the profile
+
+        if not api_key:
+            return JsonResponse({"error": "API key not found in profile"}, status=400)
+
+        # Call OpenAI ChatGPT API
+        url = "https://api.openai.com/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "model": "gpt-4-turbo",  # Replace with the appropriate GPT model
+            "messages": [
+                {"role": "user", "content": user_message}
+            ]
+        }
+
+        try:
+            response = requests.post(url, headers=headers, json=data)
+            response.raise_for_status()  # Raise an error for bad status codes
+            bot_reply = response.json()['choices'][0]['message']['content']
+        except requests.exceptions.RequestException as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
         return JsonResponse({"response": bot_reply})
     return JsonResponse({"error": "Invalid request"}, status=400)
