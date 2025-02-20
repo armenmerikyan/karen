@@ -4,35 +4,35 @@
   <div class="container mt-4">
     <h1 class="mb-4">Question & Answers</h1>
     
-            {% if user.is_authenticated %}
-                {% if user.is_staff %}
-                    <!-- Admin link: Add New Question Answer -->
-                    <a href="{% url 'question_answer_add' %}" class="btn btn-primary mb-3">Add New Question Answer</a>
-                {% else %}
-                    <!-- Regular user link: Add Simple Question -->
-                    <a href="{% url 'simple_question_add' %}" class="btn btn-primary mb-3">Ask New Question</a>
-                {% endif %}
-            {% endif %}
+    {% if user.is_authenticated %}
+      {% if user.is_staff %}
+        <!-- Admin link: Add New Question Answer -->
+        <a href="{% url 'question_answer_add' %}" class="btn btn-primary mb-3">Add New Question Answer</a>
+      {% else %}
+        <!-- Regular user link: Add Simple Question -->
+        <a href="{% url 'simple_question_add' %}" class="btn btn-primary mb-3">Ask New Question</a>
+      {% endif %}
+    {% endif %}
     
     <ul class="list-group">
       {% for qa in question_answers %}
         <li class="list-group-item">
           <div class="d-flex justify-content-between align-items-center">
             {% if user.is_authenticated and user.is_staff %}
-                <a href="{% url 'question_answer_detail' qa.pk %}" class="text-decoration-none" style="font-size: 1.5rem; font-weight: bold;">{{ qa.question }}</a>
+              <a href="{% url 'question_answer_detail' qa.pk %}" class="text-decoration-none" style="font-size: 1.5rem; font-weight: bold;">{{ qa.question }}</a>
             {% else %}
-                <span style="font-size: 1.5rem; font-weight: bold;">{{ qa.question }}</span>
+              <span style="font-size: 1.5rem; font-weight: bold;">{{ qa.question }}</span>
             {% endif %}
 
             {% if user.is_authenticated and user.is_staff %}
-            <div class="d-flex">
-                <a href="{% url 'question_answer_edit' qa.pk %}" class="btn btn-sm btn-warning me-2">
-                <i class="fas fa-edit"></i> Edit
+              <div class="d-flex align-items-center">
+                <a href="{% url 'question_answer_edit' qa.pk %}" class="btn btn-sm btn-warning me-2 d-flex align-items-center">
+                  <i class="fas fa-edit me-1"></i> Edit
                 </a>
-                <a href="{% url 'question_answer_delete' qa.pk %}" class="btn btn-sm btn-danger">
-                <i class="fas fa-trash-alt"></i> Delete
+                <a href="{% url 'question_answer_delete' qa.pk %}" class="btn btn-sm btn-danger d-flex align-items-center">
+                  <i class="fas fa-trash-alt me-1"></i> Delete
                 </a>
-            </div>
+              </div>
             {% endif %}
           </div>
           
