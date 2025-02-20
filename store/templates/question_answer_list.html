@@ -2,13 +2,20 @@
 
 {% block content %}
   <h1>Question Answers</h1>
-  <a href="{% url 'question_answer_add' %}">Add New Question Answer</a>
+  
+  {% if user.is_authenticated %}
+    <a href="{% url 'question_answer_add' %}">Add New Question Answer</a>
+  {% endif %}
+  
   <ul>
     {% for qa in question_answers %}
       <li>
-        <a href="{% url 'question_answer_detail' qa.pk %}">{{ qa.question }}</a> - 
-        <a href="{% url 'question_answer_edit' qa.pk %}">Edit</a> |
-        <a href="{% url 'question_answer_delete' qa.pk %}">Delete</a>
+        <a href="{% url 'question_answer_detail' qa.pk %}">{{ qa.question }}</a>
+        
+        {% if user.is_staff or user.is_superuser %}
+          - <a href="{% url 'question_answer_edit' qa.pk %}">Edit</a> |
+          <a href="{% url 'question_answer_delete' qa.pk %}">Delete</a>
+        {% endif %}
       </li>
     {% endfor %}
   </ul>
