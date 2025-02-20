@@ -3455,7 +3455,7 @@ def chatbot_response(request):
             # If still processing or failed, use a fallback model
             model_id = "gpt-3.5-turbo"
 
-        print(model_id)
+        print("TEST ", model_id)
 
         try:
             # Call the OpenAI API
