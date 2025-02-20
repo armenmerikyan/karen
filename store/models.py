@@ -509,6 +509,12 @@ class WebsiteProfile(models.Model):
         help_text="The ChatGPT API key for the website.",
         blank=True,
         null=True
+    )   
+    chatgpt_model_id = models.CharField(
+        max_length=255,
+        help_text="The ChatGPT Fine Tuned Model ID.",
+        blank=True,
+        null=True
     )  
 
     def __str__(self):

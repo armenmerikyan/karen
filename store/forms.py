@@ -194,7 +194,7 @@ class WebsiteProfileForm(forms.ModelForm):
             'address1', 'address2', 'city', 'state', 'zip_code', 'country',
             'tax_rate', 'terms_of_service', 'privacy_policy', 
             'stripe_publishable_key', 'stripe_secret_key', 
-            'bird_eye_api_key', 'deepseek_api_key', 'chatgpt_api_key'
+            'bird_eye_api_key', 'deepseek_api_key', 'chatgpt_api_key', 'chatgpt_model_id'
         ]
 
 class TokenProfileForm(forms.ModelForm):

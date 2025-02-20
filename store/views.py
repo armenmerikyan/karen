@@ -3454,9 +3454,14 @@ def chatbot_response(request):
 
 @csrf_exempt
 def train_product_model(request):
+    # Fetch the latest WebsiteProfile
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
-        profile = WebsiteProfile(name="add name", about_us="some info about us")
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+
+    # Ensure the ChatGPT API key is available
+    if not profile.chatgpt_api_key:
+        return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
 
     # Initialize the OpenAI client with the API key from the profile
     client = OpenAI(api_key=profile.chatgpt_api_key)
@@ -3497,13 +3502,18 @@ def train_product_model(request):
                 model="gpt-3.5-turbo"
             )
 
+            # Step 6: Update the WebsiteProfile with the new fine-tuned model ID
+            profile.chatgpt_model_id = fine_tune_response.id
+            profile.save()
+
             # Clean up temporary file
             os.remove(jsonl_file_path)
 
             return JsonResponse({
                 "message": "Training started",
                 "file_id": file_id,
-                "fine_tune_id": fine_tune_response.id
+                "fine_tune_id": fine_tune_response.id,
+                "model_id": profile.chatgpt_model_id  # Return the updated model ID
             })
 
         except Exception as e:
