@@ -3445,7 +3445,7 @@ def chatbot_response(request):
             {"role": "user", "content": user_message}  # Include the user's message
         ]
  
-        fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id)
+        fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
         print("Fine-tune status:", fine_tune_status)
  
 
