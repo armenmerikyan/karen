@@ -3404,6 +3404,10 @@ def secure_download(request, product_id):
 
 @csrf_exempt
 def chatbot_response(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us") 
+        
     if request.method == "POST":
         if not request.user.is_authenticated:
             return JsonResponse({"response": "Please log in to use the chat feature."})
@@ -3412,10 +3416,6 @@ def chatbot_response(request):
         user_message = data.get("message", "")
 
         # Get the latest profile or create a new one if it doesn't exist
-        profile = WebsiteProfile.objects.order_by('-created_at').first()
-        if not profile:
-            profile = WebsiteProfile(name="add name", about_us="some info about us")
-            profile.save()  # Save the new profile to the database
 
         api_key = profile.chatgpt_api_key  # Fetch the API key from the profile
 
@@ -3449,4 +3449,53 @@ def chatbot_response(request):
         return JsonResponse({"response": bot_reply})
     return JsonResponse({"error": "Invalid request"}, status=400)
 
+@csrf_exempt
+def train_product_model(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us") 
 
+    if request.method == "GET":
+        api_key = profile.chatgpt_api_key  # Fetch the API key from the profile
+        # Step 1: Fetch product data from the database
+        products = Product.objects.all()
+        if not products:
+            return JsonResponse({"error": "No product data found"}, status=400)
+
+        # Step 2: Format product data in JSONL format
+        training_data = []
+        for product in products:
+            training_data.append({
+                "messages": [
+                    {"role": "system", "content": "You are a helpful AI assistant that provides product information."},
+                    {"role": "user", "content": f"Tell me about {product.name}."},
+                    {"role": "assistant", "content": f"Product: {product.name}\nDescription: {product.description}\nPrice: ${product.price}\nSKU: {product.sku}"}
+                ]
+            })
+
+        # Step 3: Save JSONL data to a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl") as temp_file:
+            jsonl_file_path = temp_file.name
+            with open(jsonl_file_path, "w", encoding="utf-8") as jsonl_file:
+                for entry in training_data:
+                    jsonl_file.write(json.dumps(entry) + "\n")
+
+        # Step 4: Upload training file to OpenAI
+        with open(jsonl_file_path, "rb") as jsonl_file:
+            response = openai.File.create(file=jsonl_file, purpose="fine-tune")
+
+        file_id = response["id"]
+
+        # Step 5: Start fine-tuning
+        fine_tune_response = openai.FineTune.create(training_file=file_id, model="gpt-3.5-turbo")
+
+        # Clean up temporary file
+        os.remove(jsonl_file_path)
+
+        return JsonResponse({
+            "message": "Training started",
+            "file_id": file_id,
+            "fine_tune_id": fine_tune_response["id"]
+        })
+
+    return JsonResponse({"error": "Invalid request"}, status=400)

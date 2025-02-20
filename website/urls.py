@@ -188,6 +188,8 @@ urlpatterns = [
 
     path('chatbot-response/', views.chatbot_response, name='chatbot_response'),
 
+    path("train-products/", views.train_product_model, name="train-products"),
+
 
 ] 
 
