@@ -3459,7 +3459,7 @@ def train_product_model(request):
         profile = WebsiteProfile(name="add name", about_us="some info about us") 
 
     if request.method == "GET":
-        api_key = profile.chatgpt_api_key  # Fetch the API key from the profile
+        openai.api_key = profile.chatgpt_api_key  # Fetch the API key from the profile 
         # Step 1: Fetch product data from the database
         products = Product.objects.all()
         if not products:
