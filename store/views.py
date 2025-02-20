@@ -3486,10 +3486,11 @@ def train_product_model(request):
 
         # Step 4: Upload training file using the new method
         try:
+            # Use the `openai.File.upload()` method instead of `openai.File.create()`
             with open(jsonl_file_path, "rb") as file:
-                response = openai.File.create(file=file, purpose="fine-tune")
+                file_response = openai.File.upload(file=file, purpose="fine-tune")
 
-            file_id = response['id']
+            file_id = file_response['id']
 
             # Step 5: Start fine-tuning with new method
             fine_tune_response = openai.FineTune.create(training_file=file_id, model="gpt-3.5-turbo")
