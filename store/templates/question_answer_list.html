@@ -21,7 +21,7 @@
             {% if user.is_authenticated and user.is_staff %}
                 <a href="{% url 'question_answer_detail' qa.pk %}" class="text-decoration-none" style="font-size: 1.5rem; font-weight: bold;">{{ qa.question }}</a>
             {% else %}
-                {{ qa.question }}
+                <span style="font-size: 1.5rem; font-weight: bold;">{{ qa.question }}</span>
             {% endif %}
 
             {% if user.is_authenticated and user.is_staff %}
