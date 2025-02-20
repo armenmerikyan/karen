@@ -22,7 +22,7 @@ from .models import QuestionAnswer
 class SimpleAnswerForm(forms.ModelForm):
     class Meta:
         model = QuestionAnswer
-        fields = ['answer']  # Only the 'answer' field
+        fields = ['question']  # Only the 'answer' field
 
 class QuestionAnswerForm(forms.ModelForm):
     class Meta:
