@@ -3420,7 +3420,7 @@ def chatbot_response(request):
 
         # Include business context about 'About Us'
         context = [
-            {"role": "system", "content": f"You are a helpful assistant for a company. Here is some information about the company: {profile.about_us}"},
+            {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}"},
             {"role": "user", "content": user_message}  # Include the user's message that requests information
         ]
 
