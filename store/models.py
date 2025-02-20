@@ -516,6 +516,12 @@ class WebsiteProfile(models.Model):
         blank=True,
         null=True
     )  
+    chatgpt_model_id_current = models.CharField(
+        max_length=255,
+        help_text="The ChatGPT Fine Tuned Model ID Currently Active.",
+        blank=True,
+        null=True
+    )  
 
     def __str__(self):
         return self.name
