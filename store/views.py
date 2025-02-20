@@ -3776,8 +3776,12 @@ def simple_question_add(request):
     if request.method == 'POST':
         form = SimpleAnswerForm(request.POST)
         if form.is_valid():
-            # Save the form, but make sure the question is set or managed as needed
-            form.save()
+            # Create a new QuestionAnswer object but don't save it yet
+            question_answer = form.save(commit=False)
+            # Set the created_by field to the currently logged-in user
+            question_answer.created_by = request.user
+            # Now save the object to the database
+            question_answer.save()
             return redirect('question_answer_list')
     else:
         form = SimpleAnswerForm()  # Use the new form with only the 'answer' field
