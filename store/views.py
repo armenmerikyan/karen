@@ -3416,7 +3416,7 @@ def chatbot_response(request):
     if not profile.chatgpt_api_key:
         return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
 
-    if request.method == "POST":
+    if request.method == "GET":
         # Check if the user is authenticated
         if not request.user.is_authenticated:
             return JsonResponse({"response": "Please log in to use the chat feature."})
