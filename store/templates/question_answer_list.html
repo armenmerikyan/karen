@@ -18,7 +18,11 @@
       {% for qa in question_answers %}
         <li class="list-group-item">
           <div class="d-flex justify-content-between align-items-center">
-            <a href="{% url 'question_answer_detail' qa.pk %}" class="text-decoration-none" style="font-size: 1.5rem; font-weight: bold;">{{ qa.question }}</a>
+            {% if user.is_authenticated and user.is_staff %}
+                <a href="{% url 'question_answer_detail' qa.pk %}" class="text-decoration-none" style="font-size: 1.5rem; font-weight: bold;">{{ qa.question }}</a>
+            {% else %}
+                {{ qa.question }}
+            {% endif %}
 
             {% if user.is_authenticated and user.is_staff %}
             <div class="d-flex">
