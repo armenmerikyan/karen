@@ -3251,12 +3251,21 @@ def generate_message(request, customer_id, touchpoint_id):
     else:
         return JsonResponse({"error": "Failed to generate message"}, status=500)
 
-@admin_required
+@csrf_exempt
+@staff_member_required
 def generate_message_chatgpt(request, customer_id, touchpoint_id):
+    # Fetch the latest WebsiteProfile
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
-        profile = WebsiteProfile(name="add name", about_us="some info about us")
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
 
+    # Ensure the ChatGPT API key is available
+    if not profile.chatgpt_api_key:
+        return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
+
+    print("API Key:", profile.chatgpt_api_key)  # Debugging: Print API key
+
+    # Fetch customer and touchpoint details
     customer = get_object_or_404(Customer, id=customer_id)
     touchpoint = get_object_or_404(TouchPointType, id=touchpoint_id)
 
@@ -3286,27 +3295,48 @@ def generate_message_chatgpt(request, customer_id, touchpoint_id):
     Generate a personalized message for the customer based on the above information.
     """
 
-    # Call OpenAI ChatGPT API
-    api_key = profile.chatgpt_api_key
-    url = "https://api.openai.com/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "model": "gpt-4-turbo",  # Replace with the appropriate GPT model
-        "messages": [
-            {"role": "user", "content": prompt}
-        ]
-    }
+    # Initialize the OpenAI client with the API key from the profile
+    client = OpenAI(api_key=profile.chatgpt_api_key)
 
-    response = requests.post(url, headers=headers, json=data)
-    if response.status_code == 200:
-        generated_message = response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
-        return JsonResponse({"message": generated_message})
+    # Include business context about 'About Us' and ensure a short, concise response
+    context = [
+        {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."},
+        {"role": "user", "content": prompt}  # Include the prompt
+    ]
+
+    # Check fine-tuned model status
+    if profile.chatgpt_model_id_current:
+        fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
+        print("Fine-tune status:", fine_tune_status)
+
+        if fine_tune_status.status == 'succeeded':
+            # Use the model ID for the fine-tuned model
+            model_id = fine_tune_status.fine_tuned_model
+        else:
+            # If still processing or failed, use a fallback model
+            model_id = "gpt-3.5-turbo"
     else:
-        print("Error response:", response.text)  # Log the error response
-        return JsonResponse({"error": "Failed to generate message"}, status=500)
+        # If no fine-tuned model is specified, use a fallback model
+        model_id = "gpt-3.5-turbo"
+
+    print("Using model:", model_id)  # Debugging: Print model ID
+
+    try:
+        # Call the OpenAI API
+        response = client.chat.completions.create(
+            model=model_id,  # Use the fine-tuned model or fallback model
+            messages=context
+        )
+
+        # Extract the bot's reply
+        bot_reply = response.choices[0].message.content
+
+        return JsonResponse({"message": bot_reply})
+
+    except Exception as e:
+        # Handle any errors from the OpenAI API
+        print("OpenAI API Error:", str(e))  # Debugging: Print API error
+        return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
 
 @csrf_exempt
 @login_required
@@ -3641,7 +3671,7 @@ def train_product_model(request):
                     {"role": "assistant", "content": qa.answer}
                 ]
             })
-            
+
         # Step 3: Save JSONL data to a temporary file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl", mode="w", encoding="utf-8") as temp_file:
             jsonl_file_path = temp_file.name
