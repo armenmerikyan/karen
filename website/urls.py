@@ -198,6 +198,7 @@ urlpatterns = [
     path('question_answer_delete/<int:pk>/', views.question_answer_delete, name='question_answer_delete'),
     path('question_answer_detail/<int:pk>/', views.question_answer_detail, name='question_answer_detail'),
     path('public_question_answer_list/', views.public_question_answer_list, name='public_question_answer_list'),
+    path('simple_question_add/', views.simple_question_add, name='simple_question_add'),
 
 
 ] 

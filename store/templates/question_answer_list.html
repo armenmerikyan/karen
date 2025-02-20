@@ -13,13 +13,16 @@
         <li class="list-group-item">
           <div class="d-flex justify-content-between align-items-center">
             <a href="{% url 'question_answer_detail' qa.pk %}" class="text-decoration-none" style="font-size: 1.5rem; font-weight: bold;">{{ qa.question }}</a>
-            
-            {% if user.is_superuser %}  <!-- Only show buttons for superusers (admins) -->
-              <div>
-                <a href="{% url 'question_answer_edit' qa.pk %}" class="btn btn-sm btn-warning">Edit</a>
-                <a href="{% url 'question_answer_delete' qa.pk %}" class="btn btn-sm btn-danger">Delete</a>
-              </div>
+            {% if user.is_authenticated %}
+                {% if user.is_staff %}
+                    <!-- Admin link: Add New Question Answer -->
+                    <a href="{% url 'question_answer_add' %}" class="btn btn-primary mb-3">Add New Question Answer</a>
+                {% else %}
+                    <!-- Regular user link: Add Simple Question -->
+                    <a href="{% url 'simple_question_add' %}" class="btn btn-primary mb-3">Add New Simple Question</a>
+                {% endif %}
             {% endif %}
+
           </div>
           
           {% if qa.answer %}

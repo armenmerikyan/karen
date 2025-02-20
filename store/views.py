@@ -3768,7 +3768,7 @@ def public_question_answer_list(request):
 
 # Add a new answer (only answer field)
 @login_required
-def simple_answer_add(request):
+def simple_question_add(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
