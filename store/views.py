@@ -44,6 +44,7 @@ from django.db import models
 from django.utils import timezone  # Import Django's timezone module
  
 from openai import OpenAI
+from openai import OpenAIError  # Import OpenAIError for exception handling
 
 import json
 from PIL import Image
