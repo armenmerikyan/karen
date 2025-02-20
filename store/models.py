@@ -790,7 +790,7 @@ class QuestionAnswer(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     def clean(self):
-        if len(self.answer) < 10:  # example length constraint
+        if len(self.question) < 10:  # example length constraint
             raise ValidationError("Answer should be at least 10 characters long.")
     
     def __str__(self):
