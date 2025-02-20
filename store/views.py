@@ -3626,6 +3626,22 @@ def train_product_model(request):
                 ]
             })
 
+        approved_qas = QuestionAnswer.objects.filter(
+            is_approved=True,
+            has_sensitive_data=False,
+            is_visible_public=True,
+            is_deleted=False
+        )
+
+        for qa in approved_qas:
+            training_data.append({
+                "messages": [
+                    {"role": "system", "content": "You are a helpful AI assistant providing accurate answers to customer questions."},
+                    {"role": "user", "content": qa.question},
+                    {"role": "assistant", "content": qa.answer}
+                ]
+            })
+            
         # Step 3: Save JSONL data to a temporary file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl", mode="w", encoding="utf-8") as temp_file:
             jsonl_file_path = temp_file.name
