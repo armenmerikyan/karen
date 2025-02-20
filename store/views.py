@@ -3503,12 +3503,8 @@ def train_product_model(request):
                 "fine_tune_id": fine_tune_response["id"]
             })
 
-        except openai.error.OpenAIError as e:
-            # General OpenAI API error handling
-            return JsonResponse({"error": f"OpenAI API error: {str(e)}"}, status=500)
-
         except Exception as e:
-            # Handle other types of exceptions
+            # General exception handling
             return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
