@@ -72,7 +72,11 @@
           <p>ChatGPT Model ID: {{ profile.chatgpt_model_id }} (<a href="{% url 'train-products' %}">Train</a>)</p>
           <p>Current ChatGPT Model ID: {{ profile.chatgpt_model_id_current }}</p>
           <a href="{% url 'copy_profile' %}">Copy Profile Model ID</a>
-
+          
+          <p>Current ChatGPT Model ID: {{ current_model_id }}</p>
+          <p>Current ChatGPT Model Status: {{ current_model_status }}</p>
+          <p>Fallback ChatGPT Model ID: {{ fallback_model_id }}</p>
+          <p>Fallback ChatGPT Model Status: {{ fallback_model_status }}</p>
         </div>
         
       </div>      
