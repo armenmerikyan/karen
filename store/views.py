@@ -238,6 +238,9 @@ from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTTextContainer
 import pdfrw
 
+
+import tempfile
+
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
