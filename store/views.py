@@ -3782,6 +3782,10 @@ def simple_question_add(request):
             question_answer.created_by = request.user
             # Now save the object to the database
             question_answer.save()
+
+            if not request.user.is_staff:
+                return redirect('public_question_answer_list')
+                
             return redirect('question_answer_list')
     else:
         form = SimpleAnswerForm()  # Use the new form with only the 'answer' field
