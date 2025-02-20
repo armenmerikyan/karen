@@ -3553,7 +3553,7 @@ def train_product_model(request):
             training_data.append({
                 "messages": [
                     {"role": "system", "content": "You are a helpful AI assistant that provides website address information."},
-                    {"role": "user", "content": "What is your address?"},
+                    {"role": "user", "content": "What is your business address?"},
                     {"role": "assistant", "content": address_info.strip(', ')}
                 ]
             })
