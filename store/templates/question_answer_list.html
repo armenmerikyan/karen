@@ -26,7 +26,7 @@
             <div class="mt-2">
               <button class="btn btn-sm btn-info toggle-answer" type="button" data-bs-toggle="collapse" data-bs-target="#answer-{{ qa.pk }}" aria-expanded="false" aria-controls="answer-{{ qa.pk }}">
                 <span class="toggle-text">Show Answer</span>
-                <i class="bi bi-chevron-down toggle-icon"></i> <!-- Bootstrap Icons -->
+                <i class="fas fa-chevron-down toggle-icon"></i> <!-- Font Awesome Down Arrow -->
               </button>
               <div class="collapse mt-2" id="answer-{{ qa.pk }}">
                 <div class="card card-body">
@@ -49,14 +49,14 @@
 
       collapse.addEventListener('show.bs.collapse', function () {
         toggleText.textContent = 'Hide Answer';
-        toggleIcon.classList.remove('bi-chevron-down');
-        toggleIcon.classList.add('bi-chevron-up');
+        toggleIcon.classList.remove('fa-chevron-down');
+        toggleIcon.classList.add('fa-chevron-up');
       });
 
       collapse.addEventListener('hide.bs.collapse', function () {
         toggleText.textContent = 'Show Answer';
-        toggleIcon.classList.remove('bi-chevron-up');
-        toggleIcon.classList.add('bi-chevron-down');
+        toggleIcon.classList.remove('fa-chevron-up');
+        toggleIcon.classList.add('fa-chevron-down');
       });
     });
   </script>
