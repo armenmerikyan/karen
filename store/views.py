@@ -3444,9 +3444,10 @@ def chatbot_response(request):
             {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."},
             {"role": "user", "content": user_message}  # Include the user's message
         ]
-
-        fine_tune_status = client.fine_tuning.jobs.retrieve(fine_tune_response.id)
+ 
+        fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id)
         print("Fine-tune status:", fine_tune_status)
+ 
 
         if fine_tune_status['status'] == 'succeeded':
             # Use the model ID for the fine-tuned model
