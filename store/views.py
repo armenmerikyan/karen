@@ -3744,3 +3744,22 @@ def question_answer_delete(request, pk):
         question_answer.delete()
         return redirect('question_answer_list')
     return render(request, 'question_answer_confirm_delete.html', {'question_answer': question_answer, 'profile': profile})
+
+def public_question_answer_list(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+    
+    # Filter answers that are:
+    # - approved (is_approved)
+    # - visible to the public (is_visible_public)
+    # - not marked as deleted (is_deleted)
+    # - do not contain sensitive data (has_sensitive_data=False)
+    question_answers = QuestionAnswer.objects.filter(
+        is_approved=True,
+        is_visible_public=True,
+        is_deleted=False,
+        has_sensitive_data=False
+    )
+    
+    return render(request, 'question_answer_list.html', {'question_answers': question_answers, 'profile': profile})
