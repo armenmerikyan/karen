@@ -1562,7 +1562,7 @@ def admin_panel(request):
         else:
             fallback_model_id = "gpt-3.5-turbo"
 
-    except openai.OpenAIError as e:
+    except OpenAIError as e:
         # Handle OpenAI API errors and log if necessary
         print(f"Error occurred while retrieving fine-tune status: {e}")
         # If there's an error, leave the values as "Not Available" or "Unknown"
