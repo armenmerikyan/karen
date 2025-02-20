@@ -3595,14 +3595,16 @@ def train_product_model(request):
 
             # Clean up temporary file
             os.remove(jsonl_file_path)
-
+            '''
             return JsonResponse({
                 "message": "Training started",
                 "file_id": file_id,
                 "fine_tune_id": fine_tune_response.id,
                 "model_id": profile.chatgpt_model_id  # Return the updated model ID
             })
+            '''
 
+            return redirect('admin_panel')
         except Exception as e:
             # General exception handling
             return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
