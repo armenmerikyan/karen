@@ -16,7 +16,13 @@ from .models import TokenMarketingContent
 from store.models import Tweet 
 from .models import TouchPointType 
 from .models import GeneratedMessage
-from .models import PDFDocument
+from .models import PDFDocument 
+from .models import QuestionAnswer
+
+class QuestionAnswerForm(forms.ModelForm):
+    class Meta:
+        model = QuestionAnswer
+        fields = ['question', 'answer', 'is_approved', 'product', 'customer', 'is_visible_user', 'is_visible_public', 'has_sensitive_data', 'is_chatgpt_answer']
 
 class CustomerPDFForm(forms.Form):
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), label="Select Customer")

@@ -5,6 +5,7 @@ from django.contrib.auth.models import BaseUserManager
 import os
 import uuid
 import re
+from django.core.exceptions import ValidationError
 
 def default_uuid():
     return str(uuid.uuid4())
@@ -769,3 +770,28 @@ class PDFDocument(models.Model):
 
     def __str__(self):
         return self.title
+    
+class QuestionAnswer(models.Model):
+    question = models.TextField()
+    answer = models.TextField()
+    is_approved = models.BooleanField(default=False)
+    product = models.ForeignKey(Product, related_name='question_answers', on_delete=models.CASCADE, null=True, blank=True)
+    customer = models.ForeignKey(Customer, related_name='question_answers', on_delete=models.CASCADE, null=True, blank=True)
+    is_visible_user = models.BooleanField(null=True, default=True)
+    is_visible_public = models.BooleanField(null=True, default=True)
+    has_sensitive_data = models.BooleanField(default=False)
+    is_chatgpt_answer = models.BooleanField(default=False)
+    
+    created_by = models.ForeignKey(User, related_name='created_question_answers', on_delete=models.SET_NULL, null=True, blank=True)
+    approved_by = models.ForeignKey(User, related_name='approved_question_answers', on_delete=models.SET_NULL, null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
+
+    def clean(self):
+        if len(self.answer) < 10:  # example length constraint
+            raise ValidationError("Answer should be at least 10 characters long.")
+    
+    def __str__(self):
+        return self.question

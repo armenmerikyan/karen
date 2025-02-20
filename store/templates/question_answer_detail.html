@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{{ question_answer.question }}</h1>
+  <p><strong>Answer:</strong> {{ question_answer.answer }}</p>
+  <p><strong>Approved:</strong> {{ question_answer.is_approved }}</p>
+  <p><strong>Visible to User:</strong> {{ question_answer.is_visible_user }}</p>
+  <p><strong>Visible to Public:</strong> {{ question_answer.is_visible_public }}</p>
+  <p><strong>Sensitive Data:</strong> {{ question_answer.has_sensitive_data }}</p>
+  <p><strong>ChatGPT Answer:</strong> {{ question_answer.is_chatgpt_answer }}</p>
+  <a href="{% url 'question_answer_edit' question_answer.pk %}">Edit</a> | 
+  <a href="{% url 'question_answer_list' %}">Back to List</a>
+{% endblock %}

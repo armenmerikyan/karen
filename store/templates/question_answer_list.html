@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Question Answers</h1>
+  <a href="{% url 'question_answer_add' %}">Add New Question Answer</a>
+  <ul>
+    {% for qa in question_answers %}
+      <li>
+        <a href="{% url 'question_answer_detail' qa.pk %}">{{ qa.question }}</a> - 
+        <a href="{% url 'question_answer_edit' qa.pk %}">Edit</a> |
+        <a href="{% url 'question_answer_delete' qa.pk %}">Delete</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

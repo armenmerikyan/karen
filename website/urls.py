@@ -192,6 +192,13 @@ urlpatterns = [
 
     path('copy-profile/', views.copy_profile, name='copy_profile'),
 
+    path('question_answer_list/', views.question_answer_list, name='question_answer_list'),
+    path('question_answer_add/', views.question_answer_add, name='question_answer_add'),
+    path('question_answer_edit/<int:pk>/', views.question_answer_edit, name='question_answer_edit'),
+    path('question_answer_delete/<int:pk>/', views.question_answer_delete, name='question_answer_delete'),
+    path('question_answer_detail/<int:pk>/', views.question_answer_detail, name='question_answer_detail'),
+
+
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

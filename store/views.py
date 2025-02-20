@@ -108,8 +108,9 @@ from .models import PaymentApplication
 from .models import TouchPointType
 from .models import GeneratedMessage
 from .models import PDFDocument
- 
+from .models import QuestionAnswer
 
+from .forms import QuestionAnswerForm
 from .forms import CustomerPDFForm
 from .forms import PDFDocumentForm
 from .forms import GeneratedMessageForm
@@ -3680,3 +3681,50 @@ def copy_profile(request):
     
     # Optionally, you can redirect to another page after performing the action
     return redirect('admin_panel')
+ 
+
+# List all question answers
+@admin_required
+def question_answer_list(request):
+    question_answers = QuestionAnswer.objects.all()
+    return render(request, 'question_answer_list.html', {'question_answers': question_answers})
+
+# View a single question answer
+@admin_required
+def question_answer_detail(request, pk):
+    question_answer = get_object_or_404(QuestionAnswer, pk=pk)
+    return render(request, 'question_answer_detail.html', {'question_answer': question_answer})
+
+# Add a new question answer
+@admin_required
+def question_answer_add(request):
+    if request.method == 'POST':
+        form = QuestionAnswerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('question_answer_list')
+    else:
+        form = QuestionAnswerForm()
+    return render(request, 'question_answer_form.html', {'form': form})
+
+# Edit a question answer
+@admin_required
+def question_answer_edit(request, pk):
+    question_answer = get_object_or_404(QuestionAnswer, pk=pk)
+    if request.method == 'POST':
+        form = QuestionAnswerForm(request.POST, instance=question_answer)
+        if form.is_valid():
+            form.save()
+            return redirect('question_answer_list')
+    else:
+        form = QuestionAnswerForm(instance=question_answer)
+    return render(request, 'question_answer_form.html', {'form': form})
+
+# Delete a question answer
+@admin_required
+def question_answer_delete(request, pk):
+    question_answer = get_object_or_404(QuestionAnswer, pk=pk)
+    if request.method == 'POST':
+        question_answer.delete()
+        return redirect('question_answer_list')
+    return render(request, 'question_answer_confirm_delete.html', {'question_answer': question_answer})
