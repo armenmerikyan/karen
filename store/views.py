@@ -3420,7 +3420,7 @@ def chatbot_response(request):
 
         # Include business context about 'About Us' and ensure a short, concise response
         context = [
-            {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses short and to the point."},
+            {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."},
             {"role": "user", "content": user_message}  # Include the user's message that requests information
         ]
 
