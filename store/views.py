@@ -3560,15 +3560,28 @@ def train_product_model(request):
  
         for product in products:
             # Format price to always display two decimal places
-            price = f"${product.price:.2f}" if product.price is not None else "$0.00"
-            
             training_data.append({
                 "messages": [
-                    {"role": "system", "content": "You are a helpful AI assistant that provides product information."},
-                    {"role": "user", "content": f"Tell me about {product.name}."},
-                    {"role": "assistant", "content": f"Product: {product.name}\nDescription: {product.description}\nPrice: {price}\n"}
+                    {"role": "system", "content": "You are a knowledgeable assistant that provides details about products."},
+                    {"role": "user", "content": f"What can you tell me about {product.name}?"}, 
+                    {"role": "assistant", "content": f"Here are the details for {product.name}:\nDescription: {product.description}\n"}
                 ]
             })
+            training_data.append({
+                "messages": [
+                    {"role": "system", "content": "You assist in providing detailed information about products."},
+                    {"role": "user", "content": f"Tell me about {product.name}."}, 
+                    {"role": "assistant", "content": f"Here’s what I know about {product.name}: {product.description}\n"}
+                ]
+            })
+            training_data.append({
+                "messages": [
+                    {"role": "system", "content": "You are an AI assistant providing accurate product details."},
+                    {"role": "user", "content": f"Give me information on {product.name}."}, 
+                    {"role": "assistant", "content": f"Product: {product.name}\nDetails: {product.description}\n"}
+                ]
+            })
+
         # Step 3: Save JSONL data to a temporary file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl", mode="w", encoding="utf-8") as temp_file:
             jsonl_file_path = temp_file.name
