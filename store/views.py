@@ -3407,49 +3407,57 @@ def secure_download(request, product_id):
 
 @csrf_exempt
 def chatbot_response(request):
+    # Fetch the latest WebsiteProfile
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
-        profile = WebsiteProfile(name="add name", about_us="some info about us") 
-        
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+
+    # Ensure the ChatGPT API key is available
+    if not profile.chatgpt_api_key:
+        return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
+
     if request.method == "POST":
+        # Check if the user is authenticated
         if not request.user.is_authenticated:
             return JsonResponse({"response": "Please log in to use the chat feature."})
-        
-        data = json.loads(request.body)
-        user_message = data.get("message", "")
 
-        # Get the latest profile or create a new one if it doesn't exist
+        # Parse the user's message from the request body
+        try:
+            data = json.loads(request.body)
+            user_message = data.get("message", "")
+            if not user_message:
+                return JsonResponse({"error": "No message provided"}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
 
-        api_key = profile.chatgpt_api_key  # Fetch the API key from the profile
-
-        if not api_key:
-            return JsonResponse({"error": "API key not found in profile"}, status=400)
+        # Initialize the OpenAI client with the API key from the profile
+        client = OpenAI(api_key=profile.chatgpt_api_key)
 
         # Include business context about 'About Us' and ensure a short, concise response
         context = [
             {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."},
-            {"role": "user", "content": user_message}  # Include the user's message that requests information
+            {"role": "user", "content": user_message}  # Include the user's message
         ]
 
-        # Call OpenAI ChatGPT API
-        url = "https://api.openai.com/v1/chat/completions"
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        }
-        request_data = {
-            "model": "gpt-4-turbo",  # Use GPT-4 or other models as needed
-            "messages": context
-        }
+        # Use the fine-tuned model ID if available, otherwise fall back to a default model
+        model_id = profile.chatgpt_model_id if profile.chatgpt_model_id else "gpt-4-turbo"
 
         try:
-            response = requests.post(url, headers=headers, json=request_data)
-            response.raise_for_status()  # Raise an error for bad status codes
-            bot_reply = response.json()['choices'][0]['message']['content']
-        except requests.exceptions.RequestException as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            # Call the OpenAI API
+            response = client.chat.completions.create(
+                model=model_id,  # Use the fine-tuned model or fallback model
+                messages=context
+            )
 
-        return JsonResponse({"response": bot_reply})
+            # Extract the bot's reply
+            bot_reply = response.choices[0].message.content
+
+            return JsonResponse({"response": bot_reply})
+
+        except Exception as e:
+            # Handle any errors from the OpenAI API
+            return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
+
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 @csrf_exempt
