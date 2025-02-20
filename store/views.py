@@ -3447,7 +3447,7 @@ def chatbot_response(request):
  
         fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
         print("Fine-tune status:", fine_tune_status)
-
+        print("TEST") 
         print("TEST ", fine_tune_status['status'])
         if fine_tune_status['status'] == 'succeeded':
             # Use the model ID for the fine-tuned model
