@@ -3418,9 +3418,9 @@ def chatbot_response(request):
         if not api_key:
             return JsonResponse({"error": "API key not found in profile"}, status=400)
 
-        # Include business context about 'About Us'
+        # Include business context about 'About Us' and ensure a short, concise response
         context = [
-            {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}"},
+            {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses short and to the point."},
             {"role": "user", "content": user_message}  # Include the user's message that requests information
         ]
 
@@ -3444,4 +3444,5 @@ def chatbot_response(request):
 
         return JsonResponse({"response": bot_reply})
     return JsonResponse({"error": "Invalid request"}, status=400)
+
 
