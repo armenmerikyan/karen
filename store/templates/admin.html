@@ -74,6 +74,7 @@
           <a href="{% url 'copy_profile' %}">Copy Profile Model ID</a>
           
           <p>Current ChatGPT Model ID: {{ current_model_id }}</p>
+
           <p>
             Current ChatGPT Model Status: 
             {% if current_model_status == 'succeeded' %}
@@ -86,9 +87,9 @@
             {{ current_model_status }}
           </p>
           
-          <p>Fallback ChatGPT Model ID: {{ fallback_model_id }}</p>
+          <p>Latest ChatGPT Model ID: {{ fallback_model_id }}</p>
           <p>
-            Fallback ChatGPT Model Status: 
+            Latest ChatGPT Model Status: 
             {% if fallback_model_status == 'succeeded' %}
               <i class="fas fa-check-circle" style="color: green;"></i>
             {% elif fallback_model_status == 'failed' %}
