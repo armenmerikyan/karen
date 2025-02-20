@@ -74,9 +74,31 @@
           <a href="{% url 'copy_profile' %}">Copy Profile Model ID</a>
           
           <p>Current ChatGPT Model ID: {{ current_model_id }}</p>
-          <p>Current ChatGPT Model Status: {{ current_model_status }}</p>
+          <p>
+            Current ChatGPT Model Status: 
+            {% if current_model_status == 'succeeded' %}
+              <i class="fas fa-check-circle" style="color: green;"></i>
+            {% elif current_model_status == 'failed' %}
+              <i class="fas fa-times-circle" style="color: red;"></i>
+            {% else %}
+              <i class="fas fa-exclamation-circle" style="color: yellow;"></i>
+            {% endif %}
+            {{ current_model_status }}
+          </p>
+          
           <p>Fallback ChatGPT Model ID: {{ fallback_model_id }}</p>
-          <p>Fallback ChatGPT Model Status: {{ fallback_model_status }}</p>
+          <p>
+            Fallback ChatGPT Model Status: 
+            {% if fallback_model_status == 'succeeded' %}
+              <i class="fas fa-check-circle" style="color: green;"></i>
+            {% elif fallback_model_status == 'failed' %}
+              <i class="fas fa-times-circle" style="color: red;"></i>
+            {% else %}
+              <i class="fas fa-exclamation-circle" style="color: yellow;"></i>
+            {% endif %}
+            {{ fallback_model_status }}
+          </p>
+          
         </div>
         
       </div>      
