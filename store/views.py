@@ -3499,6 +3499,62 @@ def train_product_model(request):
 
         # Step 2: Format product data in JSONL format
         training_data = []
+
+        # Add terms of service, privacy policy, and about us to training data
+        if profile.terms_of_service:
+            training_data.append({
+                "messages": [
+                    {"role": "system", "content": "You are a helpful AI assistant that provides website information."},
+                    {"role": "user", "content": "What are the terms of service?"},
+                    {"role": "assistant", "content": profile.terms_of_service}
+                ]
+            })
+        if profile.privacy_policy:
+            training_data.append({
+                "messages": [
+                    {"role": "system", "content": "You are a helpful AI assistant that provides website information."},
+                    {"role": "user", "content": "What is the privacy policy?"},
+                    {"role": "assistant", "content": profile.privacy_policy}
+                ]
+            })
+        if profile.about_us:
+            training_data.append({
+                "messages": [
+                    {"role": "system", "content": "You are a helpful AI assistant that provides website information."},
+                    {"role": "user", "content": "Tell me about your company."},
+                    {"role": "assistant", "content": profile.about_us}
+                ]
+            })
+
+        # Add contact information to training data
+        if profile.email:
+            training_data.append({
+                "messages": [
+                    {"role": "system", "content": "You are a helpful AI assistant that provides website contact information."},
+                    {"role": "user", "content": "What is your contact email?"},
+                    {"role": "assistant", "content": profile.email}
+                ]
+            })
+        if profile.phone:
+            training_data.append({
+                "messages": [
+                    {"role": "system", "content": "You are a helpful AI assistant that provides website contact information."},
+                    {"role": "user", "content": "What is your contact phone number?"},
+                    {"role": "assistant", "content": profile.phone}
+                ]
+            })
+
+        # Add address information to training data
+        if profile.address1 or profile.address2 or profile.city or profile.state or profile.zip_code or profile.country:
+            address_info = f"{profile.address1 or ''}, {profile.address2 or ''}, {profile.city or ''}, {profile.state or ''}, {profile.zip_code or ''}, {profile.country or ''}"
+            training_data.append({
+                "messages": [
+                    {"role": "system", "content": "You are a helpful AI assistant that provides website address information."},
+                    {"role": "user", "content": "What is your address?"},
+                    {"role": "assistant", "content": address_info.strip(', ')}
+                ]
+            })
+                                
         for product in products:
             training_data.append({
                 "messages": [
