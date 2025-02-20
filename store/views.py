@@ -3554,7 +3554,7 @@ def train_product_model(request):
                     {"role": "assistant", "content": address_info.strip(', ')}
                 ]
             })
-                                
+
         for product in products:
             training_data.append({
                 "messages": [
@@ -3605,3 +3605,17 @@ def train_product_model(request):
             return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+def copy_profile(request):
+    # Get the WebsiteProfile object by ID
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+     
+    # Copy the profile's model ID to the current active model ID
+    profile.chatgpt_model_id_current = profile.chatgpt_model_id
+    profile.save()
+    
+    # Optionally, you can redirect to another page after performing the action
+    return redirect('admin_panel')

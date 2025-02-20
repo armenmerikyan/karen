@@ -190,6 +190,7 @@ urlpatterns = [
 
     path("train-products/", views.train_product_model, name="train-products"),
 
+    path('copy-profile/', views.copy_profile, name='copy_profile'),
 
 ] 
 

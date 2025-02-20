@@ -66,7 +66,13 @@
           <a href="{% url 'pdf_list' %}" class="nav-link">
               <i class="fas fa-file-pdf"></i> PDF Library
           </a>
-          <p>Browse and manage your PDF documents.</p>          
+          <p>Browse and manage your PDF documents.</p>        
+          <hr>
+          
+          <p>ChatGPT Model ID: {{ profile.chatgpt_model_id }}</p>
+          <p>Current ChatGPT Model ID: {{ profile.chatgpt_model_id_current }}</p>
+          <a href="{% url 'copy_profile' profile.id %}">Copy Profile Model ID</a>
+
         </div>
         
       </div>      
