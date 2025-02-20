@@ -101,53 +101,56 @@
 </div>
 
 <script>
+  // Toggle chat window visibility
+  document.getElementById("chat-icon").addEventListener("click", function () {
+    document.getElementById("chat-window").style.display = "flex"; // Show chat window
+    document.getElementById("chat-icon").style.display = "none"; // Hide chat icon
+  });
 
-// Toggle chat window visibility
-document.getElementById("chat-icon").addEventListener("click", function () {
-  document.getElementById("chat-window").style.display = "flex"; // Show chat window
-  document.getElementById("chat-icon").style.display = "none"; // Hide chat icon
-});
+  document.getElementById("close-button").addEventListener("click", function () {
+    document.getElementById("chat-window").style.display = "none"; // Hide chat window
+    document.getElementById("chat-icon").style.display = "block"; // Show chat icon
+  });
 
-document.getElementById("close-button").addEventListener("click", function () {
-  document.getElementById("chat-window").style.display = "none"; // Hide chat window
-  document.getElementById("chat-icon").style.display = "block"; // Show chat icon
-});
+  // Send message functionality
+  document.getElementById("send-button").addEventListener("click", sendMessage);
+  document.getElementById("user-input").addEventListener("keypress", function (event) {
+    if (event.key === "Enter") sendMessage();
+  });
 
-// Send message functionality
-document.getElementById("send-button").addEventListener("click", sendMessage);
-document.getElementById("user-input").addEventListener("keypress", function (event) {
-  if (event.key === "Enter") sendMessage();
-});
+  function sendMessage() {
+    const userInput = document.getElementById("user-input");
+    const message = userInput.value.trim();
+    if (!message) return;
+    appendMessage("user", message);
+    userInput.value = "";
 
-function sendMessage() {
-  const userInput = document.getElementById("user-input");
-  const message = userInput.value.trim();
-  if (!message) return;
-  appendMessage("user", message);
-  userInput.value = "";
+    // Set focus back to the message box
+    userInput.focus();
 
-  fetch("/chatbot-response/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: message }),
-  })
-    .then((response) => response.json())
-    .then((data) => appendMessage("bot", data.response))
-    .catch((error) => appendMessage("bot", "Error: Unable to get response"));
-}
-function appendMessage(sender, text) {
-  const chatBox = document.getElementById("chat-box");
-  const msgDiv = document.createElement("div");
-  msgDiv.classList.add("message", sender);
-  msgDiv.textContent = text;
+    fetch("/chatbot-response/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: message }),
+    })
+      .then((response) => response.json())
+      .then((data) => appendMessage("bot", data.response))
+      .catch((error) => appendMessage("bot", "Error: Unable to get response"));
+  }
 
-  // Append the new message at the bottom of the chat box
-  chatBox.appendChild(msgDiv);
+  function appendMessage(sender, text) {
+    const chatBox = document.getElementById("chat-box");
+    const msgDiv = document.createElement("div");
+    msgDiv.classList.add("message", sender);
+    msgDiv.textContent = text;
 
-  // Scroll to the bottom of the chat box
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
- 
+    // Append the new message at the bottom of the chat box
+    chatBox.appendChild(msgDiv);
+
+    // Scroll to the bottom of the chat box
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
 </script>
+
 </body>
 </html>
