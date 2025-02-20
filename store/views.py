@@ -1530,6 +1530,44 @@ def admin_panel(request):
     total_products = Product.objects.count()
     total_customers = Customer.objects.count()  # Using Customer model
 
+    # Initialize model information
+    current_model_id = "Not Available"
+    current_model_status = "Unknown"
+    fallback_model_id = "Not Available"
+    fallback_model_status = "Unknown"
+
+    try:
+        # OpenAI API setup 
+
+        client = OpenAI(api_key=profile.chatgpt_api_key)
+ 
+ 
+        # Retrieve current model status
+        fine_tune_status_current = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
+        current_model_status = fine_tune_status_current.status
+        if current_model_status == 'succeeded':
+            current_model_id = fine_tune_status_current.fine_tuned_model
+        else:
+            current_model_id = "gpt-3.5-turbo"
+        
+        # Retrieve status for chatgpt_model_id
+        fine_tune_status_fallback = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id)
+        fallback_model_status = fine_tune_status_fallback.status
+        if fallback_model_status == 'succeeded':
+            fallback_model_id = fine_tune_status_fallback.fine_tuned_model
+        else:
+            fallback_model_id = "gpt-3.5-turbo"
+
+    except openai.error.OpenAIError as e:
+        # Handle OpenAI API errors and log if necessary
+        print(f"Error occurred while retrieving fine-tune status: {e}")
+        # If there's an error, leave the values as "Not Available" or "Unknown"
+        current_model_id = "Not Available"
+        current_model_status = "Error"
+        fallback_model_id = "Not Available"
+        fallback_model_status = "Error"
+
+    # Add all model statuses and IDs
     return render(request, 'admin.html', {
         'profile': profile,
         'total_carts': total_carts,
@@ -1537,9 +1575,12 @@ def admin_panel(request):
         'processed_count': processed_count,
         'paid_count': paid_count,
         'total_products': total_products,
-        'total_customers': total_customers
+        'total_customers': total_customers,
+        'current_model_id': current_model_id,
+        'current_model_status': current_model_status,
+        'fallback_model_id': fallback_model_id,
+        'fallback_model_status': fallback_model_status
     })
-
 
 
 
