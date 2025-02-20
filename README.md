@@ -64,6 +64,24 @@
 - **Q&A: Employee Queries & HR Policy Clarifications**  
 - **Performance Reviews & Employee Feedback Systems**  
 
+### AI-Powered Chatbot & LLM Integration  
+- **Chatbot Feature**:  
+  - AI-driven chatbot powered by fine-tuned ChatGPT (LLM).  
+  - Seamless integration with product data, Q&A databases, and customer interactions.  
+  - Real-time responses to customer inquiries, order tracking, and support requests.  
+  - Multilingual support for global user bases.  
+- **Fine-Tuning Process**:  
+  - Product data (e.g., inventory, product lifecycles, pricing) and Q&A data (e.g., FAQs, customer feedback) are used to train and fine-tune the ChatGPT model.  
+  - Ensures the chatbot provides accurate, context-aware, and brand-specific responses.  
+- **LLM as a Service**:  
+  - Deploy the fine-tuned LLM as a chatbot service on your website or platform.  
+  - Enables personalized customer interactions, sales assistance, and operational support.  
+  - Continuously learns and improves from user interactions and feedback.  
+- **Use Cases**:  
+  - Customer Support: Resolve queries instantly using the knowledge base.  
+  - Sales Assistance: Recommend products, provide pricing details, and process orders.  
+  - Employee Assistance: Answer HR-related questions and provide training resources.  
+
 ---
 
 ## Tech Stack
