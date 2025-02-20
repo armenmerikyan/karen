@@ -24,7 +24,7 @@
           
           {% if qa.answer %}
             <div class="mt-2">
-              <button class="btn btn-sm btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#answer-{{ qa.pk }}" aria-expanded="false" aria-controls="answer-{{ qa.pk }}">
+              <button class="btn btn-sm btn-info toggle-answer" type="button" data-bs-toggle="collapse" data-bs-target="#answer-{{ qa.pk }}" aria-expanded="false" aria-controls="answer-{{ qa.pk }}">
                 Show Answer
               </button>
               <div class="collapse mt-2" id="answer-{{ qa.pk }}">
@@ -38,4 +38,14 @@
       {% endfor %}
     </ul>
   </div>
+
+  <script>
+    // Add event listeners to toggle button labels
+    document.querySelectorAll('.toggle-answer').forEach(button => {
+      button.addEventListener('click', function() {
+        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+        this.textContent = isExpanded ? 'Show Answer' : 'Hide Answer';
+      });
+    });
+  </script>
 {% endblock %}
