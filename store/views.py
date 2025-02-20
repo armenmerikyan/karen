@@ -110,6 +110,8 @@ from .models import GeneratedMessage
 from .models import PDFDocument
 from .models import QuestionAnswer
 
+
+from .forms import SimpleAnswerForm
 from .forms import QuestionAnswerForm
 from .forms import CustomerPDFForm
 from .forms import PDFDocumentForm
@@ -3763,3 +3765,21 @@ def public_question_answer_list(request):
     )
     
     return render(request, 'question_answer_list.html', {'question_answers': question_answers, 'profile': profile})
+
+# Add a new answer (only answer field)
+@login_required
+def simple_answer_add(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+
+    if request.method == 'POST':
+        form = SimpleAnswerForm(request.POST)
+        if form.is_valid():
+            # Save the form, but make sure the question is set or managed as needed
+            form.save()
+            return redirect('question_answer_list')
+    else:
+        form = SimpleAnswerForm()  # Use the new form with only the 'answer' field
+
+    return render(request, 'question_answer_form.html', {'form': form, 'profile': profile})
