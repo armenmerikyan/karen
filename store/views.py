@@ -3505,24 +3505,24 @@ def train_product_model(request):
             for entry in training_data:
                 temp_file.write(json.dumps(entry) + "\n")
 
-        # Step 4: Upload training file using the new method
         try:
+            # Step 4: Upload training file using the new method
             with open(jsonl_file_path, "rb") as file:
                 file_response = client.files.create(file=file, purpose="fine-tune")
 
             file_id = file_response.id
+            print(f"Uploaded training file with ID: {file_id}")
 
             # Step 5: Start fine-tuning with new method
             fine_tune_response = client.fine_tuning.jobs.create(
                 training_file=file_id,
                 model="gpt-3.5-turbo"
             )
+            print(f"Fine-tuning job started with ID: {fine_tune_response.id}")
 
             # Step 6: Update the WebsiteProfile with the new fine-tuned model ID
-            model_id = fine_tune_response['fine_tuned_model_id']  # Adjust based on actual response structure
-            profile.chatgpt_model_id = model_id
+            profile.chatgpt_model_id = fine_tune_response.id
             profile.save()
-            
 
             # Clean up temporary file
             os.remove(jsonl_file_path)
