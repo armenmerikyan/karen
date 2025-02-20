@@ -3448,13 +3448,16 @@ def chatbot_response(request):
         fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
         print("Fine-tune status:", fine_tune_status)
         print("TEST") 
-        print("TEST ", fine_tune_status['status'])
-        if fine_tune_status['status'] == 'succeeded':
+        print("TEST ", fine_tune_status.status)
+
+        if fine_tune_status.status == 'succeeded':
             # Use the model ID for the fine-tuned model
-            model_id = fine_tune_status['fine_tuned_model']
+            model_id = fine_tune_status.fine_tuned_model
         else:
             # If still processing or failed, use a fallback model
             model_id = "gpt-3.5-turbo"
+
+        print(model_id)
 
         print("TEST ", model_id)
 
