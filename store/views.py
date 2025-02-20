@@ -3458,8 +3458,9 @@ def train_product_model(request):
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us") 
 
+    openai.api_key = profile.chatgpt_api_key  # Fetch the API key from the profile 
+    
     if request.method == "GET":
-        openai.api_key = profile.chatgpt_api_key  # Fetch the API key from the profile 
         # Step 1: Fetch product data from the database
         products = Product.objects.all()
         if not products:
@@ -3483,13 +3484,12 @@ def train_product_model(request):
                 for entry in training_data:
                     jsonl_file.write(json.dumps(entry) + "\n")
 
-        # Step 4: Upload training file to OpenAI
-        with open(jsonl_file_path, "rb") as jsonl_file:
-            response = openai.File.create(file=jsonl_file, purpose="fine-tune")
+        # Step 4: Upload training file using new method
+        response = openai.File.create(file=open(jsonl_file_path, "rb"), purpose="fine-tune")
 
-        file_id = response["id"]
+        file_id = response['id']
 
-        # Step 5: Start fine-tuning
+        # Step 5: Start fine-tuning with new method
         fine_tune_response = openai.FineTune.create(training_file=file_id, model="gpt-3.5-turbo")
 
         # Clean up temporary file
