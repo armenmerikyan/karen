@@ -1542,25 +1542,31 @@ def admin_panel(request):
 
     try:
         # OpenAI API setup 
-
         client = OpenAI(api_key=profile.chatgpt_api_key)
- 
- 
-        # Retrieve current model status
-        fine_tune_status_current = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
-        current_model_status = fine_tune_status_current.status
-        if current_model_status == 'succeeded':
-            current_model_id = fine_tune_status_current.fine_tuned_model
+
+        # Retrieve current model status if model ID is available
+        if profile.chatgpt_model_id_current:
+            fine_tune_status_current = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
+            current_model_status = fine_tune_status_current.status
+            if current_model_status == 'succeeded':
+                current_model_id = fine_tune_status_current.fine_tuned_model
+            else:
+                current_model_id = "gpt-3.5-turbo"
         else:
-            current_model_id = "gpt-3.5-turbo"
-        
-        # Retrieve status for chatgpt_model_id
-        fine_tune_status_fallback = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id)
-        fallback_model_status = fine_tune_status_fallback.status
-        if fallback_model_status == 'succeeded':
-            fallback_model_id = fine_tune_status_fallback.fine_tuned_model
+            current_model_id = "Not Available"
+            current_model_status = "No Model ID Provided"
+
+        # Retrieve status for fallback model if model ID is available
+        if profile.chatgpt_model_id:
+            fine_tune_status_fallback = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id)
+            fallback_model_status = fine_tune_status_fallback.status
+            if fallback_model_status == 'succeeded':
+                fallback_model_id = fine_tune_status_fallback.fine_tuned_model
+            else:
+                fallback_model_id = "gpt-3.5-turbo"
         else:
-            fallback_model_id = "gpt-3.5-turbo"
+            fallback_model_id = "Not Available"
+            fallback_model_status = "No Model ID Provided"
 
     except OpenAIError as e:
         # Handle OpenAI API errors and log if necessary
