@@ -14,7 +14,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <a href="{% url 'question_answer_detail' qa.pk %}" class="text-decoration-none" style="font-size: 1.5rem; font-weight: bold;">{{ qa.question }}</a>
             
-            {% if user.is_staff or user.is_superuser %}
+            {% if user.is_superuser %}  <!-- Only show buttons for superusers (admins) -->
               <div>
                 <a href="{% url 'question_answer_edit' qa.pk %}" class="btn btn-sm btn-warning">Edit</a>
                 <a href="{% url 'question_answer_delete' qa.pk %}" class="btn btn-sm btn-danger">Delete</a>
