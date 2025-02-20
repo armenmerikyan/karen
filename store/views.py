@@ -3456,9 +3456,9 @@ def chatbot_response(request):
 def train_product_model(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
-        profile = WebsiteProfile(name="add name", about_us="some info about us") 
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
 
-    openai.api_key = profile.chatgpt_api_key  # Fetch the API key from the profile 
+    openai.api_key = profile.chatgpt_api_key  # Fetch the API key from the profile
     
     if request.method == "GET":
         # Step 1: Fetch product data from the database
@@ -3484,21 +3484,27 @@ def train_product_model(request):
                 for entry in training_data:
                     jsonl_file.write(json.dumps(entry) + "\n")
 
-        # Step 4: Upload training file using new method
-        response = openai.File.create(file=open(jsonl_file_path, "rb"), purpose="fine-tune")
+        # Step 4: Upload training file using the new method
+        try:
+            with open(jsonl_file_path, "rb") as file:
+                response = openai.File.create(file=file, purpose="fine-tune")
 
-        file_id = response['id']
+            file_id = response['id']
 
-        # Step 5: Start fine-tuning with new method
-        fine_tune_response = openai.FineTune.create(training_file=file_id, model="gpt-3.5-turbo")
+            # Step 5: Start fine-tuning with new method
+            fine_tune_response = openai.FineTune.create(training_file=file_id, model="gpt-3.5-turbo")
 
-        # Clean up temporary file
-        os.remove(jsonl_file_path)
+            # Clean up temporary file
+            os.remove(jsonl_file_path)
 
-        return JsonResponse({
-            "message": "Training started",
-            "file_id": file_id,
-            "fine_tune_id": fine_tune_response["id"]
-        })
+            return JsonResponse({
+                "message": "Training started",
+                "file_id": file_id,
+                "fine_tune_id": fine_tune_response["id"]
+            })
+
+        except openai.error.APIError as e:
+            # Handle any OpenAI API errors gracefully
+            return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
