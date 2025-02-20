@@ -3519,8 +3519,10 @@ def train_product_model(request):
             )
 
             # Step 6: Update the WebsiteProfile with the new fine-tuned model ID
-            profile.chatgpt_model_id = fine_tune_response.id
+            model_id = fine_tune_response['fine_tuned_model_id']  # Adjust based on actual response structure
+            profile.chatgpt_model_id = model_id
             profile.save()
+            
 
             # Clean up temporary file
             os.remove(jsonl_file_path)
