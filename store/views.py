@@ -3563,7 +3563,7 @@ def train_product_model(request):
                 "messages": [
                     {"role": "system", "content": "You are a helpful AI assistant that provides product information."},
                     {"role": "user", "content": f"Tell me about {product.name}."},
-                    {"role": "assistant", "content": f"Product: {product.name}\nDescription: {product.description}\nPrice: ${product.price}\nSKU: {product.sku}"}
+                    {"role": "assistant", "content": f"Product: {product.name}\nDescription: {product.description}\nPrice: ${product.price}\n"}
                 ]
             })
 
