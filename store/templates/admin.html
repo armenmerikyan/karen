@@ -80,15 +80,15 @@
           <hr>
           
           <p>Latest ChatGPT Model ID: {{ profile.chatgpt_model_id }} (<a href="{% url 'train-products' %}">Train</a>)</p>
-          <p>Current ChatGPT Model ID: {{ profile.chatgpt_model_id_current }}
+          <p>Active ChatGPT Model ID: {{ profile.chatgpt_model_id_current }}
           </p>
           <p>
           <a href="{% url 'copy_profile' %}">Activate Latest Model ID</a>
           </p> 
-          <p>Current ChatGPT Model ID: {{ current_model_id }}</p>
+          <p>Active ChatGPT Model ID: {{ current_model_id }}</p>
 
           <p>
-            Current ChatGPT Model Status: 
+            Active ChatGPT Model Status: 
             {% if current_model_status == 'succeeded' %}
               <i class="fas fa-check-circle" style="color: green;"></i>
             {% elif current_model_status == 'failed' %}
