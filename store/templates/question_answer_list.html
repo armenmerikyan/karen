@@ -21,10 +21,14 @@
             <a href="{% url 'question_answer_detail' qa.pk %}" class="text-decoration-none" style="font-size: 1.5rem; font-weight: bold;">{{ qa.question }}</a>
 
             {% if user.is_authenticated and user.is_staff %}
-              <div>
-                <a href="{% url 'question_answer_edit' qa.pk %}" class="btn btn-sm btn-warning">Edit</a>
-                <a href="{% url 'question_answer_delete' qa.pk %}" class="btn btn-sm btn-danger">Delete</a>
-              </div>
+            <div class="d-flex">
+                <a href="{% url 'question_answer_edit' qa.pk %}" class="btn btn-sm btn-warning me-2">
+                <i class="fas fa-edit"></i> Edit
+                </a>
+                <a href="{% url 'question_answer_delete' qa.pk %}" class="btn btn-sm btn-danger">
+                <i class="fas fa-trash-alt"></i> Delete
+                </a>
+            </div>
             {% endif %}
           </div>
           
