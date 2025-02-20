@@ -25,7 +25,8 @@
           {% if qa.answer %}
             <div class="mt-2">
               <button class="btn btn-sm btn-info toggle-answer" type="button" data-bs-toggle="collapse" data-bs-target="#answer-{{ qa.pk }}" aria-expanded="false" aria-controls="answer-{{ qa.pk }}">
-                Show Answer
+                <span class="toggle-text">Show Answer</span>
+                <i class="bi bi-chevron-down toggle-icon"></i> <!-- Bootstrap Icons -->
               </button>
               <div class="collapse mt-2" id="answer-{{ qa.pk }}">
                 <div class="card card-body">
@@ -43,13 +44,19 @@
     // Add event listeners for Bootstrap's collapse events
     document.querySelectorAll('.collapse').forEach(collapse => {
       const button = collapse.previousElementSibling; // The button is the previous sibling of the collapse div
+      const toggleText = button.querySelector('.toggle-text');
+      const toggleIcon = button.querySelector('.toggle-icon');
 
       collapse.addEventListener('show.bs.collapse', function () {
-        button.textContent = 'Hide Answer';
+        toggleText.textContent = 'Hide Answer';
+        toggleIcon.classList.remove('bi-chevron-down');
+        toggleIcon.classList.add('bi-chevron-up');
       });
 
       collapse.addEventListener('hide.bs.collapse', function () {
-        button.textContent = 'Show Answer';
+        toggleText.textContent = 'Show Answer';
+        toggleIcon.classList.remove('bi-chevron-up');
+        toggleIcon.classList.add('bi-chevron-down');
       });
     });
   </script>
