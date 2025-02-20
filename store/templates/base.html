@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="/static/css/style.css?v=48">
+  <link rel="stylesheet" href="/static/css/style.css?v=49">
 </head>
 <body class="d-flex flex-column min-vh-100 mx-5" data-bs-theme="dark">
   <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
@@ -141,7 +141,10 @@
   function appendMessage(sender, text) {
     const chatBox = document.getElementById("chat-box");
     const msgDiv = document.createElement("div");
-    msgDiv.classList.add("message", sender);
+    
+    // Use 'user-message' instead of 'user'
+    msgDiv.classList.add("message", sender === "user" ? "user-message" : "bot");
+    
     msgDiv.textContent = text;
 
     // Append the new message at the bottom of the chat box
@@ -150,6 +153,7 @@
     // Scroll to the bottom of the chat box
     chatBox.scrollTop = chatBox.scrollHeight;
   }
+
 </script>
 
 </body>
