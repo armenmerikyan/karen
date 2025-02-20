@@ -42,8 +42,8 @@ from django.db.models import Q
 from django.db import models
 
 from django.utils import timezone  # Import Django's timezone module
-
-import openai
+ 
+from openai import OpenAI
 
 import json
 from PIL import Image
@@ -3458,8 +3458,9 @@ def train_product_model(request):
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
 
-    openai.api_key = profile.chatgpt_api_key  # Fetch the API key from the profile
-    
+    # Initialize the OpenAI client with the API key from the profile
+    client = OpenAI(api_key=profile.chatgpt_api_key)
+
     if request.method == "GET":
         # Step 1: Fetch product data from the database
         products = Product.objects.all()
@@ -3478,22 +3479,23 @@ def train_product_model(request):
             })
 
         # Step 3: Save JSONL data to a temporary file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl") as temp_file:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl", mode="w", encoding="utf-8") as temp_file:
             jsonl_file_path = temp_file.name
-            with open(jsonl_file_path, "w", encoding="utf-8") as jsonl_file:
-                for entry in training_data:
-                    jsonl_file.write(json.dumps(entry) + "\n")
+            for entry in training_data:
+                temp_file.write(json.dumps(entry) + "\n")
 
         # Step 4: Upload training file using the new method
         try:
-            # Use the `openai.File.upload()` method instead of `openai.File.create()`
             with open(jsonl_file_path, "rb") as file:
-                file_response = openai.File.upload(file=file, purpose="fine-tune")
+                file_response = client.files.create(file=file, purpose="fine-tune")
 
-            file_id = file_response['id']
+            file_id = file_response.id
 
             # Step 5: Start fine-tuning with new method
-            fine_tune_response = openai.FineTune.create(training_file=file_id, model="gpt-3.5-turbo")
+            fine_tune_response = client.fine_tuning.jobs.create(
+                training_file=file_id,
+                model="gpt-3.5-turbo"
+            )
 
             # Clean up temporary file
             os.remove(jsonl_file_path)
@@ -3501,7 +3503,7 @@ def train_product_model(request):
             return JsonResponse({
                 "message": "Training started",
                 "file_id": file_id,
-                "fine_tune_id": fine_tune_response["id"]
+                "fine_tune_id": fine_tune_response.id
             })
 
         except Exception as e:
