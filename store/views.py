@@ -3686,18 +3686,28 @@ def copy_profile(request):
 # List all question answers
 @admin_required
 def question_answer_list(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+    
     question_answers = QuestionAnswer.objects.all()
-    return render(request, 'question_answer_list.html', {'question_answers': question_answers})
+    return render(request, 'question_answer_list.html', {'question_answers': question_answers, 'profile': profile})
 
 # View a single question answer
 @admin_required
 def question_answer_detail(request, pk):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
     question_answer = get_object_or_404(QuestionAnswer, pk=pk)
-    return render(request, 'question_answer_detail.html', {'question_answer': question_answer})
+    return render(request, 'question_answer_detail.html', {'question_answer': question_answer, 'profile': profile})
 
 # Add a new question answer
 @admin_required
 def question_answer_add(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
     if request.method == 'POST':
         form = QuestionAnswerForm(request.POST)
         if form.is_valid():
@@ -3705,11 +3715,14 @@ def question_answer_add(request):
             return redirect('question_answer_list')
     else:
         form = QuestionAnswerForm()
-    return render(request, 'question_answer_form.html', {'form': form})
+    return render(request, 'question_answer_form.html', {'form': form, 'profile': profile})
 
 # Edit a question answer
 @admin_required
 def question_answer_edit(request, pk):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
     question_answer = get_object_or_404(QuestionAnswer, pk=pk)
     if request.method == 'POST':
         form = QuestionAnswerForm(request.POST, instance=question_answer)
@@ -3718,13 +3731,16 @@ def question_answer_edit(request, pk):
             return redirect('question_answer_list')
     else:
         form = QuestionAnswerForm(instance=question_answer)
-    return render(request, 'question_answer_form.html', {'form': form})
+    return render(request, 'question_answer_form.html', {'form': form, 'profile': profile})
 
 # Delete a question answer
 @admin_required
 def question_answer_delete(request, pk):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
     question_answer = get_object_or_404(QuestionAnswer, pk=pk)
     if request.method == 'POST':
         question_answer.delete()
         return redirect('question_answer_list')
-    return render(request, 'question_answer_confirm_delete.html', {'question_answer': question_answer})
+    return render(request, 'question_answer_confirm_delete.html', {'question_answer': question_answer, 'profile': profile})
