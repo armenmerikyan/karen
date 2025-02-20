@@ -3445,9 +3445,17 @@ def chatbot_response(request):
             {"role": "user", "content": user_message}  # Include the user's message
         ]
 
-        # Use the fine-tuned model ID if available, otherwise fall back to a default model
-        model_id = profile.chatgpt_model_id if profile.chatgpt_model_id else "gpt-4-turbo"
-        print("Model ID:", model_id)  # Debugging: Print model ID
+        fine_tune_status = client.fine_tuning.jobs.retrieve(fine_tune_response.id)
+        print("Fine-tune status:", fine_tune_status)
+
+        if fine_tune_status['status'] == 'succeeded':
+            # Use the model ID for the fine-tuned model
+            model_id = fine_tune_status['fine_tuned_model_id']
+        else:
+            # If still processing or failed, use a fallback model
+            model_id = "gpt-3.5-turbo"
+            
+ 
 
         try:
             # Call the OpenAI API
@@ -3522,6 +3530,7 @@ def train_product_model(request):
 
             # Step 6: Update the WebsiteProfile with the new fine-tuned model ID
             profile.chatgpt_model_id = fine_tune_response.id
+            
             profile.save()
 
             # Clean up temporary file
