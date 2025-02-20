@@ -3401,9 +3401,13 @@ def secure_download(request, product_id):
     logger.info(f"Serving digital file for product {product_id}.")
     return FileResponse(open(file_path, 'rb'), as_attachment=True)
 
+
 @csrf_exempt
 def chatbot_response(request):
     if request.method == "POST":
+        if not request.user.is_authenticated:
+            return JsonResponse({"response": "Please log in to use the chat feature."})
+        
         data = json.loads(request.body)
         user_message = data.get("message", "")
 
