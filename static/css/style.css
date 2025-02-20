@@ -161,7 +161,6 @@ a.terminal-green:hover {
   background-color: #28a745;
   color: #FFFFFF !important;
 }
-
 #chat-container {
   position: fixed;
   bottom: 20px;
@@ -203,6 +202,7 @@ a.terminal-green:hover {
   padding: 8px 12px;
   margin: 5px;
   border-radius: 5px;
+  word-wrap: break-word; /* Ensures long words break and wrap */
 }
 
 .user {
