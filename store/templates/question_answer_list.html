@@ -1,22 +1,41 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>Question Answers</h1>
-  
-  {% if user.is_authenticated %}
-    <a href="{% url 'question_answer_add' %}">Add New Question Answer</a>
-  {% endif %}
-  
-  <ul>
-    {% for qa in question_answers %}
-      <li>
-        <a href="{% url 'question_answer_detail' qa.pk %}">{{ qa.question }}</a>
-        
-        {% if user.is_staff or user.is_superuser %}
-          - <a href="{% url 'question_answer_edit' qa.pk %}">Edit</a> |
-          <a href="{% url 'question_answer_delete' qa.pk %}">Delete</a>
-        {% endif %}
-      </li>
-    {% endfor %}
-  </ul>
+  <div class="container mt-4">
+    <h1 class="mb-4">Question Answers</h1>
+    
+    {% if user.is_authenticated %}
+      <a href="{% url 'question_answer_add' %}" class="btn btn-primary mb-3">Add New Question Answer</a>
+    {% endif %}
+    
+    <ul class="list-group">
+      {% for qa in question_answers %}
+        <li class="list-group-item">
+          <div class="d-flex justify-content-between align-items-center">
+            <a href="{% url 'question_answer_detail' qa.pk %}" class="text-decoration-none">{{ qa.question }}</a>
+            
+            {% if user.is_staff or user.is_superuser %}
+              <div>
+                <a href="{% url 'question_answer_edit' qa.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                <a href="{% url 'question_answer_delete' qa.pk %}" class="btn btn-sm btn-danger">Delete</a>
+              </div>
+            {% endif %}
+          </div>
+          
+          {% if qa.answer %}
+            <div class="mt-2">
+              <button class="btn btn-sm btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#answer-{{ qa.pk }}" aria-expanded="false" aria-controls="answer-{{ qa.pk }}">
+                Show Answer
+              </button>
+              <div class="collapse mt-2" id="answer-{{ qa.pk }}">
+                <div class="card card-body">
+                  {{ qa.answer }}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
 {% endblock %}
