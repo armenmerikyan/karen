@@ -3252,7 +3252,7 @@ def generate_message(request, customer_id, touchpoint_id):
         return JsonResponse({"error": "Failed to generate message"}, status=500)
 
 @csrf_exempt
-@staff_member_required
+@staff_required
 def generate_message_chatgpt(request, customer_id, touchpoint_id):
     # Fetch the latest WebsiteProfile
     profile = WebsiteProfile.objects.order_by('-created_at').first()
