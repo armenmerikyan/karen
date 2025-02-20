@@ -202,7 +202,8 @@ a.terminal-green:hover {
   padding: 8px 12px;
   margin: 5px;
   border-radius: 5px;
-  word-wrap: break-word; /* Ensures long words break and wrap */
+  word-wrap: break-word;  /* Wrapping text when no spaces */
+  word-break: break-word; /* Ensures breaking long words */
 }
 
 .user {
