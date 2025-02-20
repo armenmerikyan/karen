@@ -3557,16 +3557,18 @@ def train_product_model(request):
                     {"role": "assistant", "content": address_info.strip(', ')}
                 ]
             })
-
+ 
         for product in products:
+            # Format price to always display two decimal places
+            price = f"${product.price:.2f}" if product.price is not None else "$0.00"
+            
             training_data.append({
                 "messages": [
                     {"role": "system", "content": "You are a helpful AI assistant that provides product information."},
                     {"role": "user", "content": f"Tell me about {product.name}."},
-                    {"role": "assistant", "content": f"Product: {product.name}\nDescription: {product.description}\nPrice: ${product.price}\n"}
+                    {"role": "assistant", "content": f"Product: {product.name}\nDescription: {product.description}\nPrice: {price}\n"}
                 ]
             })
-
         # Step 3: Save JSONL data to a temporary file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl", mode="w", encoding="utf-8") as temp_file:
             jsonl_file_path = temp_file.name
