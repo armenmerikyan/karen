@@ -3416,10 +3416,14 @@ def chatbot_response(request):
     if not profile.chatgpt_api_key:
         return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
 
-    if request.method == "GET":
+    print("API Key:", profile.chatgpt_api_key)  # Debugging: Print API key
+
+    if request.method == "POST":
         # Check if the user is authenticated
         if not request.user.is_authenticated:
             return JsonResponse({"response": "Please log in to use the chat feature."})
+
+        print("User Authenticated:", request.user.is_authenticated)  # Debugging: Print authentication status
 
         # Parse the user's message from the request body
         try:
@@ -3429,6 +3433,8 @@ def chatbot_response(request):
                 return JsonResponse({"error": "No message provided"}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
+
+        print("Request Data:", data)  # Debugging: Print request data
 
         # Initialize the OpenAI client with the API key from the profile
         client = OpenAI(api_key=profile.chatgpt_api_key)
@@ -3441,6 +3447,7 @@ def chatbot_response(request):
 
         # Use the fine-tuned model ID if available, otherwise fall back to a default model
         model_id = profile.chatgpt_model_id if profile.chatgpt_model_id else "gpt-4-turbo"
+        print("Model ID:", model_id)  # Debugging: Print model ID
 
         try:
             # Call the OpenAI API
@@ -3456,6 +3463,7 @@ def chatbot_response(request):
 
         except Exception as e:
             # Handle any errors from the OpenAI API
+            print("OpenAI API Error:", str(e))  # Debugging: Print API error
             return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
