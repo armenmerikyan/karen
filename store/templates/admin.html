@@ -78,7 +78,11 @@
           </a>
           <p>Browse and manage your PDF documents.</p>        
           <hr>
-          
+          <a href="{% url 'conversation_list' %}" class="nav-link">
+              <i class="fas fa-comments"></i> Conversations
+          </a>
+          <p>Browse and manage your conversations.</p>
+          <hr>          
           <p>Latest ChatGPT Model ID: {{ profile.chatgpt_model_id }} (<a href="{% url 'train-products' %}">Train</a>)</p>
           <p>Active ChatGPT Model ID: {{ profile.chatgpt_model_id_current }}
           </p>

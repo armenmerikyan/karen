@@ -3655,6 +3655,7 @@ def upload_and_finetune(client, jsonl_file_path, profile):
         return None, str(e)
 
 @csrf_exempt
+@admin_required
 def train_product_model(request):
     if request.method != "GET":
         return JsonResponse({"error": "Invalid request"}, status=400)
@@ -3674,6 +3675,7 @@ def train_product_model(request):
     
     return redirect('admin_panel')
 
+@admin_required
 def copy_profile(request):
     # Get the WebsiteProfile object by ID
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -3794,3 +3796,8 @@ def simple_question_add(request):
         form = SimpleAnswerForm()  # Use the new form with only the 'answer' field
 
     return render(request, 'question_answer_form.html', {'form': form, 'profile': profile})
+
+@admin_required
+def conversation_list(request):
+    conversations = Conversation.objects.prefetch_related("messages").all()
+    return render(request, "conversations/conversation_list.html", {"conversations": conversations})

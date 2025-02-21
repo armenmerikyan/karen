@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Conversations</h2>
+{% for conversation in conversations %}
+    <div class="conversation">
+        <h3>Conversation ID: {{ conversation.id }}</h3>
+        <p>Started by: {{ conversation.user.username }}</p>
+        <p>Created at: {{ conversation.created_at }}</p>
+        <ul>
+            {% for message in conversation.messages.all %}
+                <li><strong>{{ message.role }}:</strong> {{ message.content }} ({{ message.timestamp }})</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endfor %}
+{% endblock %}

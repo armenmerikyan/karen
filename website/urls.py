@@ -200,6 +200,7 @@ urlpatterns = [
     path('public_question_answer_list/', views.public_question_answer_list, name='public_question_answer_list'),
     path('simple_question_add/', views.simple_question_add, name='simple_question_add'),
 
+    path("conversations/", views.conversation_list, name="conversation_list"),
 
 ] 
 
