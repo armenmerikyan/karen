@@ -110,6 +110,8 @@ from .models import TouchPointType
 from .models import GeneratedMessage
 from .models import PDFDocument
 from .models import QuestionAnswer
+from .models import Conversation
+from .models import Message
 
 
 from .forms import SimpleAnswerForm
