@@ -3820,23 +3820,42 @@ def conversation_list(request):
 @require_POST
 def update_message_content(request, message_id):
     try:
-        # Log the request body for debugging
-        print("Request body:", request.body)
+        # Log the raw request body for debugging
+        print("Raw request body:", request.body)
 
         # Parse JSON data from the request body
-        data = json.loads(request.body)
+        try:
+            data = json.loads(request.body)
+            print("Parsed JSON data:", data)
+        except json.JSONDecodeError as e:
+            print("Failed to parse JSON:", e)
+            return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
+
+        # Extract the content_update field
         content_update = data.get('content_update')
+        if not content_update:
+            print("No content_update provided in the request")
+            return JsonResponse({'success': False, 'error': 'content_update is required'})
 
-        # Log the received data for debugging
-        print("Content update:", content_update)
+        # Log the received content_update
+        print("Content update received:", content_update)
 
-        # Fetch the message and update its content
-        message = Message.objects.get(id=message_id)
+        # Fetch the message object
+        try:
+            message = Message.objects.get(id=message_id)
+            print("Message found:", message)
+        except Message.DoesNotExist:
+            print("Message not found for ID:", message_id)
+            return JsonResponse({'success': False, 'error': 'Message not found'})
+
+        # Update the message content
         message.updated_content = content_update
         message.save()
 
+        # Log the updated message for debugging
+        print("Updated message:", message.updated_content)
+
         return JsonResponse({'success': True})
-    except Message.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Message not found'})
     except Exception as e:
+        print("Unexpected error:", str(e))
         return JsonResponse({'success': False, 'error': str(e)})
