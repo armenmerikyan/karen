@@ -32,12 +32,11 @@
                             <li class="list-group-item">
                                 <strong>{{ message.role }}:</strong> 
                                 <span class="message-content" data-message-id="{{ message.id }}" style="cursor: pointer;">
-                                    {% if message.updated_content %}
-                                        <del>{{ message.content }}</del> <br> {{ message.updated_content }}
+                                    {% if message.content_update %}
+                                        <del>{{ message.content }}</del> <br> {{ message.content_update }}
                                         <span class="badge bg-success">Updated</span>
                                     {% else %}
-                                        {{ message.content }}
-                                        {{ message.updated_content }}
+                                        {{ message.content }} 
                                     {% endif %}
                                 </span> 
                                 ({{ message.timestamp }})
