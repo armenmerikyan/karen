@@ -3822,6 +3822,7 @@ def update_message_content(request, message_id):
     try:
         # Log the raw request body for debugging
         print("Raw request body:", request.body)
+        print("message id ", message_id )
 
         # Parse JSON data from the request body
         try:
@@ -3851,7 +3852,7 @@ def update_message_content(request, message_id):
         # Update the message content
         message.updated_content = content_update
         message.save()
-
+        
         # Log the updated message for debugging
         print("Updated message:", message.updated_content)
 
