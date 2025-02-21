@@ -125,11 +125,15 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                location.reload(); // Reload the page to reflect the changes
+                // Update the message content in the DOM without reloading the page
+                var messageElement = document.querySelector(`.message-content[data-message-id="${messageId}"]`);
+                messageElement.innerHTML = contentUpdate;
+                var modal = bootstrap.Modal.getInstance(document.getElementById('editMessageModal'));
+                modal.hide();
             } else {
                 alert('Failed to update the message content.');
             }
-        });
+        });        
     });
 
     // Attach click event to message content to open the edit modal
