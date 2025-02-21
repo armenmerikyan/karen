@@ -802,6 +802,7 @@ class Conversation(models.Model):
 
 class Message(models.Model):
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name="messages")
+    conversation_update = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name="messages")
     role = models.CharField(max_length=10, choices=[("user", "User"), ("assistant", "Assistant")])
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
