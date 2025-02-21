@@ -1,17 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Conversations</h2>
-{% for conversation in conversations %}
-    <div class="conversation">
-        <h3>Conversation ID: {{ conversation.id }}</h3>
-        <p>Started by: {{ conversation.user.username }}</p>
-        <p>Created at: {{ conversation.created_at }}</p>
-        <ul>
-            {% for message in conversation.messages.all %}
-                <li><strong>{{ message.role }}:</strong> {{ message.content }} ({{ message.timestamp }})</li>
-            {% endfor %}
-        </ul>
-    </div>
-{% endfor %}
+<div class="container">
+    <h2>Conversations</h2>
+    {% for conversation in conversations %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <h3>Conversation ID: {{ conversation.id }}</h3>
+                <p>Started by: {{ conversation.user.username }}</p>
+                <p>Created at: {{ conversation.created_at }}</p>
+                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#messages-{{ conversation.id }}" aria-expanded="false" aria-controls="messages-{{ conversation.id }}">
+                    Toggle Messages
+                </button>
+            </div>
+            <div class="collapse" id="messages-{{ conversation.id }}">
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for message in conversation.messages.all %}
+                            <li class="list-group-item">
+                                <strong>{{ message.role }}:</strong> {{ message.content }} ({{ message.timestamp }})
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}
