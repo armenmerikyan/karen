@@ -3802,32 +3802,15 @@ def conversation_list(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
-
-    # Get all conversations and their messages (optimized with prefetch_related)
-    conversations = Conversation.objects.prefetch_related('messages', 'user').all()
-
-    # Collect all unique user emails from the conversations
-    user_emails = set(conversation.user.email.strip().lower() for conversation in conversations if conversation.user and conversation.user.email)
-
-    # Fetch customers matching those emails
-    customers = Customer.objects.filter(email__in=user_emails)
-
-    # Create a map of customer emails to customers
-    customer_map = {customer.email.strip().lower(): customer for customer in customers}
-
-    # Iterate over conversations and assign customers to messages based on the user's email
+    
+    conversations = Conversation.objects.prefetch_related("messages").all()
+    
+    # Link conversations with customers based on email
     for conversation in conversations:
-        if conversation.user:
-            user_email = conversation.user.email.strip().lower()
-            # Find the customer using the user's email
-            customer = customer_map.get(user_email)
-            if customer:
-                for message in conversation.messages.all():
-                    message.customer = customer
-            else:
-                print(f"Customer not found for email: {user_email}")
-
+        try:
+            customer = Customer.objects.get(email=conversation.user.email)
+            conversation.customer = customer
+        except Customer.DoesNotExist:
+            conversation.customer = None
+    
     return render(request, "conversation_list.html", {"conversations": conversations, 'profile': profile})
-
-
-
