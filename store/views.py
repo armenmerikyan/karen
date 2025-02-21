@@ -3521,11 +3521,11 @@ def chatbot_response(request):
         client = OpenAI(api_key=profile.chatgpt_api_key)
 
         # Include business context about 'About Us' and ensure a short, concise response
-        context = [
+        messages = [
             {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."},
             {"role": "user", "content": user_message}  # Include the user's message
         ]
- 
+
         fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
         print("Fine-tune status:", fine_tune_status)
         print("TEST") 
@@ -3546,7 +3546,7 @@ def chatbot_response(request):
             # Call the OpenAI API
             response = client.chat.completions.create(
                 model=model_id,  # Use the fine-tuned model or fallback model
-                messages=context
+                messages=messages  # Use the correct message structure
             )
 
             # Extract the bot's reply
