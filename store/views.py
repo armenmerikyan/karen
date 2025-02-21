@@ -3815,6 +3815,11 @@ def conversation_list(request):
     for conversation in conversations:
         for message in conversation.messages.all():
             if conversation.user and conversation.user.email in customer_map:
-                message.customer = customer_map[conversation.user.email]
-
+                customer = customer_map[conversation.user.email]
+                message.customer = customer
+            else:
+                # For debugging, log cases where the user email is not found in the customer map
+                print(f"Missing customer for user email: {conversation.user.email if conversation.user else 'No user'}")
+            
     return render(request, "conversation_list.html", {"conversations": conversations, 'profile': profile})
+
