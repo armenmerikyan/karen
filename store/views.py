@@ -112,7 +112,6 @@ from .models import PDFDocument
 from .models import QuestionAnswer
 from .models import Conversation, Message
 
-
 from .forms import SimpleAnswerForm
 from .forms import QuestionAnswerForm
 from .forms import CustomerPDFForm
@@ -3488,17 +3487,21 @@ def secure_download(request, product_id):
 
 @csrf_exempt
 def chatbot_response(request):
+    # Fetch the latest WebsiteProfile
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
-    
+
+    # Ensure the ChatGPT API key is available
     if not profile.chatgpt_api_key:
         return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
-    
+
     if request.method == "POST":
+        # Check if the user is authenticated
         if not request.user.is_authenticated:
             return JsonResponse({"response": "Please log in to use the chat feature."})
 
+        # Parse the user's message from the request body
         try:
             data = json.loads(request.body)
             user_message = data.get("message", "").strip()
@@ -3506,49 +3509,69 @@ def chatbot_response(request):
                 return JsonResponse({"error": "No message provided"}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
-        
+
+        # Initialize the OpenAI client with the API key from the profile
         client = OpenAI(api_key=profile.chatgpt_api_key)
 
+        # Check the fine-tuning status
         fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
         print("Fine-tune status:", fine_tune_status)
-        print("TEST") 
-        print("TEST ", fine_tune_status.status)
 
+        # Use the fine-tuned model if available, otherwise fall back to gpt-3.5-turbo
         if fine_tune_status.status == 'succeeded':
             model_id = fine_tune_status.fine_tuned_model
         else:
             model_id = "gpt-3.5-turbo"
 
-        print(model_id)
-        print("TEST ", model_id)
+        print("Using model:", model_id)
 
+        # Retrieve or create a Conversation object for the user
         conversation, created = Conversation.objects.get_or_create(user=request.user)
-        
-        # Retrieve previous messages for context
-        previous_messages = Message.objects.filter(conversation=conversation).order_by("timestamp")
-        context = [{"role": msg.role, "content": msg.content} for msg in previous_messages]
-        
-        context.append({"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."})
+
+        # Retrieve previous messages for context (limit to the last 5 messages)
+        previous_messages = Message.objects.filter(conversation=conversation).order_by("-timestamp")[:5]
+
+        # Build the context for the OpenAI API
+        context = [
+            {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."}
+        ]
+
+        # Add previous messages to the context (validate roles)
+        valid_roles = {"system", "user", "assistant"}
+        for msg in previous_messages:
+            if msg.role in valid_roles:
+                context.append({"role": msg.role, "content": msg.content})
+
+        # Add the current user message to the context
         context.append({"role": "user", "content": user_message})
-        
+
+        # Debugging: Print the context being sent to OpenAI
+        print("Context being sent to OpenAI:", context)
+
         try:
+            # Call the OpenAI API
             response = client.chat.completions.create(
                 model=model_id,
                 messages=context
             )
+
+            # Extract the bot's reply
             bot_reply = response.choices[0].message.content
-            
+
             # Store user and bot messages in the database
             Message.objects.create(conversation=conversation, role="user", content=user_message)
             Message.objects.create(conversation=conversation, role="assistant", content=bot_reply)
-            
+
+            # Return the bot's reply as a JSON response
             return JsonResponse({"response": bot_reply})
+
         except Exception as e:
+            # Handle any errors from the OpenAI API
             print("OpenAI API Error:", str(e))
             return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
-    
-    return JsonResponse({"error": "Invalid request"}, status=400)
 
+    # Return an error for invalid requests
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
 
 def get_latest_profile():
