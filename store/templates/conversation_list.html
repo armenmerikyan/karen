@@ -9,6 +9,17 @@
                 <h3>Conversation ID: {{ conversation.id }}</h3>
                 <p>Started by: {{ conversation.user.username }}</p>
                 <p>Created at: {{ conversation.created_at }}</p>
+                {% if conversation.customer %}
+                    <p>Customer: 
+                        <a href="{% url 'customer_edit' conversation.customer.id %}">
+                            {{ conversation.customer.first_name }} {{ conversation.customer.last_name }}
+                        </a>
+                    </p>
+                    <p>Email: {{ conversation.customer.email }}</p>
+                    <p>Phone: {{ conversation.customer.phone_number }}</p>
+                {% else %}
+                    <p>No associated customer</p>
+                {% endif %}
                 <button class="btn btn-primary toggle-messages" type="button" data-bs-toggle="collapse" data-bs-target="#messages-{{ conversation.id }}" aria-expanded="false" aria-controls="messages-{{ conversation.id }}">
                     <span class="button-text">Show</span>
                     <i class="fas fa-chevron-down"></i>
