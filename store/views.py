@@ -3509,6 +3509,19 @@ def chatbot_response(request):
         
         client = OpenAI(api_key=profile.chatgpt_api_key)
 
+        fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
+        print("Fine-tune status:", fine_tune_status)
+        print("TEST") 
+        print("TEST ", fine_tune_status.status)
+
+        if fine_tune_status.status == 'succeeded':
+            model_id = fine_tune_status.fine_tuned_model
+        else:
+            model_id = "gpt-3.5-turbo"
+
+        print(model_id)
+        print("TEST ", model_id)
+
         conversation, created = Conversation.objects.get_or_create(user=request.user)
         
         # Retrieve previous messages for context
@@ -3517,9 +3530,6 @@ def chatbot_response(request):
         
         context.append({"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."})
         context.append({"role": "user", "content": user_message})
-
-        fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
-        model_id = fine_tune_status.fine_tuned_model if fine_tune_status.status == 'succeeded' else "gpt-3.5-turbo"
         
         try:
             response = client.chat.completions.create(
@@ -3534,9 +3544,11 @@ def chatbot_response(request):
             
             return JsonResponse({"response": bot_reply})
         except Exception as e:
+            print("OpenAI API Error:", str(e))
             return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
     
     return JsonResponse({"error": "Invalid request"}, status=400)
+
 
 
 def get_latest_profile():
