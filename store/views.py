@@ -3806,21 +3806,37 @@ def conversation_list(request):
     # Get all conversations and their messages (optimized with prefetch_related)
     conversations = Conversation.objects.prefetch_related("messages", "user").all()
 
-    # Collect all unique user emails from the conversations and fetch customers in one query
-    user_emails = set(conversation.user.email for conversation in conversations if conversation.user)
+    # Collect all unique user emails from the conversations
+    user_emails = set(conversation.user.email.strip().lower() for conversation in conversations if conversation.user and conversation.user.email)
+
+    # Log the user emails to check if they're correct
+    print("User emails being queried:", user_emails)
+
+    # Fetch customers matching those emails
     customers = Customer.objects.filter(email__in=user_emails)
-    customer_map = {customer.email: customer for customer in customers}
+
+    # Log the customers fetched from the database
+    print("Customers found:", [customer.email for customer in customers])
+
+    # Create a map of customer emails to customers
+    customer_map = {customer.email.strip().lower(): customer for customer in customers}
 
     # Iterate over conversations and assign customers to messages based on the user's email
     for conversation in conversations:
-        for message in conversation.messages.all():
-            if conversation.user and conversation.user.email in customer_map:
-                customer = customer_map[conversation.user.email]
-                message.customer = customer
+        if conversation.user:
+            user_email = conversation.user.email.strip().lower()
+            if user_email in customer_map:
+                customer = customer_map[user_email]
+                for message in conversation.messages.all():
+                    message.customer = customer
             else:
                 # For debugging, log cases where the user email is not found in the customer map
-                print(f"Missing customer for user email: {conversation.user.email if conversation.user else 'No user'}")
-            
+                print(f"Customer not found for email: {user_email}")
+        else:
+            print(f"No user for conversation with ID: {conversation.id}")
+
+    # Return the response with the conversations
     return render(request, "conversation_list.html", {"conversations": conversations, 'profile': profile})
+
 
 
