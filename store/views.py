@@ -3799,5 +3799,8 @@ def simple_question_add(request):
 
 @admin_required
 def conversation_list(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
     conversations = Conversation.objects.prefetch_related("messages").all()
-    return render(request, "conversation_list.html", {"conversations": conversations})
+    return render(request, "conversation_list.html", {"conversations": conversations, 'profile': profile})
