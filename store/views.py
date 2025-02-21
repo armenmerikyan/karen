@@ -3817,14 +3817,26 @@ def conversation_list(request):
 
 @csrf_exempt
 @admin_required
+@require_POST
 def update_message_content(request, message_id):
-    if request.method == 'POST':
-        try:
-            message = Message.objects.get(id=message_id)
-            content_update = request.POST.get('content_update')
-            message.updated_content = content_update
-            message.save()
-            return JsonResponse({'success': True})
-        except Message.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Message not found'})
-    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+    try:
+        # Log the request body for debugging
+        print("Request body:", request.body)
+
+        # Parse JSON data from the request body
+        data = json.loads(request.body)
+        content_update = data.get('content_update')
+
+        # Log the received data for debugging
+        print("Content update:", content_update)
+
+        # Fetch the message and update its content
+        message = Message.objects.get(id=message_id)
+        message.updated_content = content_update
+        message.save()
+
+        return JsonResponse({'success': True})
+    except Message.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Message not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
