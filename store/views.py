@@ -3850,14 +3850,10 @@ def update_message_content(request, message_id):
             return JsonResponse({'success': False, 'error': 'Message not found'})
 
         # Update the message content
-        message.updated_content = content_update
+        message.content_update = content_update
         message.save()
-
-        message = Message.objects.get(id=message_id)
-        print(message.updated_content)
-
+ 
         # Log the updated message for debugging
-        print("Updated message:", message.updated_content)
 
         return JsonResponse({'success': True})
     except Exception as e:
