@@ -34,6 +34,7 @@
                                 <span class="message-content" data-message-id="{{ message.id }}" style="cursor: pointer;">
                                     {% if message.updated_content %}
                                         <del>{{ message.content }}</del> <br> {{ message.updated_content }}
+                                        <span class="badge bg-success">Updated</span>
                                     {% else %}
                                         {{ message.content }}
                                     {% endif %}
@@ -107,7 +108,6 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.show();
     }
 
-    // Event listener for the save button
     document.getElementById('saveContentUpdate').addEventListener('click', function() {
         var messageId = document.getElementById('messageId').value;
         var contentUpdate = document.getElementById('contentUpdate').value;
@@ -127,7 +127,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 // Update the message content in the DOM without reloading the page
                 var messageElement = document.querySelector(`.message-content[data-message-id="${messageId}"]`);
-                messageElement.innerHTML = contentUpdate;
+                messageElement.innerHTML = `
+                    <del>${messageElement.textContent.trim()}</del><br>
+                    ${contentUpdate}
+                    <span class="badge bg-success">Updated</span>
+                `;
                 var modal = bootstrap.Modal.getInstance(document.getElementById('editMessageModal'));
                 modal.hide();
             } else {
@@ -135,7 +139,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });        
     });
-
     // Attach click event to message content to open the edit modal
     document.querySelectorAll('.message-content').forEach(function(element) {
         element.addEventListener('click', function() {
