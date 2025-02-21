@@ -3499,7 +3499,7 @@ def chatbot_response(request):
 
         try:
             data = json.loads(request.body)
-            user_message = data.get("message", "")
+            user_message = data.get("message", "").strip()
             if not user_message:
                 return JsonResponse({"error": "No message provided"}, status=400)
         except json.JSONDecodeError:
@@ -3507,31 +3507,34 @@ def chatbot_response(request):
 
         client = OpenAI(api_key=profile.chatgpt_api_key)
 
-        # Retrieve or create a conversation
+        # Retrieve or create conversation
         conversation, _ = Conversation.objects.get_or_create(user=request.user)
 
-        # Fetch last 10 messages to maintain context
-        recent_messages = list(conversation.messages.all().order_by('-timestamp')[:10])
-        messages_context = [
-            {"role": msg.role, "content": msg.content} for msg in reversed(recent_messages)
-        ]
+        # Fetch last 10 messages and ensure ordering is correct
+        recent_messages = list(conversation.messages.all().order_by('timestamp')[:10])
 
-        # Add current user message to context
-        messages_context.append({"role": "user", "content": user_message})
+        messages_context = [{"role": msg.role, "content": msg.content} for msg in recent_messages]
+        messages_context.append({"role": "user", "content": user_message})  # Add current message
 
-        # Store user message
+        # Store user message in DB
         Message.objects.create(conversation=conversation, role="user", content=user_message)
 
-        # Check fine-tuning status
-        fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
-        model_id = fine_tune_status.fine_tuned_model if fine_tune_status.status == "succeeded" else "gpt-3.5-turbo"
+        # Use fine-tuned model if available
+        try:
+            fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
+            model_id = fine_tune_status.fine_tuned_model if fine_tune_status.status == "succeeded" else "gpt-3.5-turbo"
+        except Exception as e:
+            model_id = "gpt-3.5-turbo"  # Fallback model
+            print(f"Fine-tuning retrieval error: {e}")
 
         try:
+            # Call OpenAI API with message history
             response = client.chat.completions.create(
                 model=model_id,
                 messages=messages_context
             )
-            bot_reply = response.choices[0].message.content
+
+            bot_reply = response.choices[0].message.content.strip()
 
             # Store bot response
             Message.objects.create(conversation=conversation, role="assistant", content=bot_reply)
@@ -3539,9 +3542,10 @@ def chatbot_response(request):
             return JsonResponse({"response": bot_reply})
 
         except Exception as e:
-            return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
+            return JsonResponse({"error": f"ChatGPT API error: {str(e)}"}, status=500)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
+
 
 def get_latest_profile():
     return WebsiteProfile.objects.order_by('-created_at').first()
