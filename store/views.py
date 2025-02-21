@@ -3485,6 +3485,7 @@ def secure_download(request, product_id):
     logger.info(f"Serving digital file for product {product_id}.")
     return FileResponse(open(file_path, 'rb'), as_attachment=True)
 
+
 @csrf_exempt
 def chatbot_response(request):
     # Fetch the latest WebsiteProfile
@@ -3496,22 +3497,34 @@ def chatbot_response(request):
     if not profile.chatgpt_api_key:
         return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
 
+    print("API Key:", profile.chatgpt_api_key)  # Debugging: Print API key
+
     if request.method == "POST":
         # Check if the user is authenticated
         if not request.user.is_authenticated:
             return JsonResponse({"response": "Please log in to use the chat feature."})
 
+        print("User Authenticated:", request.user.is_authenticated)  # Debugging: Print authentication status
+
         # Parse the user's message from the request body
         try:
             data = json.loads(request.body)
-            user_message = data.get("message", "").strip()
+            user_message = data.get("message", "")
             if not user_message:
                 return JsonResponse({"error": "No message provided"}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
 
+        print("Request Data:", data)  # Debugging: Print request data
+
         # Initialize the OpenAI client with the API key from the profile
         client = OpenAI(api_key=profile.chatgpt_api_key)
+
+        # Include business context about 'About Us' and ensure a short, concise response
+        context = [
+            {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."},
+            {"role": "user", "content": user_message}  # Include the user's message
+        ]
 
         # Check the fine-tuning status
         fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
@@ -3525,52 +3538,28 @@ def chatbot_response(request):
 
         print("Using model:", model_id)
 
-        # Retrieve or create a Conversation object for the user
-        conversation, created = Conversation.objects.get_or_create(user=request.user)
-
-        # Retrieve previous messages for context (limit to the last 5 messages)
-        previous_messages = Message.objects.filter(conversation=conversation).order_by("-timestamp")[:5]
-
-        # Build the context for the OpenAI API
-        context = [
-            {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."}
-        ]
-
-        # Add previous messages to the context (validate roles)
-        valid_roles = {"system", "user", "assistant"}
-        for msg in previous_messages:
-            if msg.role in valid_roles:
-                context.append({"role": msg.role, "content": msg.content})
-
-        # Add the current user message to the context
-        context.append({"role": "user", "content": user_message})
-
-        # Debugging: Print the context being sent to OpenAI
-        print("Context being sent to OpenAI:", context)
-
         try:
             # Call the OpenAI API
             response = client.chat.completions.create(
-                model=model_id,
+                model=model_id,  # Use the fine-tuned model or fallback model
                 messages=context
             )
 
             # Extract the bot's reply
             bot_reply = response.choices[0].message.content
 
-            # Store user and bot messages in the database
+            # Optionally, store the conversation in the database (if needed)
+            conversation, created = Conversation.objects.get_or_create(user=request.user)
             Message.objects.create(conversation=conversation, role="user", content=user_message)
             Message.objects.create(conversation=conversation, role="assistant", content=bot_reply)
 
-            # Return the bot's reply as a JSON response
             return JsonResponse({"response": bot_reply})
 
         except Exception as e:
             # Handle any errors from the OpenAI API
-            print("OpenAI API Error:", str(e))
+            print("OpenAI API Error:", str(e))  # Debugging: Print API error
             return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
 
-    # Return an error for invalid requests
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 
