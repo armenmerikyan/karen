@@ -3571,13 +3571,13 @@ def validate_profile(profile):
     if not profile.chatgpt_api_key:
         return {"error": "ChatGPT API key is missing in the website profile."}, 400
     return None
-
-def format_training_entry(system_content, user_content, assistant_content):
+ 
+def format_training_entry(system_content, user_content):
     return {"messages": [
         {"role": "system", "content": system_content},
-        {"role": "user", "content": user_content},
-        {"role": "assistant", "content": assistant_content}
+        {"role": "user", "content": user_content}
     ]}
+
 
 def get_general_info(profile):
     training_data = []
@@ -3591,8 +3591,7 @@ def get_general_info(profile):
     for attr, question in info_entries:
         content = getattr(profile, attr, None)
         if content:
-            training_data.append(format_training_entry(
-                "You are a helpful AI assistant that provides website information.",
+            training_data.append(format_training_entry( 
                 question,
                 content
             ))
@@ -3600,8 +3599,7 @@ def get_general_info(profile):
     address_fields = [profile.address1, profile.address2, profile.city, profile.state, profile.zip_code, profile.country]
     address_info = ", ".join(filter(None, address_fields)).strip(', ')
     if address_info:
-        training_data.append(format_training_entry(
-            "You are a helpful AI assistant that provides website address information.",
+        training_data.append(format_training_entry( 
             "What is your business address?",
             address_info
         ))
@@ -3612,8 +3610,7 @@ def get_product_info():
     products = Product.objects.all()
     for product in products:
         desc = f"Here are the details for {product.name}:\nDescription: {product.description}\n"
-        training_data.append(format_training_entry(
-            "You are a knowledgeable assistant that provides details about products.",
+        training_data.append(format_training_entry( 
             f"What can you tell me about {product.name}?",
             desc
         ))
@@ -3625,8 +3622,7 @@ def get_qa_info():
         is_approved=True, has_sensitive_data=False, is_visible_public=True, is_deleted=False
     )
     for qa in approved_qas:
-        training_data.append(format_training_entry(
-            "You are a helpful AI assistant providing accurate answers to customer questions.",
+        training_data.append(format_training_entry( 
             qa.question,
             qa.answer
         ))
