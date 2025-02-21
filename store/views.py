@@ -3800,4 +3800,4 @@ def simple_question_add(request):
 @admin_required
 def conversation_list(request):
     conversations = Conversation.objects.prefetch_related("messages").all()
-    return render(request, "conversations/conversation_list.html", {"conversations": conversations})
+    return render(request, "conversation_list.html", {"conversations": conversations})
