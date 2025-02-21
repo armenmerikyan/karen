@@ -3609,6 +3609,20 @@ def get_general_info(profile):
         ))
     return training_data
 
+def get_conversation_info():
+    training_data = []
+    conversations = Conversation.objects.prefetch_related("messages").all()
+
+    for convo in conversations:
+        messages = convo.messages.order_by("timestamp")
+        formatted_messages = [
+            {"role": msg.role, "content": msg.content}
+            for msg in messages
+        ]
+        training_data.append({"messages": formatted_messages})
+
+    return training_data
+
 def get_product_info():
     training_data = []
     products = Product.objects.all()
@@ -3666,7 +3680,7 @@ def train_product_model(request):
         return JsonResponse(*validation_error)
     
     client = OpenAI(api_key=profile.chatgpt_api_key)
-    training_data = get_general_info(profile) + get_product_info() + get_qa_info()
+    training_data = get_general_info(profile) + get_product_info() + get_qa_info() + get_conversation_info()
     jsonl_file_path = save_training_data(training_data)
     
     file_id, result = upload_and_finetune(client, jsonl_file_path, profile)
