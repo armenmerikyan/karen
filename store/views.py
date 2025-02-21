@@ -110,6 +110,7 @@ from .models import TouchPointType
 from .models import GeneratedMessage
 from .models import PDFDocument
 from .models import QuestionAnswer
+from .models import Conversation, Message
 
 
 from .forms import SimpleAnswerForm
@@ -3485,80 +3486,56 @@ def secure_download(request, product_id):
     logger.info(f"Serving digital file for product {product_id}.")
     return FileResponse(open(file_path, 'rb'), as_attachment=True)
 
-
 @csrf_exempt
 def chatbot_response(request):
-    # Fetch the latest WebsiteProfile
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
-
-    # Ensure the ChatGPT API key is available
+    
     if not profile.chatgpt_api_key:
         return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
-
-    print("API Key:", profile.chatgpt_api_key)  # Debugging: Print API key
-
+    
     if request.method == "POST":
-        # Check if the user is authenticated
         if not request.user.is_authenticated:
             return JsonResponse({"response": "Please log in to use the chat feature."})
 
-        print("User Authenticated:", request.user.is_authenticated)  # Debugging: Print authentication status
-
-        # Parse the user's message from the request body
         try:
             data = json.loads(request.body)
-            user_message = data.get("message", "")
+            user_message = data.get("message", "").strip()
             if not user_message:
                 return JsonResponse({"error": "No message provided"}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
-
-        print("Request Data:", data)  # Debugging: Print request data
-
-        # Initialize the OpenAI client with the API key from the profile
+        
         client = OpenAI(api_key=profile.chatgpt_api_key)
 
-        # Include business context about 'About Us' and ensure a short, concise response
-        context = [
-            {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."},
-            {"role": "user", "content": user_message}  # Include the user's message
-        ]
- 
+        conversation, created = Conversation.objects.get_or_create(user=request.user)
+        
+        # Retrieve previous messages for context
+        previous_messages = Message.objects.filter(conversation=conversation).order_by("timestamp")
+        context = [{"role": msg.role, "content": msg.content} for msg in previous_messages]
+        
+        context.append({"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."})
+        context.append({"role": "user", "content": user_message})
+
         fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
-        print("Fine-tune status:", fine_tune_status)
-        print("TEST") 
-        print("TEST ", fine_tune_status.status)
-
-        if fine_tune_status.status == 'succeeded':
-            # Use the model ID for the fine-tuned model
-            model_id = fine_tune_status.fine_tuned_model
-        else:
-            # If still processing or failed, use a fallback model
-            model_id = "gpt-3.5-turbo"
-
-        print(model_id)
-
-        print("TEST ", model_id)
-
+        model_id = fine_tune_status.fine_tuned_model if fine_tune_status.status == 'succeeded' else "gpt-3.5-turbo"
+        
         try:
-            # Call the OpenAI API
             response = client.chat.completions.create(
-                model=model_id,  # Use the fine-tuned model or fallback model
+                model=model_id,
                 messages=context
             )
-
-            # Extract the bot's reply
             bot_reply = response.choices[0].message.content
-
+            
+            # Store user and bot messages in the database
+            Message.objects.create(conversation=conversation, role="user", content=user_message)
+            Message.objects.create(conversation=conversation, role="assistant", content=bot_reply)
+            
             return JsonResponse({"response": bot_reply})
-
         except Exception as e:
-            # Handle any errors from the OpenAI API
-            print("OpenAI API Error:", str(e))  # Debugging: Print API error
             return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
-
+    
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 
