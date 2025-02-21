@@ -110,8 +110,6 @@ from .models import TouchPointType
 from .models import GeneratedMessage
 from .models import PDFDocument
 from .models import QuestionAnswer
-from .models import Conversation
-from .models import Message
 
 
 from .forms import SimpleAnswerForm
@@ -3487,62 +3485,79 @@ def secure_download(request, product_id):
     logger.info(f"Serving digital file for product {product_id}.")
     return FileResponse(open(file_path, 'rb'), as_attachment=True)
 
+
 @csrf_exempt
 def chatbot_response(request):
+    # Fetch the latest WebsiteProfile
     profile = WebsiteProfile.objects.order_by('-created_at').first()
-    if not profile or not profile.chatgpt_api_key:
-        return JsonResponse({"error": "Missing API key or profile"}, status=400)
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+
+    # Ensure the ChatGPT API key is available
+    if not profile.chatgpt_api_key:
+        return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
+
+    print("API Key:", profile.chatgpt_api_key)  # Debugging: Print API key
 
     if request.method == "POST":
+        # Check if the user is authenticated
         if not request.user.is_authenticated:
             return JsonResponse({"response": "Please log in to use the chat feature."})
 
+        print("User Authenticated:", request.user.is_authenticated)  # Debugging: Print authentication status
+
+        # Parse the user's message from the request body
         try:
             data = json.loads(request.body)
-            user_message = data.get("message", "").strip()
+            user_message = data.get("message", "")
             if not user_message:
                 return JsonResponse({"error": "No message provided"}, status=400)
         except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
+            return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
 
+        print("Request Data:", data)  # Debugging: Print request data
+
+        # Initialize the OpenAI client with the API key from the profile
         client = OpenAI(api_key=profile.chatgpt_api_key)
 
-        # Retrieve or create conversation
-        conversation, _ = Conversation.objects.get_or_create(user=request.user)
+        # Include business context about 'About Us' and ensure a short, concise response
+        context = [
+            {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."},
+            {"role": "user", "content": user_message}  # Include the user's message
+        ]
+ 
+        fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
+        print("Fine-tune status:", fine_tune_status)
+        print("TEST") 
+        print("TEST ", fine_tune_status.status)
 
-        # Fetch last 10 messages and ensure ordering is correct
-        recent_messages = list(conversation.messages.all().order_by('timestamp')[:10])
+        if fine_tune_status.status == 'succeeded':
+            # Use the model ID for the fine-tuned model
+            model_id = fine_tune_status.fine_tuned_model
+        else:
+            # If still processing or failed, use a fallback model
+            model_id = "gpt-3.5-turbo"
 
-        messages_context = [{"role": msg.role, "content": msg.content} for msg in recent_messages]
-        messages_context.append({"role": "user", "content": user_message})  # Add current message
+        print(model_id)
 
-        # Store user message in DB
-        Message.objects.create(conversation=conversation, role="user", content=user_message)
+        print("TEST ", model_id)
 
-        # Use fine-tuned model if available
         try:
-            fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
-            model_id = fine_tune_status.fine_tuned_model if fine_tune_status.status == "succeeded" else "gpt-3.5-turbo"
-        except Exception as e:
-            model_id = "gpt-3.5-turbo"  # Fallback model
-            print(f"Fine-tuning retrieval error: {e}")
-
-        try:
-            # Call OpenAI API with message history
+            # Call the OpenAI API
             response = client.chat.completions.create(
-                model=model_id,
-                messages=messages_context
+                model=model_id,  # Use the fine-tuned model or fallback model
+                messages=context
             )
 
-            bot_reply = response.choices[0].message.content.strip()
-
-            # Store bot response
-            Message.objects.create(conversation=conversation, role="assistant", content=bot_reply)
+            # Extract the bot's reply
+            bot_reply = response.choices[0].message.content
 
             return JsonResponse({"response": bot_reply})
 
         except Exception as e:
-            return JsonResponse({"error": f"ChatGPT API error: {str(e)}"}, status=500)
+            # Handle any errors from the OpenAI API
+            print("OpenAI API Error:", str(e))  # Debugging: Print API error
+            return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
 
