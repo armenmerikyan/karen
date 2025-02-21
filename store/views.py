@@ -3525,18 +3525,22 @@ def chatbot_response(request):
             {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."},
             {"role": "user", "content": user_message}  # Include the user's message
         ]
-
-        # Check the fine-tuning status
+ 
         fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
         print("Fine-tune status:", fine_tune_status)
+        print("TEST") 
+        print("TEST ", fine_tune_status.status)
 
-        # Use the fine-tuned model if available, otherwise fall back to gpt-3.5-turbo
         if fine_tune_status.status == 'succeeded':
+            # Use the model ID for the fine-tuned model
             model_id = fine_tune_status.fine_tuned_model
         else:
+            # If still processing or failed, use a fallback model
             model_id = "gpt-3.5-turbo"
 
-        print("Using model:", model_id)
+        print(model_id)
+
+        print("TEST ", model_id)
 
         try:
             # Call the OpenAI API
@@ -3547,11 +3551,6 @@ def chatbot_response(request):
 
             # Extract the bot's reply
             bot_reply = response.choices[0].message.content
-
-            # Optionally, store the conversation in the database (if needed)
-            conversation, created = Conversation.objects.get_or_create(user=request.user)
-            Message.objects.create(conversation=conversation, role="user", content=user_message)
-            Message.objects.create(conversation=conversation, role="assistant", content=bot_reply)
 
             return JsonResponse({"response": bot_reply})
 
