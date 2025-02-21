@@ -9,8 +9,9 @@
                 <h3>Conversation ID: {{ conversation.id }}</h3>
                 <p>Started by: {{ conversation.user.username }}</p>
                 <p>Created at: {{ conversation.created_at }}</p>
-                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#messages-{{ conversation.id }}" aria-expanded="false" aria-controls="messages-{{ conversation.id }}">
-                    Toggle Messages
+                <button class="btn btn-primary toggle-messages" type="button" data-bs-toggle="collapse" data-bs-target="#messages-{{ conversation.id }}" aria-expanded="false" aria-controls="messages-{{ conversation.id }}">
+                    <span class="button-text">Show</span>
+                    <i class="fas fa-chevron-down"></i>
                 </button>
             </div>
             <div class="collapse" id="messages-{{ conversation.id }}">
@@ -27,4 +28,31 @@
         </div>
     {% endfor %}
 </div>
+
+<!-- Include Font Awesome -->
+<script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+
+<!-- Custom JavaScript for toggling button text and icon -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleButtons = document.querySelectorAll('.toggle-messages');
+
+    toggleButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const buttonText = button.querySelector('.button-text');
+            const icon = button.querySelector('i');
+
+            if (buttonText.textContent === 'Show') {
+                buttonText.textContent = 'Hide';
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            } else {
+                buttonText.textContent = 'Show';
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            }
+        });
+    });
+});
+</script>
 {% endblock %}
