@@ -7,7 +7,7 @@
         <div class="card mb-3">
             <div class="card-header">
                 <h3>Conversation ID: {{ conversation.id }}</h3>
-                <p>Started by: {{ conversation.user.username }}</p>
+                <p>Started by: {{ conversation.user.username }} {{ conversation.user.email }}</p>
                 <p>Created at: {{ conversation.created_at }}</p>
                 {% if conversation.customer %}
                     <p>Customer: 
