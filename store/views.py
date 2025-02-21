@@ -3819,9 +3819,12 @@ def conversation_list(request):
 @admin_required
 def update_message_content(request, message_id):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        message = get_object_or_404(Message, id=message_id)
-        message.content_update = data.get('content_update')
-        message.save()
-        return JsonResponse({'success': True})
-    return JsonResponse({'success': False}, status=400)
+        try:
+            message = Message.objects.get(id=message_id)
+            content_update = request.POST.get('content_update')
+            message.updated_content = content_update
+            message.save()  # Ensure this line is executed
+            return JsonResponse({'success': True})
+        except Message.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Message not found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
