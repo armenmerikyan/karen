@@ -3486,7 +3486,6 @@ def secure_download(request, product_id):
     logger.info(f"Serving digital file for product {product_id}.")
     return FileResponse(open(file_path, 'rb'), as_attachment=True)
 
-
 @csrf_exempt
 def chatbot_response(request):
     # Fetch the latest WebsiteProfile
@@ -3553,6 +3552,25 @@ def chatbot_response(request):
             # Extract the bot's reply
             bot_reply = response.choices[0].message.content
 
+            # Retrieve the most recent conversation for the user or create a new one
+            conversation = Conversation.objects.filter(user=request.user).order_by('-created_at').first()
+            if not conversation:
+                conversation = Conversation.objects.create(user=request.user)
+
+            # Save the user's message
+            Message.objects.create(
+                conversation=conversation,
+                role="user",
+                content=user_message
+            )
+
+            # Save the bot's reply
+            Message.objects.create(
+                conversation=conversation,
+                role="assistant",
+                content=bot_reply
+            )
+
             return JsonResponse({"response": bot_reply})
 
         except Exception as e:
@@ -3616,12 +3634,13 @@ def get_conversation_info():
     for convo in conversations:
         messages = convo.messages.order_by("timestamp")
         formatted_messages = [
-            {"role": msg.role, "content": msg.content}
+            {"role": msg.role, "content": msg.content_update if msg.content_update else msg.content}
             for msg in messages
         ]
         training_data.append({"messages": formatted_messages})
 
     return training_data
+
 
 def get_product_info():
     training_data = []
