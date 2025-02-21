@@ -3561,168 +3561,116 @@ def chatbot_response(request):
 
     return JsonResponse({"error": "Invalid request"}, status=400)
 
+
+def get_latest_profile():
+    return WebsiteProfile.objects.order_by('-created_at').first()
+
+def validate_profile(profile):
+    if not profile:
+        return {"error": "No website profile found. Please create a profile first."}, 400
+    if not profile.chatgpt_api_key:
+        return {"error": "ChatGPT API key is missing in the website profile."}, 400
+    return None
+
+def format_training_entry(system_content, user_content, assistant_content):
+    return {"messages": [
+        {"role": "system", "content": system_content},
+        {"role": "user", "content": user_content},
+        {"role": "assistant", "content": assistant_content}
+    ]}
+
+def get_general_info(profile):
+    training_data = []
+    info_entries = [
+        ("terms_of_service", "What are the terms of service?"),
+        ("privacy_policy", "What is the privacy policy?"),
+        ("about_us", "Tell me about your company."),
+        ("email", "What is your contact email?"),
+        ("phone", "What is your contact phone number?")
+    ]
+    for attr, question in info_entries:
+        content = getattr(profile, attr, None)
+        if content:
+            training_data.append(format_training_entry(
+                "You are a helpful AI assistant that provides website information.",
+                question,
+                content
+            ))
+    
+    address_fields = [profile.address1, profile.address2, profile.city, profile.state, profile.zip_code, profile.country]
+    address_info = ", ".join(filter(None, address_fields)).strip(', ')
+    if address_info:
+        training_data.append(format_training_entry(
+            "You are a helpful AI assistant that provides website address information.",
+            "What is your business address?",
+            address_info
+        ))
+    return training_data
+
+def get_product_info():
+    training_data = []
+    products = Product.objects.all()
+    for product in products:
+        desc = f"Here are the details for {product.name}:\nDescription: {product.description}\n"
+        training_data.append(format_training_entry(
+            "You are a knowledgeable assistant that provides details about products.",
+            f"What can you tell me about {product.name}?",
+            desc
+        ))
+    return training_data
+
+def get_qa_info():
+    training_data = []
+    approved_qas = QuestionAnswer.objects.filter(
+        is_approved=True, has_sensitive_data=False, is_visible_public=True, is_deleted=False
+    )
+    for qa in approved_qas:
+        training_data.append(format_training_entry(
+            "You are a helpful AI assistant providing accurate answers to customer questions.",
+            qa.question,
+            qa.answer
+        ))
+    return training_data
+
+def save_training_data(training_data):
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl", mode="w", encoding="utf-8") as temp_file:
+        jsonl_file_path = temp_file.name
+        for entry in training_data:
+            temp_file.write(json.dumps(entry) + "\n")
+    return jsonl_file_path
+
+def upload_and_finetune(client, jsonl_file_path, profile):
+    try:
+        with open(jsonl_file_path, "rb") as file:
+            file_response = client.files.create(file=file, purpose="fine-tune")
+        file_id = file_response.id
+        fine_tune_response = client.fine_tuning.jobs.create(training_file=file_id, model="gpt-3.5-turbo")
+        profile.chatgpt_model_id = fine_tune_response.id
+        profile.save()
+        os.remove(jsonl_file_path)
+        return file_id, fine_tune_response.id
+    except Exception as e:
+        return None, str(e)
+
 @csrf_exempt
 def train_product_model(request):
-    # Fetch the latest WebsiteProfile
-    profile = WebsiteProfile.objects.order_by('-created_at').first()
-    if not profile:
-        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
-
-    # Ensure the ChatGPT API key is available
-    if not profile.chatgpt_api_key:
-        return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
-
-    # Initialize the OpenAI client with the API key from the profile
+    if request.method != "GET":
+        return JsonResponse({"error": "Invalid request"}, status=400)
+    
+    profile = get_latest_profile()
+    validation_error = validate_profile(profile)
+    if validation_error:
+        return JsonResponse(*validation_error)
+    
     client = OpenAI(api_key=profile.chatgpt_api_key)
-
-    if request.method == "GET":
-        # Step 1: Fetch product data from the database
-        products = Product.objects.all()
-        if not products:
-            return JsonResponse({"error": "No product data found"}, status=400)
-
-        # Step 2: Format product data in JSONL format
-        training_data = []
-
-        # Add terms of service, privacy policy, and about us to training data
-        if profile.terms_of_service:
-            training_data.append({
-                "messages": [
-                    {"role": "system", "content": "You are a helpful AI assistant that provides website information."},
-                    {"role": "user", "content": "What are the terms of service?"},
-                    {"role": "assistant", "content": profile.terms_of_service}
-                ]
-            })
-        if profile.privacy_policy:
-            training_data.append({
-                "messages": [
-                    {"role": "system", "content": "You are a helpful AI assistant that provides website information."},
-                    {"role": "user", "content": "What is the privacy policy?"},
-                    {"role": "assistant", "content": profile.privacy_policy}
-                ]
-            })
-        if profile.about_us:
-            training_data.append({
-                "messages": [
-                    {"role": "system", "content": "You are a helpful AI assistant that provides website information."},
-                    {"role": "user", "content": "Tell me about your company."},
-                    {"role": "assistant", "content": profile.about_us}
-                ]
-            })
-
-        # Add contact information to training data
-        if profile.email:
-            training_data.append({
-                "messages": [
-                    {"role": "system", "content": "You are a helpful AI assistant that provides website contact information."},
-                    {"role": "user", "content": "What is your contact email?"},
-                    {"role": "assistant", "content": profile.email}
-                ]
-            })
-        if profile.phone:
-            training_data.append({
-                "messages": [
-                    {"role": "system", "content": "You are a helpful AI assistant that provides website contact information."},
-                    {"role": "user", "content": "What is your contact phone number?"},
-                    {"role": "assistant", "content": profile.phone}
-                ]
-            })
-
-        # Add address information to training data
-        if profile.address1 or profile.address2 or profile.city or profile.state or profile.zip_code or profile.country:
-            address_info = f"{profile.address1 or ''}, {profile.address2 or ''}, {profile.city or ''}, {profile.state or ''}, {profile.zip_code or ''}, {profile.country or ''}"
-            training_data.append({
-                "messages": [
-                    {"role": "system", "content": "You are a helpful AI assistant that provides website address information."},
-                    {"role": "user", "content": "What is your business address?"},
-                    {"role": "assistant", "content": address_info.strip(', ')}
-                ]
-            })
- 
-        for product in products:
-            # Format price to always display two decimal places
-            training_data.append({
-                "messages": [
-                    {"role": "system", "content": "You are a knowledgeable assistant that provides details about products."},
-                    {"role": "user", "content": f"What can you tell me about {product.name}?"}, 
-                    {"role": "assistant", "content": f"Here are the details for {product.name}:\nDescription: {product.description}\n"}
-                ]
-            })
-            training_data.append({
-                "messages": [
-                    {"role": "system", "content": "You assist in providing detailed information about products."},
-                    {"role": "user", "content": f"Tell me about {product.name}."}, 
-                    {"role": "assistant", "content": f"Here’s what I know about {product.name}: {product.description}\n"}
-                ]
-            })
-            training_data.append({
-                "messages": [
-                    {"role": "system", "content": "You are an AI assistant providing accurate product details."},
-                    {"role": "user", "content": f"Give me information on {product.name}."}, 
-                    {"role": "assistant", "content": f"Product: {product.name}\nDetails: {product.description}\n"}
-                ]
-            })
-
-        approved_qas = QuestionAnswer.objects.filter(
-            is_approved=True,
-            has_sensitive_data=False,
-            is_visible_public=True,
-            is_deleted=False
-        )
-
-        for qa in approved_qas:
-            training_data.append({
-                "messages": [
-                    {"role": "system", "content": "You are a helpful AI assistant providing accurate answers to customer questions."},
-                    {"role": "user", "content": qa.question},
-                    {"role": "assistant", "content": qa.answer}
-                ]
-            })
-
-        # Step 3: Save JSONL data to a temporary file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl", mode="w", encoding="utf-8") as temp_file:
-            jsonl_file_path = temp_file.name
-            for entry in training_data:
-                temp_file.write(json.dumps(entry) + "\n")
-
-        try:
-            # Step 4: Upload training file using the new method
-            with open(jsonl_file_path, "rb") as file:
-                file_response = client.files.create(file=file, purpose="fine-tune")
-
-            file_id = file_response.id
-            print(f"Uploaded training file with ID: {file_id}")
-
-            # Step 5: Start fine-tuning with new method
-            fine_tune_response = client.fine_tuning.jobs.create(
-                training_file=file_id,
-                model="gpt-3.5-turbo"
-            )
-            print(f"Fine-tuning job started with ID: {fine_tune_response.id}")
-
-            # Step 6: Update the WebsiteProfile with the new fine-tuned model ID
-            profile.chatgpt_model_id = fine_tune_response.id
-            
-            profile.save()
-
-            # Clean up temporary file
-            os.remove(jsonl_file_path)
-            '''
-            return JsonResponse({
-                "message": "Training started",
-                "file_id": file_id,
-                "fine_tune_id": fine_tune_response.id,
-                "model_id": profile.chatgpt_model_id  # Return the updated model ID
-            })
-            '''
-
-            return redirect('admin_panel')
-        except Exception as e:
-            # General exception handling
-            return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
-
-    return JsonResponse({"error": "Invalid request"}, status=400)
-
+    training_data = get_general_info(profile) + get_product_info() + get_qa_info()
+    jsonl_file_path = save_training_data(training_data)
+    
+    file_id, result = upload_and_finetune(client, jsonl_file_path, profile)
+    if not file_id:
+        return JsonResponse({"error": f"An error occurred: {result}"}, status=500)
+    
+    return redirect('admin_panel')
 
 def copy_profile(request):
     # Get the WebsiteProfile object by ID
