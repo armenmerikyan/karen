@@ -1,69 +1,141 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
+{% load custom_filters %}
 
 {% block content %}
-<div class="container">
-    <h2>Conversations</h2>
-    {% for conversation in conversations %}
-        <div class="card mb-3">
-            <div class="card-header">
-                <h3>Conversation ID: {{ conversation.id }}</h3>
-                <p>Started by: {{ conversation.user.username }} {{ conversation.user.email }}</p>
-                <p>Created at: {{ conversation.created_at }}</p>
-                {% if conversation.customer %}
-                    <p>Customer: 
-                        <a href="{% url 'customer_edit' conversation.customer.id %}">
-                            {{ conversation.customer.first_name }} {{ conversation.customer.last_name }}
-                        </a>
-                    </p>
-                    <p>Email: {{ conversation.customer.email }}</p>
-                    <p>Phone: {{ conversation.customer.phone_number }}</p>
-                {% else %}
-                    <p>No associated customer</p> 
-                {% endif %}
-                <button class="btn btn-primary toggle-messages" type="button" data-bs-toggle="collapse" data-bs-target="#messages-{{ conversation.id }}" aria-expanded="false" aria-controls="messages-{{ conversation.id }}">
-                    <span class="button-text">Show</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
+
+<!-- Displaying JSON data -->
+<section class="py-5 bg-dark text-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <!-- Page Heading -->
+        <h1 class="display-4 mb-4 text-white">Customer List</h1>
+
+        <!-- Add New Customer Button -->
+        <a href="{% url 'customer_add' %}" class="btn btn-primary mb-4">
+          <i class="fas fa-plus-circle"></i> Add New Customer
+        </a>
+
+        <!-- Lifecycle Stage Filter -->
+        <form method="get" class="mb-4">
+          <div class="row">
+            <div class="col-md-6">
+              <select name="lifecycle_stage" class="form-control">
+                <option value="">-- Select Lifecycle Stage --</option>
+                {% for stage in lifecycle_stages %}
+                  <option value="{{ stage.id }}" {% if selected_stage == stage.id|stringformat:'s' %}selected{% endif %}>{{ stage.name }}</option>
+                {% endfor %}
+              </select>
             </div>
-            <div class="collapse" id="messages-{{ conversation.id }}">
-                <div class="card-body">
-                    <ul class="list-group">
-                        {% for message in conversation.messages.all %}
-                            <li class="list-group-item">
-                                <strong>{{ message.role }}:</strong> {{ message.content }} ({{ message.timestamp }})
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
+            <div class="col-md-6">
+              <button type="submit" class="btn btn-primary">Filter</button>
             </div>
+          </div>
+        </form>
+
+        <!-- Customer List -->
+        <div class="list-group">
+          {% for customer in customers %}
+            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 bg-secondary text-white border-dark shadow">
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1 text-white">{{ customer.first_name }} {{ customer.last_name }}</h5>
+              </div>
+              <div class="mt-2">
+                <a href="{% url 'customer_edit' customer.id %}" class="btn btn-sm btn-outline-warning mr-2">
+                  <i class="fas fa-edit"></i> Edit
+                </a>
+                <a href="{% url 'cart_create' customer.id %}" class="btn btn-sm btn-outline-info">
+                  <i class="fas fa-shopping-cart"></i> Create Cart
+                </a>
+                <a href="{% url 'customer_messages' customer.id %}" class="btn btn-sm btn-outline-light">
+                  <i class="fas fa-envelope"></i> View Messages
+                </a>
+              </div>
+            </div>
+          {% empty %}
+            <div class="list-group-item bg-secondary text-white border-dark">
+              <p class="mb-0 text-light">No customers available.</p>
+            </div>
+          {% endfor %}
         </div>
-    {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Bootstrap Modal for Editing Message Content -->
+<div class="modal fade" id="editMessageModal" tabindex="-1" aria-labelledby="editMessageModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editMessageModalLabel">Edit Message Content</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editMessageForm">
+          {% csrf_token %}
+          <input type="hidden" id="messageId" name="message_id">
+          <div class="form-group">
+            <label for="contentUpdate">Content</label>
+            <textarea class="form-control" id="contentUpdate" name="content_update" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="saveContentUpdate">Save changes</button>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- Include Font Awesome -->
-<script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+{% endblock %}
 
-<!-- Custom JavaScript for toggling button text and icon -->
+{% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const toggleButtons = document.querySelectorAll('.toggle-messages');
+  document.addEventListener('DOMContentLoaded', function() {
+    // Function to open the modal and populate it with the current message content
+    function openEditModal(messageId, currentContent) {
+      document.getElementById('messageId').value = messageId;
+      document.getElementById('contentUpdate').value = currentContent;
+      var modal = new bootstrap.Modal(document.getElementById('editMessageModal'));
+      modal.show();
+    }
 
-    toggleButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const buttonText = button.querySelector('.button-text');
-            const icon = button.querySelector('i');
+    // Event listener for the save button
+    document.getElementById('saveContentUpdate').addEventListener('click', function() {
+      var messageId = document.getElementById('messageId').value;
+      var contentUpdate = document.getElementById('contentUpdate').value;
 
-            if (buttonText.textContent === 'Show') {
-                buttonText.textContent = 'Hide';
-                icon.classList.remove('fa-chevron-down');
-                icon.classList.add('fa-chevron-up');
-            } else {
-                buttonText.textContent = 'Show';
-                icon.classList.remove('fa-chevron-up');
-                icon.classList.add('fa-chevron-down');
-            }
-        });
+      fetch(`/update_message_content/${messageId}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+          content_update: contentUpdate
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          location.reload(); // Reload the page to reflect the changes
+        } else {
+          alert('Failed to update the message content.');
+        }
+      });
     });
-});
+
+    // Attach click event to message content to open the edit modal
+    document.querySelectorAll('.message-content').forEach(function(element) {
+      element.addEventListener('click', function() {
+        var messageId = this.dataset.messageId;
+        var currentContent = this.textContent;
+        openEditModal(messageId, currentContent);
+      });
+    });
+  });
 </script>
 {% endblock %}
