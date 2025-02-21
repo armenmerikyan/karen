@@ -336,12 +336,13 @@ def shop_product_list(request):
         products = Product.objects.filter(
             Q(name__icontains=search_query) | Q(description__icontains=search_query),
             lifecycle_stage__is_sellable=True  # Only products in a sellable stage
-        )
+        ).order_by('display_priority')  # Sort by display_priority
     else:
-        products = Product.objects.filter(lifecycle_stage__is_sellable=True)
+        products = Product.objects.filter(lifecycle_stage__is_sellable=True).order_by('display_priority')  # Sort by display_priority
 
     # Pass the products and profile to the template
     return render(request, 'products/shop_product_list.html', {'products': products, 'profile': profile})
+
  
  
 def shop_product_detail(request, product_id):
