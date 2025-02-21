@@ -3823,7 +3823,7 @@ def update_message_content(request, message_id):
             message = Message.objects.get(id=message_id)
             content_update = request.POST.get('content_update')
             message.updated_content = content_update
-            message.save()  # Ensure this line is executed
+            message.save()
             return JsonResponse({'success': True})
         except Message.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Message not found'})

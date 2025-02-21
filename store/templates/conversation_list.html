@@ -75,12 +75,10 @@
     </div>
 </div>
 
-<!-- Include Font Awesome -->
 <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
-
-<!-- Custom JavaScript for toggling button text and icon -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Toggle button text and icon for showing/hiding messages
     const toggleButtons = document.querySelectorAll('.toggle-messages');
 
     toggleButtons.forEach(button => {
@@ -100,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Function to open the modal and populate it with the current message content
+    // Function to open the edit modal and populate it with the current message content
     function openEditModal(messageId, currentContent) {
         document.getElementById('messageId').value = messageId;
         document.getElementById('contentUpdate').value = currentContent;
@@ -108,6 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.show();
     }
 
+    // Save updated message content
     document.getElementById('saveContentUpdate').addEventListener('click', function() {
         var messageId = document.getElementById('messageId').value;
         var contentUpdate = document.getElementById('contentUpdate').value;
@@ -127,18 +126,25 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 // Update the message content in the DOM without reloading the page
                 var messageElement = document.querySelector(`.message-content[data-message-id="${messageId}"]`);
-                messageElement.innerHTML = `
-                    <del>${messageElement.textContent.trim()}</del><br>
-                    ${contentUpdate}
-                    <span class="badge bg-success">Updated</span>
-                `;
+                if (messageElement) {
+                    messageElement.innerHTML = `
+                        <del>${messageElement.textContent.trim()}</del><br>
+                        ${contentUpdate}
+                        <span class="badge bg-success">Updated</span>
+                    `;
+                }
                 var modal = bootstrap.Modal.getInstance(document.getElementById('editMessageModal'));
                 modal.hide();
             } else {
                 alert('Failed to update the message content.');
             }
-        });        
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the message content.');
+        });
     });
+
     // Attach click event to message content to open the edit modal
     document.querySelectorAll('.message-content').forEach(function(element) {
         element.addEventListener('click', function() {

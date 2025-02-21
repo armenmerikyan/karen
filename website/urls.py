@@ -201,8 +201,7 @@ urlpatterns = [
     path('simple_question_add/', views.simple_question_add, name='simple_question_add'),
 
     path("conversations/", views.conversation_list, name="conversation_list"),
-    path('update_message_content/<int:message_id>/', views.update_message_content, name='update_message_content'),
-
+    path('update_message_content/<int:message_id>/', views.update_message_content, name='update_message_content'), 
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
