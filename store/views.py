@@ -3814,3 +3814,14 @@ def conversation_list(request):
             conversation.customer = None
     
     return render(request, "conversation_list.html", {"conversations": conversations, 'profile': profile})
+
+@csrf_exempt
+@admin_required
+def update_message_content(request, message_id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        message = get_object_or_404(Message, id=message_id)
+        message.content_update = data.get('content_update')
+        message.save()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False}, status=400)
