@@ -81,6 +81,8 @@
           <hr>
           <a href="{% url 'conversation_list' %}" class="nav-link">
               <i class="fas fa-comments"></i> Conversations
+              <span class="badge bg-dark">{{ total_conversations }}</span> <!-- Black: Total -->
+              <span class="badge bg-success">{{ total_messages }}</span> <!-- Green: Paid -->
           </a>
           <p>Browse and manage your conversations.</p>
           <hr>          

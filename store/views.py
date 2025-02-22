@@ -1518,7 +1518,6 @@ def list_and_add_website_profiles(request):
     profiles = WebsiteProfile.objects.order_by('-created_at')
     return render(request, 'website_profiles.html', {'form': form, 'profiles': profiles, 'profile': profile})
 
- 
 @staff_required
 def admin_panel(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -1538,6 +1537,10 @@ def admin_panel(request):
     # Counting total questions and answers and visible for public
     total_questions_answers = QuestionAnswer.objects.count()
     visible_public_questions_answers = QuestionAnswer.objects.filter(is_visible_public=True).count()
+
+    # Counting total conversations and messages
+    total_conversations = Conversation.objects.count()
+    total_messages = Message.objects.count()
 
     # Initialize model information
     current_model_id = "Not Available"
@@ -1593,13 +1596,13 @@ def admin_panel(request):
         'total_customers': total_customers,
         'total_questions_answers': total_questions_answers,
         'visible_public_questions_answers': visible_public_questions_answers,
+        'total_conversations': total_conversations,
+        'total_messages': total_messages,
         'current_model_id': current_model_id,
         'current_model_status': current_model_status,
         'fallback_model_id': fallback_model_id,
         'fallback_model_status': fallback_model_status
     })
-
-
 
 
 def generate_id():
