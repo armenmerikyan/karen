@@ -42,7 +42,8 @@
 
             <a href="{% url 'question_answer_list' %}" class="nav-link">
               <i class="fas fa-question-circle"></i> Q&A
-              <span class="badge bg-dark">{{ total_questions }}</span> <!-- Black: Total -->
+              <span class="badge bg-dark">{{ total_questions_answers }}</span> <!-- Black: Total -->
+              <span class="badge bg-success">{{ visible_public_questions_answers }}</span> <!-- Green: Paid -->
             </a>                  
             <p>View and manage questions and answers from your customers.</p>
             <HR>

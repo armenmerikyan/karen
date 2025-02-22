@@ -1535,6 +1535,10 @@ def admin_panel(request):
     total_products = Product.objects.count()
     total_customers = Customer.objects.count()  # Using Customer model
 
+    # Counting total questions and answers and visible for public
+    total_questions_answers = QuestionAnswer.objects.count()
+    visible_public_questions_answers = QuestionAnswer.objects.filter(is_visible_public=True).count()
+
     # Initialize model information
     current_model_id = "Not Available"
     current_model_status = "Unknown"
@@ -1578,7 +1582,7 @@ def admin_panel(request):
         fallback_model_id = "Not Available"
         fallback_model_status = "Error"
 
-    # Add all model statuses and IDs
+    # Add all model statuses and IDs to context
     return render(request, 'admin.html', {
         'profile': profile,
         'total_carts': total_carts,
@@ -1587,11 +1591,14 @@ def admin_panel(request):
         'paid_count': paid_count,
         'total_products': total_products,
         'total_customers': total_customers,
+        'total_questions_answers': total_questions_answers,
+        'visible_public_questions_answers': visible_public_questions_answers,
         'current_model_id': current_model_id,
         'current_model_status': current_model_status,
         'fallback_model_id': fallback_model_id,
         'fallback_model_status': fallback_model_status
     })
+
 
 
 
