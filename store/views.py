@@ -1510,8 +1510,8 @@ def index(request):
     city = None
     state = None
     country = None
-    try:
-        geoip2_db_path = os.path.join(settings.BASE_DIR, 'GeoLite2-City.mmdb')
+    try: 
+        geoip2_db_path = settings.BASE_DIR / 'static' / 'GeoLite2-City.mmdb'
         print(geoip2_db_path)
         with geoip2.database.Reader(geoip2_db_path) as reader:
             response = reader.city(ip_address)
