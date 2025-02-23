@@ -18,6 +18,8 @@
                 <th>State</th>
                 <th>Country</th>
                 <th>Browser Used</th>
+                <th>Account Created</th>
+                <th>Duration</th>
               </tr>
             </thead>
             <tbody>
@@ -31,6 +33,12 @@
                   <td>{{ visitor.state }}</td>
                   <td>{{ visitor.country }}</td>
                   <td>{{ visitor.browser_used }}</td>
+                  <td>{{ visitor.time_created|date:"Y-m-d H:i:s" }}</td>
+                  <td>
+                    {% with duration=visitor.time_created|timesince %}
+                      {{ duration }}
+                    {% endwith %}
+                  </td>
                 </tr>
               {% endfor %}
             </tbody>
