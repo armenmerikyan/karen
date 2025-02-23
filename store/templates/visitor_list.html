@@ -43,7 +43,7 @@
                   
                   <td>
                     {% if visitor.time_created %}
-                      {% with duration=visitor.last_visit|timesince:visitor.time_created %}
+                      {% with duration=visitor.time_created|timesince:visitor.last_visit %}
                         {{ duration }}
                       {% endwith %}
                     {% else %}
