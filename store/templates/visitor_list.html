@@ -19,6 +19,7 @@
                 <th>Country</th>
                 <th>Browser Used</th>
                 <th>Account Created</th>
+                <th>Duration</th>
                 <th>Duration (First to Last Visit)</th>
               </tr>
             </thead>
@@ -35,8 +36,14 @@
                   <td>{{ visitor.browser_used }}</td>
                   <td>{{ visitor.time_created|date:"Y-m-d H:i:s" }}</td>
                   <td>
-                    {% if visitor.first_visit %}
-                      {% with duration=visitor.last_visit|timesince:visitor.first_visit %}
+                    {% with duration=visitor.time_created|timesince %}
+                      {{ duration }}
+                    {% endwith %}
+                  </td>
+                  
+                  <td>
+                    {% if visitor.time_created %}
+                      {% with duration=visitor.last_visit|timesince:visitor.time_created %}
                         {{ duration }}
                       {% endwith %}
                     {% else %}
