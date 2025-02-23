@@ -806,3 +806,23 @@ class Message(models.Model):
     content = models.TextField()
     content_update = models.TextField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+
+class Visitor(models.Model):
+    ip_address = models.GenericIPAddressField()
+    visit_count = models.PositiveIntegerField(default=1)
+    time_created = models.DateTimeField(auto_now_add=True)
+    last_visit = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    geo_location = models.CharField(max_length=255, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    state = models.CharField(max_length=100, null=True, blank=True)
+    country = models.CharField(max_length=100, null=True, blank=True)
+    browser_used = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return f"Visitor {self.ip_address} - {self.city}, {self.country}"
+
+    class Meta:
+        verbose_name = 'Visitor'
+        verbose_name_plural = 'Visitors'    

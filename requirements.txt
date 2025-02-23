@@ -19,3 +19,5 @@ PyPDF2
 reportlab
 pdfminer.six
 pdfrw
+geoip2
+user-agents

@@ -111,6 +111,7 @@ from .models import GeneratedMessage
 from .models import PDFDocument
 from .models import QuestionAnswer
 from .models import Conversation, Message
+from .models import Visitor  
 
 from .forms import SimpleAnswerForm
 from .forms import QuestionAnswerForm
@@ -244,6 +245,10 @@ import pdfrw
 
 
 import tempfile
+
+
+import geoip2.database
+from user_agents import parse
 
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -1476,27 +1481,66 @@ def toggle_handle_status(request, handle_id):
 
  
 def index(request):
- 
     cart_id = request.COOKIES.get('cartId')
     if cart_id is None:
         cart_id = generate_id()
- 
+
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
 
-
     tokens = TokenProfile.objects.filter(visible=True)
- 
-    
+
+    # Get IP address from request
+    ip_address = request.META.get('REMOTE_ADDR')
+
+    # Geo-location lookup (example using MaxMind GeoIP2)
+    geo_location = None
+    city = None
+    state = None
+    country = None
+    try:
+        geoip2_db_path = os.path.join(settings.BASE_DIR, 'GeoLite2-City.mmdb')
+
+        with geoip2.database.Reader(geoip2_db_path) as reader:
+            response = reader.city(ip_address)
+            geo_location = response.country.names.get('en', 'Unknown')  # Country name
+            city = response.city.names.get('en', 'Unknown')
+            state = response.subdivisions.most_specific.names.get('en', 'Unknown')
+            country = geo_location
+    except Exception as e:
+        geo_location = city = state = country = 'Unknown'
+
+    # Browser detection
+    user_agent = parse(request.META.get('HTTP_USER_AGENT', ''))
+    browser_used = user_agent.browser.family if user_agent.browser else 'Unknown'
+
+    # Check if a Visitor entry already exists for this IP
+    visitor, created = Visitor.objects.get_or_create(
+        ip_address=ip_address,
+        defaults={
+            'geo_location': geo_location,
+            'city': city,
+            'state': state,
+            'country': country,
+            'browser_used': browser_used,
+        }
+    )
+
+    if not created:
+        # If visitor exists, update the visit count and last visit time
+        visitor.visit_count += 1
+        visitor.last_visit = timezone.now()
+        visitor.save()
+
     context = {
         'cart_id': cart_id,
         'profile': profile,
         'tokens': tokens, 
     }
     
-    response = render(request, 'index.html', context) 
-    response.set_cookie('cartId', cart_id) 
+    response = render(request, 'index.html', context)
+    response.set_cookie('cartId', cart_id)
 
     return response
 
