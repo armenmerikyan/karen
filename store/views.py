@@ -3946,3 +3946,12 @@ def update_message_content(request, message_id):
     except Exception as e:
         print("Unexpected error:", str(e))
         return JsonResponse({'success': False, 'error': str(e)})
+    
+
+@admin_required
+def visitor_list(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+    visitors = Visitor.objects.all().order_by('-last_visit')  # Sort by last_visit, latest first
+    return render(request, 'visitor_list.html', {'visitors': visitors, 'profile': profile})
