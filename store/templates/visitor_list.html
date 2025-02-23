@@ -1,69 +1,73 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
 {% block content %}
-<section class="py-0">
+<section class="py-5 bg-dark">
   <div class="container-fluid">
-    <div class="container mt-5 text-light">         
+    <div class="container mt-5">
       <div class="row">
-        <div class="col-md-12 text-left">   
-          <h1>Visitors List</h1>
-          <table class="table table-dark">
-            <thead>
-              <tr>
-                <th>IP Address</th>
-                <th>Visit Count</th>
-                <th>Last Visit</th>
-                <th>Geo Location</th>
-                <th>City</th>
-                <th>State</th>
-                <th>Country</th>
-                <th>Browser Used</th>
-                <th>Account Created</th>
-                <th>Duration</th>
-                <th>Duration (First to Last Visit)</th>
-                <th>Actions</th>  <!-- New column for the delete button -->
-              </tr>
-            </thead>
-            <tbody>
-              {% for visitor in visitors %}
+        <div class="col-md-12">
+          <h1 class="text-light mb-4">Visitors List</h1>
+          <div class="table-responsive">
+            <table class="table table-dark table-striped table-hover">
+              <thead class="thead-dark">
                 <tr>
-                  <td>{{ visitor.ip_address }}</td>
-                  <td>{{ visitor.visit_count }}</td>
-                  <td>{{ visitor.last_visit }}</td>
-                  <td>{{ visitor.geo_location }}</td>
-                  <td>{{ visitor.city }}</td>
-                  <td>{{ visitor.state }}</td>
-                  <td>{{ visitor.country }}</td>
-                  <td>{{ visitor.browser_used }}</td>
-                  <td>{{ visitor.time_created|date:"Y-m-d H:i:s" }}</td>
-                  <td>
-                    {% with duration=visitor.time_created|timesince %}
-                      {{ duration }}
-                    {% endwith %}
-                  </td>
-                  <td>
-                    {% if visitor.time_created %}
-                      {% with duration=visitor.time_created|timesince:visitor.last_visit %}
+                  <th scope="col">IP Address</th>
+                  <th scope="col">Visit Count</th>
+                  <th scope="col">Last Visit</th>
+                  <th scope="col">Geo Location</th>
+                  <th scope="col">City</th>
+                  <th scope="col">State</th>
+                  <th scope="col">Country</th>
+                  <th scope="col">Browser Used</th>
+                  <th scope="col">Account Created</th>
+                  <th scope="col">Duration</th>
+                  <th scope="col">Duration (First to Last Visit)</th>
+                  <th scope="col">Actions</th>  <!-- New column for the delete button -->
+                </tr>
+              </thead>
+              <tbody>
+                {% for visitor in visitors %}
+                  <tr>
+                    <td>{{ visitor.ip_address }}</td>
+                    <td>{{ visitor.visit_count }}</td>
+                    <td>{{ visitor.last_visit }}</td>
+                    <td>{{ visitor.geo_location }}</td>
+                    <td>{{ visitor.city }}</td>
+                    <td>{{ visitor.state }}</td>
+                    <td>{{ visitor.country }}</td>
+                    <td>{{ visitor.browser_used }}</td>
+                    <td>{{ visitor.time_created|date:"Y-m-d H:i:s" }}</td>
+                    <td>
+                      {% with duration=visitor.time_created|timesince %}
                         {{ duration }}
                       {% endwith %}
-                    {% else %}
-                      N/A
-                    {% endif %}
-                  </td>
-                  <!-- Delete Button -->
-                  <td>
-                    <form action="{% url 'visitor_delete' visitor.id %}" method="POST">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+                    </td>
+                    <td>
+                      {% if visitor.time_created %}
+                        {% with duration=visitor.time_created|timesince:visitor.last_visit %}
+                          {{ duration }}
+                        {% endwith %}
+                      {% else %}
+                        N/A
+                      {% endif %}
+                    </td>
+                    <!-- Delete Button with Trashcan Icon -->
+                    <td>
+                      <form action="{% url 'visitor_delete' visitor.id %}" method="POST" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">
+                          <i class="bi bi-trash"></i> <!-- Bootstrap trashcan icon -->
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>      
+      </div>
     </div>
   </div>
-</section>    
+</section>
 {% endblock %}
