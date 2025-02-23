@@ -249,6 +249,7 @@ import tempfile
 
 import geoip2.database
 from user_agents import parse
+import maxminddb
 
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
