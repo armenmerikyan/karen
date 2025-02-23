@@ -21,6 +21,7 @@
                 <th>Account Created</th>
                 <th>Duration</th>
                 <th>Duration (First to Last Visit)</th>
+                <th>Actions</th>  <!-- New column for the delete button -->
               </tr>
             </thead>
             <tbody>
@@ -40,7 +41,6 @@
                       {{ duration }}
                     {% endwith %}
                   </td>
-                  
                   <td>
                     {% if visitor.time_created %}
                       {% with duration=visitor.time_created|timesince:visitor.last_visit %}
@@ -49,6 +49,13 @@
                     {% else %}
                       N/A
                     {% endif %}
+                  </td>
+                  <!-- Delete Button -->
+                  <td>
+                    <form action="{% url 'visitor_delete' visitor.id %}" method="POST">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
                   </td>
                 </tr>
               {% endfor %}

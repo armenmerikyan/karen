@@ -1511,15 +1511,19 @@ def index(request):
     country = None
     try:
         geoip2_db_path = os.path.join(settings.BASE_DIR, 'GeoLite2-City.mmdb')
-
+        print(geoip2_db_path)
         with geoip2.database.Reader(geoip2_db_path) as reader:
             response = reader.city(ip_address)
+            print(response)  # Debugging output
+
             geo_location = response.country.names.get('en', 'Unknown')  # Country name
             city = response.city.names.get('en', 'Unknown')
             state = response.subdivisions.most_specific.names.get('en', 'Unknown')
             country = geo_location
     except Exception as e:
+        print(f"Error: {e}")  # Debugging output
         geo_location = city = state = country = 'Unknown'
+
 
     # Browser detection
     user_agent = parse(request.META.get('HTTP_USER_AGENT', ''))
@@ -3966,3 +3970,14 @@ def visitor_list(request):
         return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
     visitors = Visitor.objects.all().order_by('-last_visit')  # Sort by last_visit, latest first
     return render(request, 'visitor_list.html', {'visitors': visitors, 'profile': profile})
+
+@admin_required
+def visitor_delete(request, id):
+    visitor = get_object_or_404(Visitor, id=id)  # Fetch the visitor to delete
+    
+    if request.method == 'POST':
+        visitor.delete()  # Delete the visitor
+        return redirect('visitor_list')  # Redirect to the visitors list page
+
+    # Optionally, handle GET for confirmation page or show an error if needed
+    return redirect('visitor_list')  # Default action if not POST

@@ -204,6 +204,7 @@ urlpatterns = [
     path('update_message_content/<int:message_id>/', views.update_message_content, name='update_message_content'), 
     
     path('visitors/', views.visitor_list, name='visitor_list'),
+    path('visitor/delete/<int:id>/', views.visitor_delete, name='visitor_delete'),
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
