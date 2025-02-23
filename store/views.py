@@ -1479,7 +1479,17 @@ def toggle_handle_status(request, handle_id):
     handle.save()
     return redirect('index')  # Redirect to the list view (update the name if different)
 
- 
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        # X-Forwarded-For contains a comma-separated list of IPs, 
+        # the first one is the client IP
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        # If the X-Forwarded-For header is not present, fall back to REMOTE_ADDR
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
 def index(request):
     cart_id = request.COOKIES.get('cartId')
     if cart_id is None:
@@ -1491,8 +1501,8 @@ def index(request):
 
     tokens = TokenProfile.objects.filter(visible=True)
 
-    # Get IP address from request
-    ip_address = request.META.get('REMOTE_ADDR')
+    # Get the real client IP address
+    ip_address = get_client_ip(request)
 
     # Geo-location lookup (example using MaxMind GeoIP2)
     geo_location = None
@@ -1543,6 +1553,7 @@ def index(request):
     response.set_cookie('cartId', cart_id)
 
     return response
+
 
 
  
