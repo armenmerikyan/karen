@@ -55,8 +55,8 @@
                     <td>
                       <form action="{% url 'visitor_delete' visitor.id %}" method="POST" class="d-inline">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-sm">
-                          <i class="fa-trash-alt"></i> <!-- Bootstrap trashcan icon -->
+                        <button type="submit" class="btn btn-danger btn-sm"> 
+                          <i class="fas fa-trash-alt"></i>
                         </button>
                       </form>
                     </td>
