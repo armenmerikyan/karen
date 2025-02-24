@@ -230,8 +230,26 @@ import geoip2.database
 from user_agents import parse
 import maxminddb
  
+from django import forms
+from django.apps import apps
+
+def get_django_forms():
+    entities = []
+    
+    for app_config in apps.get_app_configs():
+        try:
+            forms_module = importlib.import_module(f"{app_config.name}.forms")
+            for _, obj in vars(forms_module).items():
+                if isinstance(obj, type) and issubclass(obj, forms.BaseForm) and obj is not forms.BaseForm:
+                    entities.append(obj.__name__)
+        except ModuleNotFoundError:
+            continue  # Skip apps without a forms module
+    
+    return entities
+ 
 def chatbot_get_intent(message, profile):
     intents = ["Add", "Delete", "Edit", "Search", "View Details", "View Summary", "List"]
+    entities = get_django_forms()
     
     client = OpenAI(api_key=profile.chatgpt_api_key)
     
@@ -240,8 +258,10 @@ def chatbot_get_intent(message, profile):
             "You are a helpful chatbot assistant for a company. "
             "Identify the intent of the following user message based on these predefined intents: "
             f"{json.dumps(intents)}. "
-            "Respond strictly in JSON format with the following structure: {\"intent\": \"<intent>\"}. "
-            "If the message does not match any intent, respond with {\"intent\": \"Unknown\"}."
+            "Also, identify the relevant entity from the following list of known entities: "
+            f"{json.dumps(entities)}. "
+            "Respond strictly in JSON format with the following structure: {\"intent\": \"<intent>\", \"entity\": \"<entity>\"}. "
+            "If the message does not match any intent or entity, respond with {\"intent\": \"Unknown\", \"entity\": \"Unknown\"}."
         )},
         {"role": "user", "content": message}
     ]
@@ -259,7 +279,6 @@ def chatbot_get_intent(message, profile):
         model_id = "gpt-3.5-turbo"
 
     print(model_id)
-
     print("TEST ", model_id)
   
     response = client.chat.completions.create(
@@ -267,10 +286,9 @@ def chatbot_get_intent(message, profile):
         messages=messages  # Use the correct message structure
     )
  
-    bot_reply = response.choices[0].message.content
-
-    return json.loads(response.choices[0].message.content).get("intent", "Unknown")
-     
+    bot_reply = json.loads(response.choices[0].message.content)
+    
+    return bot_reply.get("intent", "Unknown"), bot_reply.get("entity", "Unknown")
 
 @csrf_exempt
 def chatbot_response(request):
