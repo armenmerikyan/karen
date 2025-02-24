@@ -19,17 +19,15 @@
             <form id="addToCartForm" class="mb-4">  <!-- Added margin bottom -->
                 {% csrf_token %}
                 <input type="hidden" name="product_id" value="{{ product.id }}">
-                <div class="d-flex align-items-center mb-3">  <!-- Use flexbox to align items in one line -->
+                <div class="d-flex align-items-center mb-3">  <!-- Flexbox container to align items in one line -->
                     {% if product.digital_file %}
                         <!-- If the product has a digital file, hide quantity field -->
                         <input type="hidden" name="quantity" value="1">
                     {% else %}
-                        <div class="me-3">  <!-- Add margin right to separate quantity field and button -->
-                            <label for="quantity" class="form-label me-2">Quantity:</label>
-                            <input type="number" id="quantity" name="quantity" value="1" min="1" class="form-control" style="width: 80px;">  <!-- Adjust width as needed -->
-                        </div>
+                        <label for="quantity" class="form-label me-2">Quantity:</label>  <!-- Label for quantity -->
+                        <input type="number" id="quantity" name="quantity" value="1" min="1" class="form-control me-3" style="width: 80px;">  <!-- Quantity input field -->
                     {% endif %}
-                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>  <!-- Add to Cart button -->
                 </div>
             </form>
 
