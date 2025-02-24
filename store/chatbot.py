@@ -112,7 +112,6 @@ from .models import PDFDocument
 from .models import QuestionAnswer
 from .models import Conversation, Message
 from .models import Visitor  
-
 from .forms import SimpleAnswerForm
 from .forms import QuestionAnswerForm
 from .forms import CustomerPDFForm
@@ -135,7 +134,6 @@ from .forms import WebsiteProfileForm
 from .forms import UserCreationForm  # You need to create this form
 
 from .serializers import ConversationTopicSerializer
-
 from .serializers import TwitterStatusSerializer
 from .serializers import UserQuerySerializer
 from .serializers import ConvoLogSerializer
@@ -193,8 +191,6 @@ import stripe
 
 from decimal import Decimal
 
-version = "00.00.06" 
-
 from django.contrib.auth import login, get_backends
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
@@ -204,7 +200,6 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect 
 from django.conf import settings 
-
 
 from solana.rpc.api import Client
 from solders.transaction import Transaction
@@ -229,15 +224,53 @@ from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTTextContainer
 import pdfrw
 
-
 import tempfile
-
 
 import geoip2.database
 from user_agents import parse
 import maxminddb
-
  
+def chatbot_get_intent(message, profile):
+    intents = ["Add", "Delete", "Edit", "Search", "View Details", "View Summary", "List"]
+    
+    client = OpenAI(api_key=profile.chatgpt_api_key)
+    
+    messages = [
+        {"role": "system", "content": (
+            "You are a helpful chatbot assistant for a company. "
+            "Identify the intent of the following user message based on these predefined intents: "
+            f"{json.dumps(intents)}. "
+            "Respond strictly in JSON format with the following structure: {\"intent\": \"<intent>\"}. "
+            "If the message does not match any intent, respond with {\"intent\": \"Unknown\"}."
+        )},
+        {"role": "user", "content": message}
+    ]
+      
+    fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
+    print("Fine-tune status:", fine_tune_status)
+    print("TEST") 
+    print("TEST ", fine_tune_status.status)
+
+    if fine_tune_status.status == 'succeeded':
+        # Use the model ID for the fine-tuned model
+        model_id = fine_tune_status.fine_tuned_model
+    else:
+        # If still processing or failed, use a fallback model
+        model_id = "gpt-3.5-turbo"
+
+    print(model_id)
+
+    print("TEST ", model_id)
+  
+    response = client.chat.completions.create(
+        model=model_id,  # Use the fine-tuned model or fallback model
+        messages=messages  # Use the correct message structure
+    )
+ 
+    bot_reply = response.choices[0].message.content
+
+    return json.loads(response.choices[0].message.content).get("intent", "Unknown")
+     
 
 @csrf_exempt
 def chatbot_response(request):
@@ -270,6 +303,10 @@ def chatbot_response(request):
 
         print("Request Data:", data)  # Debugging: Print request data
 
+        user_intent = chatbot_get_intent(user_message)
+
+        print("USER INTENT :", user_intent)
+        
         # Initialize the OpenAI client with the API key from the profile
         client = OpenAI(api_key=profile.chatgpt_api_key)
 

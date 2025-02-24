@@ -14,7 +14,6 @@ from django.contrib.auth.decorators import user_passes_test, login_required
 from django.views.generic.edit import CreateView
 from django.views.generic import View
 
-
 from os.path import join
 
 from django.core.paginator import Paginator
@@ -58,7 +57,6 @@ from django.template.context_processors import csrf
 from lxml import html
 import pandas as pd
 
-
 from datetime import datetime
 from django.utils.dateparse import parse_datetime
 
@@ -66,12 +64,8 @@ from django.core.serializers import serialize
 
 from django.views.decorators.http import require_POST
 
-
 import logging
 
-logger = logging.getLogger(__name__)
-
-register = template.Library()
 import time 
 import re
 import os
@@ -144,7 +138,6 @@ from .serializers import MemorySerializer
 from .services import MemoryService
 from .services import RoomService  # Import the RoomService class
 
-
 import base64
 import base58
 
@@ -178,7 +171,6 @@ from django.http import HttpResponseForbidden
 from functools import wraps
 from django.shortcuts import redirect
 
-
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string 
 from django.utils.encoding import force_bytes
@@ -188,15 +180,10 @@ from django.core.mail import send_mail
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth import get_user_model
 
-
 import stripe
 
 from decimal import Decimal
 
-version = "00.00.06"
- 
-
-  
 from django.contrib.auth import login, get_backends
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
@@ -206,7 +193,6 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect 
 from django.conf import settings 
-
 
 from solana.rpc.api import Client
 from solders.transaction import Transaction
@@ -231,13 +217,15 @@ from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTTextContainer
 import pdfrw
 
-
 import tempfile
-
 
 import geoip2.database
 from user_agents import parse
 import maxminddb
+
+version = "00.00.06"
+logger = logging.getLogger(__name__)
+register = template.Library()
 
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -2995,101 +2983,6 @@ def secure_download(request, product_id):
     
     logger.info(f"Serving digital file for product {product_id}.")
     return FileResponse(open(file_path, 'rb'), as_attachment=True)
-
-@csrf_exempt
-def chatbot_response(request):
-    # Fetch the latest WebsiteProfile
-    profile = WebsiteProfile.objects.order_by('-created_at').first()
-    if not profile:
-        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
-
-    # Ensure the ChatGPT API key is available
-    if not profile.chatgpt_api_key:
-        return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
-
-    print("API Key:", profile.chatgpt_api_key)  # Debugging: Print API key
-
-    if request.method == "POST":
-        # Check if the user is authenticated
-        if not request.user.is_authenticated:
-            return JsonResponse({"response": "Please log in to use the chat feature."})
-
-        print("User Authenticated:", request.user.is_authenticated)  # Debugging: Print authentication status
-
-        # Parse the user's message from the request body
-        try:
-            data = json.loads(request.body)
-            user_message = data.get("message", "")
-            if not user_message:
-                return JsonResponse({"error": "No message provided"}, status=400)
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
-
-        print("Request Data:", data)  # Debugging: Print request data
-
-        # Initialize the OpenAI client with the API key from the profile
-        client = OpenAI(api_key=profile.chatgpt_api_key)
-
-        # Include business context about 'About Us' and ensure a short, concise response
-        messages = [
-            {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."},
-            {"role": "user", "content": user_message}  # Include the user's message
-        ]
-
-        fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
-        print("Fine-tune status:", fine_tune_status)
-        print("TEST") 
-        print("TEST ", fine_tune_status.status)
-
-        if fine_tune_status.status == 'succeeded':
-            # Use the model ID for the fine-tuned model
-            model_id = fine_tune_status.fine_tuned_model
-        else:
-            # If still processing or failed, use a fallback model
-            model_id = "gpt-3.5-turbo"
-
-        print(model_id)
-
-        print("TEST ", model_id)
-
-        try:
-            # Call the OpenAI API
-            response = client.chat.completions.create(
-                model=model_id,  # Use the fine-tuned model or fallback model
-                messages=messages  # Use the correct message structure
-            )
-
-            # Extract the bot's reply
-            bot_reply = response.choices[0].message.content
-
-            # Retrieve the most recent conversation for the user or create a new one
-            conversation = Conversation.objects.filter(user=request.user).order_by('-created_at').first()
-            if not conversation:
-                conversation = Conversation.objects.create(user=request.user)
-
-            # Save the user's message
-            Message.objects.create(
-                conversation=conversation,
-                role="user",
-                content=user_message
-            )
-
-            # Save the bot's reply
-            Message.objects.create(
-                conversation=conversation,
-                role="assistant",
-                content=bot_reply
-            )
-
-            return JsonResponse({"response": bot_reply})
-
-        except Exception as e:
-            # Handle any errors from the OpenAI API
-            print("OpenAI API Error:", str(e))  # Debugging: Print API error
-            return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
-
-    return JsonResponse({"error": "Invalid request"}, status=400)
-
 
 def get_latest_profile():
     return WebsiteProfile.objects.order_by('-created_at').first()
