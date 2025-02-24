@@ -303,7 +303,7 @@ def chatbot_response(request):
 
         print("Request Data:", data)  # Debugging: Print request data
 
-        user_intent = chatbot_get_intent(user_message)
+        user_intent = chatbot_get_intent(user_message, profile)
 
         print("USER INTENT :", user_intent)
         
