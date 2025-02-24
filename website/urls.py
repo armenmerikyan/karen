@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from store import views
+from store import chatbot
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
 from django.conf import settings
@@ -186,7 +187,7 @@ urlpatterns = [
  
     path('download/<int:product_id>/', views.secure_download, name='secure_download'),
 
-    path('chatbot-response/', views.chatbot_response, name='chatbot_response'),
+    path('chatbot-response/', chatbot.chatbot_response, name='chatbot_response'),
 
     path("train-products/", views.train_product_model, name="train-products"),
 
