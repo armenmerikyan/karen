@@ -321,9 +321,9 @@ def chatbot_response(request):
 
         print("Request Data:", data)  # Debugging: Print request data
 
-        user_intent = chatbot_get_intent(user_message, profile)
-
-        print("USER INTENT :", user_intent)
+        user_intent, entity = chatbot_get_intent(user_message, profile)
+        print("USER INTENT:", user_intent)
+        print("ENTITY:", entity)
         
         # Initialize the OpenAI client with the API key from the profile
         client = OpenAI(api_key=profile.chatgpt_api_key)
