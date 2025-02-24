@@ -1655,22 +1655,7 @@ def admin_panel(request):
 
 def generate_id():
     return uuid.uuid4().hex
-
-def view_game(request, game_id):
-    game = get_object_or_404(Game, game_id=game_id)
-
-    hands = Hand.objects.filter(game_id=game_id)
-    handhistorys = Handhistory.objects.filter(game_id=game_id)
-
-    all_players = Player.objects.filter(session_id=game.session_id)
-    context = {
-        'game': game,
-        'hands': hands,  # Add the hands to the context
-        'players': all_players, 
-        'handhistorys' : handhistorys,
-    }  
-
-    return render(request, 'view_game.html', context)
+ 
 
 def delete_product(request, product_id):
     cart_id = request.COOKIES.get('cartId')
