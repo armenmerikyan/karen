@@ -3345,5 +3345,6 @@ def clear_user_fields(request, user_id):
         user.current_field = None
         user.current_entity_json = None
         user.current_field_help_text = None
+        user.current_intent_is_done = False
         user.save()
     return redirect('user_list')
