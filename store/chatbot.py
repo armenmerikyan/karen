@@ -358,7 +358,7 @@ def chatbot_get_intent_and_entity(message, profile):
 def populate_and_save_form(user):
     try:
         if not user.current_entity or not user.current_entity_json:
-            return None  # No entity or data to process
+            return "No entity or data to process"
         
         data = json.loads(user.current_entity_json)
         entity_path = user.current_entity.split('.')
@@ -382,12 +382,10 @@ def populate_and_save_form(user):
                 user.save()
                 return instance
         
-        return None
+        return f"Form validation failed: {form.errors}"
     
     except Exception as e:
-        # Log the exception, or handle it as needed
-        print(f"Error in populate_and_save_form: {e}")
-        return None
+        return f"Error in populate_and_save_form: {e}"
 
 @csrf_exempt
 def chatbot_response(request):
