@@ -169,8 +169,7 @@ from rest_framework.response import Response
 from django.contrib.auth import authenticate
 
 from django.core.paginator import Paginator
-from django.utils.timesince import timesince
-from django.http import JsonResponse 
+from django.utils.timesince import timesince 
 from functools import wraps
 
 from django.contrib.auth.decorators import login_required
@@ -235,6 +234,8 @@ import maxminddb
 from django import forms
 from django.apps import apps
 import importlib 
+
+from django.db import transaction   
 
 def get_django_forms():
     entities = []
@@ -355,32 +356,38 @@ def chatbot_get_intent_and_entity(message, profile):
     return bot_reply.get("intent", "Unknown"), bot_reply.get("entity", "Unknown")
 
 def populate_and_save_form(user):
-    if not user.current_entity or not user.current_entity_json:
-        return None  # No entity or data to process
+    try:
+        if not user.current_entity or not user.current_entity_json:
+            return None  # No entity or data to process
+        
+        data = json.loads(user.current_entity_json)
+        entity_path = user.current_entity.split('.')
+        app_label, model_name = entity_path[0], entity_path[1]
+        ModelClass = apps.get_model(app_label, model_name)
+        
+        form_data = {}
+        for item in data:
+            field_name = item["field"].split(".")[-1]  # Extract field name
+            form_data[field_name] = item["value"]
+        
+        FormClass = type(user.current_entity, (forms.ModelForm,), {
+            'Meta': type('Meta', (), {'model': ModelClass, 'fields': '__all__'})
+        })
+        
+        form = FormClass(form_data)
+        if form.is_valid():
+            with transaction.atomic():
+                instance = form.save()
+                user.current_entity_json = json.dumps(data)  # Persist JSON state
+                user.save()
+                return instance
+        
+        return None
     
-    data = json.loads(user.current_entity_json)
-    entity_path = user.current_entity.split('.')
-    app_label, model_name = entity_path[0], entity_path[1]
-    ModelClass = apps.get_model(app_label, model_name)
-    
-    form_data = {}
-    for item in data:
-        field_name = item["field"].split(".")[-1]  # Extract field name
-        form_data[field_name] = item["value"]
-    
-    FormClass = type(user.current_entity, (forms.ModelForm,), {
-        'Meta': type('Meta', (), {'model': ModelClass, 'fields': '__all__'})
-    })
-    
-    form = FormClass(form_data)
-    if form.is_valid():
-        with transaction.atomic():
-            instance = form.save()
-            user.current_entity_json = json.dumps(data)  # Persist JSON state
-            user.save()
-            return instance
-    
-    return None
+    except Exception as e:
+        # Log the exception, or handle it as needed
+        print(f"Error in populate_and_save_form: {e}")
+        return None
 
 @csrf_exempt
 def chatbot_response(request):
@@ -472,9 +479,7 @@ def chatbot_response(request):
                                     user.current_intent = user_intent  # Example intent, replace with actual logic
                                     user.current_entity = entity  # 'entity' can be passed in the request
                                     user.current_field = next_model_field  # Set the next field as the current field
-                                    user.current_field_help_text = next_model_field.help_text
-                                    if index + 2 == len(fields_list):  # This is the last item after the update
-                                        user.current_intent_is_done = True                                    
+                                    user.current_field_help_text = next_model_field.help_text                                  
                                     # Save the updated user object
                                     user.save()
                                     break  # Exit the loop after updating to the next field
