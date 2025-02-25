@@ -459,13 +459,6 @@ def chatbot_response(request):
         # If the user is in the middle of providing information for a specific field, update the message
         if user.current_field: 
             system_message += f" You are in the process of collecting data and only need the following field from the user: {user.current_field}. Ask the user to provide this information, the user provided message or prompt may be a response to a previous field or providing intent and entity, ignore it if necessary."
-        if user.current_field:
-            # Split the field by period and get the last item
-            field_parts = user.current_field.split('.')
-            last_field = field_parts[-1].strip()  # Get the last part and remove any extra spaces
-            
-            system_message += f" You are in the process of collecting data and only need the following field from the user: {last_field}. Ask the user to provide this information, the user provided message or prompt may be a response to a previous field or providing intent and entity, ignore it if necessary."
-
         # If an error occurred, ask the user to try again
         if error_occurred:
             system_message += " An error occurred while collecting the data. Can you please provide it again?"
