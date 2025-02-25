@@ -454,15 +454,14 @@ def chatbot_response(request):
 
         # Include business context about 'About Us' and ensure a short, concise response
         system_message = f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."
-        print(system_message)
 
-        # If there's a current field message, update the system message to include that information
+        # If the user is in the middle of providing information for a specific field, update the message
         if user.current_field:
-            system_message += f" You are in the process of collecting data and only need the following field from the user: {user.current_field}. Ask the user to provide this information."
+            system_message += f" You are in the process of collecting data and only need the following field from the user: {user.current_field}. Ask the user to provide this information, even if their current message may be a response to a previous field or asking another question."
 
+        # If an error occurred, ask the user to try again
         if error_occurred:
             system_message += " An error occurred while collecting the data. Can you please provide it again?"
-
 
         print(system_message)
 
@@ -470,6 +469,8 @@ def chatbot_response(request):
             {"role": "system", "content": system_message},
             {"role": "user", "content": user_message}  # Include the user's message
         ]
+
+
 
         fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
         print("Fine-tune status:", fine_tune_status)
