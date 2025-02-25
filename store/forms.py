@@ -73,7 +73,6 @@ class ProductLifecycleStageForm(forms.ModelForm):
 class SimpleCustomerForm(forms.ModelForm):
     usable_for_chatgpt = True  # Move this to class level
      
-
     class Meta:
         model = Customer
         fields = [

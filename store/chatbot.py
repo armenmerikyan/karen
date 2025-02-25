@@ -112,6 +112,8 @@ from .models import PDFDocument
 from .models import QuestionAnswer
 from .models import Conversation, Message
 from .models import Visitor  
+
+from .forms import SimpleCustomerForm
 from .forms import SimpleQuestionForm
 from .forms import QuestionAnswerForm
 from .forms import CustomerPDFForm
