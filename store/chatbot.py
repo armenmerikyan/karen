@@ -354,6 +354,34 @@ def chatbot_get_intent_and_entity(message, profile):
     
     return bot_reply.get("intent", "Unknown"), bot_reply.get("entity", "Unknown")
 
+def populate_and_save_form(user):
+    if not user.current_entity or not user.current_entity_json:
+        return None  # No entity or data to process
+    
+    data = json.loads(user.current_entity_json)
+    entity_path = user.current_entity.split('.')
+    app_label, model_name = entity_path[0], entity_path[1]
+    ModelClass = apps.get_model(app_label, model_name)
+    
+    form_data = {}
+    for item in data:
+        field_name = item["field"].split(".")[-1]  # Extract field name
+        form_data[field_name] = item["value"]
+    
+    FormClass = type(user.current_entity, (forms.ModelForm,), {
+        'Meta': type('Meta', (), {'model': ModelClass, 'fields': '__all__'})
+    })
+    
+    form = FormClass(form_data)
+    if form.is_valid():
+        with transaction.atomic():
+            instance = form.save()
+            user.current_entity_json = json.dumps(data)  # Persist JSON state
+            user.save()
+            return instance
+    
+    return None
+
 @csrf_exempt
 def chatbot_response(request):
     # Fetch the latest WebsiteProfile
@@ -489,6 +517,7 @@ def chatbot_response(request):
             system_message += " An error occurred while collecting the data. Can you please provide it again?"
 
         if user.current_intent_is_done: 
+            populate_and_save_form(user)
             system_message += f" tell user thank you for the information, the current content provided by role user may be a response to a previous question or request that is already processed, ignore it if necessary."
             print("SAVING THE INTAKE INFORMATION")
 
