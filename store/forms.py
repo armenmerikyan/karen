@@ -70,8 +70,19 @@ class ProductLifecycleStageForm(forms.ModelForm):
         fields = ['name', 'rank', 'description', 'is_visible', 'is_sellable']
 
 
-class CustomerForm(forms.ModelForm):
+class SimpleCustomerForm(forms.ModelForm):
     usable_for_chatgpt = True  # Move this to class level
+     
+
+    class Meta:
+        model = Customer
+        fields = [
+            'first_name', 'last_name', 'email', 'phone_number', 
+            'address1', 'address2', 'city', 'state', 'zip_code', 'country', 
+            'linkedin_url', 'twitter_handle', 'facebook_url', 'instagram_url', 'notes'
+        ]
+
+class CustomerForm(forms.ModelForm): 
     
     lifecycle_stage = forms.ModelChoiceField(
         queryset=LifecycleStage.objects.filter(is_visible=True),

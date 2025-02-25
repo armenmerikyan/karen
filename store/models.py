@@ -64,6 +64,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     current_intent = models.CharField(max_length=255, blank=True, null=True)
     current_entity = models.CharField(max_length=255, blank=True, null=True)
     current_field = models.CharField(max_length=255, blank=True, null=True)
+    current_field_help_text = models.CharField(max_length=500, blank=True, null=True)
         
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
@@ -582,42 +583,37 @@ def customer_upload_to(instance, filename):
     return f"customer_photos/{instance.id}_{name}{ext}"
 
 class Customer(models.Model):
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
-    phone_number = models.CharField(max_length=15, blank=True, null=True)
-    
+    first_name = models.CharField(max_length=100, help_text="Enter the customer's first name.")
+    last_name = models.CharField(max_length=100, help_text="Enter the customer's last name.")
+    email = models.EmailField(unique=True, help_text="Enter a unique email address for the customer.")
+    phone_number = models.CharField(max_length=15, blank=True, null=True, help_text="Enter the customer's phone number (optional).")
+
     # Address Details
-    address1 = models.CharField(max_length=255, blank=True, null=True)
-    address2 = models.CharField(max_length=255, blank=True, null=True)
-    city = models.CharField(max_length=100, blank=True, null=True)
-    state = models.CharField(max_length=100, blank=True, null=True)
-    zip_code = models.CharField(max_length=20, blank=True, null=True)
-    country = models.CharField(max_length=100, blank=True, null=True)
+    address1 = models.CharField(max_length=255, blank=True, null=True, help_text="Enter the primary street address.")
+    address2 = models.CharField(max_length=255, blank=True, null=True, help_text="Enter an additional address line (optional).")
+    city = models.CharField(max_length=100, blank=True, null=True, help_text="Enter the city name.")
+    state = models.CharField(max_length=100, blank=True, null=True, help_text="Enter the state or province.")
+    zip_code = models.CharField(max_length=20, blank=True, null=True, help_text="Enter the ZIP or postal code.")
+    country = models.CharField(max_length=100, blank=True, null=True, help_text="Enter the country name.")
 
     # Social Media
-    linkedin_url = models.URLField(max_length=255, blank=True, null=True)
-    twitter_handle = models.CharField(max_length=100, blank=True, null=True)
-    facebook_url = models.URLField(max_length=255, blank=True, null=True)
-    instagram_url = models.URLField(max_length=255, blank=True, null=True)  # Instagram URL
+    linkedin_url = models.URLField(max_length=255, blank=True, null=True, help_text="Enter the LinkedIn profile URL (optional).")
+    twitter_handle = models.CharField(max_length=100, blank=True, null=True, help_text="Enter the Twitter handle (optional).")
+    facebook_url = models.URLField(max_length=255, blank=True, null=True, help_text="Enter the Facebook profile URL (optional).")
+    instagram_url = models.URLField(max_length=255, blank=True, null=True, help_text="Enter the Instagram profile URL (optional).")
 
     # Photo Field
-    photo = models.ImageField(upload_to='customer_photos/', null=True, blank=True)
+    photo = models.ImageField(upload_to='customer_photos/', null=True, blank=True, help_text="Upload a profile photo for the customer (optional).")
 
     # Metadata
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, help_text="Timestamp when the customer record was created.")
+    updated_at = models.DateTimeField(auto_now=True, help_text="Timestamp when the customer record was last updated.")
 
     # Customer Lifecycle Stage
-    lifecycle_stage = models.ForeignKey(
-        'LifecycleStage',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
-    )
+    lifecycle_stage = models.ForeignKey('LifecycleStage', on_delete=models.SET_NULL, null=True, blank=True, help_text="Select the current lifecycle stage of the customer.")
 
     # Notes Field
-    notes = models.TextField(blank=True, null=True)
+    notes = models.TextField(blank=True, null=True, help_text="Enter any additional notes about the customer (optional).")
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
