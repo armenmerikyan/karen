@@ -457,7 +457,8 @@ def chatbot_response(request):
 
         # If the user is in the middle of providing information for a specific field, update the message
         if user.current_field:
-            system_message += f" You are in the process of collecting data and only need the following field from the user: {user.current_field}. Ask the user to provide this information, even if their current message may be a response to a previous field or asking another question."
+            current_field_name = user.current_field.split('.')[-1]
+            system_message += f" You are in the process of collecting data and only need the following field from the user: {current_field_name}. Ask the user to provide this information, the user provided message or prompt may be a response to a previous field or providing intent and entity, ignore it if necessary."
 
         # If an error occurred, ask the user to try again
         if error_occurred:
