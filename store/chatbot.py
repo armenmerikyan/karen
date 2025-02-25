@@ -401,36 +401,37 @@ def chatbot_response(request):
                     # Iterate through the fields
                     # Initialize a flag to track if a match was found
                     found_match = False
+                    if user.current_field:
+                        for index, (field_name, field) in enumerate(fields_list):
+                            print(f"Field: {field_name}, Type: {type(field)}")
+                            model_field = model_class._meta.get_field(field_name)  # Get the model field
+                            print(f"Help Text: {model_field.help_text if model_field.help_text else 'No help text available'}")
 
-                    for index, (field_name, field) in enumerate(fields_list):
-                        print(f"Field: {field_name}, Type: {type(field)}")
-                        model_field = model_class._meta.get_field(field_name)  # Get the model field
-                        print(f"Help Text: {model_field.help_text if model_field.help_text else 'No help text available'}")
+                            print(f"Comparing user.current_field: {user.current_field} with field_name: {field_name}")
 
-                        print(f"Comparing user.current_field: {user.current_field} with field_name: {field_name}")
+                            # Check if the current field matches the user's current_field
+                            current_field_name = user.current_field.split('.')[-1]
 
-                        # Check if the current field matches the user's current_field
-                        current_field_name = user.current_field.split('.')[-1]
+                            if current_field_name == field_name:    
+                                found_match = True  # Mark that a match was found
+                                
+                                # If a match is found, move to the next item in the loop
+                                if index + 1 < len(fields_list):  # Check if there is a next item
+                                    next_field_name, next_field = fields_list[index + 1]
+                                    next_model_field = model_class._meta.get_field(next_field_name)
 
-                        if current_field_name == field_name:    
-                            found_match = True  # Mark that a match was found
-                            
-                            # If a match is found, move to the next item in the loop
-                            if index + 1 < len(fields_list):  # Check if there is a next item
-                                next_field_name, next_field = fields_list[index + 1]
-                                next_model_field = model_class._meta.get_field(next_field_name)
+                                    # Update the user object with the next field
+                                    user.current_intent = user_intent  # Example intent, replace with actual logic
+                                    user.current_entity = entity  # 'entity' can be passed in the request
+                                    user.current_field = next_model_field  # Set the next field as the current field
 
-                                # Update the user object with the next field
-                                user.current_intent = user_intent  # Example intent, replace with actual logic
-                                user.current_entity = entity  # 'entity' can be passed in the request
-                                user.current_field = next_model_field  # Set the next field as the current field
-
-                                # Save the updated user object
-                                user.save()
-                                break  # Exit the loop after updating to the next field
-                            else:
-                                # If it's the last item, stop the loop
-                                break
+                                    # Save the updated user object
+                                    user.save()
+                                    break  # Exit the loop after updating to the next field
+                                else:
+                                    # If it's the last item, stop the loop
+                                    break
+                     
 
                     # If no match was found, set current_field to the first item in the loop
                     if not found_match:
