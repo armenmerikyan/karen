@@ -305,6 +305,8 @@ def chatbot_response(request):
 
     print("API Key:", profile.chatgpt_api_key)  # Debugging: Print API key
 
+    user = get_object_or_404(User, id=request.user.id)  # Adjust based on how you fetch the user
+    
     if request.method == "POST":
         # Check if the user is authenticated
         if not request.user.is_authenticated:
@@ -336,7 +338,6 @@ def chatbot_response(request):
                     print("Model representing the object:", model_class)
 
 
-                    user = get_object_or_404(User, id=request.user.id)  # Adjust based on how you fetch the user
 
                     # Convert form fields into a list of tuples (field_name, model_field) for easier iteration
                     fields_list = list(form_instance.fields.items())
@@ -389,8 +390,14 @@ def chatbot_response(request):
         client = OpenAI(api_key=profile.chatgpt_api_key)
 
         # Include business context about 'About Us' and ensure a short, concise response
+        system_message = f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."
+        
+        # If there's a current field message, update the system message to include that information
+        if user.current_field:
+            system_message += " you are in the process of collecting data and you need the following field " + user.current_field + " ask the user to provide the info"
+
         messages = [
-            {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."},
+            {"role": "system", "content": system_message},
             {"role": "user", "content": user_message}  # Include the user's message
         ]
 
