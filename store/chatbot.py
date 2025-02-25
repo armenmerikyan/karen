@@ -334,10 +334,17 @@ def chatbot_response(request):
                     form_instance = FormClass()
                     model_class = form_instance._meta.model  # Get associated model
                     print("Model representing the object:", model_class)
+
+                    # Print form fields, their types, and help text
+                    for field_name, field in form_instance.fields.items():
+                        print(f"Field: {field_name}, Type: {type(field)}")
+                        model_field = model_class._meta.get_field(field_name)  # Get the model field
+                        print(f"Help Text: {model_field.help_text if model_field.help_text else 'No help text available'}")
+
                 else:
                     print(f"'{entity}' is not a valid ModelForm.")
             except Exception as e:
-                print(f"Error: {e}")                 
+                print(f"Error: {e}")
 
         # Initialize the OpenAI client with the API key from the profile
         client = OpenAI(api_key=profile.chatgpt_api_key)

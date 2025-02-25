@@ -772,8 +772,8 @@ class PDFDocument(models.Model):
         return self.title
     
 class QuestionAnswer(models.Model):
-    question = models.TextField()
-    answer = models.TextField()
+    question = models.TextField(help_text="The question that needs to be answered.")
+    answer = models.TextField(help_text="The answer to the question.")    
     is_approved = models.BooleanField(default=False)
     product = models.ForeignKey(Product, related_name='question_answers', on_delete=models.CASCADE, null=True, blank=True)
     customer = models.ForeignKey(Customer, related_name='question_answers', on_delete=models.CASCADE, null=True, blank=True)
