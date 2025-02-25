@@ -473,6 +473,8 @@ def chatbot_response(request):
                                     user.current_entity = entity  # 'entity' can be passed in the request
                                     user.current_field = next_model_field  # Set the next field as the current field
                                     user.current_field_help_text = next_model_field.help_text
+                                    if index + 2 == len(fields_list):  # This is the last item after the update
+                                        user.current_intent_is_done = True                                    
                                     # Save the updated user object
                                     user.save()
                                     break  # Exit the loop after updating to the next field
