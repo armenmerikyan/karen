@@ -517,7 +517,12 @@ def chatbot_response(request):
             system_message += " An error occurred while collecting the data. Can you please provide it again?"
 
         if user.current_intent_is_done: 
-            populate_and_save_form(user)
+            instance = populate_and_save_form(user)            
+            if instance:
+                print(f"Form successfully saved: {instance}")
+            else:
+                print("Form validation failed or no data to process.")
+
             system_message += f" tell user thank you for the information, the current content provided by role user may be a response to a previous question or request that is already processed, ignore it if necessary."
             print("SAVING THE INTAKE INFORMATION")
 
