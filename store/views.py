@@ -3327,10 +3327,14 @@ def visitor_delete(request, id):
 
 @admin_required
 def list_users(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+    
     if not request.user.is_staff:
         return redirect('user_list')  # Redirect if not an admin
     users = User.objects.all()
-    return render(request, 'user_list.html', {'users': users})
+    return render(request, 'user_list.html', {'users': users, 'profile': profile})
 
 @admin_required
 def clear_user_fields(request, user_id):
