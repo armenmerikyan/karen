@@ -410,7 +410,9 @@ def chatbot_response(request):
                         print(f"Comparing user.current_field: {user.current_field} with field_name: {field_name}")
 
                         # Check if the current field matches the user's current_field
-                        if user.current_field == field_name:    
+                        current_field_name = user.current_field.split('.')[-1]
+
+                        if current_field_name == field_name:    
                             found_match = True  # Mark that a match was found
                             
                             # If a match is found, move to the next item in the loop
