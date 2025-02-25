@@ -369,7 +369,7 @@ def chatbot_response(request):
         print("Request Data:", data)  # Debugging: Print request data
         error_occurred = False
 
-        if not user.current_intent and not entity and not field:
+        if not user.current_intent and not user.current_entity and not user.current_field:
             user_intent, entity = chatbot_get_intent_and_entity(user_message, profile)
         else:
             try:
