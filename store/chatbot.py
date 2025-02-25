@@ -305,6 +305,7 @@ def chatbot_get_entity_value(message, user, profile):
 
         # Convert back to string for saving in the database
         user.current_entity_json = json.dumps(current_entity_json)
+        user.save()
 
     # Step 7: Return both value even if it's None
     return field, entity_value
