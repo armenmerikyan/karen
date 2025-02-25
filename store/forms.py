@@ -71,6 +71,8 @@ class ProductLifecycleStageForm(forms.ModelForm):
 
 
 class CustomerForm(forms.ModelForm):
+    usable_for_chatgpt = True  # Move this to class level
+    
     lifecycle_stage = forms.ModelChoiceField(
         queryset=LifecycleStage.objects.filter(is_visible=True),
         empty_label="Select Lifecycle Stage",
