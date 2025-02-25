@@ -367,18 +367,25 @@ def chatbot_response(request):
             return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
 
         print("Request Data:", data)  # Debugging: Print request data
+        error_occurred = False
+
         if not user.current_intent and not entity and not field:
             user_intent, entity = chatbot_get_intent_and_entity(user_message, profile)
-        else: 
-            user_intent = user.current_intent
-            entity = user.current_entity
-            field_value = chatbot_get_entity_value(user_message, user, profile)
-            print("USER PROVIDED FIELD:", field_value)
+        else:
+            try:
+                user_intent = user.current_intent
+                entity = user.current_entity
+                field_value = chatbot_get_entity_value(user_message, user, profile)
+                print("USER PROVIDED FIELD:", field_value)
+            except Exception as e:
+                error_occurred = True
+                print("Error occurred:", e)
+
 
         print("USER INTENT:", user_intent)
         print("ENTITY:", entity)
         #Unknown 
-        if user_intent is not None and entity is not None:
+        if not error_occurred and user_intent is not None and entity is not None:
             try:
                 FormClass = globals().get(entity)  # Retrieve form class dynamically
                 if FormClass and issubclass(FormClass, forms.ModelForm):  # Ensure it's a ModelForm
@@ -445,6 +452,10 @@ def chatbot_response(request):
         # If there's a current field message, update the system message to include that information
         if user.current_field:
             system_message += f" You are in the process of collecting data and only need the following field from the user: {user.current_field}. Ask the user to provide this information."
+
+        if error_occurred:
+            system_message += " An error occurred while collecting the data. Can you please provide it again?"
+
 
         print(system_message)
 
