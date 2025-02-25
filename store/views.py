@@ -107,7 +107,7 @@ from .models import QuestionAnswer
 from .models import Conversation, Message
 from .models import Visitor  
 
-from .forms import SimpleAnswerForm
+from .forms import SimpleQuestionForm
 from .forms import QuestionAnswerForm
 from .forms import CustomerPDFForm
 from .forms import PDFDocumentForm
@@ -3215,7 +3215,7 @@ def simple_question_add(request):
         return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
 
     if request.method == 'POST':
-        form = SimpleAnswerForm(request.POST)
+        form = SimpleQuestionForm(request.POST)
         if form.is_valid():
             # Create a new QuestionAnswer object but don't save it yet
             question_answer = form.save(commit=False)
@@ -3229,7 +3229,7 @@ def simple_question_add(request):
                 
             return redirect('question_answer_list')
     else:
-        form = SimpleAnswerForm()  # Use the new form with only the 'answer' field
+        form = SimpleQuestionForm()  # Use the new form with only the 'answer' field
 
     return render(request, 'question_answer_form.html', {'form': form, 'profile': profile})
 

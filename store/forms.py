@@ -19,10 +19,14 @@ from .models import GeneratedMessage
 from .models import PDFDocument 
 from .models import QuestionAnswer
 
-class SimpleAnswerForm(forms.ModelForm):
+class SimpleQuestionForm(forms.ModelForm):
     class Meta:
         model = QuestionAnswer
         fields = ['question']  # Only the 'answer' field
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.usable_for_chatgpt = True  # Custom metadata
 
 class QuestionAnswerForm(forms.ModelForm):
     class Meta:

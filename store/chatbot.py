@@ -112,7 +112,7 @@ from .models import PDFDocument
 from .models import QuestionAnswer
 from .models import Conversation, Message
 from .models import Visitor  
-from .forms import SimpleAnswerForm
+from .forms import SimpleQuestionForm
 from .forms import QuestionAnswerForm
 from .forms import CustomerPDFForm
 from .forms import PDFDocumentForm
@@ -242,7 +242,8 @@ def get_django_forms():
             forms_module = importlib.import_module(f"{app_config.name}.forms")
             for _, obj in vars(forms_module).items():
                 if isinstance(obj, type) and issubclass(obj, forms.BaseForm) and obj is not forms.BaseForm:
-                    entities.append(obj.__name__)
+                    if hasattr(obj, "usable_for_chatgpt") and getattr(obj, "usable_for_chatgpt") is True:
+                        entities.append(obj.__name__)
         except ModuleNotFoundError:
             continue  # Skip apps without a forms module
     
