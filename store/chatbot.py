@@ -458,7 +458,7 @@ def chatbot_response(request):
 
         # If the user is in the middle of providing information for a specific field, update the message
         if user.current_field: 
-            system_message += f" You are in the process of collecting data and only need the following field from the user: {user.current_field}. Ask the user to provide this information, the current content proivded by role user may be a response to a previous question or request that already processed, ignore it if necessary."
+            system_message += f" You are in the process of collecting data and only need the following field from the user: {user.current_field}. Ask the user to provide {user.current_field} information, the current content proivded by role user may be a response to a previous question or request that is already processed, ignore it if necessary."
         # If an error occurred, ask the user to try again
         if error_occurred:
             system_message += " An error occurred while collecting the data. Can you please provide it again?"
