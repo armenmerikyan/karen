@@ -20,13 +20,11 @@ from .models import PDFDocument
 from .models import QuestionAnswer
 
 class SimpleQuestionForm(forms.ModelForm):
+    usable_for_chatgpt = True  # Move this to class level
     class Meta:
         model = QuestionAnswer
         fields = ['question']  # Only the 'answer' field
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.usable_for_chatgpt = True  # Custom metadata
+ 
 
 class QuestionAnswerForm(forms.ModelForm):
     class Meta:
