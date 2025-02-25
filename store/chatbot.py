@@ -249,7 +249,50 @@ def get_django_forms():
     
     return entities
  
-def chatbot_get_intent(message, profile):
+
+def chatbot_get_entity_value(message, user, profile):
+    print("chatbot_get_entity_value")
+
+    # Step 1: Get the current intent, entity, and field from the message using chatbot_get_intent_and_entity
+    # Assuming user.current_intent and user.current_field are set elsewhere
+    intent = user.current_intent
+    field = user.current_field
+
+    # Step 2: Create messages for ChatGPT to extract the entity value
+    messages = [
+        {"role": "system", "content": (
+            f"You are a helpful assistant. "
+            f"The goal is to extract the value of '{field}' for the entity '{intent}' from the following message. "
+            "Please respond strictly in JSON format with only the value of the entity. "
+            "The response should be in the following format: {\"entity_value\": \"<value>\"}."
+        )},
+        {"role": "user", "content": message}
+    ]
+
+    # Step 3: Set up the API call to ChatGPT with the defined messages
+    client = OpenAI(api_key=profile.chatgpt_api_key)
+    
+    fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
+    print("Fine-tune status:", fine_tune_status)
+
+    if fine_tune_status.status == 'succeeded':
+        model_id = fine_tune_status.fine_tuned_model
+    else:
+        model_id = "gpt-3.5-turbo"
+
+    response = client.chat.completions.create(
+        model=model_id,
+        messages=messages
+    )
+    
+    # Step 4: Parse the response to get the extracted value
+    bot_reply = json.loads(response.choices[0].message.content)
+
+    # Step 5: Return the extracted entity value
+    return bot_reply.get("entity_value", "No value found")
+
+
+def chatbot_get_intent_and_entity(message, profile):
     intents = ["Add", "Delete", "Edit", "Search", "View Details", "View Summary", "List"]
     entities = get_django_forms()
     
@@ -324,8 +367,14 @@ def chatbot_response(request):
             return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
 
         print("Request Data:", data)  # Debugging: Print request data
+        if not user.current_intent and not entity and not field:
+            user_intent, entity = chatbot_get_intent_and_entity(user_message, profile)
+        else: 
+            user_intent = user.current_intent
+            entity = user.current_entity
+            field_value = chatbot_get_entity_value(user_message, user, profile)
+            print("USER PROVIDED FIELD:", field_value)
 
-        user_intent, entity = chatbot_get_intent(user_message, profile)
         print("USER INTENT:", user_intent)
         print("ENTITY:", entity)
         #Unknown 
