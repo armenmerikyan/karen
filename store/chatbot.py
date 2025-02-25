@@ -407,8 +407,10 @@ def chatbot_response(request):
                         model_field = model_class._meta.get_field(field_name)  # Get the model field
                         print(f"Help Text: {model_field.help_text if model_field.help_text else 'No help text available'}")
 
+                        print(f"Comparing user.current_field: {user.current_field} with field_name: {field_name}")
+
                         # Check if the current field matches the user's current_field
-                        if user.current_field == model_field:
+                        if user.current_field == field_name:    
                             found_match = True  # Mark that a match was found
                             
                             # If a match is found, move to the next item in the loop
