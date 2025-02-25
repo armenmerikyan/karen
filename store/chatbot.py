@@ -232,7 +232,7 @@ import maxminddb
  
 from django import forms
 from django.apps import apps
-import importlib
+import importlib 
 
 def get_django_forms():
     entities = []
@@ -326,7 +326,19 @@ def chatbot_response(request):
         user_intent, entity = chatbot_get_intent(user_message, profile)
         print("USER INTENT:", user_intent)
         print("ENTITY:", entity)
-        
+        #Unknown 
+        if user_intent is not None and entity is not None:
+            try:
+                FormClass = globals().get(entity)  # Retrieve form class dynamically
+                if FormClass and issubclass(FormClass, forms.ModelForm):  # Ensure it's a ModelForm
+                    form_instance = FormClass()
+                    model_class = form_instance._meta.model  # Get associated model
+                    print("Model representing the object:", model_class)
+                else:
+                    print(f"'{entity}' is not a valid ModelForm.")
+            except Exception as e:
+                print(f"Error: {e}")                 
+
         # Initialize the OpenAI client with the API key from the profile
         client = OpenAI(api_key=profile.chatgpt_api_key)
 
