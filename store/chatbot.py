@@ -443,7 +443,7 @@ def chatbot_response(request):
                         user.current_intent = user_intent  # Example intent, replace with actual logic
                         user.current_entity = entity  # 'entity' can be passed in the request
                         user.current_field = first_model_field
-                        user.current_field_help_text = next_model_field.help_text
+                        user.current_field_help_text = first_model_field.help_text
                         user.save()
 
 
