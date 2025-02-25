@@ -454,6 +454,8 @@ def chatbot_response(request):
         # Initialize the OpenAI client with the API key from the profile
         client = OpenAI(api_key=profile.chatgpt_api_key)
 
+        
+
         # Include business context about 'About Us' and ensure a short, concise response
         system_message = f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."
 
@@ -465,7 +467,7 @@ def chatbot_response(request):
         if error_occurred:
             system_message += " An error occurred while collecting the data. Can you please provide it again?"
 
-        print(system_message)
+        print("System Message: ", system_message)
 
         messages = [
             {"role": "system", "content": system_message},
