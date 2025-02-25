@@ -77,8 +77,7 @@ class SimpleCustomerForm(forms.ModelForm):
         model = Customer
         fields = [
             'first_name', 'last_name', 'email', 'phone_number', 
-            'address1', 'address2', 'city', 'state', 'zip_code', 'country', 
-            'linkedin_url', 'twitter_handle', 'facebook_url', 'instagram_url', 'notes'
+            'address1', 'address2', 'city', 'state', 'zip_code', 'notes'
         ]
 
 class CustomerForm(forms.ModelForm): 

@@ -66,6 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     current_entity_json = models.TextField(blank=True, null=True)
     current_field = models.CharField(max_length=255, blank=True, null=True)
     current_field_help_text = models.CharField(max_length=500, blank=True, null=True)
+    current_intent_is_done = models.BooleanField(default=False)
         
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email', 'first_name', 'last_name']

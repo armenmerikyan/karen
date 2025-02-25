@@ -450,6 +450,8 @@ def chatbot_response(request):
                                     break  # Exit the loop after updating to the next field
                                 else:
                                     # If it's the last item, stop the loop
+                                    user.current_intent_is_done = True
+                                    user.save()
                                     break
                      
 
@@ -479,12 +481,16 @@ def chatbot_response(request):
         system_message = f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."
 
         # If the user is in the middle of providing information for a specific field, update the message
-        if user.current_field: 
+        if user.current_field and not user.current_intent_is_done: 
             system_message += f" You are in the process of collecting data and only need the following field from the user: {user.current_field}. this is the help text for the field '{user.current_field_help_text}', use the help text and field name to construct a human readable message to ask the user to provide {user.current_field} information, the current content provided by role user may be a response to a previous question or request that is already processed, ignore it if necessary."
 
         # If an error occurred, ask the user to try again
         if error_occurred:
             system_message += " An error occurred while collecting the data. Can you please provide it again?"
+
+        if user.current_intent_is_done: 
+            system_message += f" tell user thank you for the information, the current content provided by role user may be a response to a previous question or request that is already processed, ignore it if necessary."
+            print("SAVING THE INTAKE INFORMATION")
 
         print("System Message: ", system_message)
 
