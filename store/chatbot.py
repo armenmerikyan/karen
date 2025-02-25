@@ -381,7 +381,7 @@ def chatbot_response(request):
                 error_occurred = True
                 print("Error occurred:", e)
 
-
+        print("Before assignment - Intent:", user.current_intent, "Entity:", user.current_entity, "Field:", user.current_field)
         print("USER INTENT:", user_intent)
         print("ENTITY:", entity)
         #Unknown 
