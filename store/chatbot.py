@@ -342,6 +342,9 @@ def chatbot_response(request):
                     fields_list = list(form_instance.fields.items())
 
                     # Iterate through the fields
+                    # Initialize a flag to track if a match was found
+                    found_match = False
+
                     for index, (field_name, field) in enumerate(fields_list):
                         print(f"Field: {field_name}, Type: {type(field)}")
                         model_field = model_class._meta.get_field(field_name)  # Get the model field
@@ -349,6 +352,8 @@ def chatbot_response(request):
 
                         # Check if the current field matches the user's current_field
                         if user.current_field == model_field:
+                            found_match = True  # Mark that a match was found
+                            
                             # If a match is found, move to the next item in the loop
                             if index + 1 < len(fields_list):  # Check if there is a next item
                                 next_field_name, next_field = fields_list[index + 1]
@@ -366,9 +371,13 @@ def chatbot_response(request):
                                 # If it's the last item, stop the loop
                                 break
 
-                        # If no match is found, continue to the next iteration
-                        else:
-                            continue
+                    # If no match was found, set current_field to the first item in the loop
+                    if not found_match:
+                        first_field_name, first_field = fields_list[0]
+                        first_model_field = model_class._meta.get_field(first_field_name)
+                        user.current_field = first_model_field
+                        user.save()
+
 
 
                 else:
