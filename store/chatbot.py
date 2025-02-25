@@ -335,11 +335,41 @@ def chatbot_response(request):
                     model_class = form_instance._meta.model  # Get associated model
                     print("Model representing the object:", model_class)
 
-                    # Print form fields, their types, and help text
-                    for field_name, field in form_instance.fields.items():
+
+                    user = get_object_or_404(User, id=request.user.id)  # Adjust based on how you fetch the user
+
+                    # Convert form fields into a list of tuples (field_name, model_field) for easier iteration
+                    fields_list = list(form_instance.fields.items())
+
+                    # Iterate through the fields
+                    for index, (field_name, field) in enumerate(fields_list):
                         print(f"Field: {field_name}, Type: {type(field)}")
                         model_field = model_class._meta.get_field(field_name)  # Get the model field
                         print(f"Help Text: {model_field.help_text if model_field.help_text else 'No help text available'}")
+
+                        # Check if the current field matches the user's current_field
+                        if user.current_field == model_field:
+                            # If a match is found, move to the next item in the loop
+                            if index + 1 < len(fields_list):  # Check if there is a next item
+                                next_field_name, next_field = fields_list[index + 1]
+                                next_model_field = model_class._meta.get_field(next_field_name)
+
+                                # Update the user object with the next field
+                                user.current_intent = user_intent  # Example intent, replace with actual logic
+                                user.current_entity = entity  # 'entity' can be passed in the request
+                                user.current_field = next_model_field  # Set the next field as the current field
+
+                                # Save the updated user object
+                                user.save()
+                                break  # Exit the loop after updating to the next field
+                            else:
+                                # If it's the last item, stop the loop
+                                break
+
+                        # If no match is found, continue to the next iteration
+                        else:
+                            continue
+
 
                 else:
                     print(f"'{entity}' is not a valid ModelForm.")

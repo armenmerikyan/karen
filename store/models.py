@@ -60,6 +60,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     shipping_zipcode = models.CharField(max_length=255, blank=True)
     shipping_country = models.CharField(max_length=255, blank=True) 
     sol_wallet_address = models.CharField(max_length=255, blank=True)
+
+    current_intent = models.CharField(max_length=255, blank=True, null=True)
+    current_entity = models.CharField(max_length=255, blank=True, null=True)
+    current_field = models.CharField(max_length=255, blank=True, null=True)
+        
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
     objects = UserManager()
