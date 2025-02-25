@@ -391,10 +391,13 @@ def chatbot_response(request):
 
         # Include business context about 'About Us' and ensure a short, concise response
         system_message = f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."
+        print(system_message)
         
         # If there's a current field message, update the system message to include that information
         if user.current_field:
-            system_message += " you are in the process of collecting data and you need the following field " + user.current_field + " ask the user to provide the info"
+            system_message += f" You are in the process of collecting data and need the following field: {user.current_field}. Ask the user to provide this information."
+
+        print(system_message)
 
         messages = [
             {"role": "system", "content": system_message},
