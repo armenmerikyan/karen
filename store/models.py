@@ -63,6 +63,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     current_intent = models.CharField(max_length=255, blank=True, null=True)
     current_entity = models.CharField(max_length=255, blank=True, null=True)
+    current_entity_json = models.TextField(blank=True, null=True)
     current_field = models.CharField(max_length=255, blank=True, null=True)
     current_field_help_text = models.CharField(max_length=500, blank=True, null=True)
         

@@ -290,8 +290,17 @@ def chatbot_get_entity_value(message, user, profile):
     # Step 4: Parse the response to get the extracted value
     bot_reply = json.loads(response.choices[0].message.content)
 
-    # Step 5: Return the extracted entity value
-    return bot_reply.get("entity_value", "No value found")
+    entity_value = bot_reply.get("entity_value", None)
+
+    # Step 6: Append the field and value only if value is found
+    if entity_value:
+        if not hasattr(user, 'current_entity_json'):
+            user.current_entity_json = []
+
+        user.current_entity_json.append({"field": field, "value": entity_value})
+
+    # Step 7: Return both value even if it's None
+    return field, entity_value
 
 
 def chatbot_get_intent_and_entity(message, profile):
