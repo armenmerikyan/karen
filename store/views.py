@@ -3333,7 +3333,11 @@ def list_users(request):
     return render(request, 'user_list.html', {'users': users})
 
 @admin_required
-def clear_all_user_fields(request):
+def clear_user_fields(request, user_id):
     if request.user.is_staff:
-        User.objects.update(current_intent=None, current_entity=None, current_field=None)
+        user = get_object_or_404(User, id=user_id)
+        user.current_intent = None
+        user.current_entity = None
+        user.current_field = None
+        user.save()
     return redirect('user_list')

@@ -2,16 +2,22 @@
 
 {% block content %}
 <h2>User List</h2>
-<a href="{% url 'clear_all_user_fields' %}" onclick="return confirm('Clear fields for all users?')">Clear All Fields</a>
 <table border="1">
     <tr>
         <th>Username</th>
         <th>Email</th>
+        <th>Actions</th>
     </tr>
     {% for user in users %}
     <tr>
         <td>{{ user.username }}</td>
         <td>{{ user.email }}</td>
+        <td>
+            <a href="{% url 'clear_user_fields' user.id %}" 
+               onclick="return confirm('Clear fields for {{ user.username }}?')">
+                Clear Fields
+            </a>
+        </td>
     </tr>
     {% endfor %}
 </table>
