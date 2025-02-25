@@ -292,13 +292,19 @@ def chatbot_get_entity_value(message, user, profile):
 
     entity_value = bot_reply.get("entity_value", None)
 
-    # Step 6: Append the field and value only if value is found
     if entity_value:
-        if not hasattr(user, 'current_entity_json') or user.current_entity_json is None:
-            user.current_entity_json = []
+        # Check if user.current_entity_json is not set or is set to a non-list value (e.g., string)
+        if not hasattr(user, 'current_entity_json') or not user.current_entity_json:
+            user.current_entity_json = '[]'  # Initialize as empty JSON array (string representation)
 
-        user.current_entity_json.append({"field": field, "value": entity_value})
+        # Convert current_entity_json from string to list
+        current_entity_json = json.loads(user.current_entity_json)
 
+        # Append the new data
+        current_entity_json.append({"field": field, "value": entity_value})
+
+        # Convert back to string for saving in the database
+        user.current_entity_json = json.dumps(current_entity_json)
 
     # Step 7: Return both value even if it's None
     return field, entity_value
