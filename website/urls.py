@@ -201,6 +201,10 @@ urlpatterns = [
     
     path('visitors/', views.visitor_list, name='visitor_list'),
     path('visitor/delete/<int:id>/', views.visitor_delete, name='visitor_delete'),
+
+
+    path('users/', views.list_users, name='user_list'),
+    path('users/clear/', views.clear_all_user_fields, name='clear_all_user_fields'),
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

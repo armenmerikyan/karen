@@ -31,8 +31,8 @@
           </a>         
           <p>Track and manage different stages of the customer journey.</p>
           <HR>
-          <a href="{% url 'customer_list' %}" class="nav-link">
-            <i class="fas fa-users"></i> Customers
+          <a href="{% url 'customer_list' %}" class="nav-link"> 
+            <i class="fas fa-address-book"></i> Customers
             <span class="badge bg-dark">{{ total_customers }}</span> <!-- Black: Total -->     
             
           </a>                  
@@ -85,7 +85,15 @@
           <a href="{% url 'pdf_list' %}" class="nav-link">
               <i class="fas fa-file-pdf"></i> PDF Library
           </a>
-          <p>Browse and manage your PDF documents.</p>        
+          <p>Browse and manage your PDF documents.</p>      
+          
+          <hr>
+
+          <a href="{% url 'user_list' %}" class="nav-link">
+              <i class="fas fa-users"></i> User List
+          </a>
+          <p>Browse and manage users.</p>
+          
           <hr>
           <a href="{% url 'conversation_list' %}" class="nav-link">
               <i class="fas fa-comments"></i> Conversations & Messages

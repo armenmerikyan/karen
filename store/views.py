@@ -3323,3 +3323,17 @@ def visitor_delete(request, id):
 
     # Optionally, handle GET for confirmation page or show an error if needed
     return redirect('visitor_list')  # Default action if not POST
+
+
+@admin_required
+def list_users(request):
+    if not request.user.is_staff:
+        return redirect('user_list')  # Redirect if not an admin
+    users = User.objects.all()
+    return render(request, 'user_list.html', {'users': users})
+
+@admin_required
+def clear_all_user_fields(request):
+    if request.user.is_staff:
+        User.objects.update(current_intent=None, current_entity=None, current_field=None)
+    return redirect('user_list')

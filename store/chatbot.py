@@ -432,6 +432,8 @@ def chatbot_response(request):
                     if not found_match:
                         first_field_name, first_field = fields_list[0]
                         first_model_field = model_class._meta.get_field(first_field_name)
+                        user.current_intent = user_intent  # Example intent, replace with actual logic
+                        user.current_entity = entity  # 'entity' can be passed in the request
                         user.current_field = first_model_field
                         user.save()
 
