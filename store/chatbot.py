@@ -254,7 +254,7 @@ def chatbot_get_intent(message, profile):
     entities = get_django_forms()
     
     client = OpenAI(api_key=profile.chatgpt_api_key)
-    
+    print("Entity:", f"{json.dumps(entities)}. ")
     messages = [
         {"role": "system", "content": (
             "You are a helpful chatbot assistant for a company. "
