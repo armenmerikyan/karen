@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referrals</title>
+</head>
+<body>
+    <h1>Referral List</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Referred By</th>
+                <th>Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for referral in referrals %}
+            <tr>
+                <td>{{ referral.name }}</td>
+                <td>{{ referral.email }}</td>
+                <td>{{ referral.phone }}</td>
+                <td>{{ referral.referred_by }}</td>
+                <td>{{ referral.created_at }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No referrals found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

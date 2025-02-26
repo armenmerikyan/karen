@@ -106,6 +106,7 @@ from .models import PDFDocument
 from .models import QuestionAnswer
 from .models import Conversation, Message
 from .models import Visitor  
+from .models import Referral  
 
 from .forms import SimpleQuestionForm
 from .forms import QuestionAnswerForm
@@ -3345,3 +3346,8 @@ def clear_user_fields(request, user_id):
     user = get_object_or_404(User, id=user_id)
     reset_user_fields(user)
     return redirect('user_list')
+
+@admin_required
+def referral_list(request):
+    referrals = Referral.objects.all()
+    return render(request, 'referrals.html', {'referrals': referrals})

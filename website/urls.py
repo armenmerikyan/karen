@@ -205,6 +205,9 @@ urlpatterns = [
     path('users/', views.list_users, name='user_list'),
     path('users/clear/<int:user_id>/', views.clear_user_fields, name='clear_user_fields'),
 
+
+    path('referrals/', views.referral_list, name='referral_list'),
+
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
