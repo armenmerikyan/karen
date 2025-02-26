@@ -359,31 +359,36 @@ def populate_and_save_form(user):
     try:
         if not user.current_entity or not user.current_entity_json:
             return "No entity or data to process"
-        
+
         data = json.loads(user.current_entity_json)
         entity_path = user.current_entity.split('.')
+
+        # Ensure entity_path contains both app_label and model_name
+        if len(entity_path) < 2:
+            return f"Invalid entity format: {user.current_entity}"
+
         app_label, model_name = entity_path[0], entity_path[1]
         ModelClass = apps.get_model(app_label, model_name)
-        
+
         form_data = {}
         for item in data:
             field_name = item["field"].split(".")[-1]  # Extract field name
             form_data[field_name] = item["value"]
-        
+
         FormClass = type(user.current_entity, (forms.ModelForm,), {
             'Meta': type('Meta', (), {'model': ModelClass, 'fields': '__all__'})
         })
-        
+
         form = FormClass(form_data)
         if form.is_valid():
             with transaction.atomic():
                 instance = form.save()
                 user.current_entity_json = json.dumps(data)  # Persist JSON state
                 user.save()
-                return instance
-        
+                return f"Form successfully saved: {instance}"
+
         return f"Form validation failed: {form.errors}"
-    
+
     except Exception as e:
         return f"Error in populate_and_save_form: {e}"
 
