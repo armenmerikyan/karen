@@ -21,6 +21,7 @@ from .models import QuestionAnswer
 from .models import Referral
 
 class ReferralForm(forms.ModelForm):
+    usable_for_chatgpt = True  # Move this to class level
     class Meta:
         model = Referral
         fields = ['name', 'email', 'phone', 'referred_by']  # No changes needed here
