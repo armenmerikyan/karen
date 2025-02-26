@@ -363,7 +363,7 @@ def reset_user_fields(user):
     user.current_field_help_text = None
     user.current_intent_is_done = False
     user.save()
-      
+
 def populate_and_save_form(user):
     try:
         if not user.current_entity_json:
@@ -544,6 +544,7 @@ def chatbot_response(request):
         if user.current_intent_is_done: 
             instance = populate_and_save_form(user)            
             if instance:
+                reset_user_fields(user)
                 print(f"Form successfully saved: {instance}")
             else:
                 print("Form validation failed or no data to process.")
