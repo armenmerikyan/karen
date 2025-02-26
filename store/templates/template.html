@@ -1,41 +1,12 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
-
 {% block content %}
 <section class="py-0">
   <div class="container-fluid">
     <div class="container mt-5 text-light">         
       <div class="row">
         <div class="col-md-12 text-left">   
-          <h1 class="mb-4">Referral List</h1>
-          <div class="table-responsive">
-            <table class="table table-dark table-striped table-bordered">
-              <thead class="thead-light">
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th>Referred By</th>
-                  <th>Created At</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for referral in referrals %}
-                <tr>
-                  <td>{{ referral.name }}</td>
-                  <td>{{ referral.email }}</td>
-                  <td>{{ referral.phone }}</td>
-                  <td>{{ referral.referred_by }}</td>
-                  <td>{{ referral.created_at }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="5" class="text-center">No referrals found.</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
+
         </div>
       </div>      
     </div>
