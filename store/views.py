@@ -3349,5 +3349,8 @@ def clear_user_fields(request, user_id):
 
 @admin_required
 def referral_list(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
     referrals = Referral.objects.all()
-    return render(request, 'referrals.html', {'referrals': referrals})
+    return render(request, 'referrals.html', {'referrals': referrals, 'profile': profile})
