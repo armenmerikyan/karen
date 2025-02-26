@@ -223,7 +223,7 @@ import geoip2.database
 from user_agents import parse
 import maxminddb 
 
-from chatbot import reset_user_fields
+from .chatbot import reset_user_fields
 
 version = "00.00.06"
 logger = logging.getLogger(__name__)
