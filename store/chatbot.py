@@ -112,7 +112,9 @@ from .models import PDFDocument
 from .models import QuestionAnswer
 from .models import Conversation, Message
 from .models import Visitor  
+from .models import Referral
 
+from .forms import ReferralForm
 from .forms import SimpleCustomerForm
 from .forms import SimpleQuestionForm
 from .forms import QuestionAnswerForm

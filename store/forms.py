@@ -18,6 +18,13 @@ from .models import TouchPointType
 from .models import GeneratedMessage
 from .models import PDFDocument 
 from .models import QuestionAnswer
+from .models import Referral
+
+class ReferralForm(forms.ModelForm):
+    class Meta:
+        model = Referral
+        fields = ['name', 'email', 'phone', 'referred_by']  # No changes needed here
+
 
 class SimpleQuestionForm(forms.ModelForm):
     usable_for_chatgpt = True  # Move this to class level

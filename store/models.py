@@ -829,3 +829,13 @@ class Visitor(models.Model):
     class Meta:
         verbose_name = 'Visitor'
         verbose_name_plural = 'Visitors'    
+
+class Referral(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=15, blank=True, null=True)
+    referred_by = models.CharField(max_length=255, blank=True, null=True)  # Changed to CharField
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.name
