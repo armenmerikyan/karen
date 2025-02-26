@@ -355,7 +355,15 @@ def chatbot_get_intent_and_entity(message, profile):
     
     return bot_reply.get("intent", "Unknown"), bot_reply.get("entity", "Unknown")
 
-  
+def reset_user_fields(user):
+    user.current_intent = None
+    user.current_entity = None
+    user.current_field = None
+    user.current_entity_json = None
+    user.current_field_help_text = None
+    user.current_intent_is_done = False
+    user.save()
+      
 def populate_and_save_form(user):
     try:
         if not user.current_entity_json:

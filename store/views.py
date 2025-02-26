@@ -221,7 +221,9 @@ import tempfile
 
 import geoip2.database
 from user_agents import parse
-import maxminddb
+import maxminddb 
+
+from chatbot import reset_user_fields
 
 version = "00.00.06"
 logger = logging.getLogger(__name__)
@@ -3336,15 +3338,10 @@ def list_users(request):
     users = User.objects.all()
     return render(request, 'user_list.html', {'users': users, 'profile': profile})
 
+
+
 @admin_required
 def clear_user_fields(request, user_id):
-    if request.user.is_staff:
-        user = get_object_or_404(User, id=user_id)
-        user.current_intent = None
-        user.current_entity = None
-        user.current_field = None
-        user.current_entity_json = None
-        user.current_field_help_text = None
-        user.current_intent_is_done = False
-        user.save()
+    user = get_object_or_404(User, id=user_id)
+    reset_user_fields(user)
     return redirect('user_list')
