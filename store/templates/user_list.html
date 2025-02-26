@@ -1,34 +1,48 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 
 {% block content %}
-<h2>Registered User List Conversations</h2>
-<table border="1">
-    <tr>
-        <th>Username</th>
-        <th>Email</th>
-        <th>Intent</th>
-        <th>Entity</th>
-        <th>Entity JSON</th>
-        <th>Field</th>
-        <th>Help</th>
-        <th>Actions</th>
-    </tr>
-    {% for user in users %}
-    <tr>
-        <td>{{ user.username }}</td>
-        <td>{{ user.email }}</td>
-        <td>{{ user.current_intent }}</td>
-        <td>{{ user.current_entity }}</td>
-        <td>{{ user.current_entity_json }}</td>
-        <td>{{ user.current_field }}</td>
-        <td>{{ user.current_field_help_text }}</td>
-        <td>
-            <a href="{% url 'clear_user_fields' user.id %}" 
-               onclick="return confirm('Clear fields for {{ user.username }}?')">
-                Clear Fields
-            </a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-12">
+        <h2 class="mb-4">Registered User List Conversations</h2>
+        <table class="table table-bordered table-striped">
+          <thead class="thead-dark">
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Intent</th>
+              <th>Entity</th>
+              <th>Entity JSON</th>
+              <th>Field</th>
+              <th>Help</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr>
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.current_intent }}</td>
+              <td>{{ user.current_entity }}</td>
+              <td>{{ user.current_entity_json }}</td>
+              <td>{{ user.current_field }}</td>
+              <td>{{ user.current_field_help_text }}</td>
+              <td>
+                <a href="{% url 'clear_user_fields' user.id %}" 
+                   class="btn btn-danger btn-sm" 
+                   onclick="return confirm('Clear fields for {{ user.username }}?')">
+                  Clear Fields
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>   
+  </div>
+</section>
 {% endblock %}
