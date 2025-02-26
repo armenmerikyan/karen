@@ -355,27 +355,32 @@ def chatbot_get_intent_and_entity(message, profile):
     
     return bot_reply.get("intent", "Unknown"), bot_reply.get("entity", "Unknown")
 
+  
 def populate_and_save_form(user):
     try:
-        if not user.current_entity or not user.current_entity_json:
-            return "No entity or data to process"
+        if not user.current_entity_json:
+            return "No data to process"
 
         data = json.loads(user.current_entity_json)
-        entity_path = user.current_entity.split('.')
 
-        # Ensure entity_path contains both app_label and model_name
-        if len(entity_path) < 2:
-            return f"Invalid entity format: {user.current_entity}"
+        if not data or "field" not in data[0]:
+            return "Invalid data format"
 
-        app_label, model_name = entity_path[0], entity_path[1]
+        # Extract app_label and model_name from the first field entry
+        field_parts = data[0]["field"].split(".")
+        if len(field_parts) < 2:
+            return "Invalid field format in data"
+
+        app_label, model_name = field_parts[0], field_parts[1]
         ModelClass = apps.get_model(app_label, model_name)
 
         form_data = {}
         for item in data:
-            field_name = item["field"].split(".")[-1]  # Extract field name
+            field_name = item["field"].split(".")[-1]  # Extract actual field name
             form_data[field_name] = item["value"]
 
-        FormClass = type(user.current_entity, (forms.ModelForm,), {
+        # Dynamically create a ModelForm for the extracted model
+        FormClass = type(f"{model_name}Form", (forms.ModelForm,), {
             'Meta': type('Meta', (), {'model': ModelClass, 'fields': '__all__'})
         })
 
@@ -391,6 +396,8 @@ def populate_and_save_form(user):
 
     except Exception as e:
         return f"Error in populate_and_save_form: {e}"
+
+
 
 @csrf_exempt
 def chatbot_response(request):
