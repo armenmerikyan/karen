@@ -212,8 +212,9 @@ urlpatterns = [
     path('landing_page_list/', views.landing_page_list, name='landing_page_list'),
     path('landing_page_create/', views.landing_page_create, name='landing_page_create'),
     path('landing_page_edit/<int:pk>/', views.landing_page_edit, name='landing_page_edit'),
+    path('landing_page/<int:pk>/activate/', views.set_landing_page_active, name='landing_page_activate'),
+    path('landing_page/<int:pk>/deactivate/', views.set_landing_page_inactive, name='landing_page_deactivate'),
 
-    path('landing_page_activate/<int:pk>/', views.set_landing_page_active, name='landing_page_activate'),
 
 ] 
 

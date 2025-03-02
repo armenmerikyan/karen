@@ -28,7 +28,9 @@
                             <td>{% if landing_page.is_activated %}Yes{% else %}No{% endif %}</td>
                             <td>
                                 <a href="{% url 'landing_page_edit' landing_page.pk %}" class="btn btn-warning">Edit</a>
-                                {% if not landing_page.is_activated %}
+                                {% if landing_page.is_activated %}
+                                    <a href="{% url 'landing_page_deactivate' landing_page.pk %}" class="btn btn-danger">Deactivate</a>
+                                {% else %}
                                     <a href="{% url 'landing_page_activate' landing_page.pk %}" class="btn btn-success">Activate</a>
                                 {% endif %}
                             </td>

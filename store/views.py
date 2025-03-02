@@ -3528,3 +3528,26 @@ def set_landing_page_active(request, pk):
     landing_page.is_activated = True
     landing_page.save()
     return redirect('landing_page_list')
+
+
+@admin_required 
+def set_landing_page_inactive(request, pk):
+    landing_page = get_object_or_404(LandingPage, pk=pk)
+    
+    # Check if the landing page is using Docker
+    if landing_page.is_docker:
+        client = docker.from_env()
+        
+        # Stop and remove the container if it's running
+        if landing_page.docker_id:
+            container = client.containers.get(landing_page.docker_id)
+            container.stop()
+            container.remove()
+            print(f"Container with ID {landing_page.docker_id} stopped and removed.")
+            landing_page.docker_id = None  # Clear the docker ID from the landing page
+
+    # Deactivate the landing page
+    landing_page.is_activated = False
+    landing_page.save()
+
+    return redirect('landing_page_list')
