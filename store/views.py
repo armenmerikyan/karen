@@ -228,6 +228,7 @@ import maxminddb
 
 from .chatbot import reset_user_fields
  
+import subprocess
 
 version = "00.00.06"
 logger = logging.getLogger(__name__)
