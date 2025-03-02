@@ -3412,6 +3412,14 @@ def add_domain_with_proxy(domain):
     except subprocess.CalledProcessError as e:
         print(f"Error while updating hosts: {e.stderr.decode()}")
 
+
+
+    if domain not in settings.CSRF_TRUSTED_ORIGINS:
+        settings.CSRF_TRUSTED_ORIGINS.append(domain)
+
+    if domain not in settings.CSRF_TRUSTED_ORIGINS:
+        settings.ALLOWED_HOSTS.append(domain)
+
     # Payload to add the domain and configure the reverse proxy
     payload = {
         "@id": f"{domain.replace('.', '-')}",  # Unique ID for the route
