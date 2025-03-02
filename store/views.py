@@ -3399,25 +3399,11 @@ def add_domain_with_proxy(domain):
     
     :param domain: The domain to add (e.g., "newdomain.com").
     """
-    # Run the management command to update ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS
-    try:
-        # Running the command to update hosts
-        subprocess.run(
-            ['python3', 'manage.py', 'update_hosts', domain, f'http://{domain}'],
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        print(f"Domain {domain} added to ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS.")
-    except subprocess.CalledProcessError as e:
-        print(f"Error while updating hosts: {e.stderr.decode()}")
-
-
 
     if domain not in settings.CSRF_TRUSTED_ORIGINS:
         settings.CSRF_TRUSTED_ORIGINS.append(domain)
 
-    if domain not in settings.CSRF_TRUSTED_ORIGINS:
+    if domain not in settings.ALLOWED_HOSTS:
         settings.ALLOWED_HOSTS.append(domain)
 
     # Payload to add the domain and configure the reverse proxy
