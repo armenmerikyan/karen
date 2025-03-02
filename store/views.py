@@ -233,6 +233,7 @@ import subprocess
 version = "00.00.06"
 logger = logging.getLogger(__name__)
 register = template.Library()
+CADDY_API_URL = "http://localhost:2019/config/apps/http/servers/srv0/routes"
 
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -3372,12 +3373,15 @@ def referral_list(request):
 # List all landing pages
 @admin_required
 def landing_page_list(request):
+    profile = get_latest_profile()
+
     landing_pages = LandingPage.objects.all()
-    return render(request, 'landing_page_list.html', {'landing_pages': landing_pages})
+    return render(request, 'landing_page_list.html', {'landing_pages': landing_pages, 'profile': profile})
 
 # Add a new landing page
 @admin_required
 def landing_page_create(request):
+    profile = get_latest_profile()
     if request.method == 'POST':
         form = LandingPageForm(request.POST)
         if form.is_valid():
@@ -3385,11 +3389,12 @@ def landing_page_create(request):
             return redirect('landing_page_list')
     else:
         form = LandingPageForm()
-    return render(request, 'landing_page_form.html', {'form': form})
+    return render(request, 'landing_page_form.html', {'form': form, 'profile': profile})
 
 # Edit an existing landing page
 @admin_required
 def landing_page_edit(request, pk):
+    profile = get_latest_profile()
     landing_page = get_object_or_404(LandingPage, pk=pk)
     if request.method == 'POST':
         form = LandingPageForm(request.POST, instance=landing_page)
@@ -3398,10 +3403,10 @@ def landing_page_edit(request, pk):
             return redirect('landing_page_list')
     else:
         form = LandingPageForm(instance=landing_page)
-    return render(request, 'landing_page_form.html', {'form': form})
+    return render(request, 'landing_page_form.html', {'form': form, 'profile': profile})
  
 
-CADDY_API_URL = "http://localhost:2019/config/apps/http/servers/srv0/routes"
+
 
 def add_domain_with_proxy(domain):
     """
