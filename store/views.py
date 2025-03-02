@@ -1484,6 +1484,9 @@ def index(request):
     landing_page = LandingPage.objects.filter(domain_name=domain, is_activated=True).first()
 
     if landing_page:
+        landing_page.visitor_count = models.F('visitor_count') + 1  # Increment without race condition
+        landing_page.save(update_fields=['visitor_count'])  # Save only the updated field
+
         context = {'landing_page': landing_page}
         response = render(request, 'landing_page.html', context)
         response.set_cookie('cartId', cart_id)

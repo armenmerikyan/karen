@@ -843,13 +843,14 @@ class Referral(models.Model):
 class LandingPage(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
-    goal = models.TextField()  # You can adjust the field type based on your needs
+    goal = models.TextField()
     domain_name = models.CharField(max_length=255, unique=True)
     is_activated = models.BooleanField(default=False)
-    is_docker = models.BooleanField(default=False)  # Indicates if Docker is used
-    docker_name = models.CharField(max_length=255, blank=True, null=True)  # Name of the Docker container
-    content = models.TextField(blank=True, null=True)  # Additional content related to Docker
-    docker_id = models.CharField(max_length=255, blank=True, null=True, unique=True)  # Unique ID for the Docker container
+    is_docker = models.BooleanField(default=False)
+    docker_name = models.CharField(max_length=255, blank=True, null=True)
+    content = models.TextField(blank=True, null=True)
+    docker_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
+    visitor_count = models.PositiveIntegerField(default=0)  # Track visitors
 
     def __str__(self):
         return self.name
