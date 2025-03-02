@@ -1478,6 +1478,16 @@ def index(request):
     cart_id = request.COOKIES.get('cartId')
     if cart_id is None:
         cart_id = generate_id()
+    
+    domain = request.get_host()
+    landing_page = LandingPage.objects.filter(domain_name=domain, is_activated=True).first()
+
+    if landing_page:
+        context = {'landing_page': landing_page}
+        response = render(request, 'landing_page.html', context)
+        response.set_cookie('cartId', cart_id)
+        return response
+            
 
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
