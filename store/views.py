@@ -3403,7 +3403,7 @@ def add_domain_with_proxy(domain):
     try:
         # Running the command to update hosts
         subprocess.run(
-            ['python', 'manage.py', 'update_hosts', domain, f'http://{domain}'],
+            ['python3', 'manage.py', 'update_hosts', domain, f'http://{domain}'],
             check=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
