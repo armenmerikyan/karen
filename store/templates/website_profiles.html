@@ -71,7 +71,6 @@
                   
                 <div class="form-group">
                     <label for="{{ form.about_us.id_for_label }}" class="form-label">About Us</label>
-                    <!-- Replace the form field with a textarea -->
                     <textarea id="{{ form.about_us.id_for_label }}" name="{{ form.about_us.name }}" class="form-control">{{ form.about_us.value }}</textarea>
                     <small class="form-text text-muted">{{ form.about_us.help_text }}</small>
                   </div>
@@ -82,8 +81,8 @@
                     ClassicEditor
                       .create(document.querySelector('#{{ form.about_us.id_for_label }}'), {
                         toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo'],
-                        height: 300, // Set the height of the editor
-                        removePlugins: ['Markdown'], // Remove unnecessary plugins
+                        height: 300,
+                        removePlugins: ['Markdown']
                       })
                       .catch(error => {
                         console.error(error);

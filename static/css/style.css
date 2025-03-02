@@ -247,3 +247,28 @@ a.terminal-green:hover {
   cursor: pointer;
   border-top: 1px solid #444;
 }
+
+
+  /* Custom Dark Mode Styles for CKEditor */
+  .ck.ck-editor {
+    color: #ffffff; /* Text color */
+  }
+  .ck.ck-editor__main .ck-content {
+    background-color: #1e1e1e; /* Editor background */
+    color: #ffffff; /* Text color */
+    border: 1px solid #444; /* Border color */
+  }
+  .ck.ck-toolbar {
+    background-color: #2d2d2d; /* Toolbar background */
+    border: 1px solid #444; /* Border color */
+  }
+  .ck.ck-button {
+    color: #ffffff; /* Button text color */
+  }
+  .ck.ck-button:not(.ck-disabled):hover {
+    background-color: #444; /* Button hover background */
+  }
+  .ck.ck-dropdown__panel {
+    background-color: #2d2d2d; /* Dropdown background */
+    border: 1px solid #444; /* Dropdown border */
+  }
