@@ -1505,8 +1505,19 @@ def index(request):
                 landing_page.save()  # Save the Docker container ID to the model
 
             # Route the traffic to the Docker container's port
-            docker_url = f'http://localhost:{landing_page.port}'
-            return HttpResponseRedirect(docker_url)  # Redirect to the container's URL
+            docker_url = f'http://localhost:{landing_page.port}{request.path}'  # Append the original path to the URL
+            headers = {'User-Agent': request.META.get('HTTP_USER_AGENT', '')}  # Forward the User-Agent header
+            try:
+                # Forward the request to the Docker container
+                response = requests.get(docker_url, headers=headers, cookies=request.COOKIES)
+
+                # Return the response from the container directly to the user
+                return HttpResponse(response.content, status=response.status_code, content_type=response.headers['Content-Type'])
+
+            except requests.RequestException as e:
+                # Handle request error (e.g., container is down or unreachable)
+                return HttpResponse(f"Error: Unable to proxy the request to the Docker container. {e}", status=500)
+
 
         else :    
             landing_page.visitor_count = models.F('visitor_count') + 1  # Increment without race condition
