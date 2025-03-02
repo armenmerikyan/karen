@@ -3400,11 +3400,16 @@ def add_domain_with_proxy(domain):
     :param domain: The domain to add (e.g., "newdomain.com").
     """
 
-    if domain not in settings.CSRF_TRUSTED_ORIGINS:
-        settings.CSRF_TRUSTED_ORIGINS.append(domain)
+ 
 
+    domain_with_scheme = f'https://{domain}'
+    if domain_with_scheme not in settings.CSRF_TRUSTED_ORIGINS:
+        settings.CSRF_TRUSTED_ORIGINS.append(domain_with_scheme)
+
+    # Add domain to ALLOWED_HOSTS without the scheme
     if domain not in settings.ALLOWED_HOSTS:
         settings.ALLOWED_HOSTS.append(domain)
+
 
     # Payload to add the domain and configure the reverse proxy
     payload = {

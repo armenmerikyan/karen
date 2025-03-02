@@ -21,9 +21,12 @@ class StoreConfig(AppConfig):
 
             # Add domains to CSRF_TRUSTED_ORIGINS and ALLOWED_HOSTS
             for domain in activated_domains:
-                if domain not in settings.CSRF_TRUSTED_ORIGINS:
-                    settings.CSRF_TRUSTED_ORIGINS.append(domain)
+                # Add https:// to the domain for CSRF_TRUSTED_ORIGINS
+                domain_with_scheme = f'https://{domain}'
+                if domain_with_scheme not in settings.CSRF_TRUSTED_ORIGINS:
+                    settings.CSRF_TRUSTED_ORIGINS.append(domain_with_scheme)
 
+                # Add domain to ALLOWED_HOSTS without the scheme
                 if domain not in settings.ALLOWED_HOSTS:
                     settings.ALLOWED_HOSTS.append(domain)
 
