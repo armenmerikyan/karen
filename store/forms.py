@@ -239,4 +239,4 @@ class TokenProfileForm(forms.ModelForm):
 class LandingPageForm(forms.ModelForm):
     class Meta:
         model = LandingPage
-        fields = ['name', 'description', 'goal', 'domain_name', 'is_activated']
+        fields = ['name', 'description', 'goal', 'domain_name', 'is_activated', 'is_docker', 'docker_name', 'content', 'docker_id']

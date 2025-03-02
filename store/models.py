@@ -846,6 +846,10 @@ class LandingPage(models.Model):
     goal = models.TextField()  # You can adjust the field type based on your needs
     domain_name = models.CharField(max_length=255, unique=True)
     is_activated = models.BooleanField(default=False)
-    
+    is_docker = models.BooleanField(default=False)  # Indicates if Docker is used
+    docker_name = models.CharField(max_length=255, blank=True, null=True)  # Name of the Docker container
+    content = models.TextField(blank=True, null=True)  # Additional content related to Docker
+    docker_id = models.CharField(max_length=255, blank=True, null=True, unique=True)  # Unique ID for the Docker container
+
     def __str__(self):
         return self.name
