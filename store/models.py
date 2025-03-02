@@ -532,6 +532,9 @@ class WebsiteProfile(models.Model):
         null=True
     )  
 
+    dockerhub_username = models.CharField(max_length=255, help_text="The DockerHub username.", blank=True, null=True)
+    dockerhub_password = models.CharField(max_length=255, help_text="The DockerHub password. Store securely!", blank=True, null=True)
+
     def __str__(self):
         return self.name
 
