@@ -255,7 +255,7 @@ a.terminal-green:hover {
   }
   .ck.ck-editor__main .ck-content {
     background-color: #1e1e1e; /* Editor background */
-    color: #ffffff; /* Text color for the content */
+    color: #000000; /* Text color for the content */
     border: 1px solid #444; /* Border color */
   }
   .ck.ck-toolbar {
