@@ -3508,9 +3508,12 @@ def add_domain_with_proxy(domain):
 
 @admin_required 
 def set_landing_page_active(request, pk):
+    profile = get_latest_profile()
     landing_page = get_object_or_404(LandingPage, pk=pk)
     add_domain_with_proxy(landing_page.domain_name)
- 
+    
+    client = docker.from_env()
+
     if landing_page.github:
         repo_name = landing_page.github.split('/')[-1]
         local_path = f"/tmp/{repo_name}"
@@ -3527,8 +3530,8 @@ def set_landing_page_active(request, pk):
         image_name = landing_page.docker_name
 
         # Authenticate & Pull if DockerHub credentials exist
-        if website_profile and website_profile.dockerhub_username and website_profile.dockerhub_password:
-            client.login(username=website_profile.dockerhub_username, password=website_profile.dockerhub_password)
+        if profile and profile.dockerhub_username and profile.dockerhub_password:
+            client.login(username=profile.dockerhub_username, password=profile.dockerhub_password)
             client.images.pull(image_name)
         else:
             # Build locally if no DockerHub credentials
