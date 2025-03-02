@@ -15,6 +15,7 @@
                         <th>Name</th>
                         <th>Domain</th>
                         <th>Visitors</th>
+                        <th>Docker</th>
                         <th>Port</th>
                         <th>Activated</th>
                         <th>Actions</th>
@@ -26,6 +27,7 @@
                             <td>{{ landing_page.name }}</td>
                             <td>{{ landing_page.domain_name }}</td>
                             <td>{{ landing_page.visitor_count }}</td>
+                            <td>{% if landing_page.is_docker %}Yes{% else %}No{% endif %}</td>
                             <td>{{ landing_page.port }}</td>
                             <td>{% if landing_page.is_activated %}Yes{% else %}No{% endif %}</td>
                             <td>
