@@ -855,6 +855,7 @@ class LandingPage(models.Model):
     docker_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
     visitor_count = models.PositiveIntegerField(default=0)  # Track visitors
     port = models.PositiveIntegerField(default=7500)
+    github = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.name
