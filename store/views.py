@@ -3387,3 +3387,10 @@ def landing_page_edit(request, pk):
     else:
         form = LandingPageForm(instance=landing_page)
     return render(request, 'landing_page_form.html', {'form': form})
+ 
+@admin_required 
+def set_landing_page_active(request, pk):
+    landing_page = get_object_or_404(LandingPage, pk=pk)
+    landing_page.is_activated = True
+    landing_page.save()
+    return redirect('landing_page_list')

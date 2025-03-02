@@ -212,6 +212,9 @@ urlpatterns = [
     path('landing_page_list/', views.landing_page_list, name='landing_page_list'),
     path('landing_page_create/', views.landing_page_create, name='landing_page_create'),
     path('landing_page_edit/<int:pk>/', views.landing_page_edit, name='landing_page_edit'),
+
+    path('landing_page_activate/<int:pk>/', views.set_landing_page_active, name='landing_page_activate'),
+
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
