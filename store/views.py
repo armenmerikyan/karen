@@ -227,6 +227,7 @@ from user_agents import parse
 import maxminddb 
 
 from .chatbot import reset_user_fields
+ 
 
 version = "00.00.06"
 logger = logging.getLogger(__name__)
@@ -3394,9 +3395,22 @@ CADDY_API_URL = "http://localhost:2019/config/apps/http/servers/srv0/routes"
 def add_domain_with_proxy(domain):
     """
     Add a new domain to Caddy and forward all requests to 127.0.0.1:8000.
-
+    
     :param domain: The domain to add (e.g., "newdomain.com").
     """
+    # Run the management command to update ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS
+    try:
+        # Running the command to update hosts
+        subprocess.run(
+            ['python', 'manage.py', 'update_hosts', domain, f'http://{domain}'],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        print(f"Domain {domain} added to ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS.")
+    except subprocess.CalledProcessError as e:
+        print(f"Error while updating hosts: {e.stderr.decode()}")
+
     # Payload to add the domain and configure the reverse proxy
     payload = {
         "@id": f"{domain.replace('.', '-')}",  # Unique ID for the route
