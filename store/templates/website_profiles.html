@@ -69,22 +69,15 @@
                 </div>
                 
                   
-                <style>
-                /* Style only the specific textarea for about_us */
-                textarea#{{ form.about_us.id_for_label }}.form-control {
-                    background-color: #1e1e1e; /* Dark background */
-                    color: #ffffff; /* White text */
-                    border: 1px solid #444; /* Dark border */
-                }
-                </style>
                 <div class="form-group">
-                  <label for="{{ form.about_us.id_for_label }}" class="form-label">About Us</label>
-                  <textarea id="{{ form.about_us.id_for_label }}" name="{{ form.about_us.name }}" class="form-control">{{ form.about_us.value }}</textarea>
-                  <small class="form-text text-muted">{{ form.about_us.help_text }}</small>
-                </div>
+                    <label for="{{ form.about_us.id_for_label }}" class="form-label">About Us</label>
+                    <!-- Textarea for CKEditor -->
+                    <textarea id="{{ form.about_us.id_for_label }}" name="{{ form.about_us.name }}" class="form-control">{{ form.about_us.value }}</textarea>
+                    <small class="form-text text-muted">{{ form.about_us.help_text }}</small>
+                  </div>
                   
                   <!-- Include CKEditor -->
-                  <script src="https://cdn.ckeditor.com/ckeditor5/35.3.2/classic/ckeditor.js"></script>
+                  <script src="https://cdn.ckeditor.com/ckeditor5/35.3.2/classic/ckeditor.js"></script> 
                   <script>
                     ClassicEditor
                       .create(document.querySelector('#{{ form.about_us.id_for_label }}'), {
@@ -96,7 +89,6 @@
                         console.error(error);
                       });
                   </script>
-                  
                   <div class="form-group">
                       <label for="{{ form.wallet.id_for_label }}" class="form-label">Solana Wallet</label>
                       {{ form.wallet|add_class:"form-control" }}
