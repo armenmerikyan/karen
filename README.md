@@ -193,7 +193,45 @@ Restart Nginx to apply changes:
 ```bash
 sudo systemctl restart nginx
 ```
+cady 
+```
+* {
+    root * /var/www/html
+    file_server
 
+    @media {
+        path /media/product_files/*
+    }
+    respond @media 403
+
+    reverse_proxy /solana_payment/* 127.0.0.1:8080 {
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+        header_up X-Forwarded-For {remote}
+        header_up X-CSRFToken {http.X-CSRFToken}
+        header_up X-CSRF-TOKEN {http.X-CSRF-TOKEN}
+        header_up X-Forwarded-Proto {scheme}
+        transport http {
+            read_timeout 600s
+            write_timeout 600s
+        }
+        body_size 1G
+    }
+
+    reverse_proxy / 127.0.0.1:8000 {
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+        header_up X-Forwarded-For {remote}
+        header_up X-CSRFToken {http.X-CSRFToken}
+        header_up X-CSRF-TOKEN {http.X-CSRF-TOKEN}
+        header_up X-Forwarded-Proto {scheme}
+        transport http {
+            read_timeout 600s
+            write_timeout 600s
+        }
+    }
+}
+```
 ## 2. Install SSL with Certbot
 
 Install Certbot and configure SSL for your domain:

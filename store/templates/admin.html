@@ -39,6 +39,15 @@
           <p>View and manage customer details and interactions.</p>
           <HR>
 
+            <a href="{% url 'landing_page_list' %}" class="nav-link">
+              <i class="fas fa-file-alt"></i> Landing Pages
+              <span class="badge bg-dark">{{ total_landing_pages }}</span> <!-- Black: Total landing pages -->
+              <span class="badge bg-success">{{ activated_landing_pages }}</span> <!-- Green: Activated landing pages -->
+            </a>                  
+            <p>View and manage your landing pages.</p>
+            
+          <HR>
+
 
             <a href="{% url 'question_answer_list' %}" class="nav-link">
               <i class="fas fa-question-circle"></i> Q&A

@@ -839,3 +839,13 @@ class Referral(models.Model):
     
     def __str__(self):
         return self.name
+
+class LandingPage(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField()
+    goal = models.TextField()  # You can adjust the field type based on your needs
+    domain_name = models.CharField(max_length=255, unique=True)
+    is_activated = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return self.name

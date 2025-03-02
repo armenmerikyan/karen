@@ -208,6 +208,10 @@ urlpatterns = [
 
     path('referrals/', views.referral_list, name='referral_list'),
 
+
+    path('landing_page_list/', views.landing_page_list, name='landing_page_list'),
+    path('landing_page_create/', views.landing_page_create, name='landing_page_create'),
+    path('landing_page_edit/<int:pk>/', views.landing_page_edit, name='landing_page_edit'),
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

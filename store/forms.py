@@ -19,6 +19,8 @@ from .models import GeneratedMessage
 from .models import PDFDocument 
 from .models import QuestionAnswer
 from .models import Referral
+from .models import LandingPage
+
 
 class ReferralForm(forms.ModelForm):
     usable_for_chatgpt = True  # Move this to class level
@@ -233,3 +235,8 @@ class TokenProfileForm(forms.ModelForm):
     class Meta:
         model = TokenProfile
         fields = ['name', 'description', 'image_uri', 'address', 'visible']
+
+class LandingPageForm(forms.ModelForm):
+    class Meta:
+        model = LandingPage
+        fields = ['name', 'description', 'goal', 'domain_name', 'is_activated']

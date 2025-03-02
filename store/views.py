@@ -107,7 +107,9 @@ from .models import QuestionAnswer
 from .models import Conversation, Message
 from .models import Visitor  
 from .models import Referral  
+from .models import LandingPage
 
+from .forms import LandingPageForm
 from .forms import SimpleQuestionForm
 from .forms import QuestionAnswerForm
 from .forms import CustomerPDFForm
@@ -3354,3 +3356,34 @@ def referral_list(request):
         return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
     referrals = Referral.objects.all()
     return render(request, 'referrals.html', {'referrals': referrals, 'profile': profile})
+
+# List all landing pages
+@admin_required
+def landing_page_list(request):
+    landing_pages = LandingPage.objects.all()
+    return render(request, 'landing_page_list.html', {'landing_pages': landing_pages})
+
+# Add a new landing page
+@admin_required
+def landing_page_create(request):
+    if request.method == 'POST':
+        form = LandingPageForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('landing_page_list')
+    else:
+        form = LandingPageForm()
+    return render(request, 'landing_page_form.html', {'form': form})
+
+# Edit an existing landing page
+@admin_required
+def landing_page_edit(request, pk):
+    landing_page = get_object_or_404(LandingPage, pk=pk)
+    if request.method == 'POST':
+        form = LandingPageForm(request.POST, instance=landing_page)
+        if form.is_valid():
+            form.save()
+            return redirect('landing_page_list')
+    else:
+        form = LandingPageForm(instance=landing_page)
+    return render(request, 'landing_page_form.html', {'form': form})
