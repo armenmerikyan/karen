@@ -45,6 +45,7 @@ pip install pdfminer.six
 pip install pdfrw
 pip install geoip2
 pip install user-agents
+pip install docker
 
 python3 manage.py makemigrations
 python3 manage.py migrate

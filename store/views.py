@@ -230,6 +230,8 @@ from .chatbot import reset_user_fields
  
 import subprocess
 
+import docker
+
 version = "00.00.06"
 logger = logging.getLogger(__name__)
 register = template.Library()
@@ -3474,6 +3476,21 @@ def add_domain_with_proxy(domain):
 def set_landing_page_active(request, pk):
     landing_page = get_object_or_404(LandingPage, pk=pk)
     add_domain_with_proxy(landing_page.domain_name)
+    if landing_page.is_docker :
+        client = docker.from_env()
+
+        # Pull the image from Docker Hub
+        image_name = landing_page.docker_name
+        client.images.pull(image_name)
+
+        # Run the container with port mapping
+        container = client.containers.run(image_name, ports={'80/tcp': landing_page.port}, detach=True)
+
+        # Print the container ID to confirm it's running
+        print(f"Container started with ID: {container.id}")
+        landing_page.docker_id = container.id
+
+
     landing_page.is_activated = True
     landing_page.save()
     return redirect('landing_page_list')

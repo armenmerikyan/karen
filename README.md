@@ -260,7 +260,15 @@ sudo ufw allow 80/tcp   # Allows HTTP traffic on port 80
 sudo ufw allow 443/tcp  # Allows HTTPS traffic on port 443
 sudo certbot --nginx -d YOURDOMANNAME.com -d www.YOURDOMANNAME.com --email info@YOURDOMANNAME.com
 ```
+## 2.5 Docker install 
+```bash 
+sudo apt update
 
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+```
 ## 3. Set Up Python Virtual Environment
 
 Install Python 3 and set up a virtual environment:
