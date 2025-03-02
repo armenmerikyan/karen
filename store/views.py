@@ -1486,13 +1486,36 @@ def index(request):
     landing_page = LandingPage.objects.filter(domain_name=domain, is_activated=True).first()
 
     if landing_page:
-        landing_page.visitor_count = models.F('visitor_count') + 1  # Increment without race condition
-        landing_page.save(update_fields=['visitor_count'])  # Save only the updated field
+        if landing_page.is_docker :
+            # Check if the Docker container is running and route traffic to it
+            client = docker.from_env()
 
-        context = {'landing_page': landing_page}
-        response = render(request, 'landing_page.html', context)
-        response.set_cookie('cartId', cart_id)
-        return response
+            # Check if the container is already running
+            try:
+                container = client.containers.get(landing_page.docker_id)
+            except docker.errors.NotFound:
+                # If the container isn't found, pull the image and run it
+                image_name = landing_page.docker_name
+                client.images.pull(image_name)  # Pull the image from Docker Hub
+                container = client.containers.run(image_name, 
+                                                ports={'80/tcp': landing_page.port}, 
+                                                detach=True)  # Run the container with port mapping
+
+                landing_page.docker_id = container.id
+                landing_page.save()  # Save the Docker container ID to the model
+
+            # Route the traffic to the Docker container's port
+            docker_url = f'http://localhost:{landing_page.port}'
+            return HttpResponseRedirect(docker_url)  # Redirect to the container's URL
+
+        else :    
+            landing_page.visitor_count = models.F('visitor_count') + 1  # Increment without race condition
+            landing_page.save(update_fields=['visitor_count'])  # Save only the updated field
+
+            context = {'landing_page': landing_page}
+            response = render(request, 'landing_page.html', context)
+            response.set_cookie('cartId', cart_id)
+            return response
             
 
     profile = WebsiteProfile.objects.order_by('-created_at').first()
