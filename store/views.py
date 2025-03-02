@@ -3389,6 +3389,8 @@ def landing_page_edit(request, pk):
     return render(request, 'landing_page_form.html', {'form': form})
  
 
+CADDY_API_URL = "http://localhost:2019/config/apps/http/servers/srv0/routes"
+
 def add_domain_with_proxy(domain):
     """
     Add a new domain to Caddy and forward all requests to 127.0.0.1:8000.
