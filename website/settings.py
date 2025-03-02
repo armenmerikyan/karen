@@ -127,6 +127,7 @@ MIDDLEWARE = [
 
     # Add AccountMiddleware from allauth
     'allauth.account.middleware.AccountMiddleware',
+    'store.middleware.DynamicAllowedHostsMiddleware',
 
  
 ]
