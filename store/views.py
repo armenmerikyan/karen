@@ -3510,21 +3510,31 @@ def add_domain_with_proxy(domain):
 def set_landing_page_active(request, pk):
     landing_page = get_object_or_404(LandingPage, pk=pk)
     add_domain_with_proxy(landing_page.domain_name)
-    if landing_page.is_docker :
-        client = docker.from_env()
+ 
+    if landing_page.github:
+        repo_name = landing_page.github.split('/')[-1]
+        local_path = f"/tmp/{repo_name}"
 
-        # Pull the image from Docker Hub
+        # Clone the repo if not already cloned
+        if not os.path.exists(local_path):
+            subprocess.run(["git", "clone", landing_page.github, local_path])
+
+        # Build the Docker image
+        image_name = landing_page.docker_name or f"{repo_name.lower()}_image"
+        client.images.build(path=local_path, tag=image_name)
+
+    elif landing_page.is_docker:
         image_name = landing_page.docker_name
-        client.images.pull(image_name)
 
-        # Run the container with port mapping
-        container = client.containers.run(image_name, ports={'80/tcp': landing_page.port}, detach=True)
-
-        # Print the container ID to confirm it's running
-        print(f"Container started with ID: {container.id}")
-        landing_page.docker_id = container.id
-
-
+        # Authenticate & Pull if DockerHub credentials exist
+        if website_profile and website_profile.dockerhub_username and website_profile.dockerhub_password:
+            client.login(username=website_profile.dockerhub_username, password=website_profile.dockerhub_password)
+            client.images.pull(image_name)
+        else:
+            # Build locally if no DockerHub credentials
+            client.images.build(path=".", tag=image_name)
+    container = client.containers.run(image_name, ports={'80/tcp': landing_page.port}, detach=True)
+    landing_page.docker_id = container.id 
     landing_page.is_activated = True
     landing_page.save()
     return redirect('landing_page_list')
