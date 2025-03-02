@@ -150,7 +150,9 @@ Configure Nginx for the project:
 ```bash
 sudo vi /etc/nginx/sites-available/default
 ```
+
 ```default
+
 server {
 	listen 80 default_server;
 	listen [::]:80 default_server;
@@ -193,44 +195,60 @@ Restart Nginx to apply changes:
 ```bash
 sudo systemctl restart nginx
 ```
-cady 
-```
-* {
-    root * /var/www/html
-    file_server
 
+## caddy
+
+```caddy
+
+# The Caddyfile is an easy way to configure your Caddy web server.
+#
+# Unless the file starts with a global options block, the first
+# uncommented line is always the address of your site.
+#
+# To use your own domain name (with automatic HTTPS), first make
+# sure your domain's A/AAAA DNS records are properly pointed to
+# this machine's public IP, then replace ":80" below with your
+gigahard.ai, *.gigahard.ai {
+    # Block access to /media/product_files/*
     @media {
         path /media/product_files/*
     }
     respond @media 403
 
-    reverse_proxy /solana_payment/* 127.0.0.1:8080 {
-        header_up Host {host}
-        header_up X-Real-IP {remote}
-        header_up X-Forwarded-For {remote}
-        header_up X-CSRFToken {http.X-CSRFToken}
-        header_up X-CSRF-TOKEN {http.X-CSRF-TOKEN}
-        header_up X-Forwarded-Proto {scheme}
-        transport http {
-            read_timeout 600s
-            write_timeout 600s
-        }
-        body_size 1G
+    # Set maximum request body size to 1G
+    request_body {
+        max_size 1G
     }
 
-    reverse_proxy / 127.0.0.1:8000 {
-        header_up Host {host}
-        header_up X-Real-IP {remote}
-        header_up X-Forwarded-For {remote}
-        header_up X-CSRFToken {http.X-CSRFToken}
-        header_up X-CSRF-TOKEN {http.X-CSRF-TOKEN}
-        header_up X-Forwarded-Proto {scheme}
-        transport http {
-            read_timeout 600s
-            write_timeout 600s
+    # Reverse proxy for /solana_payment/*
+    handle /solana_payment/* {
+        reverse_proxy 127.0.0.1:8080 {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-CSRFToken {http.X-CSRFToken}
+            header_up X-CSRF-TOKEN {http.X-CSRF-TOKEN}
+            transport http {
+                read_timeout 600s
+                write_timeout 600s
+            }
+        }
+    }
+
+    # Reverse proxy for all other requests (Django)
+    handle /* {
+        reverse_proxy 127.0.0.1:8000 {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-CSRFToken {http.X-CSRFToken}
+            header_up X-CSRF-TOKEN {http.X-CSRF-TOKEN}
+            transport http {
+                read_timeout 600s
+                write_timeout 600s
+            }
         }
     }
 }
+# domain name.# this machine's public IP, then replace ":80" below with your
 ```
 ## 2. Install SSL with Certbot
 
