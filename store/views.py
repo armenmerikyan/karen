@@ -3445,68 +3445,6 @@ def landing_page_edit(request, pk):
         form = LandingPageForm(instance=landing_page)
     return render(request, 'landing_page_form.html', {'form': form, 'profile': profile})
  
-
-
-'''
-def add_domain_with_proxy(domain):
-    """
-    Add a new domain to Caddy and forward all requests to 127.0.0.1:8000.
-    
-    :param domain: The domain to add (e.g., "newdomain.com").
-    """
-
- 
-
-    domain_with_scheme = f'https://{domain}'
-    if domain_with_scheme not in settings.CSRF_TRUSTED_ORIGINS:
-        settings.CSRF_TRUSTED_ORIGINS.append(domain_with_scheme)
-
-    # Add domain to ALLOWED_HOSTS without the scheme
-    if domain not in settings.ALLOWED_HOSTS:
-        settings.ALLOWED_HOSTS.append(domain)
-
-
-    # Payload to add the domain and configure the reverse proxy
-    payload = {
-        "@id": f"{domain.replace('.', '-')}",  # Unique ID for the route
-        "match": [{
-            "host": [domain]  # Match requests for this domain
-        }],
-        "handle": [{
-            "handler": "reverse_proxy",
-            "upstreams": [{
-                "dial": "127.0.0.1:8000"  # Backend server to forward requests to
-            }],
-            "headers": {
-                "request": {
-                    "set": {
-                        "Host": ["{http.request.host}"],
-                        "X-Real-IP": ["{http.request.remote}"],
-                        "X-CSRFToken": ["{http.request.header.X-CSRFToken}"],
-                        "X-CSRF-TOKEN": ["{http.request.header.X-CSRF-TOKEN}"]
-                    }
-                }
-            },
-            "transport": {
-                "protocol": "http",
-                "read_timeout": "600s",
-                "write_timeout": "600s"
-            }
-        }]
-    }
-
-    try:
-        # Send the request to the Caddy API
-        response = requests.post(CADDY_API_URL, json=payload)
-
-        # Check the response
-        if response.status_code == 200:
-            print(f"Domain {domain} added successfully!")
-        else:
-            print(f"Failed to add domain {domain}: {response.text}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-'''
 def remove_domain_proxy(domain):
     """
     Remove the proxy configuration for the given domain from Caddy.
@@ -3525,13 +3463,15 @@ def remove_domain_proxy(domain):
         
         # Parse the response to get the current configuration
         config = response.json()
-        print("Current Caddy configuration:", config)  # Debugging
+        print("Full Caddy configuration:", config)  # Debugging: Print entire response to inspect
 
-        # Access the routes directly as a list
+        # Try to access the routes directly as a list
         routes = config.get('apps', {}).get('http', {}).get('servers', {}).get('srv0', {}).get('routes', [])
-
-        # Check if routes is indeed a list
+        
+        # Check if the 'routes' is a list and print it for debugging
         if isinstance(routes, list):
+            print("Current routes:", routes)  # Debugging: Print the routes list
+
             # Filter out routes matching the domain_id
             updated_routes = [route for route in routes if route.get("@id") != domain_id]
 
