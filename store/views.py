@@ -236,7 +236,6 @@ version = "00.00.06"
 logger = logging.getLogger(__name__)
 register = template.Library()
 CADDY_API_URL = "http://localhost:2019/config/apps/http/servers/srv0/routes"
-CADDY_API_HTTP_URL = "http://localhost:2019/config/apps/http"
 
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -3446,6 +3445,7 @@ def landing_page_edit(request, pk):
     return render(request, 'landing_page_form.html', {'form': form, 'profile': profile})
  
 CADDY_API_URL_CONFIG = "http://localhost:2019/config"  # Update with your Caddy API URL
+CADDY_API_HTTP_URL = "http://localhost:2019/config/apps/http"
 
 def remove_domain_proxy(domain):
     """
@@ -3467,7 +3467,7 @@ def remove_domain_proxy(domain):
         config = response.json()
         print("Full Caddy configuration:", config)  # Debugging: Print entire response to inspect
 
-        # Access the routes directly
+        # Access the existing 'http' routes configuration
         apps = config.get('apps', {})
         http = apps.get('http', {})
         servers = http.get('servers', {})
