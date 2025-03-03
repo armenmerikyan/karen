@@ -3523,21 +3523,22 @@ def remove_domain_proxy(domain):
             print(f"Failed to fetch current routes configuration: {response.text}")
             return
         
-        # Parse the response to get the current routes
-        routes = response.json()
-        print("Current routes configuration:", routes)  # Debugging
+        # Parse the response to get the current configuration
+        config = response.json()
+        print("Current Caddy configuration:", config)  # Debugging
 
         # Filter out routes matching the domain_id
-        updated_routes = [route for route in routes if route.get("@id") != domain_id]
+        updated_routes = [
+            route for route in config.get('apps', {}).get('http', {}).get('servers', {}).get('srv0', {}).get('routes', [])
+            if route.get("@id") != domain_id
+        ]
 
-        if len(updated_routes) < len(routes):
-            # Prepare the payload with the updated configuration
-            updated_config = {
-                "routes": updated_routes  # Only modify the 'routes' field
-            }
+        # If the routes have been updated, prepare the updated configuration
+        if len(updated_routes) < len(config.get('apps', {}).get('http', {}).get('servers', {}).get('srv0', {}).get('routes', [])):
+            config['apps']['http']['servers']['srv0']['routes'] = updated_routes
 
-            # Send the updated configuration to Caddy
-            update_response = requests.put(CADDY_API_URL, json=updated_config)
+            # Send the updated configuration back to Caddy
+            update_response = requests.put(CADDY_API_URL, json=config)
 
             if update_response.status_code == 200:
                 print(f"Proxy configuration for domain {domain} removed successfully!")
