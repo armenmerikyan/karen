@@ -3524,9 +3524,9 @@ def add_domain_with_proxy(domain, port):
         }],
         "handle": [{
             "handler": "reverse_proxy",
-            "upstreams": [{
+            "upstreams": {
                 "dial": f"127.0.0.1:{port}"  # Backend server to forward requests to
-            }],
+            },
             "headers": {
                 "request": {
                     "set": {
