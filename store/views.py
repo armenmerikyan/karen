@@ -3556,28 +3556,37 @@ def add_domain_with_proxy(domain, port):
 
 def add_domain_with_proxy(domain, port):
     """
-    Add a new domain to Caddy and forward all requests to 127.0.0.1:<port> using HTTP.
-    Optionally, include a note for reference.
-    
+    Add a new domain to Caddy and forward all requests to 127.0.0.1:port using HTTP.
+    If the domain already exists, it will be deleted first.
+
     :param domain: The domain to add (e.g., "newdomain.com").
-    :param port: The port where the backend server is running.
-    :param note: Optional note describing the purpose of the domain.
+    :param port: The port to forward requests to.
     """
-    domain_with_scheme = f'http://{domain}'  # Use HTTP instead of HTTPS
-    if domain_with_scheme not in settings.CSRF_TRUSTED_ORIGINS:
-        settings.CSRF_TRUSTED_ORIGINS.append(domain_with_scheme)
 
-    # Add domain to ALLOWED_HOSTS without the scheme
-    if domain not in settings.ALLOWED_HOSTS:
-        settings.ALLOWED_HOSTS.append(domain)
+    # Normalize domain ID for Caddy
+    domain_id = domain.replace('.', '-')
 
-    # Payload to add the domain and configure the reverse proxy
+    # Step 1: Get current routes to find existing entry
+    routes_response = requests.get(CADDY_API_URL)
+    
+    if routes_response.status_code == 200:
+        routes = routes_response.json()
+        
+        # Find the index of the existing route
+        for index, route in enumerate(routes):
+            if route.get("@id") == domain_id:
+                # Step 2: Delete the existing route by index
+                delete_url = f"{CADDY_API_URL}/{index}"
+                requests.delete(delete_url)
+                break
+
+    # Step 3: Create new route payload
     payload = {
-        "@id": f"{domain.replace('.', '-')}",  # Unique ID for the route
-        "match": [{"host": [domain]}],  # Match requests for this domain
+        "@id": domain_id,
+        "match": [{"host": [domain]}],
         "handle": [{
             "handler": "reverse_proxy",
-            "upstreams": [{"dial": f"127.0.0.1:{port}"}],  # Backend server to forward requests to
+            "upstreams": [{"dial": f"127.0.0.1:{port}"}],
             "headers": {
                 "request": {
                     "set": {
@@ -3596,18 +3605,13 @@ def add_domain_with_proxy(domain, port):
         }]
     }
 
-    try:
-        # Send the request to the Caddy API
-        #response = requests.post(f"{CADDY_API_URL}/config/apps/http/servers/myserver/routes/...", json=payload)
-        response = requests.post(f"{CADDY_API_URL}/config/apps/http/servers/srv0/routes", json=payload)
+    # Step 4: Add new route
+    response = requests.post(f"{CADDY_API_URL}/...", json=[payload])
 
-        # Check the response
-        if response.status_code == 200:
-            print(f"Domain {domain} added successfully!")
-        else:
-            print(f"Failed to add domain {domain}: {response.text}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    if response.status_code == 200:
+        print(f"Domain {domain} added successfully!")
+    else:
+        print(f"Failed to add domain {domain}: {response.text}")
 
 @admin_required 
 def set_landing_page_active(request, pk):
