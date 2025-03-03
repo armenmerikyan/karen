@@ -108,6 +108,7 @@ from .models import Conversation, Message
 from .models import Visitor  
 from .models import Referral  
 from .models import LandingPage
+from .models import FormSubmission
 
 from .forms import LandingPageForm
 from .forms import SimpleQuestionForm
@@ -3735,3 +3736,10 @@ def submit_form(request):
 
     # Return a JSON response indicating the form was submitted successfully
     return JsonResponse({'message': 'Form submitted successfully'})  
+
+
+
+@admin_required 
+def submission_list(request):
+    submissions = FormSubmission.objects.all().order_by('-created_at')
+    return render(request, 'submissions.html', {'submissions': submissions})
