@@ -3522,7 +3522,7 @@ def delete_matching_routes(domain):
                     print(f"Failed to delete route for domain {domain}: {delete_response.text}")
     else:
         print(f"Failed to fetch routes: {routes_response.text}")
-
+'''
 def add_domain_with_proxy(domain, port):
     """
     Add a new domain to Caddy and forward all requests to 127.0.0.1:port using HTTP.
@@ -3577,7 +3577,7 @@ def add_domain_with_proxy(domain, port):
         print(f"Domain {domain} added successfully!")
     else:
         print(f"Failed to add domain {domain}: {response.text}")
-
+'''
 '''
 def add_domain_with_proxy(domain, port):
     """
@@ -3669,6 +3669,99 @@ def add_domain_with_proxy(domain, port):
         print("Contact route:", contact_resp.text)
         print("Default route:", default_resp.text)
 '''
+
+def add_domain_with_proxy(domain, port):
+    """
+    Add two routes for the domain to Caddy:
+    1. A route that matches requests with URL paths starting with '/contact_us_api'
+       (and the specified host) and forwards them to 127.0.0.1:8000.
+    2. A default route that matches the specified host and all paths (/**) and forwards
+       them to 127.0.0.1:port.
+    
+    If the domain already exists, it will be deleted first.
+
+    :param domain: The domain to add (e.g., "newdomain.com").
+    :param port: The port to forward requests to for non-'contact_us_api' traffic.
+    """
+    # Step 1: Delete any existing matching routes
+    delete_matching_routes(domain)
+
+    # Add domain to CSRF trusted origins and ALLOWED_HOSTS
+    domain_with_scheme = f'http://{domain}'
+    if domain_with_scheme not in settings.CSRF_TRUSTED_ORIGINS:
+        settings.CSRF_TRUSTED_ORIGINS.append(domain_with_scheme)
+    if domain not in settings.ALLOWED_HOSTS:
+        settings.ALLOWED_HOSTS.append(domain)
+
+    # Normalize domain ID for route IDs
+    domain_id = domain.replace('.', '-')
+
+    # Route 1: For /contact_us_api paths
+    contact_route = {
+        "@id": f"{domain_id}-contact",
+        "match": [
+            {"host": [domain]},
+            {"path": ["/contact_us_api/**"]}
+        ],
+        "handle": [{
+            "handler": "reverse_proxy",
+            "upstreams": [{"dial": "127.0.0.1:8000"}],
+            "headers": {
+                "request": {
+                    "set": {
+                        "Host": ["{http.request.host}"],
+                        "X-Real-IP": ["{http.request.remote}"],
+                        "X-CSRFToken": ["{http.request.header.X-CSRFToken}"],
+                        "X-CSRF-TOKEN": ["{http.request.header.X-CSRF-TOKEN}"]
+                    }
+                }
+            },
+            "transport": {
+                "protocol": "http",
+                "read_timeout": "600s",
+                "write_timeout": "600s"
+            }
+        }]
+    }
+
+    # Route 2: Default route for all other requests
+    default_route = {
+        "@id": f"{domain_id}-default",
+        "match": [
+            {"host": [domain]},
+            {"path": ["/**"]}  # Catch-all path match for all traffic
+        ],
+        "handle": [{
+            "handler": "reverse_proxy",
+            "upstreams": [{"dial": f"127.0.0.1:{port}"}],
+            "headers": {
+                "request": {
+                    "set": {
+                        "Host": ["{http.request.host}"],
+                        "X-Real-IP": ["{http.request.remote}"],
+                        "X-CSRFToken": ["{http.request.header.X-CSRFToken}"],
+                        "X-CSRF-TOKEN": ["{http.request.header.X-CSRF-TOKEN}"]
+                    }
+                }
+            },
+            "transport": {
+                "protocol": "http",
+                "read_timeout": "600s",
+                "write_timeout": "600s"
+            }
+        }]
+    }
+
+    # Step 3: Add new routes by posting them separately
+    contact_resp = requests.post(CADDY_API_URL, json=contact_route)
+    default_resp = requests.post(CADDY_API_URL, json=default_route)
+
+    if contact_resp.status_code == 200 and default_resp.status_code == 200:
+        print(f"Domain {domain} added successfully!")
+    else:
+        print("Failed to add domain routes:")
+        print("Contact route:", contact_resp.text)
+        print("Default route:", default_resp.text)
 
 @admin_required 
 def set_landing_page_active(request, pk):
