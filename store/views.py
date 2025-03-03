@@ -3502,7 +3502,6 @@ def remove_domain_proxy(domain):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-
 def add_domain_with_proxy(domain, port):
     """
     Add a new domain to Caddy and forward all requests to 127.0.0.1:8000 using HTTP.
