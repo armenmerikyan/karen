@@ -3447,7 +3447,7 @@ def landing_page_edit(request, pk):
 
 
 
-def add_domain_with_proxy(landing_page):
+def add_domain_with_proxy(domain):
     """
     Add a new domain to Caddy and forward all requests to 127.0.0.1:8000.
     
@@ -3456,25 +3456,25 @@ def add_domain_with_proxy(landing_page):
 
  
 
-    domain_with_scheme = f'https://{landing_page.domain_name}'
+    domain_with_scheme = f'https://{domain}'
     if domain_with_scheme not in settings.CSRF_TRUSTED_ORIGINS:
         settings.CSRF_TRUSTED_ORIGINS.append(domain_with_scheme)
 
     # Add domain to ALLOWED_HOSTS without the scheme
-    if landing_page.domain_name not in settings.ALLOWED_HOSTS:
-        settings.ALLOWED_HOSTS.append(landing_page.domain_name)
+    if domain not in settings.ALLOWED_HOSTS:
+        settings.ALLOWED_HOSTS.append(domain)
 
-    dial = f"127.0.0.1:{landing_page.port}" 
+
     # Payload to add the domain and configure the reverse proxy
     payload = {
-        "@id": f"{landing_page.domain_name.replace('.', '-')}",  # Unique ID for the route
+        "@id": f"{domain.replace('.', '-')}",  # Unique ID for the route
         "match": [{
-            "host": [landing_page.domain_name]  # Match requests for this domain
+            "host": [domain]  # Match requests for this domain
         }],
         "handle": [{
             "handler": "reverse_proxy",
             "upstreams": [{
-                "dial": dial  # Backend server to forward requests to
+                "dial": "127.0.0.1:8000"  # Backend server to forward requests to
             }],
             "headers": {
                 "request": {
@@ -3500,17 +3500,16 @@ def add_domain_with_proxy(landing_page):
 
         # Check the response
         if response.status_code == 200:
-            print(f"Domain {landing_page.domain_name} added successfully!")
+            print(f"Domain {domain} added successfully!")
         else:
-            print(f"Failed to add domain {landing_page.domain_name}: {response.text}")
+            print(f"Failed to add domain {domain}: {response.text}")
     except Exception as e:
         print(f"An error occurred: {e}")
 
 @admin_required 
 def set_landing_page_active(request, pk):
     landing_page = get_object_or_404(LandingPage, pk=pk)
-    add_domain_with_proxy(landing_page)
-
+    add_domain_with_proxy(landing_page.domain_name)
     if landing_page.is_docker :
         client = docker.from_env()
 
@@ -3524,7 +3523,7 @@ def set_landing_page_active(request, pk):
         # Print the container ID to confirm it's running
         print(f"Container started with ID: {container.id}")
         landing_page.docker_id = container.id
- 
+
     landing_page.is_activated = True
     landing_page.save()
     return redirect('landing_page_list')
