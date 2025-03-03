@@ -3533,7 +3533,7 @@ def remove_domain_proxy(domain):
         # Check if any routes were removed
         if len(updated_routes) < len(routes):
             # Prepare the payload with the correct structure
-            payload = {"@id": "routes", "routes": updated_routes}
+            payload = updated_routes  # Send the updated routes array directly
 
             # Send the updated routes back to Caddy
             update_response = requests.put(CADDY_API_URL, json=payload)
