@@ -3514,19 +3514,7 @@ def set_landing_page_active(request, pk):
     
     client = docker.from_env()
 
-    if landing_page.github:
-        repo_name = landing_page.github.split('/')[-1]
-        local_path = f"/tmp/{repo_name}"
-
-        # Clone the repo if not already cloned
-        if not os.path.exists(local_path):
-            subprocess.run(["git", "clone", landing_page.github, local_path])
-
-        # Build the Docker image
-        image_name = landing_page.docker_name or f"{repo_name.lower()}_image"
-        client.images.build(path=local_path, tag=image_name)
-
-    elif landing_page.is_docker:
+    if landing_page.is_docker:
         image_name = landing_page.docker_name
 
         # Authenticate & Pull if DockerHub credentials exist
@@ -3536,10 +3524,13 @@ def set_landing_page_active(request, pk):
         else:
             # Build locally if no DockerHub credentials
             client.images.build(path=".", tag=image_name)
-    container = client.containers.run(image_name, ports={'80/tcp': landing_page.port}, detach=True)
-    landing_page.docker_id = container.id 
+
+        container = client.containers.run(image_name, ports={'80/tcp': landing_page.port}, detach=True)
+        landing_page.docker_id = container.id 
+        
     landing_page.is_activated = True
     landing_page.save()
+
     return redirect('landing_page_list')
 
 
