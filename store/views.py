@@ -3517,44 +3517,50 @@ def remove_domain_proxy(domain):
 
     try:
         # Get the current Caddy configuration for the HTTP app
-        response = requests.get(f"{CADDY_API_HTTP_URL}")
+        response = requests.get(f"{CADDY_API_HTTP_URL}/config")
 
         if response.status_code != 200:
             print(f"Failed to fetch current configuration: {response.text}")
             return
         
-        # Print the response to understand its structure
-        print("Caddy Configuration Response:", response.json())
-
-        # Assuming the response structure includes a 'servers' key
+        # Parse the response to check the current configuration
         config = response.json()
 
-        # Check the structure of the response
+        # Ensure the configuration has the expected structure
         if 'http' not in config or 'servers' not in config['http']:
             print("Unexpected configuration structure:", config)
             return
 
-        # Find and remove the domain's proxy from the configuration
-        updated_routes = []
-        servers = config['http'].get('servers', {})
+        # Flag to track if any updates were made
+        updated_config = False
+        
+        # Process each server in the configuration
+        servers = config['http']['servers']
         for server, server_config in servers.items():
             routes = server_config.get("routes", [])
+            updated_routes = []
             
-            # Filter out the route with the matching domain_id
+            # Filter out routes matching the domain_id
             for route in routes:
                 if route.get("@id") != domain_id:
                     updated_routes.append(route)
+                else:
+                    updated_config = True  # Mark that we've found and removed a route
+            
+            # Update the routes if necessary
+            if updated_routes != routes:
+                server_config["routes"] = updated_routes
+        
+        if updated_config:
+            # Send the updated configuration back to Caddy
+            update_response = requests.put(f"{CADDY_API_HTTP_URL}/config", json=config)
 
-            # Update the routes in the server configuration
-            server_config["routes"] = updated_routes
-
-        # Send the updated configuration back to Caddy
-        update_response = requests.put(f"{CADDY_API_HTTP_URL}/config", json=config)
-
-        if update_response.status_code == 200:
-            print(f"Proxy configuration for domain {domain} removed successfully!")
+            if update_response.status_code == 200:
+                print(f"Proxy configuration for domain {domain} removed successfully!")
+            else:
+                print(f"Failed to update Caddy configuration: {update_response.text}")
         else:
-            print(f"Failed to update Caddy configuration: {update_response.text}")
+            print(f"No proxy configuration found for domain {domain}.")
 
     except Exception as e:
         print(f"An error occurred: {e}")
