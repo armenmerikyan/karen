@@ -3457,7 +3457,7 @@ def remove_domain_proxy(domain):
 
     try:
         # Get the current routes configuration
-        response = requests.get(CADDY_API_URL)
+        response = requests.get(CADDY_API_URL_CONFIG)
 
         if response.status_code != 200:
             print(f"Failed to fetch current routes configuration: {response.text}")
