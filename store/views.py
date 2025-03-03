@@ -3590,6 +3590,14 @@ def add_domain_with_proxy(domain, port):
     # Step 1: Delete any existing matching routes
     delete_matching_routes(domain)
 
+    domain_with_scheme = f'http://{domain}'  # Use HTTP instead of HTTPS
+    if domain_with_scheme not in settings.CSRF_TRUSTED_ORIGINS:
+        settings.CSRF_TRUSTED_ORIGINS.append(domain_with_scheme)
+
+    # Add domain to ALLOWED_HOSTS without the scheme
+    if domain not in settings.ALLOWED_HOSTS:
+        settings.ALLOWED_HOSTS.append(domain)
+
     # Normalize domain ID for Caddy
     domain_id = domain.replace('.', '-')
 
