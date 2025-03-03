@@ -3582,8 +3582,8 @@ def add_domain_with_proxy(domain, port):
     Add a new domain to Caddy and forward requests to 127.0.0.1 using HTTP.
     
     Two rules are created:
-    1. A default rule that forwards all traffic for the given domain to the original port.
-    2. A rule that matches URL paths starting with '/contact_us_api' and forwards them to port 8000.
+    1. A rule that matches URL paths starting with '/contact_us_api' and forwards them to port 8000.
+    2. A default rule that forwards all traffic for the given domain to the original port.
     
     If the domain already exists, it will be deleted first.
 
@@ -3611,7 +3611,7 @@ def add_domain_with_proxy(domain, port):
         "handle": [
             {
                 # This handle matches requests with a path starting with /contact_us_api
-                "match": [{"path": ["/contact_us_api/*"]}],
+                "match": [{"path": ["/contact_us_api*"]}],
                 "handler": "reverse_proxy",
                 "upstreams": [{"dial": "127.0.0.1:8000"}],
                 "headers": {
