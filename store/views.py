@@ -3610,7 +3610,7 @@ def add_domain_with_proxy(domain, port):
         "@id": f"{domain_id}-contact",
         "match": [
             {"host": [domain]},
-            {"path": ["/contact_us_api/**"]}
+            {"path": ["/contact_us_api/"]}
         ],
         "handle": [{
             "handler": "reverse_proxy",
