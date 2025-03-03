@@ -3508,29 +3508,25 @@ def add_domain_with_proxy(domain):
 
 @admin_required 
 def set_landing_page_active(request, pk):
-    profile = get_latest_profile()
     landing_page = get_object_or_404(LandingPage, pk=pk)
     add_domain_with_proxy(landing_page.domain_name)
     
-    client = docker.from_env()
+    if landing_page.is_docker :
+        client = docker.from_env()
 
-    if landing_page.is_docker:
+        # Pull the image from Docker Hub
         image_name = landing_page.docker_name
+        client.images.pull(image_name)
 
-        # Authenticate & Pull if DockerHub credentials exist
-        if profile and profile.dockerhub_username and profile.dockerhub_password:
-            client.login(username=profile.dockerhub_username, password=profile.dockerhub_password)
-            client.images.pull(image_name)
-        else:
-            # Build locally if no DockerHub credentials
-            client.images.build(path=".", tag=image_name)
-
+        # Run the container with port mapping
         container = client.containers.run(image_name, ports={'80/tcp': landing_page.port}, detach=True)
-        landing_page.docker_id = container.id 
-        
+
+        # Print the container ID to confirm it's running
+        print(f"Container started with ID: {container.id}")
+        landing_page.docker_id = container.id
+ 
     landing_page.is_activated = True
     landing_page.save()
-
     return redirect('landing_page_list')
 
 
