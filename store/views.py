@@ -3445,6 +3445,8 @@ def landing_page_edit(request, pk):
         form = LandingPageForm(instance=landing_page)
     return render(request, 'landing_page_form.html', {'form': form, 'profile': profile})
  
+CADDY_API_URL_CONFIG = "http://localhost:2019/config"  # Update with your Caddy API URL
+
 def remove_domain_proxy(domain):
     """
     Remove the proxy configuration for the given domain from Caddy.
@@ -3455,7 +3457,7 @@ def remove_domain_proxy(domain):
 
     try:
         # Get the current routes configuration
-        response = requests.get(CADDY_API_URL)
+        response = requests.get(CADDY_API_URL_CONFIG)
 
         if response.status_code != 200:
             print(f"Failed to fetch current routes configuration: {response.text}")
@@ -3465,15 +3467,24 @@ def remove_domain_proxy(domain):
         config = response.json()
         print("Full Caddy configuration:", config)  # Debugging: Print entire response to inspect
 
-        # Try to access the routes directly as a list
-        routes = config.get('apps', {}).get('http', {}).get('servers', {}).get('srv0', {}).get('routes', [])
-        
+        # Try to access the routes configuration safely
+        apps = config.get('apps', {})
+        http = apps.get('http', {})
+        servers = http.get('servers', {})
+        srv0 = servers.get('srv0', {})
+        routes = srv0.get('routes', [])
+
         # Check if the 'routes' is a list and print it for debugging
         if isinstance(routes, list):
             print("Current routes:", routes)  # Debugging: Print the routes list
 
             # Filter out routes matching the domain_id
-            updated_routes = [route for route in routes if route.get("@id") != domain_id]
+            updated_routes = []
+            for route in routes:
+                if isinstance(route, dict):
+                    route_id = route.get('@id')
+                    if route_id != domain_id:
+                        updated_routes.append(route)
 
             # If the routes have been updated, prepare the updated configuration
             if len(updated_routes) < len(routes):
