@@ -3736,3 +3736,9 @@ def submit_form(request):
 
     # Return a JSON response indicating the form was submitted successfully
     return JsonResponse({'message': 'Form submitted successfully'})
+
+@admin_required
+def submission_list(request):
+    # Retrieve all form submissions, ordered by most recent
+    submissions = FormSubmission.objects.all().order_by('-created_at')
+    return render(request, 'submissions.html', {'submissions': submissions})

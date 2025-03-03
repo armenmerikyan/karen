@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">
+          <h1>Form Submissions</h1>
+          {% if submissions %}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Domain</th>
+                  <th>Data</th>
+                  <th>Processed</th>
+                  <th>Source IP</th>
+                  <th>Created At</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for submission in submissions %}
+                  <tr>
+                    <td>{{ submission.pk }}</td>
+                    <td>{{ submission.domain }}</td>
+                    <td>
+                      {# Use a custom filter 'jsonify' to render the JSON data nicely, or simply output raw #}
+                      {{ submission.data|jsonify }}
+                    </td>
+                    <td>{{ submission.is_processed }}</td>
+                    <td>{{ submission.source_ip }}</td>
+                    <td>{{ submission.created_at }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <p>No submissions found.</p>
+          {% endif %}
+        </div>
+      </div>      
+    </div>
+  </div>
+</section>    
+{% endblock %}

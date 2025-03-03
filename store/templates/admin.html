@@ -38,7 +38,13 @@
           </a>                  
           <p>View and manage customer details and interactions.</p>
           <HR>
-
+            <a href="{% url 'submission_list' %}" class="nav-link">
+              <i class="fas fa-envelope"></i> Form Submissions
+              <span class="badge bg-dark">{{ total_submissions }}</span> <!-- Total count -->
+            </a>
+            <p>View and manage form submissions details and interactions.</p>
+            <hr>
+            
             <a href="{% url 'landing_page_list' %}" class="nav-link">
               <i class="fas fa-file-alt"></i> Landing Pages
               <span class="badge bg-dark">{{ total_landing_pages }}</span> <!-- Black: Total landing pages -->
