@@ -3532,11 +3532,13 @@ def remove_domain_proxy(domain):
 
         # Check if any routes were removed
         if len(updated_routes) < len(routes):
-            # Prepare the payload with the correct structure
-            payload = updated_routes  # Send the updated routes array directly
+            # Prepare the payload with the updated configuration
+            updated_config = {
+                "routes": updated_routes  # Only modify the 'routes' field
+            }
 
             # Send the updated routes back to Caddy
-            update_response = requests.put(CADDY_API_URL, json=payload)
+            update_response = requests.put(CADDY_API_URL, json=updated_config)
 
             if update_response.status_code == 200:
                 print(f"Proxy configuration for domain {domain} removed successfully!")
@@ -3547,6 +3549,7 @@ def remove_domain_proxy(domain):
 
     except Exception as e:
         print(f"An error occurred: {e}")
+
 
 def add_domain_with_proxy(domain, port):
     """
