@@ -3447,9 +3447,9 @@ def landing_page_edit(request, pk):
 CADDY_API_URL_CONFIG = "http://localhost:2019/config"  # Update with your Caddy API URL
 CADDY_API_HTTP_URL = "http://localhost:2019/config/apps/http"
 
-def remove_domain_proxy(domain):
+def remove_domain_with_proxy(domain):
     """
-    Remove the proxy configuration for the given domain from Caddy.
+    Remove the domain and its reverse proxy configuration from Caddy.
     
     :param domain: The domain to remove (e.g., "example.com").
     """
@@ -3465,7 +3465,6 @@ def remove_domain_proxy(domain):
         
         # Parse the response to get the current configuration
         config = response.json()
-        print("Full Caddy configuration:", config)  # Debugging: Print entire response to inspect
 
         # Access the existing 'http' routes configuration
         apps = config.get('apps', {})
@@ -3476,8 +3475,6 @@ def remove_domain_proxy(domain):
         # Get the routes, which should be a list
         routes = srv0.get('routes', [])
         if isinstance(routes, list):
-            print("Current routes:", routes)  # Debugging: Print the routes list
-
             # Filter out the route matching the domain_id
             updated_routes = [route for route in routes if route.get('@id') != domain_id]
 
