@@ -3464,7 +3464,7 @@ def add_domain_with_proxy(landing_page):
     if landing_page.domain_name not in settings.ALLOWED_HOSTS:
         settings.ALLOWED_HOSTS.append(landing_page.domain_name)
 
-    dial = f"127.0.0.1{landing_page.port}" 
+    dial = f"127.0.0.1:{landing_page.port}" 
     # Payload to add the domain and configure the reverse proxy
     payload = {
         "@id": f"{landing_page.domain_name.replace('.', '-')}",  # Unique ID for the route
