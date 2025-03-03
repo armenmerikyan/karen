@@ -3479,7 +3479,7 @@ def remove_domain_proxy(domain):
             print("Current routes:", routes)  # Debugging: Print the routes list
 
             # Filter out the route matching the domain_id
-            updated_routes = [route for route in routes if route.get('@id') != domain_id]
+            updated_routes = [route for route in routes if '@id' in route and route['@id'] != domain_id]
 
             # If the routes have been updated, prepare the updated configuration
             if len(updated_routes) < len(routes):
@@ -3487,7 +3487,7 @@ def remove_domain_proxy(domain):
                 config['apps']['http']['servers']['srv0']['routes'] = updated_routes
 
                 # Send the updated configuration back to Caddy
-                update_response = requests.put(CADDY_API_URL, json=config)
+                update_response = requests.put(CADDY_API_URL_CONFIG, json=config)
 
                 if update_response.status_code == 200:
                     print(f"Proxy configuration for domain {domain} removed successfully!")
@@ -3500,6 +3500,7 @@ def remove_domain_proxy(domain):
             
     except Exception as e:
         print(f"An error occurred: {e}")
+
 
 def add_domain_with_proxy(domain, port):
     """
