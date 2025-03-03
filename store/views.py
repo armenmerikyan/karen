@@ -108,7 +108,6 @@ from .models import Conversation, Message
 from .models import Visitor  
 from .models import Referral  
 from .models import LandingPage
-from .models import FormSubmission
 
 from .forms import LandingPageForm
 from .forms import SimpleQuestionForm
@@ -3610,7 +3609,7 @@ def add_domain_with_proxy(domain, port):
         "@id": f"{domain_id}-contact",
         "match": [
             {"host": [domain]},
-            {"path": ["/contact_us_api/"]}
+            {"path": ["/contact_us_api/**"]}
         ],
         "handle": [{
             "handler": "reverse_proxy",
@@ -3713,36 +3712,4 @@ def set_landing_page_inactive(request, pk):
     landing_page.save()
 
     return redirect('landing_page_list')
-
-@csrf_exempt
-@require_POST
-def submit_form(request):
-    # Capture the domain from the request
-    domain = request.get_host()  # e.g., "example.com"
-
-    # Capture the source IP address from the request
-    source_ip = get_client_ip(request)
-
-    # Try to parse JSON from the request body
-    try:
-        form_data = json.loads(request.body)
-    except json.JSONDecodeError:
-        # Fallback to request.POST in case of form-encoded data
-        form_data = request.POST.dict()
-
-    # Create a new form submission instance
-    submission = FormSubmission.objects.create(
-        domain=domain,
-        data=json.dumps(form_data),
-        source_ip=source_ip,
-        is_processed=False  # default value
-    )
-
-    # Return a JSON response indicating the form was submitted successfully
-    return JsonResponse({'message': 'Form submitted successfully'})
-
-@admin_required
-def submission_list(request):
-    # Retrieve all form submissions, ordered by most recent
-    submissions = FormSubmission.objects.all().order_by('-created_at')
-    return render(request, 'submissions.html', {'submissions': submissions})
+    
