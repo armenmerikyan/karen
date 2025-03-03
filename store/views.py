@@ -235,7 +235,7 @@ import docker
 version = "00.00.06"
 logger = logging.getLogger(__name__)
 register = template.Library()
-CADDY_API_URL = "http://localhost:2019"
+CADDY_API_URL = "http://localhost:2019/config/apps/http/servers/srv0/routes"
 
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -3612,6 +3612,7 @@ def add_domain_with_proxy(domain, port):
         print(f"Domain {domain} added successfully!")
     else:
         print(f"Failed to add domain {domain}: {response.text}")
+
 
 @admin_required 
 def set_landing_page_active(request, pk):
