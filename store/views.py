@@ -3602,7 +3602,7 @@ def add_domain_with_proxy(domain, port, note=""):
     try:
         # Send the request to the Caddy API
         #response = requests.post(f"{CADDY_API_URL}/config/apps/http/servers/myserver/routes/...", json=payload)
-        response = requests.post(f"{CADDY_API_URL}/config/apps/http/servers/myserver/routes", json=payload)
+        response = requests.post(f"{CADDY_API_URL}/config/apps/http/servers/srv0/routes", json=payload)
 
         # Check the response
         if response.status_code == 200:
