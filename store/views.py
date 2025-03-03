@@ -3522,7 +3522,7 @@ def delete_matching_routes(domain):
                     print(f"Failed to delete route for domain {domain}: {delete_response.text}")
     else:
         print(f"Failed to fetch routes: {routes_response.text}")
-'''
+
 def add_domain_with_proxy(domain, port):
     """
     Add a new domain to Caddy and forward all requests to 127.0.0.1:port using HTTP.
@@ -3577,8 +3577,8 @@ def add_domain_with_proxy(domain, port):
         print(f"Domain {domain} added successfully!")
     else:
         print(f"Failed to add domain {domain}: {response.text}")
-'''
 
+'''
 def add_domain_with_proxy(domain, port):
     """
     Add two routes for the domain to Caddy:
@@ -3668,6 +3668,7 @@ def add_domain_with_proxy(domain, port):
         print("Failed to add domain routes:")
         print("Contact route:", contact_resp.text)
         print("Default route:", default_resp.text)
+'''
 
 @admin_required 
 def set_landing_page_active(request, pk):
