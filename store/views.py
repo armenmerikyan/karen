@@ -3488,7 +3488,8 @@ def remove_domain_proxy(domain):
 
                 # Send the updated configuration back to Caddy with Content-Type set to application/json
                 headers = {'Content-Type': 'application/json'}
-                update_response = requests.put(CADDY_API_URL_CONFIG, json=config, headers=headers)
+                data = json.dumps(config)  # Convert the config to a JSON string
+                update_response = requests.put(CADDY_API_URL_CONFIG, data=data, headers=headers)
 
                 if update_response.status_code == 200:
                     print(f"Proxy configuration for domain {domain} removed successfully!")
