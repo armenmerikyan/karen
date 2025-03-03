@@ -236,6 +236,7 @@ version = "00.00.06"
 logger = logging.getLogger(__name__)
 register = template.Library()
 CADDY_API_URL = "http://localhost:2019/config/apps/http/servers/srv0/routes"
+CADDY_API_HTTP_URL = "http://localhost:2019/config/apps/http"
 
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -3512,12 +3513,11 @@ def remove_domain_proxy(domain):
     
     :param domain: The domain to remove (e.g., "newdomain.com").
     """
-    # Create the ID based on the domain (matches the one used in the proxy configuration)
-    domain_id = domain.replace('.', '-')
+    domain_id = domain.replace('.', '-')  # ID used in the proxy configuration
 
     try:
-        # Get the current Caddy configuration
-        response = requests.get(f"{CADDY_API_URL}/config")
+        # Get the current Caddy configuration for the HTTP app
+        response = requests.get(f"{CADDY_API_HTTP_URL}")
 
         if response.status_code != 200:
             print(f"Failed to fetch current configuration: {response.text}")
@@ -3527,15 +3527,18 @@ def remove_domain_proxy(domain):
 
         # Find and remove the domain's proxy from the configuration
         updated_routes = []
-        for route in config.get("apps", {}).get("http", {}).get("routes", []):
+        routes = config.get("http", {}).get("servers", {}).get("srv0", {}).get("routes", [])
+        
+        # Filter out the route with the matching domain_id
+        for route in routes:
             if route.get("@id") != domain_id:
                 updated_routes.append(route)
 
-        # Update the configuration with the new routes
-        config["apps"]["http"]["routes"] = updated_routes
+        # Update the routes in the configuration
+        config["http"]["servers"]["srv0"]["routes"] = updated_routes
 
-        # Send the updated configuration to Caddy
-        update_response = requests.put(f"{CADDY_API_URL}/config", json=config)
+        # Send the updated configuration back to Caddy
+        update_response = requests.put(f"{CADDY_API_HTTP_URL}/config", json=config)
 
         if update_response.status_code == 200:
             print(f"Proxy configuration for domain {domain} removed successfully!")
