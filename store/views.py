@@ -3447,7 +3447,7 @@ def landing_page_edit(request, pk):
 CADDY_API_URL_CONFIG = "http://localhost:2019/config"  # Update with your Caddy API URL
 CADDY_API_HTTP_URL = "http://localhost:2019/config/apps/http"
 
-def remove_domain_with_proxy(domain):
+def remove_domain_proxy(domain):
     """
     Remove the domain and its reverse proxy configuration from Caddy.
     
