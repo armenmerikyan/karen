@@ -3593,7 +3593,7 @@ def add_domain_with_proxy(domain, port):
     # Normalize domain ID for Caddy
     domain_id = domain.replace('.', '-')
 
-    # Step 2: Create new route payload
+    # Step 2: Create new route payload (remove array wrapper around payload)
     payload = {
         "@id": domain_id,
         "match": [{"host": [domain]}],
@@ -3618,14 +3618,13 @@ def add_domain_with_proxy(domain, port):
         }]
     }
 
-    # Step 3: Add new route
-    response = requests.post(CADDY_API_URL, json=[payload])
+    # Step 3: Add new route (payload is no longer an array)
+    response = requests.post(CADDY_API_URL, json=payload)
 
     if response.status_code == 200:
         print(f"Domain {domain} added successfully!")
     else:
         print(f"Failed to add domain {domain}: {response.text}")
-
 
 @admin_required 
 def set_landing_page_active(request, pk):
