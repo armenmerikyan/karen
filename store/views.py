@@ -3528,23 +3528,26 @@ def remove_domain_proxy(domain):
         print("Current routes configuration:", routes)  # Debugging
 
         # Filter out routes matching the domain_id
-        route_to_remove = next((route for route in routes if route.get("@id") == domain_id), None)
+        updated_routes = [route for route in routes if route.get("@id") != domain_id]
 
-        if route_to_remove:
-            # Send DELETE request for the specific route
-            delete_url = f"{CADDY_API_URL}/{domain_id}"  # Assuming Caddy API supports DELETE at this endpoint
-            delete_response = requests.delete(delete_url)
+        if len(updated_routes) < len(routes):
+            # Prepare the payload with the updated configuration
+            updated_config = {
+                "routes": updated_routes  # Only modify the 'routes' field
+            }
 
-            if delete_response.status_code == 200:
+            # Send the updated configuration to Caddy
+            update_response = requests.put(CADDY_API_URL, json=updated_config)
+
+            if update_response.status_code == 200:
                 print(f"Proxy configuration for domain {domain} removed successfully!")
             else:
-                print(f"Failed to remove proxy configuration: {delete_response.text}")
+                print(f"Failed to update Caddy configuration: {update_response.text}")
         else:
             print(f"No proxy configuration found for domain {domain}.")
 
     except Exception as e:
         print(f"An error occurred: {e}")
-
 
 
 def add_domain_with_proxy(domain, port):
