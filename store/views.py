@@ -3515,22 +3515,33 @@ def remove_domain_proxy(domain):
     # Create the ID based on the domain (matches the one used in the proxy configuration)
     domain_id = domain.replace('.', '-')
 
-    # Payload to remove the domain's proxy configuration
-    payload = {
-        "remove": [{
-            "@id": domain_id  # ID to match the existing proxy route
-        }]
-    }
-
     try:
-        # Send the request to the Caddy API to remove the proxy
-        response = requests.post(CADDY_API_URL, json=payload)
+        # Get the current Caddy configuration
+        response = requests.get(f"{CADDY_API_URL}/config")
 
-        # Check the response
-        if response.status_code == 200:
+        if response.status_code != 200:
+            print(f"Failed to fetch current configuration: {response.text}")
+            return
+        
+        config = response.json()
+
+        # Find and remove the domain's proxy from the configuration
+        updated_routes = []
+        for route in config.get("apps", {}).get("http", {}).get("routes", []):
+            if route.get("@id") != domain_id:
+                updated_routes.append(route)
+
+        # Update the configuration with the new routes
+        config["apps"]["http"]["routes"] = updated_routes
+
+        # Send the updated configuration to Caddy
+        update_response = requests.put(f"{CADDY_API_URL}/config", json=config)
+
+        if update_response.status_code == 200:
             print(f"Proxy configuration for domain {domain} removed successfully!")
         else:
-            print(f"Failed to remove proxy for domain {domain}: {response.text}")
+            print(f"Failed to update Caddy configuration: {update_response.text}")
+
     except Exception as e:
         print(f"An error occurred: {e}")
 
