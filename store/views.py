@@ -3506,6 +3506,33 @@ def add_domain_with_proxy(domain):
     except Exception as e:
         print(f"An error occurred: {e}")
 '''
+def remove_domain_proxy(domain):
+    """
+    Remove the proxy configuration for the given domain from Caddy.
+    
+    :param domain: The domain to remove (e.g., "newdomain.com").
+    """
+    # Create the ID based on the domain (matches the one used in the proxy configuration)
+    domain_id = domain.replace('.', '-')
+
+    # Payload to remove the domain's proxy configuration
+    payload = {
+        "remove": [{
+            "@id": domain_id  # ID to match the existing proxy route
+        }]
+    }
+
+    try:
+        # Send the request to the Caddy API to remove the proxy
+        response = requests.post(CADDY_API_URL, json=payload)
+
+        # Check the response
+        if response.status_code == 200:
+            print(f"Proxy configuration for domain {domain} removed successfully!")
+        else:
+            print(f"Failed to remove proxy for domain {domain}: {response.text}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 def add_domain_with_proxy(domain, port):
     """
@@ -3589,7 +3616,7 @@ def set_landing_page_active(request, pk):
 @admin_required 
 def set_landing_page_inactive(request, pk):
     landing_page = get_object_or_404(LandingPage, pk=pk)
-    
+    remove_domain_proxy(landing_page.domain_name)
     # Check if the landing page is using Docker
     if landing_page.is_docker:
         client = docker.from_env()

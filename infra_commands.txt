@@ -61,3 +61,6 @@ sudo apt install npm
 sudo vi /etc/systemd/system/solpay.service
 
 scp GeoLite2-City.mmdb root@YOUR_IP_HERE:/root/karen/static/
+
+
+docker buildx build --platform linux/amd64 -t gigahard/landing-page --push .
