@@ -3486,9 +3486,14 @@ def remove_domain_proxy(domain):
                 # Update the routes in the configuration by removing the domain-specific route
                 config['apps']['http']['servers']['srv0']['routes'] = updated_routes
 
-                # Send the updated configuration back to Caddy with the correct content type
+                # Headers to ensure correct content type
                 headers = {'Content-Type': 'application/json'}
-                update_response = requests.put(CADDY_API_URL_CONFIG, json=config, headers=headers)
+
+                # Log headers to debug
+                print(f"Request headers: {headers}")
+
+                # Send the updated configuration back to Caddy
+                update_response = requests.put(CADDY_API_URL_CONFIG, data=json.dumps(config), headers=headers)
 
                 if update_response.status_code == 200:
                     print(f"Proxy configuration for domain {domain} removed successfully!")
