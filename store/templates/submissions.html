@@ -25,9 +25,9 @@
                     <td>{{ submission.pk }}</td>
                     <td>{{ submission.domain }}</td>
                     <td>
-                      {# Use a custom filter 'jsonify' to render the JSON data nicely, or simply output raw #}
-                      {{ submission.data|jsonify }}
+                        <pre>{{ submission.data }}</pre>
                     </td>
+
                     <td>{{ submission.is_processed }}</td>
                     <td>{{ submission.source_ip }}</td>
                     <td>{{ submission.created_at }}</td>
