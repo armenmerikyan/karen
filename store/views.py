@@ -3554,6 +3554,31 @@ def add_domain_with_proxy(domain, port):
         print(f"An error occurred: {e}")
 '''
 
+def delete_matching_routes(domain):
+    """
+    Deletes all routes that match the given domain.
+    """
+    domain_id = domain.replace('.', '-')
+
+    # Step 1: Get current routes to find existing entries
+    routes_response = requests.get(CADDY_API_URL)
+    
+    if routes_response.status_code == 200:
+        routes = routes_response.json()
+        
+        # Step 2: Find and delete the matching routes
+        for index, route in enumerate(routes):
+            if any(match.get('host') == [domain] for match in route.get('match', [])):
+                delete_url = f"{CADDY_API_URL}/{index}"
+                delete_response = requests.delete(delete_url)
+                
+                if delete_response.status_code == 200:
+                    print(f"Route for domain {domain} deleted successfully.")
+                else:
+                    print(f"Failed to delete route for domain {domain}: {delete_response.text}")
+    else:
+        print(f"Failed to fetch routes: {routes_response.text}")
+
 def add_domain_with_proxy(domain, port):
     """
     Add a new domain to Caddy and forward all requests to 127.0.0.1:port using HTTP.
@@ -3562,25 +3587,13 @@ def add_domain_with_proxy(domain, port):
     :param domain: The domain to add (e.g., "newdomain.com").
     :param port: The port to forward requests to.
     """
+    # Step 1: Delete any existing matching routes
+    delete_matching_routes(domain)
 
     # Normalize domain ID for Caddy
     domain_id = domain.replace('.', '-')
 
-    # Step 1: Get current routes to find existing entry
-    routes_response = requests.get(CADDY_API_URL)
-    
-    if routes_response.status_code == 200:
-        routes = routes_response.json()
-        
-        # Find the index of the existing route
-        for index, route in enumerate(routes):
-            if route.get("@id") == domain_id:
-                # Step 2: Delete the existing route by index
-                delete_url = f"{CADDY_API_URL}/{index}"
-                requests.delete(delete_url)
-                break
-
-    # Step 3: Create new route payload
+    # Step 2: Create new route payload
     payload = {
         "@id": domain_id,
         "match": [{"host": [domain]}],
@@ -3605,8 +3618,8 @@ def add_domain_with_proxy(domain, port):
         }]
     }
 
-    # Step 4: Add new route
-    response = requests.post(f"{CADDY_API_URL}/...", json=[payload])
+    # Step 3: Add new route
+    response = requests.post(CADDY_API_URL, json=[payload])
 
     if response.status_code == 200:
         print(f"Domain {domain} added successfully!")
