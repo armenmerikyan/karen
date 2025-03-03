@@ -3713,7 +3713,6 @@ def set_landing_page_inactive(request, pk):
 
     return redirect('landing_page_list')
 
-
 @csrf_exempt
 @require_POST
 def submit_form(request):
