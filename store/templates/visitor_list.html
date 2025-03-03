@@ -26,8 +26,10 @@
                   <th scope="col" onclick="sortTable(6)">Country</th>
                   <th scope="col" onclick="sortTable(7)">Browser</th>
                   <th scope="col" onclick="sortTable(8)">Created</th>
+                  <!--
                   <th scope="col" onclick="sortTable(9)">Duration (First to Now)</th>
                   <th scope="col" onclick="sortTable(10)">Duration (First to Last)</th>
+                  -->
                   <th scope="col"><i class="fas fa-trash-alt"></i></th>
                 </tr>
               </thead>
@@ -43,6 +45,7 @@
                     <td>{{ visitor.country }}</td>
                     <td>{{ visitor.browser_used }}</td>
                     <td>{{ visitor.time_created|date:"Y-m-d H:i:s" }}</td>
+                    <!--
                     <td>
                       {% with duration=visitor.time_created|timesince %}
                         {{ duration }}
@@ -57,6 +60,7 @@
                         N/A
                       {% endif %}
                     </td>
+                    -->
                     <td>
                       <form action="{% url 'visitor_delete' visitor.id %}" method="POST" class="d-inline">
                         {% csrf_token %}
