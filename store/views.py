@@ -3839,5 +3839,6 @@ def submit_form(request):
 
 @admin_required 
 def submission_list(request):
+    profile = get_latest_profile()
     submissions = FormSubmission.objects.all().order_by('-created_at')
-    return render(request, 'submissions.html', {'submissions': submissions})
+    return render(request, 'submissions.html', {'submissions': submissions, 'profile': profile})
