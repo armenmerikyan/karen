@@ -3473,7 +3473,7 @@ def remove_domain_proxy(domain):
         servers = http.get('servers', {})
         srv0 = servers.get('srv0', {})
 
-        # Check if 'routes' is a list or a dictionary
+        # Get the routes, which should be a list
         routes = srv0.get('routes', [])
         if isinstance(routes, list):
             print("Current routes:", routes)  # Debugging: Print the routes list
