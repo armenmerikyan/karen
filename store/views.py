@@ -3728,8 +3728,8 @@ def submit_form(request):
 
     # Create a new form submission instance
     submission = FormSubmission.objects.create(
-        domain=domain,
-        data=form_data,
+        domain=domain, 
+        data=json.dumps(form_data),
         source_ip=source_ip,
         is_processed=False  # default value
     )
