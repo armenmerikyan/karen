@@ -3496,63 +3496,6 @@ def remove_domain_proxy(domain):
             
     except Exception as e:
         print(f"An error occurred: {e}")
-'''
-def add_domain_with_proxy(domain, port):
-    """
-    Add a new domain to Caddy and forward all requests to 127.0.0.1:8000 using HTTP.
-    
-    :param domain: The domain to add (e.g., "newdomain.com").
-    """
-
-    domain_with_scheme = f'http://{domain}'  # Use HTTP instead of HTTPS
-    if domain_with_scheme not in settings.CSRF_TRUSTED_ORIGINS:
-        settings.CSRF_TRUSTED_ORIGINS.append(domain_with_scheme)
-
-    # Add domain to ALLOWED_HOSTS without the scheme
-    if domain not in settings.ALLOWED_HOSTS:
-        settings.ALLOWED_HOSTS.append(domain)
-
-    # Payload to add the domain and configure the reverse proxy
-    payload = {
-        "@id": f"{domain.replace('.', '-')}",  # Unique ID for the route
-        "match": [{
-            "host": [domain]  # Match requests for this domain
-        }],
-        "handle": [{
-            "handler": "reverse_proxy",
-            "upstreams": [{
-                "dial": f"127.0.0.1:{port}"  # Backend server to forward requests to
-            }],
-            "headers": {
-                "request": {
-                    "set": {
-                        "Host": ["{http.request.host}"],
-                        "X-Real-IP": ["{http.request.remote}"],
-                        "X-CSRFToken": ["{http.request.header.X-CSRFToken}"],
-                        "X-CSRF-TOKEN": ["{http.request.header.X-CSRF-TOKEN}"]
-                    }
-                }
-            },
-            "transport": {
-                "protocol": "http",
-                "read_timeout": "600s",
-                "write_timeout": "600s"
-            }
-        }]
-    }
-
-    try:
-        # Send the request to the Caddy API
-        response = requests.post(CADDY_API_URL, json=payload)
-
-        # Check the response
-        if response.status_code == 200:
-            print(f"Domain {domain} added successfully!")
-        else:
-            print(f"Failed to add domain {domain}: {response.text}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-'''
 
 def delete_matching_routes(domain):
     """
@@ -3578,7 +3521,7 @@ def delete_matching_routes(domain):
                     print(f"Failed to delete route for domain {domain}: {delete_response.text}")
     else:
         print(f"Failed to fetch routes: {routes_response.text}")
-
+'''
 def add_domain_with_proxy(domain, port):
     """
     Add a new domain to Caddy and forward all requests to 127.0.0.1:port using HTTP.
@@ -3627,6 +3570,90 @@ def add_domain_with_proxy(domain, port):
     }
 
     # Step 3: Add new route (payload is no longer an array)
+    response = requests.post(CADDY_API_URL, json=payload)
+
+    if response.status_code == 200:
+        print(f"Domain {domain} added successfully!")
+    else:
+        print(f"Failed to add domain {domain}: {response.text}")
+'''
+def add_domain_with_proxy(domain, port):
+    """
+    Add a new domain to Caddy and forward requests to 127.0.0.1 using HTTP.
+    
+    Two rules are created:
+    1. A default rule that forwards all traffic for the given domain to the original port.
+    2. A rule that matches URL paths starting with '/contact_us_api' and forwards them to port 8000.
+    
+    If the domain already exists, it will be deleted first.
+
+    :param domain: The domain to add (e.g., "newdomain.com").
+    :param port: The port to forward requests to for non-'contact_us_api' traffic.
+    """
+    # Step 1: Delete any existing matching routes
+    delete_matching_routes(domain)
+
+    domain_with_scheme = f'http://{domain}'  # Use HTTP instead of HTTPS
+    if domain_with_scheme not in settings.CSRF_TRUSTED_ORIGINS:
+        settings.CSRF_TRUSTED_ORIGINS.append(domain_with_scheme)
+
+    # Add domain to ALLOWED_HOSTS without the scheme
+    if domain not in settings.ALLOWED_HOSTS:
+        settings.ALLOWED_HOSTS.append(domain)
+
+    # Normalize domain ID for Caddy
+    domain_id = domain.replace('.', '-')
+
+    # Step 2: Create new route payload with two handle blocks
+    payload = {
+        "@id": domain_id,
+        "match": [{"host": [domain]}],
+        "handle": [
+            {
+                # This handle matches requests with a path starting with /contact_us_api
+                "match": [{"path": ["/contact_us_api/*"]}],
+                "handler": "reverse_proxy",
+                "upstreams": [{"dial": "127.0.0.1:8000"}],
+                "headers": {
+                    "request": {
+                        "set": {
+                            "Host": ["{http.request.host}"],
+                            "X-Real-IP": ["{http.request.remote}"],
+                            "X-CSRFToken": ["{http.request.header.X-CSRFToken}"],
+                            "X-CSRF-TOKEN": ["{http.request.header.X-CSRF-TOKEN}"]
+                        }
+                    }
+                },
+                "transport": {
+                    "protocol": "http",
+                    "read_timeout": "600s",
+                    "write_timeout": "600s"
+                }
+            },
+            {
+                # Default handle for all other requests
+                "handler": "reverse_proxy",
+                "upstreams": [{"dial": f"127.0.0.1:{port}"}],
+                "headers": {
+                    "request": {
+                        "set": {
+                            "Host": ["{http.request.host}"],
+                            "X-Real-IP": ["{http.request.remote}"],
+                            "X-CSRFToken": ["{http.request.header.X-CSRFToken}"],
+                            "X-CSRF-TOKEN": ["{http.request.header.X-CSRF-TOKEN}"]
+                        }
+                    }
+                },
+                "transport": {
+                    "protocol": "http",
+                    "read_timeout": "600s",
+                    "write_timeout": "600s"
+                }
+            }
+        ]
+    }
+
+    # Step 3: Add new route (payload is a single route with multiple handles)
     response = requests.post(CADDY_API_URL, json=payload)
 
     if response.status_code == 200:
