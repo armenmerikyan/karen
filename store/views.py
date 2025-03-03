@@ -3447,7 +3447,7 @@ def landing_page_edit(request, pk):
 
 
 
-def add_domain_with_proxy(domain):
+def add_domain_with_proxy(landing_page):
     """
     Add a new domain to Caddy and forward all requests to 127.0.0.1:8000.
     
@@ -3456,25 +3456,25 @@ def add_domain_with_proxy(domain):
 
  
 
-    domain_with_scheme = f'https://{domain}'
+    domain_with_scheme = f'https://{landing_page.domain_name}'
     if domain_with_scheme not in settings.CSRF_TRUSTED_ORIGINS:
         settings.CSRF_TRUSTED_ORIGINS.append(domain_with_scheme)
 
     # Add domain to ALLOWED_HOSTS without the scheme
-    if domain not in settings.ALLOWED_HOSTS:
-        settings.ALLOWED_HOSTS.append(domain)
+    if landing_page.domain_name not in settings.ALLOWED_HOSTS:
+        settings.ALLOWED_HOSTS.append(landing_page.domain_name)
 
-
+    dial = f"127.0.0.1{landing_page.port}" 
     # Payload to add the domain and configure the reverse proxy
     payload = {
         "@id": f"{domain.replace('.', '-')}",  # Unique ID for the route
         "match": [{
-            "host": [domain]  # Match requests for this domain
+            "host": [landing_page.domain_name]  # Match requests for this domain
         }],
         "handle": [{
             "handler": "reverse_proxy",
             "upstreams": [{
-                "dial": "127.0.0.1:8000"  # Backend server to forward requests to
+                "dial": dial  # Backend server to forward requests to
             }],
             "headers": {
                 "request": {
@@ -3509,8 +3509,8 @@ def add_domain_with_proxy(domain):
 @admin_required 
 def set_landing_page_active(request, pk):
     landing_page = get_object_or_404(LandingPage, pk=pk)
-    add_domain_with_proxy(landing_page.domain_name)
-    
+    add_domain_with_proxy(landing_page)
+
     if landing_page.is_docker :
         client = docker.from_env()
 
