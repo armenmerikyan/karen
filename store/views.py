@@ -3457,7 +3457,7 @@ def remove_domain_proxy(domain):
 
     try:
         # Get the current routes configuration
-        response = requests.get(CADDY_API_URL_CONFIG)
+        response = requests.get(CADDY_API_URL)
 
         if response.status_code != 200:
             print(f"Failed to fetch current routes configuration: {response.text}")
@@ -3486,10 +3486,8 @@ def remove_domain_proxy(domain):
                 # Update the routes in the configuration by removing the domain-specific route
                 config['apps']['http']['servers']['srv0']['routes'] = updated_routes
 
-                # Send the updated configuration back to Caddy with Content-Type set to application/json
-                headers = {'Content-Type': 'application/json'}
-                data = json.dumps(config)  # Convert the config to a JSON string
-                update_response = requests.put(CADDY_API_URL_CONFIG, data=data, headers=headers)
+                # Send the updated configuration back to Caddy
+                update_response = requests.put(CADDY_API_URL, json=config)
 
                 if update_response.status_code == 200:
                     print(f"Proxy configuration for domain {domain} removed successfully!")
@@ -3526,9 +3524,9 @@ def add_domain_with_proxy(domain, port):
         }],
         "handle": [{
             "handler": "reverse_proxy",
-            "upstreams": {
+            "upstreams": [{
                 "dial": f"127.0.0.1:{port}"  # Backend server to forward requests to
-            },
+            }],
             "headers": {
                 "request": {
                     "set": {
