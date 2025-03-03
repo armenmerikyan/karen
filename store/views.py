@@ -3554,7 +3554,7 @@ def add_domain_with_proxy(domain, port):
         print(f"An error occurred: {e}")
 '''
 
-def add_domain_with_proxy(domain, port, note=""):
+def add_domain_with_proxy(domain, port):
     """
     Add a new domain to Caddy and forward all requests to 127.0.0.1:<port> using HTTP.
     Optionally, include a note for reference.
@@ -3593,10 +3593,7 @@ def add_domain_with_proxy(domain, port, note=""):
                 "read_timeout": "600s",
                 "write_timeout": "600s"
             }
-        }],
-        "meta": {
-            "note": note  # Store an optional note
-        }
+        }]
     }
 
     try:
