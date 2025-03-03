@@ -3467,14 +3467,14 @@ def remove_domain_proxy(domain):
         config = response.json()
         print("Full Caddy configuration:", config)  # Debugging: Print entire response to inspect
 
-        # Try to access the routes configuration safely
+        # Access the routes directly, assuming they are in the structure below
         apps = config.get('apps', {})
         http = apps.get('http', {})
         servers = http.get('servers', {})
         srv0 = servers.get('srv0', {})
         routes = srv0.get('routes', [])
 
-        # Check if the 'routes' is a list and print it for debugging
+        # Ensure that 'routes' is a list and filter based on domain_id
         if isinstance(routes, list):
             print("Current routes:", routes)  # Debugging: Print the routes list
 
@@ -3496,11 +3496,10 @@ def remove_domain_proxy(domain):
             else:
                 print(f"No proxy configuration found for domain {domain}.")
         else:
-            print("Routes configuration is not a list as expected.")
+            print(f"Unexpected format for routes: {type(routes)}. Expected a list.")
             
     except Exception as e:
         print(f"An error occurred: {e}")
-
 
 def add_domain_with_proxy(domain, port):
     """
