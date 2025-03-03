@@ -3817,19 +3817,23 @@ def submit_form(request):
     # Capture the source IP address from the request
     source_ip = get_client_ip(request)
 
-    # Convert POST data to a dictionary
-    form_data = request.POST.dict()
+    # Try to parse JSON from the request body
+    try:
+        form_data = json.loads(request.body)
+    except json.JSONDecodeError:
+        # Fallback to request.POST in case of form-encoded data
+        form_data = request.POST.dict()
 
     # Create a new form submission instance
     submission = FormSubmission.objects.create(
-        domain=domain, 
+        domain=domain,
         data=json.dumps(form_data),
         source_ip=source_ip,
         is_processed=False  # default value
     )
 
     # Return a JSON response indicating the form was submitted successfully
-    return JsonResponse({'message': 'Form submitted successfully'})  
+    return JsonResponse({'message': 'Form submitted successfully'})
 
 
 
