@@ -3530,26 +3530,31 @@ def remove_domain_proxy(domain):
         # Access the routes directly as a list
         routes = config.get('apps', {}).get('http', {}).get('servers', {}).get('srv0', {}).get('routes', [])
 
-        # Filter out routes matching the domain_id
-        updated_routes = [route for route in routes if route.get("@id") != domain_id]
+        # Check if routes is indeed a list
+        if isinstance(routes, list):
+            # Filter out routes matching the domain_id
+            updated_routes = [route for route in routes if route.get("@id") != domain_id]
 
-        # If the routes have been updated, prepare the updated configuration
-        if len(updated_routes) < len(routes):
-            # Update the routes in the configuration
-            config['apps']['http']['servers']['srv0']['routes'] = updated_routes
+            # If the routes have been updated, prepare the updated configuration
+            if len(updated_routes) < len(routes):
+                # Update the routes in the configuration
+                config['apps']['http']['servers']['srv0']['routes'] = updated_routes
 
-            # Send the updated configuration back to Caddy
-            update_response = requests.put(CADDY_API_URL, json=config)
+                # Send the updated configuration back to Caddy
+                update_response = requests.put(CADDY_API_URL, json=config)
 
-            if update_response.status_code == 200:
-                print(f"Proxy configuration for domain {domain} removed successfully!")
+                if update_response.status_code == 200:
+                    print(f"Proxy configuration for domain {domain} removed successfully!")
+                else:
+                    print(f"Failed to update Caddy configuration: {update_response.text}")
             else:
-                print(f"Failed to update Caddy configuration: {update_response.text}")
+                print(f"No proxy configuration found for domain {domain}.")
         else:
-            print(f"No proxy configuration found for domain {domain}.")
-
+            print("Routes configuration is not a list as expected.")
+            
     except Exception as e:
         print(f"An error occurred: {e}")
+
 
 def add_domain_with_proxy(domain, port):
     """
