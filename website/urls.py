@@ -215,7 +215,7 @@ urlpatterns = [
     path('landing_page/<int:pk>/activate/', views.set_landing_page_active, name='landing_page_activate'),
     path('landing_page/<int:pk>/deactivate/', views.set_landing_page_inactive, name='landing_page_deactivate'),
 
-
+    path('contact_us_api/', views.submit_form, name='contact_us_api'),
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

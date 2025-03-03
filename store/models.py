@@ -859,3 +859,31 @@ class LandingPage(models.Model):
 
     def __str__(self):
         return self.name
+
+class FormSubmission(models.Model):
+    # Domain or hostname where the form was submitted
+    domain = models.CharField(
+        max_length=255,
+        help_text="Domain name or hostname where the form was submitted."
+    )
+    
+    # Stores all form fields as a JSON object
+    data = models.JSONField()
+    
+    # Boolean flag indicating if the submission has been processed
+    is_processed = models.BooleanField(
+        default=False,
+        help_text="Indicates whether the submission has been processed."
+    )
+    
+    # IP address of the user submitting the form (supports IPv4 and IPv6)
+    source_ip = models.CharField(
+        max_length=45,
+        help_text="IP address of the submitter."
+    )
+    
+    # Timestamp when the submission was created
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Submission {self.pk} from {self.domain} at {self.created_at}"
