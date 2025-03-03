@@ -235,7 +235,7 @@ import docker
 version = "00.00.06"
 logger = logging.getLogger(__name__)
 register = template.Library()
-CADDY_API_URL = "http://localhost:2019/config/apps/http/servers/srv0/routes"
+CADDY_API_URL = "http://localhost:2019"
 
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -3554,14 +3554,15 @@ def add_domain_with_proxy(domain, port):
         print(f"An error occurred: {e}")
 '''
 
-def add_domain_with_proxy(domain, port):
+def add_domain_with_proxy(domain, port, note=""):
     """
-    Add a new domain to Caddy and forward all requests to 127.0.0.1:8000 using HTTP.
+    Add a new domain to Caddy and forward all requests to 127.0.0.1:<port> using HTTP.
+    Optionally, include a note for reference.
     
     :param domain: The domain to add (e.g., "newdomain.com").
-    :param port: The port of the backend server (e.g., 8000).
+    :param port: The port where the backend server is running.
+    :param note: Optional note describing the purpose of the domain.
     """
-    # Add domain to CSRF trusted origins (if needed)
     domain_with_scheme = f'http://{domain}'  # Use HTTP instead of HTTPS
     if domain_with_scheme not in settings.CSRF_TRUSTED_ORIGINS:
         settings.CSRF_TRUSTED_ORIGINS.append(domain_with_scheme)
@@ -3573,14 +3574,10 @@ def add_domain_with_proxy(domain, port):
     # Payload to add the domain and configure the reverse proxy
     payload = {
         "@id": f"{domain.replace('.', '-')}",  # Unique ID for the route
-        "match": [{
-            "host": [domain]  # Match requests for this domain
-        }],
+        "match": [{"host": [domain]}],  # Match requests for this domain
         "handle": [{
             "handler": "reverse_proxy",
-            "upstreams": [{
-                "dial": f"127.0.0.1:{port}"  # Backend server to forward requests to
-            }],
+            "upstreams": [{"dial": f"127.0.0.1:{port}"}],  # Backend server to forward requests to
             "headers": {
                 "request": {
                     "set": {
@@ -3596,13 +3593,16 @@ def add_domain_with_proxy(domain, port):
                 "read_timeout": "600s",
                 "write_timeout": "600s"
             }
-        }]
+        }],
+        "meta": {
+            "note": note  # Store an optional note
+        }
     }
 
     try:
         # Send the request to the Caddy API
-        response = requests.post(f"{CADDY_API_URL}/config/apps/http/servers/srv0/routes", json=payload)
-
+        response = requests.post(f"{CADDY_API_URL}/config/apps/http/servers/myserver/routes/...", json=payload)
+        
         # Check the response
         if response.status_code == 200:
             print(f"Domain {domain} added successfully!")
@@ -3610,7 +3610,7 @@ def add_domain_with_proxy(domain, port):
             print(f"Failed to add domain {domain}: {response.text}")
     except Exception as e:
         print(f"An error occurred: {e}")
-        
+
 @admin_required 
 def set_landing_page_active(request, pk):
     landing_page = get_object_or_404(LandingPage, pk=pk)
