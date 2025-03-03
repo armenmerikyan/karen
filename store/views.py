@@ -3581,9 +3581,11 @@ def add_domain_with_proxy(domain, port):
     """
     Add a new domain to Caddy and forward requests to 127.0.0.1 using HTTP.
     
-    Two rules are created:
-    1. A rule that matches URL paths starting with '/contact_us_api' and forwards them to port 8000.
-    2. A default rule that forwards all traffic for the given domain to the original port.
+    Two routes are created:
+    1. A route that matches requests with URL paths starting with '/contact_us_api'
+       (and the specified host) and forwards them to port 8000.
+    2. A default route that matches the specified host and forwards all other requests
+       to the original port.
     
     If the domain already exists, it will be deleted first.
 
@@ -3604,62 +3606,70 @@ def add_domain_with_proxy(domain, port):
     # Normalize domain ID for Caddy
     domain_id = domain.replace('.', '-')
 
-    # Step 2: Create new route payload with two handle blocks
-    payload = {
-        "@id": domain_id,
-        "match": [{"host": [domain]}],
-        "handle": [
-            {
-                # This handle matches requests with a path starting with /contact_us_api
-                "match": [{"path": ["/contact_us_api*"]}],
-                "handler": "reverse_proxy",
-                "upstreams": [{"dial": "127.0.0.1:8000"}],
-                "headers": {
-                    "request": {
-                        "set": {
-                            "Host": ["{http.request.host}"],
-                            "X-Real-IP": ["{http.request.remote}"],
-                            "X-CSRFToken": ["{http.request.header.X-CSRFToken}"],
-                            "X-CSRF-TOKEN": ["{http.request.header.X-CSRF-TOKEN}"]
-                        }
+    # Define the route for /contact_us_api paths using a glob that matches all subpaths
+    contact_route = {
+        "@id": f"{domain_id}-contact",
+        "match": [
+            {"host": [domain]},
+            {"path": ["/contact_us_api/**"]}
+        ],
+        "handle": [{
+            "handler": "reverse_proxy",
+            "upstreams": [{"dial": "127.0.0.1:8000"}],
+            "headers": {
+                "request": {
+                    "set": {
+                        "Host": ["{http.request.host}"],
+                        "X-Real-IP": ["{http.request.remote}"],
+                        "X-CSRFToken": ["{http.request.header.X-CSRFToken}"],
+                        "X-CSRF-TOKEN": ["{http.request.header.X-CSRF-TOKEN}"]
                     }
-                },
-                "transport": {
-                    "protocol": "http",
-                    "read_timeout": "600s",
-                    "write_timeout": "600s"
                 }
             },
-            {
-                # Default handle for all other requests
-                "handler": "reverse_proxy",
-                "upstreams": [{"dial": f"127.0.0.1:{port}"}],
-                "headers": {
-                    "request": {
-                        "set": {
-                            "Host": ["{http.request.host}"],
-                            "X-Real-IP": ["{http.request.remote}"],
-                            "X-CSRFToken": ["{http.request.header.X-CSRFToken}"],
-                            "X-CSRF-TOKEN": ["{http.request.header.X-CSRF-TOKEN}"]
-                        }
-                    }
-                },
-                "transport": {
-                    "protocol": "http",
-                    "read_timeout": "600s",
-                    "write_timeout": "600s"
-                }
+            "transport": {
+                "protocol": "http",
+                "read_timeout": "600s",
+                "write_timeout": "600s"
             }
-        ]
+        }]
     }
 
-    # Step 3: Add new route (payload is a single route with multiple handles)
+    # Define the default route for all other paths
+    default_route = {
+        "@id": f"{domain_id}-default",
+        "match": [{"host": [domain]}],
+        "handle": [{
+            "handler": "reverse_proxy",
+            "upstreams": [{"dial": f"127.0.0.1:{port}"}],
+            "headers": {
+                "request": {
+                    "set": {
+                        "Host": ["{http.request.host}"],
+                        "X-Real-IP": ["{http.request.remote}"],
+                        "X-CSRFToken": ["{http.request.header.X-CSRFToken}"],
+                        "X-CSRF-TOKEN": ["{http.request.header.X-CSRF-TOKEN}"]
+                    }
+                }
+            },
+            "transport": {
+                "protocol": "http",
+                "read_timeout": "600s",
+                "write_timeout": "600s"
+            }
+        }]
+    }
+
+    # Combine both routes into a single payload (as a list)
+    payload = [contact_route, default_route]
+
+    # Step 3: Add new routes - note that your Caddy API endpoint may expect a JSON array of routes
     response = requests.post(CADDY_API_URL, json=payload)
 
     if response.status_code == 200:
         print(f"Domain {domain} added successfully!")
     else:
         print(f"Failed to add domain {domain}: {response.text}")
+
 
 @admin_required 
 def set_landing_page_active(request, pk):
