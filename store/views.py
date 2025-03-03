@@ -3737,7 +3737,7 @@ def add_domain_with_proxy(domain, port):
             "headers": {
                 "request": {
                     "set": {
-                        "Host": ["{http.request.host}"],
+                        "Host": ["localhost"],
                         "X-Real-IP": ["{http.request.remote}"],
                         "X-CSRFToken": ["{http.request.header.X-CSRFToken}"],
                         "X-CSRF-TOKEN": ["{http.request.header.X-CSRF-TOKEN}"]
