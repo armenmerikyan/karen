@@ -3577,15 +3577,14 @@ def add_domain_with_proxy(domain, port):
     else:
         print(f"Failed to add domain {domain}: {response.text}")
 '''
+
 def add_domain_with_proxy(domain, port):
     """
-    Add a new domain to Caddy and forward requests to 127.0.0.1 using HTTP.
-    
-    Two routes are created:
+    Add two routes for the domain to Caddy:
     1. A route that matches requests with URL paths starting with '/contact_us_api'
-       (and the specified host) and forwards them to port 8000.
+       (and the specified host) and forwards them to 127.0.0.1:8000.
     2. A default route that matches the specified host and forwards all other requests
-       to the original port.
+       to 127.0.0.1:port.
     
     If the domain already exists, it will be deleted first.
 
@@ -3595,18 +3594,17 @@ def add_domain_with_proxy(domain, port):
     # Step 1: Delete any existing matching routes
     delete_matching_routes(domain)
 
-    domain_with_scheme = f'http://{domain}'  # Use HTTP instead of HTTPS
+    # Add domain to CSRF trusted origins and ALLOWED_HOSTS
+    domain_with_scheme = f'http://{domain}'
     if domain_with_scheme not in settings.CSRF_TRUSTED_ORIGINS:
         settings.CSRF_TRUSTED_ORIGINS.append(domain_with_scheme)
-
-    # Add domain to ALLOWED_HOSTS without the scheme
     if domain not in settings.ALLOWED_HOSTS:
         settings.ALLOWED_HOSTS.append(domain)
 
-    # Normalize domain ID for Caddy
+    # Normalize domain ID for route IDs
     domain_id = domain.replace('.', '-')
 
-    # Define the route for /contact_us_api paths using a glob that matches all subpaths
+    # Route 1: For /contact_us_api paths
     contact_route = {
         "@id": f"{domain_id}-contact",
         "match": [
@@ -3634,7 +3632,7 @@ def add_domain_with_proxy(domain, port):
         }]
     }
 
-    # Define the default route for all other paths
+    # Route 2: Default route for all other requests
     default_route = {
         "@id": f"{domain_id}-default",
         "match": [{"host": [domain]}],
@@ -3659,17 +3657,16 @@ def add_domain_with_proxy(domain, port):
         }]
     }
 
-    # Combine both routes into a single payload (as a list)
-    payload = [contact_route, default_route]
+    # Step 3: Add new routes by posting them separately
+    contact_resp = requests.post(CADDY_API_URL, json=contact_route)
+    default_resp = requests.post(CADDY_API_URL, json=default_route)
 
-    # Step 3: Add new routes - note that your Caddy API endpoint may expect a JSON array of routes
-    response = requests.post(CADDY_API_URL, json=payload)
-
-    if response.status_code == 200:
+    if contact_resp.status_code == 200 and default_resp.status_code == 200:
         print(f"Domain {domain} added successfully!")
     else:
-        print(f"Failed to add domain {domain}: {response.text}")
-
+        print("Failed to add domain routes:")
+        print("Contact route:", contact_resp.text)
+        print("Default route:", default_resp.text)
 
 @admin_required 
 def set_landing_page_active(request, pk):
