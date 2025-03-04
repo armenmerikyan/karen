@@ -3730,7 +3730,7 @@ def add_domain_with_proxy(domain, port):
         "@id": f"{domain_id}-default",
         "match": [
             {"host": [domain]},
-            {"path": ["/**"]}  # Catch-all path match for all traffic
+            {"path": ["!/contact_us_api/**", "/**"]}  # Catch-all path match for all traffic
         ],
         "handle": [{
             "handler": "reverse_proxy",
