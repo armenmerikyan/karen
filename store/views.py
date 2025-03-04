@@ -3686,7 +3686,7 @@ def add_domain_with_proxy(domain, port):
     # Step 1: Delete any existing matching routes
     delete_matching_routes(domain)
     
-    time.sleep(2)
+    time.sleep(1)
 
     # Add domain to CSRF trusted origins and ALLOWED_HOSTS
     domain_with_scheme = f'http://{domain}'
@@ -3723,7 +3723,8 @@ def add_domain_with_proxy(domain, port):
                 "read_timeout": "600s",
                 "write_timeout": "600s"
             }
-        }]
+        }],
+        "terminal": True
     }
 
     contact_resp = requests.post(CADDY_API_URL, json=contact_route)
@@ -3753,7 +3754,8 @@ def add_domain_with_proxy(domain, port):
                 "read_timeout": "600s",
                 "write_timeout": "600s"
             }
-        }]
+        }],
+        "terminal": True
     }
     time.sleep(1)
     # Step 3: Add new routes by posting them separately
