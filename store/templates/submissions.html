@@ -16,6 +16,9 @@
                   <th>Data</th>
                   <th>Processed</th>
                   <th>Source IP</th>
+                  <th>User Agent</th>
+                  <th>Referer</th>
+                  <th>Origin</th>
                   <th>Created At</th>
                 </tr>
               </thead>
@@ -25,12 +28,21 @@
                     <td>{{ submission.pk }}</td>
                     <td>{{ submission.domain }}</td>
                     <td>
-                        <pre style="white-space: pre-wrap; word-wrap: break-word;">{{ submission.data }}</pre>
+                      <pre style="white-space: pre-wrap; word-wrap: break-word;">{{ submission.data }}</pre>
                     </td>
-
-
                     <td>{{ submission.is_processed }}</td>
                     <td>{{ submission.source_ip }}</td>
+                    <td>
+                      <small style="display:block; max-width: 200px; overflow: hidden; text-overflow: ellipsis;" title="{{ submission.user_agent }}">
+                        {{ submission.user_agent }}
+                      </small>
+                    </td>
+                    <td>
+                      <a href="{{ submission.referer }}" target="_blank">{{ submission.referer|default:"-" }}</a>
+                    </td>
+                    <td>
+                      <a href="{{ submission.origin }}" target="_blank">{{ submission.origin|default:"-" }}</a>
+                    </td>
                     <td>{{ submission.created_at }}</td>
                   </tr>
                 {% endfor %}

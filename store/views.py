@@ -3631,28 +3631,31 @@ def set_landing_page_inactive(request, pk):
 @csrf_exempt
 @require_POST
 def submit_form(request):
-    # Capture the domain from the request
+    # Capture metadata from request headers
     domain = request.get_host()  # e.g., "example.com"
-
-    # Capture the source IP address from the request
     source_ip = get_client_ip(request)
+    user_agent = request.META.get('HTTP_USER_AGENT', '')  # Browser user agent
+    referer = request.META.get('HTTP_REFERER', '')  # URL of the page that sent the request
+    origin = request.META.get('HTTP_ORIGIN', '')  # Origin of the request
 
     # Try to parse JSON from the request body
     try:
         form_data = json.loads(request.body)
     except json.JSONDecodeError:
-        # Fallback to request.POST in case of form-encoded data
         form_data = request.POST.dict()
 
-    # Create a new form submission instance
+    # Create a new form submission instance with all fields
     submission = FormSubmission.objects.create(
         domain=domain,
-        data=json.dumps(form_data),
+        data=form_data,  # JSONField supports dict storage
         source_ip=source_ip,
-        is_processed=False  # default value
+        is_processed=False,
+        user_agent=user_agent,
+        referer=referer,
+        origin=origin
     )
 
-    # Return a JSON response indicating the form was submitted successfully
+    # Return a JSON response indicating success
     return JsonResponse({'message': 'Form submitted successfully'})
 
 

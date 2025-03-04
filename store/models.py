@@ -875,7 +875,19 @@ class FormSubmission(models.Model):
         default=False,
         help_text="Indicates whether the submission has been processed."
     )
+
+    referer = models.URLField(
+        help_text="URL of the page where the form was submitted from.",
+        blank=True,
+        null=True
+    )
     
+    origin = models.URLField(
+        help_text="Origin of the request (protocol, domain, and port).",
+        blank=True,
+        null=True
+    )
+        
     # IP address of the user submitting the form (supports IPv4 and IPv6)
     source_ip = models.CharField(
         max_length=45,
