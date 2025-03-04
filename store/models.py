@@ -875,6 +875,7 @@ class FormSubmission(models.Model):
         default=False,
         help_text="Indicates whether the submission has been processed."
     )
+    user_agent = models.TextField(blank=True, null=True, help_text="User agent string of the submitter's browser.")
 
     referer = models.URLField(
         help_text="URL of the page where the form was submitted from.",
@@ -887,7 +888,7 @@ class FormSubmission(models.Model):
         blank=True,
         null=True
     )
-        
+
     # IP address of the user submitting the form (supports IPv4 and IPv6)
     source_ip = models.CharField(
         max_length=45,
