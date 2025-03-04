@@ -3685,6 +3685,8 @@ def add_domain_with_proxy(domain, port):
     """
     # Step 1: Delete any existing matching routes
     delete_matching_routes(domain)
+    
+    time.sleep(2)
 
     # Add domain to CSRF trusted origins and ALLOWED_HOSTS
     domain_with_scheme = f'http://{domain}'
@@ -3725,7 +3727,7 @@ def add_domain_with_proxy(domain, port):
     }
 
     contact_resp = requests.post(CADDY_API_URL, json=contact_route)
-
+    time.sleep(1)
     # Route 2: Default route for all other requests
     default_route = {
         "@id": f"{domain_id}-default",
@@ -3753,7 +3755,7 @@ def add_domain_with_proxy(domain, port):
             }
         }]
     }
-
+    time.sleep(1)
     # Step 3: Add new routes by posting them separately
     default_resp = requests.post(CADDY_API_URL, json=default_route)
 
@@ -3791,7 +3793,9 @@ def set_landing_page_active(request, pk):
 def set_landing_page_inactive(request, pk):
     landing_page = get_object_or_404(LandingPage, pk=pk)
     delete_matching_routes(landing_page.domain_name)
+    time.sleep(1)
     delete_matching_routes(landing_page.domain_name)
+    time.sleep(1)
     # Check if the landing page is using Docker
     if landing_page.is_docker:
         client = docker.from_env()
