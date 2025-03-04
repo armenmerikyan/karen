@@ -3791,6 +3791,7 @@ def set_landing_page_active(request, pk):
 def set_landing_page_inactive(request, pk):
     landing_page = get_object_or_404(LandingPage, pk=pk)
     delete_matching_routes(landing_page.domain_name)
+    delete_matching_routes(landing_page.domain_name)
     # Check if the landing page is using Docker
     if landing_page.is_docker:
         client = docker.from_env()
