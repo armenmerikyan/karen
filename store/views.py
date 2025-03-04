@@ -3631,32 +3631,53 @@ def set_landing_page_inactive(request, pk):
 @csrf_exempt
 @require_POST
 def submit_form(request):
-    # Capture metadata from request headers
-    domain = request.get_host()  # e.g., "example.com"
-    source_ip = get_client_ip(request)
-    user_agent = request.META.get('HTTP_USER_AGENT', '')  # Browser user agent
-    referer = request.META.get('HTTP_REFERER', '')  # URL of the page that sent the request
-    origin = request.META.get('HTTP_ORIGIN', '')  # Origin of the request
-
-    # Try to parse JSON from the request body
     try:
-        form_data = json.loads(request.body)
-    except json.JSONDecodeError:
-        form_data = request.POST.dict()
+        print("Received form submission request.")
 
-    # Create a new form submission instance with all fields
-    submission = FormSubmission.objects.create(
-        domain=domain,
-        data=form_data,  # JSONField supports dict storage
-        source_ip=source_ip,
-        is_processed=False,
-        user_agent=user_agent,
-        referer=referer,
-        origin=origin
-    )
+        # Capture metadata from request headers
+        domain = request.get_host()  # e.g., "example.com"
+        source_ip = get_client_ip(request)
+        user_agent = request.META.get('HTTP_USER_AGENT', '')  # Browser user agent
+        referer = request.META.get('HTTP_REFERER', '')  # URL of the page that sent the request
+        origin = request.META.get('HTTP_ORIGIN', '')  # Origin of the request
 
-    # Return a JSON response indicating success
-    return JsonResponse({'message': 'Form submitted successfully'})
+        print(f"Domain: {domain}")
+        print(f"Source IP: {source_ip}")
+        print(f"User Agent: {user_agent}")
+        print(f"Referer: {referer}")
+        print(f"Origin: {origin}")
+
+        # Try to parse JSON from the request body
+        try:
+            form_data = json.loads(request.body)
+            print("Form data received as JSON:", form_data)
+        except json.JSONDecodeError:
+            form_data = request.POST.dict()
+            print("Form data received as form-encoded:", form_data)
+
+        # Ensure form_data is properly formatted before saving
+        if not isinstance(form_data, dict):
+            raise ValueError("Form data is not a valid dictionary.")
+
+        # Create a new form submission instance with all fields
+        submission = FormSubmission.objects.create(
+            domain=domain,
+            data=form_data,  # JSONField supports dict storage
+            source_ip=source_ip,
+            is_processed=False,
+            user_agent=user_agent,
+            referer=referer,
+            origin=origin
+        )
+
+        print(f"Form submission saved with ID: {submission.pk}")
+
+        # Return a JSON response indicating success
+        return JsonResponse({'message': 'Form submitted successfully'})
+
+    except Exception as e:
+        print("Error occurred:", str(e))
+        return JsonResponse({'error': 'Failed to process form', 'details': str(e)}, status=500)
 
 
 
