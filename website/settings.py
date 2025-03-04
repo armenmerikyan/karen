@@ -4,7 +4,8 @@ from pathlib import Path
 import random
 import string
 
- 
+CORS_ALLOW_ALL_ORIGINS = True  # Don't use in production
+
 
 def generate_secret_key(length=50):
     """Generates a random secret key."""
@@ -105,7 +106,7 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
 ) 
 
-MIDDLEWARE = [
+MIDDLEWARE = [ 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
