@@ -3709,7 +3709,7 @@ def add_domain_with_proxy(domain, port):
     # Route 1: For /contact_us_api paths
     contact_route = {
         "@id": f"{domain_id}-contact",
-        "terminal": True,
+        "terminal": true,
         "match": [
             {"host": [domain]},
             {"path": ["/contact_us_api/**"]}
