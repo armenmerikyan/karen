@@ -3542,6 +3542,10 @@ def add_domain_with_proxy(domain, port):
     if domain not in settings.ALLOWED_HOSTS:
         settings.ALLOWED_HOSTS.append(domain)
 
+    if domain_with_scheme not in settings.CORS_ALLOWED_ORIGINS:
+        settings.CORS_ALLOWED_ORIGINS.append(domain_with_scheme)
+    
+
     # Normalize domain ID for Caddy
     domain_id = domain.replace('.', '-')
 
