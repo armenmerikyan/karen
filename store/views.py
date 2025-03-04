@@ -3725,7 +3725,7 @@ def add_domain_with_proxy(domain, port):
     }
 
     contact_resp = requests.post(CADDY_API_URL, json=contact_route)
-    
+
     # Route 2: Default route for all other requests
     default_route = {
         "@id": f"{domain_id}-default",
@@ -3790,7 +3790,7 @@ def set_landing_page_active(request, pk):
 @admin_required 
 def set_landing_page_inactive(request, pk):
     landing_page = get_object_or_404(LandingPage, pk=pk)
-    remove_domain_proxy(landing_page.domain_name)
+    delete_matching_routes(landing_page.domain_name)
     # Check if the landing page is using Docker
     if landing_page.is_docker:
         client = docker.from_env()
