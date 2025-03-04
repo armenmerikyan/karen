@@ -3500,28 +3500,38 @@ def remove_domain_proxy(domain):
 
 def delete_matching_routes(domain):
     """
-    Deletes all routes that match the given domain.
+    Deletes all routes that match the given domain from the Caddy configuration.
+    This version looks inside the HTTP servers in the Caddy config.
     """
-    domain_id = domain.replace('.', '-')
+    # Get the current Caddy config
+    config_response = requests.get(CADDY_API_URL)
+    if config_response.status_code != 200:
+        print(f"Failed to fetch configuration: {config_response.text}")
+        return
 
-    # Step 1: Get current routes to find existing entries
-    routes_response = requests.get(CADDY_API_URL)
-    
-    if routes_response.status_code == 200:
-        routes = routes_response.json()
-        
-        # Step 2: Find and delete the matching routes
-        for index, route in enumerate(routes):
-            if any(match.get('host') == [domain] for match in route.get('match', [])):
-                delete_url = f"{CADDY_API_URL}/{index}"
-                delete_response = requests.delete(delete_url)
-                
-                if delete_response.status_code == 200:
-                    print(f"Route for domain {domain} deleted successfully.")
-                else:
-                    print(f"Failed to delete route for domain {domain}: {delete_response.text}")
-    else:
-        print(f"Failed to fetch routes: {routes_response.text}")
+    config = config_response.json()
+
+    # Traverse the config to get the servers and their routes
+    http_apps = config.get("apps", {}).get("http", {}).get("servers", {})
+    for server_name, server_data in http_apps.items():
+        routes = server_data.get("routes", [])
+        # Iterate in reverse order so deleting items doesn't affect the index iteration
+        for i in range(len(routes) - 1, -1, -1):
+            route = routes[i]
+            # Check if any matcher in the route has a host match equal to [domain]
+            matches = route.get("match", [])
+            for matcher in matches:
+                if matcher.get("host") == [domain]:
+                    # Construct a deletion URL.
+                    # The deletion endpoint may be like: {CADDY_API_URL}/{server_name}/routes/{index}
+                    delete_url = f"{CADDY_API_URL}/{server_name}/routes/{i}"
+                    delete_response = requests.delete(delete_url)
+                    if delete_response.status_code == 200:
+                        print(f"Route for domain {domain} deleted successfully from server {server_name}.")
+                    else:
+                        print(f"Failed to delete route for domain {domain} from server {server_name}: {delete_response.text}")
+                    break  # Found a matching host in this route; move to the next route.
+
 '''
 def add_domain_with_proxy(domain, port):
     """
@@ -3699,6 +3709,7 @@ def add_domain_with_proxy(domain, port):
     # Route 1: For /contact_us_api paths
     contact_route = {
         "@id": f"{domain_id}-contact",
+        "terminal": True,
         "match": [
             {"host": [domain]},
             {"path": ["/contact_us_api/**"]}
