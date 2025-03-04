@@ -3699,10 +3699,9 @@ def add_domain_with_proxy(domain, port):
     # Route 1: For /contact_us_api paths
     contact_route = {
         "@id": f"{domain_id}-contact",
-        "terminal": True,
         "match": [
             {"host": [domain]},
-            {"path": ["/contact_us_api/**"]}
+            {"path": ["/contact_us_api/"]}
         ],
         "handle": [{
             "handler": "reverse_proxy",
@@ -3725,12 +3724,14 @@ def add_domain_with_proxy(domain, port):
         }]
     }
 
+    contact_resp = requests.post(CADDY_API_URL, json=contact_route)
+    
     # Route 2: Default route for all other requests
     default_route = {
         "@id": f"{domain_id}-default",
         "match": [
             {"host": [domain]},
-            {"path": ["!/contact_us_api/**", "/**"]}  # Catch-all path match for all traffic
+            {"path": ["!/contact_us_api/", "/**"]}  # Catch-all path match for all traffic
         ],
         "handle": [{
             "handler": "reverse_proxy",
@@ -3754,7 +3755,6 @@ def add_domain_with_proxy(domain, port):
     }
 
     # Step 3: Add new routes by posting them separately
-    contact_resp = requests.post(CADDY_API_URL, json=contact_route)
     default_resp = requests.post(CADDY_API_URL, json=default_route)
 
     if contact_resp.status_code == 200 and default_resp.status_code == 200:
