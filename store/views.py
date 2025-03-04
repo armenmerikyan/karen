@@ -3723,12 +3723,9 @@ def add_domain_with_proxy(domain, port):
                 "read_timeout": "600s",
                 "write_timeout": "600s"
             }
-        }],
-        "terminal": True
+        }]
     }
 
-    contact_resp = requests.post(CADDY_API_URL, json=contact_route)
-    time.sleep(1)
     # Route 2: Default route for all other requests
     default_route = {
         "@id": f"{domain_id}-default",
@@ -3753,12 +3750,13 @@ def add_domain_with_proxy(domain, port):
                 "read_timeout": "600s",
                 "write_timeout": "600s"
             }
-        }],
-        "terminal": True
+        }]
     }
-    time.sleep(1)
     # Step 3: Add new routes by posting them separately
+    time.sleep(1)
     default_resp = requests.post(CADDY_API_URL, json=default_route)
+    time.sleep(1)
+    contact_resp = requests.post(CADDY_API_URL, json=contact_route)
 
     if contact_resp.status_code == 200 and default_resp.status_code == 200:
         print(f"Domain {domain} added successfully!")
