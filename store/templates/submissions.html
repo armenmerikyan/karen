@@ -38,20 +38,13 @@
                       </small>
                     </td>
 
-                    <td>
-                      <div style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                        <a href="{{ submission.referer }}" target="_blank" title="{{ submission.referer }}">
-                          {{ submission.referer|default:"-" }}
-                        </a>
-                      </div>
+                    <td style="word-wrap: break-word; white-space: normal;">
+                      <a href="{{ submission.referer }}" target="_blank">{{ submission.referer|default:"-" }}</a>
                     </td>
-                    <td>
-                      <div style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                        <a href="{{ submission.origin }}" target="_blank" title="{{ submission.origin }}">
-                          {{ submission.origin|default:"-" }}
-                        </a>
-                      </div>
+                    <td style="word-wrap: break-word; white-space: normal;">
+                      <a href="{{ submission.origin }}" target="_blank">{{ submission.origin|default:"-" }}</a>
                     </td>
+                    
 
                     <td>{{ submission.created_at }}</td>
                   </tr>
