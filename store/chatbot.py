@@ -565,7 +565,7 @@ def chatbot_response(request):
                 conversation = Conversation.objects.create(user=request.user)
 
             # Fetch the last 10 messages from the conversation history
-            recent_messages = Message.objects.filter(conversation=conversation).order_by('-created_at')[:10]
+            recent_messages = Message.objects.filter(conversation=conversation).order_by('-timestamp')[:10]
 
             # Format them properly for OpenAI's API
             for msg in reversed(recent_messages):  # Reverse to maintain chronological order
