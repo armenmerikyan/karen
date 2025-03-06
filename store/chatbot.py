@@ -459,7 +459,7 @@ def chatbot_response(request):
         print("USER INTENT:", user_intent)
         print("ENTITY:", entity)
         #Unknown 
-        if not error_occurred and user_intent is not None and entity is not None:
+        if not error_occurred and user_intent not in [None, "Unknown"] and entity not in [None, "Unknown"]:
             try:
                 FormClass = globals().get(entity)  # Retrieve form class dynamically
                 if FormClass and issubclass(FormClass, forms.ModelForm):  # Ensure it's a ModelForm
