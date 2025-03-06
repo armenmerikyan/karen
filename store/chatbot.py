@@ -556,28 +556,29 @@ def chatbot_response(request):
 
         print("System Message: ", system_message)
 
-        messages = [
-            {"role": "system", "content": system_message},
-            {"role": "user", "content": user_message}  # Include the user's message
-        ]
+        messages = [{"role": "system", "content": system_message}]
 
+        # Retrieve the latest conversation for the user
+        conversation = Conversation.objects.filter(user=request.user).order_by('-created_at').first()
 
+        if not conversation:
+            conversation = Conversation.objects.create(user=request.user)
+
+        # Fetch the last 10 messages from the conversation history
+        recent_messages = Message.objects.filter(conversation=conversation).order_by('-created_at')[:10]
+
+        # Format them properly for OpenAI's API
+        for msg in reversed(recent_messages):  # Reverse to maintain chronological order
+            messages.append({"role": msg.role, "content": msg.content})
+
+        # Append the new user message
+        messages.append({"role": "user", "content": user_message})
 
         fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
-        print("Fine-tune status:", fine_tune_status)
-        print("TEST") 
-        print("TEST ", fine_tune_status.status)
-
         if fine_tune_status.status == 'succeeded':
-            # Use the model ID for the fine-tuned model
             model_id = fine_tune_status.fine_tuned_model
         else:
-            # If still processing or failed, use a fallback model
             model_id = "gpt-3.5-turbo"
-
-        print(model_id)
-
-        print("TEST ", model_id)
 
         try:
             # Call the OpenAI API
@@ -588,11 +589,6 @@ def chatbot_response(request):
 
             # Extract the bot's reply
             bot_reply = response.choices[0].message.content
-
-            # Retrieve the most recent conversation for the user or create a new one
-            conversation = Conversation.objects.filter(user=request.user).order_by('-created_at').first()
-            if not conversation:
-                conversation = Conversation.objects.create(user=request.user)
 
             # Save the user's message
             Message.objects.create(
