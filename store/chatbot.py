@@ -555,32 +555,32 @@ def chatbot_response(request):
             print("SAVING THE INTAKE INFORMATION")
 
         print("System Message: ", system_message)
-
-        messages = [{"role": "system", "content": system_message}]
-
-        # Retrieve the latest conversation for the user
-        conversation = Conversation.objects.filter(user=request.user).order_by('-created_at').first()
-
-        if not conversation:
-            conversation = Conversation.objects.create(user=request.user)
-
-        # Fetch the last 10 messages from the conversation history
-        recent_messages = Message.objects.filter(conversation=conversation).order_by('-created_at')[:10]
-
-        # Format them properly for OpenAI's API
-        for msg in reversed(recent_messages):  # Reverse to maintain chronological order
-            messages.append({"role": msg.role, "content": msg.content})
-
-        # Append the new user message
-        messages.append({"role": "user", "content": user_message})
-
-        fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
-        if fine_tune_status.status == 'succeeded':
-            model_id = fine_tune_status.fine_tuned_model
-        else:
-            model_id = "gpt-3.5-turbo"
-
         try:
+            messages = [{"role": "system", "content": system_message}]
+
+            # Retrieve the latest conversation for the user
+            conversation = Conversation.objects.filter(user=request.user).order_by('-created_at').first()
+
+            if not conversation:
+                conversation = Conversation.objects.create(user=request.user)
+
+            # Fetch the last 10 messages from the conversation history
+            recent_messages = Message.objects.filter(conversation=conversation).order_by('-created_at')[:10]
+
+            # Format them properly for OpenAI's API
+            for msg in reversed(recent_messages):  # Reverse to maintain chronological order
+                messages.append({"role": msg.role, "content": msg.content})
+
+            # Append the new user message
+            messages.append({"role": "user", "content": user_message})
+
+            fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
+            if fine_tune_status.status == 'succeeded':
+                model_id = fine_tune_status.fine_tuned_model
+            else:
+                model_id = "gpt-3.5-turbo"
+
+
             # Call the OpenAI API
             response = client.chat.completions.create(
                 model=model_id,  # Use the fine-tuned model or fallback model
