@@ -423,7 +423,7 @@ def chatbot_response(request):
     print("API Key:", profile.chatgpt_api_key)  # Debugging: Print API key
 
     user = get_object_or_404(User, id=request.user.id)  # Adjust based on how you fetch the user
-    
+    user_message = ''
     if request.method == "POST":
         # Check if the user is authenticated
         if not request.user.is_authenticated:
