@@ -564,7 +564,7 @@ def chatbot_response(request):
             if not conversation:
                 conversation = Conversation.objects.create(user=request.user)
 
-            # Fetch the last 10 messages from the conversation history
+            # Fetch the last 10 messages from the conversation history using the correct field 'timestamp'
             recent_messages = Message.objects.filter(conversation=conversation).order_by('-timestamp')[:10]
 
             # Format them properly for OpenAI's API
@@ -575,11 +575,7 @@ def chatbot_response(request):
             messages.append({"role": "user", "content": user_message})
 
             fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
-            if fine_tune_status.status == 'succeeded':
-                model_id = fine_tune_status.fine_tuned_model
-            else:
-                model_id = "gpt-3.5-turbo"
-
+            model_id = fine_tune_status.fine_tuned_model if fine_tune_status.status == 'succeeded' else "gpt-3.5-turbo"
 
             # Call the OpenAI API
             response = client.chat.completions.create(
@@ -610,5 +606,6 @@ def chatbot_response(request):
             # Handle any errors from the OpenAI API
             print("OpenAI API Error:", str(e))  # Debugging: Print API error
             return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
+ 
 
     return JsonResponse({"error": "Invalid request"}, status=400)
