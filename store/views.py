@@ -3301,11 +3301,15 @@ def conversation_list(request):
     
     # Link conversations with customers based on email
     for conversation in conversations:
-        try:
-            customer = Customer.objects.get(email=conversation.user.email)
-            conversation.customer = customer
-        except Customer.DoesNotExist:
+        if conversation.user:
+            try:
+                customer = Customer.objects.get(email=conversation.user.email)
+                conversation.customer = customer
+            except Customer.DoesNotExist:
+                conversation.customer = None
+        else:
             conversation.customer = None
+
     
     return render(request, "conversation_list.html", {"conversations": conversations, 'profile': profile})
 
