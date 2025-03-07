@@ -424,10 +424,10 @@ def get_landing_page(request):
         landing_page = LandingPage.objects.get(domain_name=domain_name, is_activated=True)
         landing_page.visitor_count += 1
         landing_page.save()
+        return landing_page
     except LandingPage.DoesNotExist:
-        return HttpResponse('Landing page not found or inactive.', status=404)
+        return None
 
-    return HttpResponse(f'Landing Page: {landing_page.name}')
 
 @csrf_exempt
 def chatbot_response_public(request):
