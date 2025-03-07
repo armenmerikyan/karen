@@ -230,8 +230,7 @@ import pdfrw
 
 import tempfile
 
-import geoip2.database
-from user_agents import parse
+import geoip2.database 
 import maxminddb
  
 from django import forms
@@ -409,20 +408,20 @@ def populate_and_save_form(user):
         return f"Error in populate_and_save_form: {e}"
 
 def get_landing_page(request):
-    user_agent = request.META.get('HTTP_USER_AGENT', '')
-    referer = request.META.get('HTTP_REFERER', '')
-    origin = request.META.get('HTTP_ORIGIN', '')
+    try:
+        user_agent = request.META.get('HTTP_USER_AGENT', '')
+        referer = request.META.get('HTTP_REFERER', '')
+        origin = request.META.get('HTTP_ORIGIN', '')
 
-    # Use 'origin' or 'referer' to extract the domain name to match with LandingPage
-    domain = origin or referer
+        # Use 'origin' or 'referer' to extract the domain name to match with LandingPage
+        domain = origin or referer
 
-    # Extract just the domain without path (e.g., 'https://example.com' -> 'example.com')
-    from urllib.parse import urlparse
-    parsed_url = urlparse(domain)
-    domain_name = parsed_url.hostname or ''
+        # Extract just the domain without path (e.g., 'https://example.com' -> 'example.com')
+        from urllib.parse import urlparse
+        parsed_url = urlparse(domain)
+        domain_name = parsed_url.hostname or ''
 
     # Get the matching LandingPage
-    try:
         landing_page = LandingPage.objects.get(domain_name=domain_name, is_activated=True)
         landing_page.visitor_count += 1
         landing_page.save()
