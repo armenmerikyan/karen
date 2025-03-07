@@ -113,6 +113,7 @@ from .models import QuestionAnswer
 from .models import Conversation, Message
 from .models import Visitor  
 from .models import Referral
+from .models import LandingPage
 
 from .forms import ReferralForm
 from .forms import SimpleCustomerForm
@@ -407,6 +408,28 @@ def populate_and_save_form(user):
     except Exception as e:
         return f"Error in populate_and_save_form: {e}"
 
+def get_landing_page(request):
+    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    referer = request.META.get('HTTP_REFERER', '')
+    origin = request.META.get('HTTP_ORIGIN', '')
+
+    # Use 'origin' or 'referer' to extract the domain name to match with LandingPage
+    domain = origin or referer
+
+    # Extract just the domain without path (e.g., 'https://example.com' -> 'example.com')
+    from urllib.parse import urlparse
+    parsed_url = urlparse(domain)
+    domain_name = parsed_url.hostname or ''
+
+    # Get the matching LandingPage
+    try:
+        landing_page = LandingPage.objects.get(domain_name=domain_name, is_activated=True)
+        landing_page.visitor_count += 1
+        landing_page.save()
+    except LandingPage.DoesNotExist:
+        return HttpResponse('Landing page not found or inactive.', status=404)
+
+    return HttpResponse(f'Landing Page: {landing_page.name}')
 
 @csrf_exempt
 def chatbot_response_public(request):
@@ -427,6 +450,8 @@ def chatbot_response_public(request):
  
 
         # Parse the user's message from the request body
+        landingpage =  get_landing_page(request)
+        
         try:
             data = json.loads(request.body)
             user_message = data.get("message", "")
@@ -443,7 +468,7 @@ def chatbot_response_public(request):
         
 
         # Include business context about 'About Us' and ensure a short, concise response
-        system_message = f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."
+        system_message = f"You are a helpful chatbot assistant for a company. Here is some information about the website : {landingpage.description}. The goal for the website is {landingpage.goal}. Please keep your responses really short and to the point."
 
         # If the user is in the middle of providing information for a specific field, update the message
  
