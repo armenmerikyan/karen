@@ -182,7 +182,9 @@ urlpatterns = [
  
     path('download/<int:product_id>/', views.secure_download, name='secure_download'),
 
-    path('chatbot-response/', chatbot.chatbot_response, name='chatbot_response'),
+    path('chatbot-response/', chatbot.chatbot_response_private, name='chatbot_response'),
+
+    path('chatbot-response-public/', chatbot.chatbot_response_public, name='chatbot_response_hosted'),
 
     path("train-products/", views.train_product_model, name="train-products"),
 

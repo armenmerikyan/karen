@@ -408,9 +408,8 @@ def populate_and_save_form(user):
         return f"Error in populate_and_save_form: {e}"
 
 
-
 @csrf_exempt
-def chatbot_response(request):
+def chatbot_response_public(request):
     # Fetch the latest WebsiteProfile
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
@@ -426,8 +425,6 @@ def chatbot_response(request):
     user_message = ''
     if request.method == "POST":
         # Check if the user is authenticated
-        if not request.user.is_authenticated:
-            return JsonResponse({"response": "Please log in to use the chat feature."})
 
         print("User Authenticated:", request.user.is_authenticated)  # Debugging: Print authentication status
 
@@ -609,3 +606,10 @@ def chatbot_response(request):
  
 
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+@csrf_exempt
+def chatbot_response_private(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"response": "Please log in to use the chat feature."})
+
+    return chatbot_response_public(request)
