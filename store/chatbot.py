@@ -408,8 +408,7 @@ def populate_and_save_form(user):
         return f"Error in populate_and_save_form: {e}"
 
 def get_landing_page(request):
-    try:
-        user_agent = request.META.get('HTTP_USER_AGENT', '')
+    try: 
         referer = request.META.get('HTTP_REFERER', '')
         origin = request.META.get('HTTP_ORIGIN', '')
 
@@ -449,8 +448,9 @@ def chatbot_response_public(request):
  
 
         # Parse the user's message from the request body
-        landingpage =  get_landing_page(request)
         
+        landingpage =  get_landing_page(request)
+
         try:
             data = json.loads(request.body)
             user_message = data.get("message", "")
