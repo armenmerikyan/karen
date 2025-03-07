@@ -443,11 +443,14 @@ def chatbot_response_public(request):
     print("API Key:", profile.chatgpt_api_key)  # Debugging: Print API key
  
     user_message = ''
+    clientId = ''
     if request.method == "POST":
         # Parse the user's message from the request body
         try:
             data = json.loads(request.body)
             user_message = data.get("message", "")
+            clientId = data.get("clientId", "")
+            print('clientId: ', clientId)
             if not user_message:
                 return JsonResponse({"error": "No message provided"}, status=400)
         except json.JSONDecodeError:
