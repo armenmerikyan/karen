@@ -7,7 +7,15 @@
         <div class="card mb-3">
             <div class="card-header">
                 <h3>Conversation ID: {{ conversation.id }}</h3>
-                <p>Started by: {{ conversation.user.username }} {{ conversation.user.email }}</p>
+                <p>Started by: 
+                    {% if conversation.user %}
+                        {{ conversation.user.username }} ({{ conversation.user.email }})
+                    {% elif conversation.client_id %}
+                        Client ID: {{ conversation.client_id }}
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </p>
                 <p>Created at: {{ conversation.created_at }}</p>
                 {% if conversation.customer %}
                     <p>Customer: 
@@ -20,6 +28,7 @@
                 {% else %}
                     <p>No associated customer</p> 
                 {% endif %}
+                
                 <button class="btn btn-primary toggle-messages" type="button" data-bs-toggle="collapse" data-bs-target="#messages-{{ conversation.id }}" aria-expanded="false" aria-controls="messages-{{ conversation.id }}">
                     <span class="button-text">Show</span>
                     <i class="fas fa-chevron-down"></i>
