@@ -428,74 +428,65 @@ def get_landing_page(request):
     except LandingPage.DoesNotExist:
         return None
 
-
 @csrf_exempt
 def chatbot_response_public(request):
-    # Fetch the latest WebsiteProfile
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
 
-    # Ensure the ChatGPT API key is available
     if not profile.chatgpt_api_key:
         return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
 
-    print("API Key:", profile.chatgpt_api_key)  # Debugging: Print API key
- 
-    user_message = ''
-    clientId = ''
     if request.method == "POST":
-        # Parse the user's message from the request body
         try:
             data = json.loads(request.body)
             user_message = data.get("message", "")
-            clientId = data.get("clientId", "")
-            print('clientId: ', clientId)
-            if not user_message:
-                return JsonResponse({"error": "No message provided"}, status=400)
+            client_id = data.get("clientId", "")
+            if not user_message or not client_id:
+                return JsonResponse({"error": "Message and clientId are required."}, status=400)
         except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
+            return JsonResponse({"error": "Invalid JSON in request body."}, status=400)
 
-        print("Request Data:", data)  # Debugging: Print request data
- 
-        # Initialize the OpenAI client with the API key from the profile
         client = OpenAI(api_key=profile.chatgpt_api_key)
 
+        landingpage = get_landing_page(request)
+
+        system_message = f"You are a helpful chatbot assistant for a company. Here is some information about the website: {landingpage.description}. The goal for the website is {landingpage.goal}. Please keep your responses really short and to the point."
+
+        messages = [{"role": "system", "content": system_message}]
+
+        conversation = Conversation.objects.filter(client_id=client_id).order_by('-created_at').first()
+        if not conversation:
+            conversation = Conversation.objects.create(client_id=client_id)
+
+        recent_messages = Message.objects.filter(conversation=conversation).order_by('-timestamp')[:10]
+
+        for msg in reversed(recent_messages):
+            messages.append({"role": msg.role, "content": msg.content})
+
+        messages.append({"role": "user", "content": user_message})
+
+        fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
+        model_id = fine_tune_status.fine_tuned_model if fine_tune_status.status == 'succeeded' else "gpt-3.5-turbo"
+
         try:
-            landingpage =  get_landing_page(request)
-
-            # Include business context about 'About Us' and ensure a short, concise response
-            system_message = f"You are a helpful chatbot assistant for a company. Here is some information about the website : {landingpage.description}. The goal for the website is {landingpage.goal}. Please keep your responses really short and to the point."
-
-            # If the user is in the middle of providing information for a specific field, update the message    
-            print("System Message: ", system_message)
-            messages = [{"role": "system", "content": system_message}]
-
-            # Append the new user message
-            messages.append({"role": "user", "content": user_message})
-
-            fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
-            model_id = fine_tune_status.fine_tuned_model if fine_tune_status.status == 'succeeded' else "gpt-3.5-turbo"
-
-            # Call the OpenAI API
             response = client.chat.completions.create(
-                model=model_id,  # Use the fine-tuned model or fallback model
-                messages=messages  # Use the correct message structure
+                model=model_id,
+                messages=messages
             )
 
-            # Extract the bot's reply
             bot_reply = response.choices[0].message.content
- 
+
+            Message.objects.create(conversation=conversation, role="user", content=user_message)
+            Message.objects.create(conversation=conversation, role="assistant", content=bot_reply)
 
             return JsonResponse({"response": bot_reply})
 
         except Exception as e:
-            # Handle any errors from the OpenAI API
-            print("OpenAI API Error:", str(e))  # Debugging: Print API error
             return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
- 
 
     return JsonResponse({"error": "Invalid request"}, status=400)
+
 
 @csrf_exempt
 def chatbot_response_private(request):
