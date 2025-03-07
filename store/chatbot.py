@@ -420,13 +420,11 @@ def chatbot_response_public(request):
         return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
 
     print("API Key:", profile.chatgpt_api_key)  # Debugging: Print API key
-
-    user = get_object_or_404(User, id=request.user.id)  # Adjust based on how you fetch the user
+ 
     user_message = ''
     if request.method == "POST":
         # Check if the user is authenticated
-
-        print("User Authenticated:", request.user.is_authenticated)  # Debugging: Print authentication status
+ 
 
         # Parse the user's message from the request body
         try:
