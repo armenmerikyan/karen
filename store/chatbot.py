@@ -444,13 +444,7 @@ def chatbot_response_public(request):
  
     user_message = ''
     if request.method == "POST":
-        # Check if the user is authenticated
- 
-
         # Parse the user's message from the request body
-        
-        landingpage =  get_landing_page(request)
-
         try:
             data = json.loads(request.body)
             user_message = data.get("message", "")
@@ -464,19 +458,15 @@ def chatbot_response_public(request):
         # Initialize the OpenAI client with the API key from the profile
         client = OpenAI(api_key=profile.chatgpt_api_key)
 
-        
-
-        # Include business context about 'About Us' and ensure a short, concise response
-        system_message = f"You are a helpful chatbot assistant for a company. Here is some information about the website : {landingpage.description}. The goal for the website is {landingpage.goal}. Please keep your responses really short and to the point."
-
-        # If the user is in the middle of providing information for a specific field, update the message
- 
-        print("System Message: ", system_message)
         try:
-            messages = [{"role": "system", "content": system_message}]
+            landingpage =  get_landing_page(request)
 
-            # Retrieve the latest conversation for the user 
-  
+            # Include business context about 'About Us' and ensure a short, concise response
+            system_message = f"You are a helpful chatbot assistant for a company. Here is some information about the website : {landingpage.description}. The goal for the website is {landingpage.goal}. Please keep your responses really short and to the point."
+
+            # If the user is in the middle of providing information for a specific field, update the message    
+            print("System Message: ", system_message)
+            messages = [{"role": "system", "content": system_message}]
 
             # Append the new user message
             messages.append({"role": "user", "content": user_message})
