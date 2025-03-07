@@ -438,6 +438,83 @@ def chatbot_response_public(request):
             return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
 
         print("Request Data:", data)  # Debugging: Print request data
+ 
+        # Initialize the OpenAI client with the API key from the profile
+        client = OpenAI(api_key=profile.chatgpt_api_key)
+
+        
+
+        # Include business context about 'About Us' and ensure a short, concise response
+        system_message = f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."
+
+        # If the user is in the middle of providing information for a specific field, update the message
+ 
+        print("System Message: ", system_message)
+        try:
+            messages = [{"role": "system", "content": system_message}]
+
+            # Retrieve the latest conversation for the user 
+  
+
+            # Append the new user message
+            messages.append({"role": "user", "content": user_message})
+
+            fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
+            model_id = fine_tune_status.fine_tuned_model if fine_tune_status.status == 'succeeded' else "gpt-3.5-turbo"
+
+            # Call the OpenAI API
+            response = client.chat.completions.create(
+                model=model_id,  # Use the fine-tuned model or fallback model
+                messages=messages  # Use the correct message structure
+            )
+
+            # Extract the bot's reply
+            bot_reply = response.choices[0].message.content
+ 
+
+            return JsonResponse({"response": bot_reply})
+
+        except Exception as e:
+            # Handle any errors from the OpenAI API
+            print("OpenAI API Error:", str(e))  # Debugging: Print API error
+            return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
+ 
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+@csrf_exempt
+def chatbot_response_private(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"response": "Please log in to use the chat feature."})
+
+    # Fetch the latest WebsiteProfile
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+
+    # Ensure the ChatGPT API key is available
+    if not profile.chatgpt_api_key:
+        return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
+
+    print("API Key:", profile.chatgpt_api_key)  # Debugging: Print API key
+
+    user = get_object_or_404(User, id=request.user.id)  # Adjust based on how you fetch the user
+    user_message = ''
+    if request.method == "POST":
+        # Check if the user is authenticated
+
+        print("User Authenticated:", request.user.is_authenticated)  # Debugging: Print authentication status
+
+        # Parse the user's message from the request body
+        try:
+            data = json.loads(request.body)
+            user_message = data.get("message", "")
+            if not user_message:
+                return JsonResponse({"error": "No message provided"}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
+
+        print("Request Data:", data)  # Debugging: Print request data
         error_occurred = False
 
         if not user.current_intent and not user.current_entity and not user.current_field:
@@ -606,10 +683,3 @@ def chatbot_response_public(request):
  
 
     return JsonResponse({"error": "Invalid request"}, status=400)
-
-@csrf_exempt
-def chatbot_response_private(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({"response": "Please log in to use the chat feature."})
-
-    return chatbot_response_public(request)
