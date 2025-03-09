@@ -451,7 +451,7 @@ def chatbot_response_public(request):
 
         landingpage = get_landing_page(request)
 
-        system_message = f"You are a helpful chatbot assistant for a company. Here is some information about the website: {landingpage.description}. The goal for the website is {landingpage.goal}. Please keep your responses really short (sentance or two) and to the point, because response is is shown in small chatbot window on website ."
+        system_message = f"You are a helpful chatbot assistant for a company. Here is some information about the website: {landingpage.description}. The goal for the website is {landingpage.goal}. Please keep your responses really short (sentance or two, max 200 characters) and to the point, because response is is shown in small chatbot window on website ."
 
         messages = [{"role": "system", "content": system_message}]
 
