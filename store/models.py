@@ -592,6 +592,7 @@ class Customer(models.Model):
     last_name = models.CharField(max_length=100, help_text="Enter the customer's last name.")
     email = models.EmailField(unique=True, help_text="Enter a unique email address for the customer.")
     phone_number = models.CharField(max_length=15, blank=True, null=True, help_text="Enter the customer's phone number (optional).")
+    business_name = models.CharField(max_length=100, blank=True, null=True, help_text="Enter the customer's business name.")
 
     # Address Details
     address1 = models.CharField(max_length=255, blank=True, null=True, help_text="Enter the primary street address.")
