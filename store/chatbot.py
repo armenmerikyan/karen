@@ -433,9 +433,13 @@ def fetch_mcp_data():
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     """Fetches MCP API data for business context."""
     try:
-        mcp_response = openai.OpenAI(profile.chatgpt_api_key).chat.completions.create(
+        client = openai.OpenAI(api_key=profile.chatgpt_api_key)
+        mcp_response = client.chat.completions.create(
             model="gpt-4-turbo",
-            messages=[{"role": "system", "content": "Fetch business context from MCP API"}],
+            messages=[
+                {"role": "system", "content": "Fetch business context from MCP API"},
+                {"role": "user", "content": "Provide business information"}
+            ],
             tools=[{
                 "type": "function",
                 "function": {
@@ -444,11 +448,18 @@ def fetch_mcp_data():
                     "parameters": {}
                 }
             }],
-            tool_choice="auto"
+            tool_choice={"type": "function", "function": {"name": "MCP_API"}},  # Explicit function call
         )
+
+        # Debugging output
+        print("MCP API Response:", mcp_response)
+
         return mcp_response.choices[0].message.content
+
     except Exception as e:
+        print("Error fetching MCP data:", str(e))  # Log errors
         return f"Error fetching MCP data: {str(e)}"
+
 
 @csrf_exempt
 def chatbot_response_public(request):
