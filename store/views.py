@@ -3711,11 +3711,14 @@ class BusinessDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = BusinessSerializer
 
 
-class BusinessMCPView(APIView):
+class BusinessMCPView(generics.ListAPIView):  # Change to ListAPIView
     """
     Custom MCP-compatible API endpoint.
     """
+    queryset = Business.objects.all()
+    serializer_class = BusinessSerializer  # Add serializer_class
+
     def get(self, request, *args, **kwargs):
-        businesses = Business.objects.all()
+        businesses = self.get_queryset()
         data = [business.to_mcp_context() for business in businesses]
         return Response(data)
