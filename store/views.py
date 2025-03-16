@@ -3746,6 +3746,7 @@ class BusinessMCPView(generics.ListAPIView):
         return Response(data)
     
 
+# 🚫 Completely exclude these views from OpenAPI
 @extend_schema(exclude=True)
 class CreateConversationTopicView(GenericAPIView):
     serializer_class = EmptySerializer
@@ -3792,11 +3793,3 @@ class GetUserQueryView(GenericAPIView):
 
     def get(self, request):
         return Response({"message": "User query retrieved"})
-
-
-@extend_schema(exclude=True)
-class MemoryView(GenericAPIView):
-    serializer_class = EmptySerializer
-
-    def get(self, request):
-        return Response({"message": "Memory retrieved"})    
