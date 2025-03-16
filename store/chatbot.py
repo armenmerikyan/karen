@@ -428,12 +428,13 @@ def get_landing_page(request):
     except LandingPage.DoesNotExist:
         return None
 
-# Function to fetch MCP Data
 def fetch_mcp_data():
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     """Fetches MCP API data for business context."""
     try:
-        client = OpenAI(api_key=profile.chatgpt_api_key)
+        client = openai.OpenAI(api_key=profile.chatgpt_api_key)
+        
+        # Step 1: Ask OpenAI for MCP API function call
         mcp_response = client.chat.completions.create(
             model="gpt-4-turbo",
             messages=[
@@ -451,24 +452,54 @@ def fetch_mcp_data():
             tool_choice={"type": "function", "function": {"name": "MCP_API"}},  # Explicit function call
         )
 
-        # Debugging output
-        print("MCP API Raw Response:", mcp_response)
+        print("🔍 MCP API Raw Response:", mcp_response)
 
-        # Check if there's a tool call response
-        if mcp_response.choices[0].message.tool_calls:
-            tool_call = mcp_response.choices[0].message.tool_calls[0]  # Extract the first tool call
-            function_name = tool_call.function.name
-            arguments = tool_call.function.arguments  # This is the extracted MCP data
+        # Step 2: Extract tool call
+        tool_calls = mcp_response.choices[0].message.tool_calls if mcp_response.choices else []
 
-            print(f"Function called: {function_name} with arguments: {arguments}")
+        if tool_calls:
+            for tool in tool_calls:
+                if tool.function.name == "MCP_API":
+                    tool_call_id = tool.id  # OpenAI requires this ID for tracking
+                    
+                    print(f"📡 OpenAI requested MCP_API execution.")
 
-            return arguments  # Return the actual extracted business data
+                    # Step 3: Call the actual MCP API (assuming it's an HTTP API)
+                    api_url = "https://gigahard.ai/api/mcp-business-context"
+                    mcp_api_response = requests.get(api_url)
+
+                    if mcp_api_response.status_code == 200:
+                        mcp_data = mcp_api_response.json()
+                    else:
+                        print(f"❌ MCP API Error: {mcp_api_response.status_code}")
+                        mcp_data = {"error": f"MCP API returned {mcp_api_response.status_code}"}
+
+                    # Step 4: Send API data back to OpenAI as response to tool call
+                    followup_response = client.chat.completions.create(
+                        model="gpt-4-turbo",
+                        messages=[
+                            {"role": "system", "content": "Fetch business context from MCP API"},
+                            {"role": "user", "content": "Provide business information"},
+                            {"role": "assistant", "tool_calls": tool_calls},
+                            {
+                                "role": "tool",
+                                "name": "MCP_API",
+                                "tool_call_id": tool_call_id,  # Required for OpenAI to track
+                                "content": json.dumps(mcp_data)
+                            }
+                        ]
+                    )
+
+                    print("✅ Final OpenAI Response:\n", followup_response)
+                    
+                    return mcp_data  # ✅ Return the actual business data
 
         return "No valid MCP data returned."
 
     except Exception as e:
         print("Error fetching MCP data:", str(e))  # Log errors
         return f"Error fetching MCP data: {str(e)}"
+
 
 
 
