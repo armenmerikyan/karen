@@ -897,7 +897,7 @@ def conversation_topics(request):
 
     return render(request, 'conversation_topics.html', {'topics': topics})
 
-
+@extend_schema(exclude=True)
 @csrf_exempt
 @admin_required 
 @api_view(['POST'])
