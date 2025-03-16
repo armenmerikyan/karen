@@ -22,3 +22,4 @@ pdfrw
 geoip2
 user-agents
 docker
+drf-spectacular
