@@ -432,7 +432,7 @@ def fetch_mcp_data():
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     """Fetches MCP API data for business context."""
     try:
-        client = openai.OpenAI(api_key=profile.chatgpt_api_key)
+        client = OpenAI(api_key=profile.chatgpt_api_key)
         
         # Step 1: Ask OpenAI for MCP API function call
         mcp_response = client.chat.completions.create(
