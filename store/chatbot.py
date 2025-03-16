@@ -427,20 +427,54 @@ def get_landing_page(request):
         return landing_page
     except LandingPage.DoesNotExist:
         return None
-
-def fetch_mcp_data():
-    profile = WebsiteProfile.objects.order_by('-created_at').first()
-    """Fetches MCP API data for business context."""
+def fetch_mcp_data(business_id):
+    """Fetches MCP API data for business context based on ID."""
     try:
-        client = OpenAI(api_key=profile.chatgpt_api_key)
-        
-        # Step 1: Ask OpenAI for MCP API function call
-        mcp_response = client.chat.completions.create(
+        api_url = f"https://gigahard.ai/api/businesses/{business_id}/"
+        response = requests.get(api_url)
+        if response.status_code == 200:
+            return response.json()
+        return {"error": f"MCP API returned {response.status_code}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@csrf_exempt
+def chatbot_response_public(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile or not profile.chatgpt_api_key:
+        return JsonResponse({"error": "Invalid website profile or missing API key."}, status=400)
+
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method."}, status=400)
+
+    try:
+        data = json.loads(request.body)
+        user_message = data.get("message", "")
+        client_id = data.get("clientId", "")
+        if not user_message or not client_id:
+            return JsonResponse({"error": "Message and clientId are required."}, status=400)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON format."}, status=400)
+
+    client = OpenAI(api_key=profile.chatgpt_api_key)
+
+    landingpage = get_landing_page(request)
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                f"You are a chatbot assistant for a company. Website Info: {landingpage.description}. "
+                f"Goal: {landingpage.goal}. Keep responses under 200 characters."
+            ),
+        },
+        {"role": "user", "content": user_message},
+    ]
+
+    # Step 1: Ask OpenAI if API call is needed
+    try:
+        response = client.chat.completions.create(
             model="gpt-4-turbo",
-            messages=[
-                {"role": "system", "content": "Fetch business context from MCP API"},
-                {"role": "user", "content": "Provide business information"}
-            ],
+            messages=messages,
             tools=[{
                 "type": "function",
                 "function": {
@@ -455,140 +489,47 @@ def fetch_mcp_data():
                     }
                 }
             }],
-            tool_choice={"type": "function", "function": {"name": "MCP_API"}},  # Explicit function call
+            tool_choice="auto"  # Let OpenAI decide if API call is needed
         )
-
-        print("🔍 MCP API Raw Response:", mcp_response)
-
-        # Step 2: Extract tool call
-        tool_calls = mcp_response.choices[0].message.tool_calls if mcp_response.choices else []
-
-        if tool_calls:
-            for tool in tool_calls:
-                if tool.function.name == "MCP_API":
-                    tool_call_id = tool.id  # OpenAI requires this ID for tracking
-                    function_args = json.loads(tool.function.arguments)  # Extract arguments
-
-                    # Extract the Business ID
-                    business_id = function_args.get("id")
-                    if not business_id:
-                        return "Error: No valid business ID provided."
-
-                    print(f"📡 OpenAI requested MCP_API execution for Business ID: {business_id}")
-
-                    # ✅ Step 3: Use the correct API URL (change this to match your actual API)
-                    api_url = f"https://gigahard.ai/api/businesses/{business_id}/"  # Change here
-                    print(f"📡 Fetching business data from: {api_url}")
-
-                    mcp_api_response = requests.get(api_url)
-
-                    if mcp_api_response.status_code == 200:
-                        mcp_data = mcp_api_response.json()
-                    else:
-                        print(f"❌ MCP API Error: {mcp_api_response.status_code}")
-                        mcp_data = {"error": f"MCP API returned {mcp_api_response.status_code}"}
-
-                    # Step 4: Send API data back to OpenAI as response to tool call
-                    followup_response = client.chat.completions.create(
-                        model="gpt-4-turbo",
-                        messages=[
-                            {"role": "system", "content": "Fetch business context from MCP API"},
-                            {"role": "user", "content": "Provide business information"},
-                            {"role": "assistant", "tool_calls": tool_calls},
-                            {
-                                "role": "tool",
-                                "name": "MCP_API",
-                                "tool_call_id": tool_call_id,  # Required for OpenAI to track
-                                "content": json.dumps(mcp_data)
-                            }
-                        ]
-                    )
-
-                    print("✅ Final OpenAI Response:\n", followup_response)
-                    
-                    return mcp_data  # ✅ Return the actual business data
-
-        return "No valid MCP data returned."
-
     except Exception as e:
-        print("Error fetching MCP data:", str(e))  # Log errors
-        return f"Error fetching MCP data: {str(e)}"
+        return JsonResponse({"error": f"OpenAI request failed: {str(e)}"}, status=500)
 
+    tool_calls = response.choices[0].message.tool_calls if response.choices else []
 
-@csrf_exempt
-def chatbot_response_public(request):
-    profile = WebsiteProfile.objects.order_by('-created_at').first()
-    if not profile:
-        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+    # Step 2: Handle API Call if Needed
+    mcp_data = None
+    if tool_calls:
+        for tool in tool_calls:
+            if tool.function.name == "MCP_API":
+                function_args = json.loads(tool.function.arguments)
+                business_id = function_args.get("id")
+                if business_id:
+                    mcp_data = fetch_mcp_data(business_id)
+                else:
+                    mcp_data = {"error": "Invalid Business ID"}
 
-    if not profile.chatgpt_api_key:
-        return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
-
-    if request.method == "POST":
+    # Step 3: Generate Final Response
+    if mcp_data:
+        followup_messages = messages + [
+            {"role": "tool", "name": "MCP_API", "content": json.dumps(mcp_data)}
+        ]
         try:
-            data = json.loads(request.body)
-            user_message = data.get("message", "")
-            client_id = data.get("clientId", "")
-            if not user_message or not client_id:
-                return JsonResponse({"error": "Message and clientId are required."}, status=400)
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON in request body."}, status=400)
-
-        client = OpenAI(api_key=profile.chatgpt_api_key)
-
-        landingpage = get_landing_page(request)
-
-        # Fetch MCP Business Context
-        mcp_data = fetch_mcp_data()
-
-        system_message = (
-            f"You are a helpful chatbot assistant for a company. Here is some information about the website: "
-            f"{landingpage.description}. The goal for the website is {landingpage.goal}. "
-            f"Business Context: {mcp_data}. "
-            f"Please keep your responses short (max 200 characters) and to the point."
-        )
-
-        messages = [{"role": "system", "content": system_message}]
-
-        # Retrieve conversation history
-        conversation = Conversation.objects.filter(client_id=client_id).order_by('-created_at').first()
-        if not conversation:
-            conversation = Conversation.objects.create(client_id=client_id)
-
-        recent_messages = Message.objects.filter(conversation=conversation).order_by('-timestamp')[:10]
-        for msg in reversed(recent_messages):
-            messages.append({"role": msg.role, "content": msg.content})
-
-        messages.append({"role": "user", "content": user_message})
-
-        # Determine which model to use
-        try:
-            fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
-            model_id = fine_tune_status.fine_tuned_model if fine_tune_status.status == 'succeeded' else "gpt-3.5-turbo"
-        except Exception as e:
-            model_id = "gpt-4-turbo"
-
-
-        model_id = "gpt-4-turbo"
-        
-        try:
-            response = client.chat.completions.create(
-                model=model_id,
-                messages=messages
+            final_response = client.chat.completions.create(
+                model="gpt-4-turbo",
+                messages=followup_messages
             )
-
-            bot_reply = response.choices[0].message.content
-
-            Message.objects.create(conversation=conversation, role="user", content=user_message)
-            Message.objects.create(conversation=conversation, role="assistant", content=bot_reply)
-
-            return JsonResponse({"response": bot_reply})
-
+            bot_reply = final_response.choices[0].message.content
         except Exception as e:
-            return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
+            return JsonResponse({"error": f"Final OpenAI request failed: {str(e)}"}, status=500)
+    else:
+        bot_reply = response.choices[0].message.content
 
-    return JsonResponse({"error": "Invalid request"}, status=400)
+    # Step 4: Save conversation and return response
+    conversation, _ = Conversation.objects.get_or_create(client_id=client_id)
+    Message.objects.create(conversation=conversation, role="user", content=user_message)
+    Message.objects.create(conversation=conversation, role="assistant", content=bot_reply)
 
+    return JsonResponse({"response": bot_reply})
 
 @csrf_exempt
 def chatbot_response_private(request):
