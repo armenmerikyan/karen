@@ -92,6 +92,7 @@ INSTALLED_APPS = [
     'social_django',
     'rest_framework',
     'rest_framework.authtoken',
+    'drf_spectacular',
 ]
 
 
@@ -120,6 +121,7 @@ MIDDLEWARE = [
 
     # Add AccountMiddleware from allauth
     'allauth.account.middleware.AccountMiddleware', 
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 
  
 ]

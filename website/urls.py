@@ -24,6 +24,7 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import LoginView 
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import PasswordResetConfirmView 
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [  
     path('admin/', admin.site.urls),  
@@ -224,6 +225,8 @@ urlpatterns = [
     path('api/businesses/<int:pk>/', views.BusinessDetailView.as_view(), name='business-detail'),
     path('api/businesses/mcp/', views.BusinessMCPView.as_view(), name='business-mcp'),
 
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 
 ] 
 
