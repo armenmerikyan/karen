@@ -902,3 +902,103 @@ class FormSubmission(models.Model):
 
     def __str__(self):
         return f"Submission {self.pk} from {self.domain} at {self.created_at}"
+    
+
+class Business(models.Model):
+    """
+    MCP-Compatible Business Model
+    """
+
+    # Basic Business Info
+    name = models.CharField(max_length=255, blank=True, null=True, help_text="Business name.")
+    owner = models.CharField(max_length=255, blank=True, null=True, help_text="Owner or primary contact.")
+    email = models.EmailField(blank=True, null=True, help_text="Business contact email.")
+    phone = models.CharField(max_length=20, blank=True, null=True, help_text="Business phone number.")
+    website = models.URLField(blank=True, null=True, help_text="Official website URL.")
+    industry = models.CharField(max_length=255, blank=True, null=True, help_text="Industry or business category.")
+    established_date = models.DateField(blank=True, null=True, help_text="Date when the business was established.")
+    description = models.TextField(blank=True, null=True, help_text="Brief business description.")
+
+    # Address Details
+    address_line1 = models.CharField(max_length=255, blank=True, null=True, help_text="Street address (line 1).")
+    address_line2 = models.CharField(max_length=255, blank=True, null=True, help_text="Street address (line 2).")
+    city = models.CharField(max_length=100, blank=True, null=True, help_text="City.")
+    state = models.CharField(max_length=100, blank=True, null=True, help_text="State or province.")
+    country = models.CharField(max_length=100, blank=True, null=True, help_text="Country.")
+    zip_code = models.CharField(max_length=20, blank=True, null=True, help_text="Postal/ZIP code.")
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True, help_text="Geographic latitude.")
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True, help_text="Geographic longitude.")
+
+    # Social Media Links
+    facebook = models.URLField(blank=True, null=True, help_text="Facebook page URL.")
+    instagram = models.URLField(blank=True, null=True, help_text="Instagram profile URL.")
+    twitter = models.URLField(blank=True, null=True, help_text="Twitter (X) profile URL.")
+    linkedin = models.URLField(blank=True, null=True, help_text="LinkedIn profile URL.")
+    youtube = models.URLField(blank=True, null=True, help_text="YouTube channel URL.")
+    tiktok = models.URLField(blank=True, null=True, help_text="TikTok profile URL.")
+    snapchat = models.URLField(blank=True, null=True, help_text="Snapchat profile URL.")
+    pinterest = models.URLField(blank=True, null=True, help_text="Pinterest profile URL.")
+    reddit = models.URLField(blank=True, null=True, help_text="Reddit profile URL.")
+    discord = models.URLField(blank=True, null=True, help_text="Discord server invite URL.")
+    telegram = models.URLField(blank=True, null=True, help_text="Telegram group or profile URL.")
+    github = models.URLField(blank=True, null=True, help_text="GitHub organization or repository URL.")
+    medium = models.URLField(blank=True, null=True, help_text="Medium blog URL.")
+    whatsapp = models.CharField(max_length=20, blank=True, null=True, help_text="WhatsApp contact number.")
+    wechat = models.CharField(max_length=20, blank=True, null=True, help_text="WeChat contact number.")
+
+    # Metadata
+    created_at = models.DateTimeField(auto_now_add=True, help_text="Record creation timestamp.")
+    updated_at = models.DateTimeField(auto_now=True, help_text="Last update timestamp.")
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name if self.name else "Unnamed Business"
+
+    def to_mcp_context(self):
+        """
+        Converts the business object to an MCP-compatible dictionary.
+        """
+        return {
+            "id": self.id,
+            "name": self.name,
+            "owner": self.owner,
+            "email": self.email,
+            "phone": self.phone,
+            "website": self.website,
+            "industry": self.industry,
+            "established_date": self.established_date,
+            "description": self.description,
+            "address": {
+                "line1": self.address_line1,
+                "line2": self.address_line2,
+                "city": self.city,
+                "state": self.state,
+                "country": self.country,
+                "zip": self.zip_code,
+                "latitude": float(self.latitude) if self.latitude else None,
+                "longitude": float(self.longitude) if self.longitude else None,
+            },
+            "social_media": {
+                "facebook": self.facebook,
+                "instagram": self.instagram,
+                "twitter": self.twitter,
+                "linkedin": self.linkedin,
+                "youtube": self.youtube,
+                "tiktok": self.tiktok,
+                "snapchat": self.snapchat,
+                "pinterest": self.pinterest,
+                "reddit": self.reddit,
+                "discord": self.discord,
+                "telegram": self.telegram,
+                "github": self.github,
+                "medium": self.medium,
+                "whatsapp": self.whatsapp,
+                "wechat": self.wechat,
+            },
+            "timestamps": {
+                "created_at": self.created_at.isoformat(),
+                "updated_at": self.updated_at.isoformat(),
+            }
+        }

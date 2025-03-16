@@ -219,6 +219,12 @@ urlpatterns = [
 
     path('contact_us_api/', views.submit_form, name='contact_us_api'),
     path('submissions/', views.submission_list, name='submission_list'),
+
+    path('api/businesses/', views.BusinessListCreateView.as_view(), name='business-list'),
+    path('api/businesses/<int:pk>/', views.BusinessDetailView.as_view(), name='business-detail'),
+    path('api/businesses/mcp/', views.BusinessMCPView.as_view(), name='business-mcp'),
+
+
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

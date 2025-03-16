@@ -109,6 +109,7 @@ from .models import Visitor
 from .models import Referral  
 from .models import LandingPage
 from .models import FormSubmission
+from .models import Business
 
 from .forms import LandingPageForm
 from .forms import SimpleQuestionForm
@@ -159,6 +160,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser
 
 from .serializers import TwitterStatusSerializer
+from .serializers import BusinessSerializer
 
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -232,6 +234,8 @@ from .chatbot import reset_user_fields
 import subprocess
 
 import docker
+
+from rest_framework import generics  
 
 version = "00.00.06"
 logger = logging.getLogger(__name__)
@@ -3690,3 +3694,28 @@ def submission_list(request):
     profile = get_latest_profile()
     submissions = FormSubmission.objects.all().order_by('-created_at')
     return render(request, 'submissions.html', {'submissions': submissions, 'profile': profile})
+
+class BusinessListCreateView(generics.ListCreateAPIView):
+    """
+    API endpoint to list or create businesses.
+    """
+    queryset = Business.objects.all()
+    serializer_class = BusinessSerializer
+
+
+class BusinessDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API endpoint to retrieve, update, or delete a business.
+    """
+    queryset = Business.objects.all()
+    serializer_class = BusinessSerializer
+
+
+class BusinessMCPView(APIView):
+    """
+    Custom MCP-compatible API endpoint.
+    """
+    def get(self, request, *args, **kwargs):
+        businesses = Business.objects.all()
+        data = [business.to_mcp_context() for business in businesses]
+        return Response(data)

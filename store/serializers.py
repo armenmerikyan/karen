@@ -5,7 +5,13 @@ from .models import UserQuery
 from .models import ConvoLog
 from .models import ConversationTopic
 from .models import Memory
+from .models import Business
 
+class BusinessSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Business
+        fields = '__all__'
+        
 class ConversationTopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConversationTopic
