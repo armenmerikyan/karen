@@ -24,6 +24,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.template.context_processors import csrf
 
 from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -3752,13 +3753,23 @@ class BusinessMCPView(generics.ListAPIView):
         data = [business.to_mcp_context() for business in businesses]  # Assumes `to_mcp_context` method exists
         return Response(data)
     
+@extend_schema(
+    summary="Create a new business",
+    description="API endpoint to add a new business to the system.",
+    tags=["Business"]
+)
+class BusinessCreateView(CreateAPIView):
+    """
+    API endpoint to create a new business.
+    """
+    queryset = Business.objects.all()
+    serializer_class = BusinessSerializer
 
-# 🚫 Completely exclude these views from OpenAPI
-@extend_schema(exclude=True)
-class CreateConversationTopicView(GenericAPIView):
-    serializer_class = EmptySerializer
-
-    def post(self, request):
-        return Response({"message": "Conversation topic created"})
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            business = serializer.save()
+            return Response({"message": "Business created", "id": business.id}, status=201)
+        return Response(serializer.errors, status=400) 
 
  
