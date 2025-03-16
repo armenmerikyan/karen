@@ -2383,6 +2383,7 @@ def save_room_view(request):
 
     return JsonResponse({"error": "Only POST requests are allowed."}, status=400)
 
+@extend_schema(exclude=True)
 @api_view(['POST'])
 def save_room(request):
     try:
