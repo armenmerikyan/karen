@@ -433,7 +433,7 @@ def fetch_mcp_data():
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     """Fetches MCP API data for business context."""
     try:
-        client = OpenAI(api_key=profile.chatgpt_api_key)
+        client = openai.OpenAI(api_key=profile.chatgpt_api_key)
         mcp_response = client.chat.completions.create(
             model="gpt-4-turbo",
             messages=[
@@ -452,13 +452,24 @@ def fetch_mcp_data():
         )
 
         # Debugging output
-        print("MCP API Response:", mcp_response)
+        print("MCP API Raw Response:", mcp_response)
 
-        return mcp_response.choices[0].message.content
+        # Check if there's a tool call response
+        if mcp_response.choices[0].message.tool_calls:
+            tool_call = mcp_response.choices[0].message.tool_calls[0]  # Extract the first tool call
+            function_name = tool_call.function.name
+            arguments = tool_call.function.arguments  # This is the extracted MCP data
+
+            print(f"Function called: {function_name} with arguments: {arguments}")
+
+            return arguments  # Return the actual extracted business data
+
+        return "No valid MCP data returned."
 
     except Exception as e:
         print("Error fetching MCP data:", str(e))  # Log errors
         return f"Error fetching MCP data: {str(e)}"
+
 
 
 @csrf_exempt
