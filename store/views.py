@@ -137,6 +137,9 @@ from .serializers import TwitterStatusSerializer
 from .serializers import UserQuerySerializer
 from .serializers import ConvoLogSerializer
 from .serializers import MemorySerializer
+from .serializers import EmptySerializer
+from .serializers import TwitterStatusSerializer
+from .serializers import BusinessSerializer
 from .services import MemoryService
 from .services import RoomService  # Import the RoomService class
 
@@ -159,8 +162,6 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser
 
-from .serializers import TwitterStatusSerializer
-from .serializers import BusinessSerializer
 
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -3742,3 +3743,59 @@ class BusinessMCPView(generics.ListAPIView):
         businesses = self.get_queryset()
         data = [business.to_mcp_context() for business in businesses]  # Assumes `to_mcp_context` method exists
         return Response(data)
+    
+
+@extend_schema(exclude=True)
+class CreateConversationTopicView(GenericAPIView):
+    serializer_class = EmptySerializer
+
+    def post(self, request):
+        return Response({"message": "Conversation topic created"})
+
+
+@extend_schema(exclude=True)
+class CreateConvoLogView(GenericAPIView):
+    serializer_class = EmptySerializer
+
+    def post(self, request):
+        return Response({"message": "Log created"})
+
+
+@extend_schema(exclude=True)
+class SaveRoomView(GenericAPIView):
+    serializer_class = EmptySerializer
+
+    def post(self, request):
+        return Response({"message": "Room saved"})
+
+
+@extend_schema(exclude=True)
+class ListTwitterStatusView(GenericAPIView):
+    serializer_class = EmptySerializer
+
+    def get(self, request):
+        return Response({"message": "Twitter status list"})
+
+
+@extend_schema(exclude=True)
+class CreateUserQueryView(GenericAPIView):
+    serializer_class = EmptySerializer
+
+    def post(self, request):
+        return Response({"message": "User query created"})
+
+
+@extend_schema(exclude=True)
+class GetUserQueryView(GenericAPIView):
+    serializer_class = EmptySerializer
+
+    def get(self, request):
+        return Response({"message": "User query retrieved"})
+
+
+@extend_schema(exclude=True)
+class MemoryView(GenericAPIView):
+    serializer_class = EmptySerializer
+
+    def get(self, request):
+        return Response({"message": "Memory retrieved"})    

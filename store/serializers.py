@@ -38,3 +38,5 @@ class MemorySerializer(serializers.ModelSerializer):
         model = Memory
         fields = '__all__'
         
+class EmptySerializer(serializers.Serializer):
+    pass
