@@ -430,9 +430,10 @@ def get_landing_page(request):
 
 # Function to fetch MCP Data
 def fetch_mcp_data():
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
     """Fetches MCP API data for business context."""
     try:
-        mcp_response = openai.OpenAI().chat.completions.create(
+        mcp_response = openai.OpenAI(profile.chatgpt_api_key).chat.completions.create(
             model="gpt-4-turbo",
             messages=[{"role": "system", "content": "Fetch business context from MCP API"}],
             tools=[{
