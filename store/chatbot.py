@@ -446,7 +446,13 @@ def fetch_mcp_data():
                 "function": {
                     "name": "MCP_API",
                     "description": "Gigahard MCP API for business data retrieval.",
-                    "parameters": {}
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "id": {"type": "integer", "description": "Business ID to fetch"}
+                        },
+                        "required": ["id"]
+                    }
                 }
             }],
             tool_choice={"type": "function", "function": {"name": "MCP_API"}},  # Explicit function call
@@ -461,11 +467,19 @@ def fetch_mcp_data():
             for tool in tool_calls:
                 if tool.function.name == "MCP_API":
                     tool_call_id = tool.id  # OpenAI requires this ID for tracking
-                    
-                    print(f"📡 OpenAI requested MCP_API execution.")
+                    function_args = json.loads(tool.function.arguments)  # Extract arguments
 
-                    # Step 3: Call the actual MCP API (assuming it's an HTTP API)
-                    api_url = "https://gigahard.ai/api/mcp-business-context"
+                    # Extract the Business ID
+                    business_id = function_args.get("id")
+                    if not business_id:
+                        return "Error: No valid business ID provided."
+
+                    print(f"📡 OpenAI requested MCP_API execution for Business ID: {business_id}")
+
+                    # ✅ Step 3: Use the correct API URL (change this to match your actual API)
+                    api_url = f"https://gigahard.ai/api/businesses/{business_id}/"  # Change here
+                    print(f"📡 Fetching business data from: {api_url}")
+
                     mcp_api_response = requests.get(api_url)
 
                     if mcp_api_response.status_code == 200:
@@ -499,8 +513,6 @@ def fetch_mcp_data():
     except Exception as e:
         print("Error fetching MCP data:", str(e))  # Log errors
         return f"Error fetching MCP data: {str(e)}"
-
-
 
 
 @csrf_exempt
