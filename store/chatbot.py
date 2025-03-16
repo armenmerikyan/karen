@@ -428,6 +428,27 @@ def get_landing_page(request):
     except LandingPage.DoesNotExist:
         return None
 
+# Function to fetch MCP Data
+def fetch_mcp_data():
+    """Fetches MCP API data for business context."""
+    try:
+        mcp_response = openai.OpenAI().chat.completions.create(
+            model="gpt-4-turbo",
+            messages=[{"role": "system", "content": "Fetch business context from MCP API"}],
+            tools=[{
+                "type": "function",
+                "function": {
+                    "name": "MCP_API",
+                    "description": "Gigahard MCP API for business data retrieval.",
+                    "parameters": {}
+                }
+            }],
+            tool_choice="auto"
+        )
+        return mcp_response.choices[0].message.content
+    except Exception as e:
+        return f"Error fetching MCP data: {str(e)}"
+
 @csrf_exempt
 def chatbot_response_public(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -451,23 +472,35 @@ def chatbot_response_public(request):
 
         landingpage = get_landing_page(request)
 
-        system_message = f"You are a helpful chatbot assistant for a company. Here is some information about the website: {landingpage.description}. The goal for the website is {landingpage.goal}. Please keep your responses really short (sentance or two, max 200 characters) and to the point, because response is is shown in small chatbot window on website ."
+        # Fetch MCP Business Context
+        mcp_data = fetch_mcp_data()
+
+        system_message = (
+            f"You are a helpful chatbot assistant for a company. Here is some information about the website: "
+            f"{landingpage.description}. The goal for the website is {landingpage.goal}. "
+            f"Business Context: {mcp_data}. "
+            f"Please keep your responses short (max 200 characters) and to the point."
+        )
 
         messages = [{"role": "system", "content": system_message}]
 
+        # Retrieve conversation history
         conversation = Conversation.objects.filter(client_id=client_id).order_by('-created_at').first()
         if not conversation:
             conversation = Conversation.objects.create(client_id=client_id)
 
         recent_messages = Message.objects.filter(conversation=conversation).order_by('-timestamp')[:10]
-
         for msg in reversed(recent_messages):
             messages.append({"role": msg.role, "content": msg.content})
 
         messages.append({"role": "user", "content": user_message})
 
-        fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
-        model_id = fine_tune_status.fine_tuned_model if fine_tune_status.status == 'succeeded' else "gpt-3.5-turbo"
+        # Determine which model to use
+        try:
+            fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
+            model_id = fine_tune_status.fine_tuned_model if fine_tune_status.status == 'succeeded' else "gpt-3.5-turbo"
+        except Exception as e:
+            model_id = "gpt-3.5-turbo"
 
         try:
             response = client.chat.completions.create(
