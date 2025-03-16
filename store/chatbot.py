@@ -500,7 +500,7 @@ def chatbot_response_public(request):
             fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
             model_id = fine_tune_status.fine_tuned_model if fine_tune_status.status == 'succeeded' else "gpt-3.5-turbo"
         except Exception as e:
-            model_id = "gpt-3.5-turbo"
+            model_id = "gpt-4-turbo"
 
         try:
             response = client.chat.completions.create(
