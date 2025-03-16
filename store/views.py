@@ -910,6 +910,7 @@ def create_conversation_topic(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@extend_schema(exclude=True)
 @csrf_exempt
 @admin_required
 @api_view(['POST'])
@@ -921,6 +922,7 @@ def create_convo_log(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@extend_schema(exclude=True)
 @csrf_exempt
 @admin_required
 @api_view(['POST'])
@@ -941,6 +943,7 @@ def list_user_queries(request):
         return Response(serializer.data)
 
 # Retrieve a single UserQuery record by ID
+@extend_schema(exclude=True)
 @api_view(['GET'])
 def get_user_query(request, query_id):
     try:
@@ -1065,6 +1068,7 @@ def extract_twitter_info(url):
     return None, None
 
 # View all TwitterStatus entries (API)
+@extend_schema(exclude=True)
 @api_view(['GET'])
 def list_twitter_status(request):
     if request.method == 'GET':
@@ -2358,6 +2362,7 @@ def marketcap_async_search(request):
         print("An error occurred while rendering the template:", e)
         return render(request, 'error.html', {'error_message': 'An error occurred while rendering the template.'})
 
+@extend_schema(exclude=True)
 @csrf_exempt  # For simplicity, disable CSRF validation (for testing)
 def save_room_view(request):
     if request.method == 'POST':
@@ -2415,6 +2420,7 @@ def memory_list(request):
     memories = Memory.objects.all()
     return render(request, 'memory_list.html', {'memories': memories})
 
+@extend_schema(exclude=True)
 class MemoryView(APIView):
     def post(self, request):
         serializer = MemorySerializer(data=request.data)
@@ -3754,42 +3760,4 @@ class CreateConversationTopicView(GenericAPIView):
     def post(self, request):
         return Response({"message": "Conversation topic created"})
 
-
-@extend_schema(exclude=True)
-class CreateConvoLogView(GenericAPIView):
-    serializer_class = EmptySerializer
-
-    def post(self, request):
-        return Response({"message": "Log created"})
-
-
-@extend_schema(exclude=True)
-class SaveRoomView(GenericAPIView):
-    serializer_class = EmptySerializer
-
-    def post(self, request):
-        return Response({"message": "Room saved"})
-
-
-@extend_schema(exclude=True)
-class ListTwitterStatusView(GenericAPIView):
-    serializer_class = EmptySerializer
-
-    def get(self, request):
-        return Response({"message": "Twitter status list"})
-
-
-@extend_schema(exclude=True)
-class CreateUserQueryView(GenericAPIView):
-    serializer_class = EmptySerializer
-
-    def post(self, request):
-        return Response({"message": "User query created"})
-
-
-@extend_schema(exclude=True)
-class GetUserQueryView(GenericAPIView):
-    serializer_class = EmptySerializer
-
-    def get(self, request):
-        return Response({"message": "User query retrieved"})
+ 
