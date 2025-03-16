@@ -237,6 +237,8 @@ import docker
 
 from rest_framework import generics  
 
+from drf_spectacular.utils import extend_schema
+
 version = "00.00.06"
 logger = logging.getLogger(__name__)
 register = template.Library()
@@ -3695,6 +3697,14 @@ def submission_list(request):
     submissions = FormSubmission.objects.all().order_by('-created_at')
     return render(request, 'submissions.html', {'submissions': submissions, 'profile': profile})
 
+
+#MCP 
+
+@extend_schema(
+    summary="List or Create Businesses",
+    description="API endpoint to list all businesses or create a new business.",
+    tags=["Business"]
+)
 class BusinessListCreateView(generics.ListCreateAPIView):
     """
     API endpoint to list or create businesses.
@@ -3703,6 +3713,11 @@ class BusinessListCreateView(generics.ListCreateAPIView):
     serializer_class = BusinessSerializer
 
 
+@extend_schema(
+    summary="Retrieve, Update, or Delete a Business",
+    description="API endpoint to retrieve, update, or delete a business by ID.",
+    tags=["Business"]
+)
 class BusinessDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     API endpoint to retrieve, update, or delete a business.
@@ -3711,14 +3726,19 @@ class BusinessDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = BusinessSerializer
 
 
-class BusinessMCPView(generics.ListAPIView):  # Change to ListAPIView
+@extend_schema(
+    summary="Retrieve MCP-Compatible Business Context",
+    description="Returns business data formatted for Model Context Protocol (MCP).",
+    tags=["Business"],
+)
+class BusinessMCPView(generics.ListAPIView):
     """
     Custom MCP-compatible API endpoint.
     """
     queryset = Business.objects.all()
-    serializer_class = BusinessSerializer  # Add serializer_class
+    serializer_class = BusinessSerializer  # Ensure OpenAPI picks it up
 
     def get(self, request, *args, **kwargs):
         businesses = self.get_queryset()
-        data = [business.to_mcp_context() for business in businesses]
+        data = [business.to_mcp_context() for business in businesses]  # Assumes `to_mcp_context` method exists
         return Response(data)
