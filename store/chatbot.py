@@ -525,6 +525,9 @@ def chatbot_response_public(request):
         except Exception as e:
             model_id = "gpt-4-turbo"
 
+
+        model_id = "gpt-4-turbo"
+        
         try:
             response = client.chat.completions.create(
                 model=model_id,
