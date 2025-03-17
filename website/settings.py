@@ -133,6 +133,14 @@ REST_FRAMEWORK = {
     ],
 }
  
+# Simple JWT settings
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Access token validity
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),    # Refresh token validity
+}
+ 
 SPECTACULAR_SETTINGS = {
     'SCHEMA_VERSION': '3.1.0',
     'SECURITY': [],  # explicitly disable security schemes
