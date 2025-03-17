@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Directory</title>
+</head>
+<body>
+    <h1>Business Directory</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Owner</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Website</th>
+                <th>Industry</th>
+                <th>City</th>
+                <th>Country</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for business in businesses %}
+            <tr>
+                <td>{{ business.name }}</td>
+                <td>{{ business.owner }}</td>
+                <td>{{ business.email }}</td>
+                <td>{{ business.phone }}</td>
+                <td><a href="{{ business.website }}" target="_blank">{{ business.website }}</a></td>
+                <td>{{ business.industry }}</td>
+                <td>{{ business.city }}</td>
+                <td>{{ business.country }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8">No businesses found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

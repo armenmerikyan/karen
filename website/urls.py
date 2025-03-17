@@ -233,6 +233,7 @@ urlpatterns = [
     path("api/support-tickets/create/", views.SupportTicketCreateView.as_view(), name="support-ticket-create"),  # ✅ Create a new ticket
     path("api/support-tickets/<int:pk>/", views.SupportTicketDetailView.as_view(), name="support-ticket-detail"),  # ✅ Retrieve or update a ticket
     path("api/support-tickets/<int:pk>/update/", views.SupportTicketUpdateView.as_view(), name="support-ticket-update"),  # ✅ Fully update a ticket
+    path('businesses/', views.business_list, name='business_list'),
 
 ] 
 

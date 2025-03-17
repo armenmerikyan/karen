@@ -3847,3 +3847,8 @@ class SupportTicketUpdateView(UpdateAPIView):
     """
     queryset = SupportTicket.objects.all()
     serializer_class = SupportTicketSerializer
+
+
+def business_list(request):
+    businesses = Business.objects.all()
+    return render(request, 'business_list.html', {'businesses': businesses})
