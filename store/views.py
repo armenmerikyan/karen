@@ -3847,6 +3847,20 @@ class SupportTicketDetailView(RetrieveUpdateAPIView):
     serializer_class = SupportTicketSerializer
 
 
+@extend_schema(
+    summary="Retrieve or Update a Support Ticket",
+    description="Retrieve details of a support ticket or update its fields.",
+    tags=["Support Ticket"]
+)
+class SupportTicketUpdateView(generics.UpdateAPIView):
+    """
+    API endpoint to update an existing support ticket.
+    """
+    queryset = SupportTicket.objects.all()
+    serializer_class = SupportTicketSerializer
+    permission_classes = [IsAuthenticated]
+
+
 # REVIEWS 
 # ViewSet with CRUD Operations
 @extend_schema(
@@ -3904,13 +3918,83 @@ def delete_review(request, pk):
     review.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
+ 
 
-
+@extend_schema(
+    summary="Register a new user",
+    description="Creates a new user with the provided username, email, password, and additional optional fields like company name, phone, and Solana wallet address.",
+    request=RegisterSerializer,
+    responses={
+        201: OpenApiTypes.OBJECT,  # Success Response
+        400: OpenApiTypes.OBJECT   # Validation errors
+    },
+    tags=["Authentication"],
+    examples=[
+        OpenApiExample(
+            name="Successful Registration",
+            value={
+                "username": "john_doe",
+                "email": "john@example.com",
+                "first_name": "John",
+                "last_name": "Doe",
+                "company_name": "Doe Inc.",
+                "company_phone": "+1234567890",
+                "sol_wallet_address": "YourSolanaAddress"
+            },
+            request_only=True
+        ),
+        OpenApiExample(
+            name="Validation Error - Missing Email",
+            value={"email": ["This field is required."]},
+            response_only=True
+        ),
+    ]
+)
 class RegisterView(generics.CreateAPIView):
+    """
+    API endpoint to register a new user.
+    """
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
 
+
+@extend_schema(
+    summary="User Login",
+    description="Authenticates a user using their username and password, returning a JWT access and refresh token for authentication.",
+    request=CustomTokenObtainPairSerializer,
+    responses={
+        200: OpenApiTypes.OBJECT,  # Successful Response
+        401: OpenApiTypes.OBJECT   # Authentication Failed
+    },
+    tags=["Authentication"],
+    examples=[
+        OpenApiExample(
+            name="Successful Login",
+            value={
+                "username": "john_doe",
+                "password": "SecurePassword123"
+            },
+            request_only=True
+        ),
+        OpenApiExample(
+            name="Response - Successful Login",
+            value={
+                "refresh": "your-refresh-token",
+                "access": "your-access-token"
+            },
+            response_only=True
+        ),
+        OpenApiExample(
+            name="Authentication Error",
+            value={"detail": "No active account found with the given credentials"},
+            response_only=True
+        ),
+    ]
+)
 class CustomLoginView(TokenObtainPairView):
+    """
+    API endpoint for user login.
+    """
     serializer_class = CustomTokenObtainPairSerializer
     permission_classes = [AllowAny]
