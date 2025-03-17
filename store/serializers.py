@@ -11,7 +11,18 @@ from .models import Review
 from .models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from .models import Token
 
+class TokenSerializer(serializers.ModelSerializer):
+    mcp_context = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Token
+        fields = "__all__"  # Includes all fields from the model + `mcp_context`
+
+    def get_mcp_context(self, obj):
+        return obj.to_mcp_context()
+    
 class RegisterResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

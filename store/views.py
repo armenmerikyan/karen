@@ -152,7 +152,7 @@ from .serializers import BusinessSerializer
 from .serializers import SupportTicketSerializer
 from .serializers import ReviewSerializer
 from .serializers import RegisterResponseSerializer
-
+from .serializers import TokenSerializer
 
 from .services import MemoryService
 from .services import RoomService  # Import the RoomService class
@@ -4009,7 +4009,6 @@ class CustomLoginView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
     permission_classes = [AllowAny]
 
-    
  
 
 

@@ -48,6 +48,7 @@ pip install user-agents
 pip install docker
 pip install drf-spectacular django-filter
 pip install djangorestframework-simplejwt
+pip install django-oauth-toolkit
 
 python3 manage.py makemigrations
 python3 manage.py migrate

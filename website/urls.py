@@ -242,6 +242,7 @@ urlpatterns = [
     path('api/reviews/update/<int:pk>/', views.update_review, name="update_review"),
     path('api/reviews/delete/<int:pk>/', views.delete_review, name="delete_review"),    
 
+    path('oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 
 #    path('api/register/', views.RegisterAPIView.as_view(), name='api_register'),
 #    path('api/login/', views.CustomLoginView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='api_login'),

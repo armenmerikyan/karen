@@ -77,6 +77,7 @@ LOGOUT_REDIRECT_URL = "/"
 
 
 INSTALLED_APPS = [
+    'django.contrib.sites', 
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -93,13 +94,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'drf_spectacular',
+    'oauth2_provider',
 ]
 
 
 AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
     'social_core.backends.google.GoogleOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.ModelBackend',  
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -299,3 +301,14 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "apikey"  # This is the literal string 'apikey'
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')  # Replace with your SendGrid API Key
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': os.environ.get('GOOGLE_OAUTH_CLIENT_ID'),
+            'secret': os.environ.get('GOOGLE_OAUTH_CLIENT_SECRET'),
+            'key': ''
+        }
+    }
+}

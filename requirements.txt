@@ -25,3 +25,4 @@ docker
 drf-spectacular
 django-filter
 djangorestframework-simplejwt
+django-oauth-toolkit
