@@ -139,7 +139,8 @@ from .forms import TweetForm
 from .forms import WebsiteProfileForm
 from .forms import UserCreationForm  # You need to create this form
 
-from .serializers import UserRegisterSerializer  
+from store.serializers import UserRegisterSerializer as RegisterSerializer
+
 from .serializers import CustomTokenObtainPairSerializer
 from .serializers import ConversationTopicSerializer
 from .serializers import TwitterStatusSerializer
@@ -3953,10 +3954,9 @@ def delete_review(request, pk):
         ),
     ]
 )
-
 class RegisterAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
-    serializer_class = UserRegisterSerializer
+    serializer_class = RegisterSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
