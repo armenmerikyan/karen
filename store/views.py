@@ -3796,6 +3796,7 @@ class BusinessCreateView(CreateAPIView):
     description="API endpoint to list, search, or create a new business. Supports filtering by name, industry, and city.",
     tags=["Business"]
 )
+@permission_classes([IsAuthenticated])  # Restricts to authenticated users only
 class BusinessListCreateView(ListCreateAPIView):
     """
     API endpoint to list, search, or create businesses.
@@ -3865,67 +3866,7 @@ class SupportTicketUpdateView(generics.UpdateAPIView):
 
 
 # REVIEWS 
-# ViewSet with CRUD Operations
-@extend_schema(
-    summary="List, Retrieve, Create, Update, or Delete Reviews",
-    description="API endpoint to list, retrieve, create, update, or delete reviews.",
-    tags=["Reviews"]
-)
-class ReviewViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-    permission_classes = [AllowAny]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ["business", "stars", "reviewer_name"]  # Exact match filtering
-    search_fields = ["reviewer_name", "comment"]  # Partial search support
-
-    def get_queryset(self):
-        business_id = self.request.query_params.get('business_id')
-        if business_id:
-            return Review.objects.filter(business_id=business_id)
-        return super().get_queryset()
-
-# API Views for explicit CRUD operations
-
-@method_decorator(csrf_exempt, name='dispatch')
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])  # Restricts to authenticated users only
-@extend_schema(summary="Create a Review", description="Endpoint to add a new review.", tags=["Reviews"])
-def create_review(request):
-    serializer = ReviewSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET'])
-@method_decorator(csrf_exempt, name='dispatch')
-@permission_classes([IsAuthenticated])  # Restricts to authenticated users only
-@extend_schema(summary="List Reviews", description="Endpoint to list all reviews.", tags=["Reviews"])
-class ListReviewsView(ListAPIView):
-    def get(self, request):
-        reviews = Review.objects.all()
-        serializer = ReviewSerializer(reviews, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
-@api_view(['PUT', 'PATCH'])
-@permission_classes([IsAuthenticated])  # Restricts to authenticated users only
-@extend_schema(summary="Update a Review", description="Endpoint to update a review.", tags=["Reviews"])
-def update_review(request, pk):
-    review = get_object_or_404(Review, pk=pk)
-    serializer = ReviewSerializer(review, data=request.data, partial=True)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['DELETE'])
-@extend_schema(summary="Delete a Review", description="Endpoint to delete a review.", tags=["Reviews"])
-def delete_review(request, pk):
-    review = get_object_or_404(Review, pk=pk)
-    review.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
-
+ 
  
 
 @extend_schema(
