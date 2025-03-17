@@ -126,7 +126,7 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
-
+ 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Gigahard API",
     "DESCRIPTION": "OpenAPI schema for Business MCP integration",
@@ -134,9 +134,8 @@ SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": "/api/businesses/",
     "SERVE_INCLUDE_SCHEMA": False,
     "SERVE_PERMISSIONS": [],
-    "SERVERS": [
-        {"url": "https://gigahard.com"}, 
-    ],
+    "SERVERS": [{"url": "https://api.gigahard.com"}],
+    "OPENAPI_VERSION": "3.1.0",
 }
 
 
