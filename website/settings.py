@@ -125,11 +125,18 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [],  # explicitly no authentication
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
 }
+
  
 SPECTACULAR_SETTINGS = {
-    'SCHEMA_VERSION': '3.1.0',
+    'SCHEMA_VERSION': '3.0.3',
     'SECURITY': [],  # explicitly disable security schemes
+    'SERVE_PERMISSIONS': ['rest_framework.permissions.AllowAny'],  # allow open access
+
     'COMPONENT_SPLIT_REQUEST': True,
     'DEFAULT_GENERATOR_CLASS': 'drf_spectacular.generators.SchemaGenerator',
     "TITLE": "Gigahard API",
