@@ -3899,6 +3899,8 @@ def create_review(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
+@method_decorator(csrf_exempt, name='dispatch')
+@permission_classes([IsAuthenticated])  # Restricts to authenticated users only
 @extend_schema(summary="List Reviews", description="Endpoint to list all reviews.", tags=["Reviews"])
 def list_reviews(request):
     reviews = Review.objects.all()
