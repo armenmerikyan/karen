@@ -443,6 +443,7 @@ def fetch_mcp_data(business_id):
 
 @csrf_exempt
 def chatbot_response_public(request):
+    """Handles chatbot responses, including MCP API integration."""
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile or not profile.chatgpt_api_key:
         return JsonResponse({"error": "Invalid website profile or missing API key."}, status=400)
@@ -473,7 +474,7 @@ def chatbot_response_public(request):
         {"role": "user", "content": user_message},
     ]
 
-    # Step 1: Ask OpenAI if API call is needed
+    # Step 1: Ask OpenAI if an API call is needed
     try:
         response = client.chat.completions.create(
             model="gpt-4-turbo",
@@ -517,22 +518,29 @@ def chatbot_response_public(request):
     print(f"MCP Data Retrieved: {mcp_data}")
 
     # Step 3: Generate Final Response
-    if mcp_data:
-        followup_messages = messages + [
+    followup_messages = messages.copy()
+
+    if tool_calls and mcp_data:
+        # Only include 'tool' role if OpenAI explicitly called the function
+        followup_messages.append(
             {"role": "tool", "name": "MCP_API", "content": json.dumps(mcp_data)}
-        ]
-        try:
-            final_response = client.chat.completions.create(
-                model="gpt-4-turbo",
-                messages=followup_messages
-            )
-            bot_reply = final_response.choices[0].message.content
-            print(f"Final OpenAI Response: {bot_reply}")
-        except Exception as e:
-            print(f"Final OpenAI request failed: {str(e)}")
-            return JsonResponse({"error": f"Final OpenAI request failed: {str(e)}"}, status=500)
-    else:
-        bot_reply = response.choices[0].message.content
+        )
+    elif mcp_data:
+        # If OpenAI did not request a tool call, provide context as a system message
+        followup_messages.append(
+            {"role": "system", "content": f"Business Context: {json.dumps(mcp_data)}"}
+        )
+
+    try:
+        final_response = client.chat.completions.create(
+            model="gpt-4-turbo",
+            messages=followup_messages
+        )
+        bot_reply = final_response.choices[0].message.content
+        print(f"Final OpenAI Response: {bot_reply}")
+    except Exception as e:
+        print(f"Final OpenAI request failed: {str(e)}")
+        return JsonResponse({"error": f"Final OpenAI request failed: {str(e)}"}, status=500)
 
     # Step 4: Save conversation and return response
     conversation, _ = Conversation.objects.get_or_create(client_id=client_id)
