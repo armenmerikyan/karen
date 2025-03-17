@@ -24,7 +24,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.template.context_processors import csrf
 
 from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, CreateAPIView, RetrieveUpdateAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 
