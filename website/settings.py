@@ -136,6 +136,9 @@ SPECTACULAR_SETTINGS = {
     "SERVE_PERMISSIONS": [],
     "SERVERS": [{"url": "https://api.gigahard.com"}],
     "OPENAPI_VERSION": "3.1.0",
+    "SECURITY": [{"BearerAuth": []}],
+    "COMPONENT_SPLIT_REQUEST": True,
+    "COMPONENT_SPLIT_RESPONSE": True,
 }
 
 
