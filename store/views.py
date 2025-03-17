@@ -3851,4 +3851,8 @@ class SupportTicketUpdateView(UpdateAPIView):
 
 def business_list(request):
     businesses = Business.objects.all()
-    return render(request, 'business_list.html', {'businesses': businesses})
+    total_businesses = businesses.count()
+    return render(request, 'business_list.html', {
+        'businesses': businesses,
+        'total_businesses': total_businesses
+    })
