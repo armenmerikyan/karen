@@ -132,7 +132,7 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "OpenAPI schema for Business MCP integration",
     "VERSION": "1.0.0",
     "SCHEMA_PATH_PREFIX": "/api/businesses/",
-    "SERVE_INCLUDE_SCHEMA": False,
+    "SERVE_INCLUDE_SCHEMA": True,
     "SERVE_PERMISSIONS": [],
     "SERVERS": [{"url": "https://api.gigahard.com"}],
     "OPENAPI_VERSION": "3.1.0",
