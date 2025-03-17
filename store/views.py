@@ -3731,12 +3731,16 @@ def get(self, request, id, *args, **kwargs):
     return Response(data)
 
 
+
 @extend_schema(
     summary="Retrieve, Update, or Delete a Business",
     description="API endpoint to retrieve, update, or delete a business by ID.",
     tags=["Business"]
 )
-class BusinessDetailView(RetrieveUpdateDestroyAPIView):
+class BusinessDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API endpoint to retrieve, update, or delete a business.
+    """
     queryset = Business.objects.all()
     serializer_class = BusinessSerializer
 
@@ -3744,7 +3748,7 @@ class BusinessDetailView(RetrieveUpdateDestroyAPIView):
 @extend_schema(
     summary="Retrieve MCP-Compatible Business Context",
     description="Returns business data formatted for MCP.",
-    responses=BusinessSerializer(many=True)
+    responses=BusinessSerializer(many=True),  # explicitly specify the serializer
 )
 class BusinessMCPView(APIView):
     queryset = Business.objects.all()
@@ -3755,18 +3759,41 @@ class BusinessMCPView(APIView):
         return Response(data)
 
 
+    
+@extend_schema(
+    summary="Create a new business",
+    description="API endpoint to add a new business to the system.",
+    tags=["Business"]
+)
+class BusinessCreateView(CreateAPIView):
+    """
+    API endpoint to create a new business.
+    """
+    queryset = Business.objects.all()
+    serializer_class = BusinessSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            business = serializer.save()
+            return Response({"message": "Business created", "id": business.id}, status=201)
+        return Response(serializer.errors, status=400) 
+
 @extend_schema(
     summary="List, Search, or Create Businesses",
-    description="API endpoint to list, search, or create businesses. Supports filtering by name, industry, and city.",
+    description="API endpoint to list, search, or create a new business. Supports filtering by name, industry, and city.",
     tags=["Business"]
 )
 class BusinessListCreateView(ListCreateAPIView):
+    """
+    API endpoint to list, search, or create businesses.
+    Supports search by name, industry, and city.
+    """
     queryset = Business.objects.all()
     serializer_class = BusinessSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ["name", "industry", "city"]
-    search_fields = ["name", "industry", "city"]
-
+    filterset_fields = ["name", "industry", "city"]  # Exact match filtering
+    search_fields = ["name", "industry", "city"]  # Partial search support 
 
 @extend_schema(
     summary="List Support Tickets",
@@ -3774,6 +3801,9 @@ class BusinessListCreateView(ListCreateAPIView):
     tags=["Support Ticket"]
 )
 class SupportTicketListView(ListAPIView):
+    """
+    API endpoint to list support tickets with filtering.
+    """
     queryset = SupportTicket.objects.all()
     serializer_class = SupportTicketSerializer
     filterset_fields = ["status", "priority", "assigned_to", "business"]
@@ -3781,16 +3811,17 @@ class SupportTicketListView(ListAPIView):
     ordering_fields = ["created_at", "updated_at"]
     ordering = ["-created_at"]
 
-
 @extend_schema(
     summary="Create a Support Ticket",
     description="Endpoint to create a new support ticket.",
     tags=["Support Ticket"]
 )
 class SupportTicketCreateView(CreateAPIView):
+    """
+    API endpoint to create a support ticket.
+    """
     queryset = SupportTicket.objects.all()
     serializer_class = SupportTicketSerializer
-
 
 @extend_schema(
     summary="Retrieve or Update a Support Ticket",
@@ -3798,8 +3829,27 @@ class SupportTicketCreateView(CreateAPIView):
     tags=["Support Ticket"]
 )
 class SupportTicketDetailView(RetrieveUpdateAPIView):
+    """
+    API endpoint to retrieve or update a support ticket.
+    Supports full and partial updates.
+    """
     queryset = SupportTicket.objects.all()
     serializer_class = SupportTicketSerializer
+
+@extend_schema(
+    summary="Update a Support Ticket",
+    description="Fully update a support ticket (all fields required).",
+    tags=["Support Ticket"]
+)
+class SupportTicketUpdateView(UpdateAPIView):
+    """
+    API endpoint to fully update a support ticket (PUT method).
+    """
+    queryset = SupportTicket.objects.all()
+    serializer_class = SupportTicketSerializer
+
+
+def business_list(request):
     businesses = Business.objects.all()
     total_businesses = businesses.count()
     return render(request, 'business_list.html', {
