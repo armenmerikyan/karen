@@ -11,9 +11,13 @@
             <p>You are about to sign in using a third-party account from Google.</p>
             
             <!-- Custom Google Login Button -->
-            <a href="{% provider_login_url 'google' %}" class="btn btn-danger btn-user btn-block mb-3">
-                <i class="fab fa-google"></i> Sign in with Google
+            <a href="{% provider_login_url 'google' %}" 
+            class="btn btn-danger btn-user btn-block mb-3"
+            target="_blank" 
+            rel="noopener noreferrer">
+            <i class="fab fa-google"></i> Sign in with Google
             </a>
+
         </div>
       </div>      
     </div>
