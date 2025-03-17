@@ -3928,7 +3928,7 @@ def delete_review(request, pk):
     description="Creates a new user with the provided username, email, password, and additional optional fields like company name, phone, and Solana wallet address.",
     request=RegisterSerializer,
     responses={
-        201: UserRegisterResponse,  # Updated response schema reference
+        201: RegisterResponseSerializer,  # Updated response schema reference
         400: OpenApiTypes.OBJECT
     },
     tags=["Authentication"],
