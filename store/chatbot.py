@@ -239,8 +239,7 @@ import importlib
 
 from django.db import transaction   
 
-from .utils import (
-    get_landing_page,
+from .utils import ( 
     fetch_mcp_data,
     create_business,
     fetch_all_businesses,
