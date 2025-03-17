@@ -427,15 +427,18 @@ def get_landing_page(request):
         return landing_page
     except LandingPage.DoesNotExist:
         return None
+
 def fetch_mcp_data(business_id):
     """Fetches MCP API data for business context based on ID."""
     try:
         api_url = f"https://gigahard.ai/api/businesses/{business_id}/"
         response = requests.get(api_url)
+        print(f"Fetching MCP Data: {api_url}, Status: {response.status_code}")
         if response.status_code == 200:
             return response.json()
-        return {"error": f"MCP API returned {response.status_code}"}
+        return {"error": f"MCP API returned {response.status_code}", "response": response.text}
     except Exception as e:
+        print(f"Error fetching MCP data: {str(e)}")
         return {"error": str(e)}
 
 @csrf_exempt
@@ -491,7 +494,9 @@ def chatbot_response_public(request):
             }],
             tool_choice="auto"  # Let OpenAI decide if API call is needed
         )
+        print(f"OpenAI Response: {response}")
     except Exception as e:
+        print(f"OpenAI request failed: {str(e)}")
         return JsonResponse({"error": f"OpenAI request failed: {str(e)}"}, status=500)
 
     tool_calls = response.choices[0].message.tool_calls if response.choices else []
@@ -503,10 +508,13 @@ def chatbot_response_public(request):
             if tool.function.name == "MCP_API":
                 function_args = json.loads(tool.function.arguments)
                 business_id = function_args.get("id")
+                print(f"Business ID extracted: {business_id}")
                 if business_id:
                     mcp_data = fetch_mcp_data(business_id)
                 else:
                     mcp_data = {"error": "Invalid Business ID"}
+
+    print(f"MCP Data Retrieved: {mcp_data}")
 
     # Step 3: Generate Final Response
     if mcp_data:
@@ -519,7 +527,9 @@ def chatbot_response_public(request):
                 messages=followup_messages
             )
             bot_reply = final_response.choices[0].message.content
+            print(f"Final OpenAI Response: {bot_reply}")
         except Exception as e:
+            print(f"Final OpenAI request failed: {str(e)}")
             return JsonResponse({"error": f"Final OpenAI request failed: {str(e)}"}, status=500)
     else:
         bot_reply = response.choices[0].message.content
