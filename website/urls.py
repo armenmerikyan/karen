@@ -25,6 +25,7 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import PasswordResetConfirmView 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from store.serializers import CustomTokenObtainPairSerializer
 
 urlpatterns = [  
     path('admin/', admin.site.urls),  
