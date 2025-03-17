@@ -3708,7 +3708,7 @@ def submission_list(request):
     return render(request, 'submissions.html', {'submissions': submissions, 'profile': profile})
 
 
-#MCP 
+# Model Context Protocol MCP 
 
 @extend_schema(
     summary="List or Create Businesses",
@@ -3772,4 +3772,18 @@ class BusinessCreateView(CreateAPIView):
             return Response({"message": "Business created", "id": business.id}, status=201)
         return Response(serializer.errors, status=400) 
 
- 
+@extend_schema(
+    summary="List, Search, or Create Businesses",
+    description="API endpoint to list, search, or create a new business. Supports filtering by name, industry, and city.",
+    tags=["Business"]
+)
+class BusinessListCreateView(ListCreateAPIView):
+    """
+    API endpoint to list, search, or create businesses.
+    Supports search by name, industry, and city.
+    """
+    queryset = Business.objects.all()
+    serializer_class = BusinessSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ["name", "industry", "city"]  # Exact match filtering
+    search_fields = ["name", "industry", "city"]  # Partial search support 
