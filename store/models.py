@@ -155,6 +155,54 @@ class Token(models.Model):
     def __str__(self):
         return self.name  # or any other field you want to represent the object with
 
+    def to_mcp_context(self):
+        return {
+            "mint": self.mint,
+            "name": self.name,
+            "symbol": self.symbol,
+            "description": self.description,
+            "image_uri": self.image_uri,
+            "metadata_uri": self.metadata_uri,
+            "website": self.website,
+            "socials": {
+                "twitter": self.twitter,
+                "telegram": self.telegram,
+            },
+            "market": {
+                "raydium_pool": self.raydium_pool,
+                "market_id": self.market_id,
+                "market_id_two": self.market_id_two,
+                "market_cap": str(self.market_cap) if self.market_cap else None,
+                "usd_market_cap": str(self.usd_market_cap) if self.usd_market_cap else None,
+            },
+            "tokenomics": {
+                "total_supply": str(self.total_supply) if self.total_supply else None,
+                "bonding_curve": self.bonding_curve,
+                "associated_bonding_curve": self.associated_bonding_curve,
+                "virtual_sol_reserves": str(self.virtual_sol_reserves) if self.virtual_sol_reserves else None,
+                "virtual_token_reserves": str(self.virtual_token_reserves) if self.virtual_token_reserves else None,
+            },
+            "creator": {
+                "wallet_address": self.creator,
+                "username": self.username,
+                "profile_image": self.profile_image,
+            },
+            "timestamps": {
+                "created_timestamp": self.created_timestamp.isoformat() if self.created_timestamp else None,
+                "last_trade_timestamp": self.last_trade_timestamp.isoformat() if self.last_trade_timestamp else None,
+                "king_of_the_hill_timestamp": self.king_of_the_hill_timestamp.isoformat() if self.king_of_the_hill_timestamp else None,
+            },
+            "meta": {
+                "reply_count": self.reply_count,
+                "last_reply": self.last_reply,
+                "ai_analysis": self.ai_analysis,
+                "nsfw": self.nsfw,
+                "hidden": self.hidden,
+                "show_name": self.show_name,
+                "inverted": self.inverted,
+            },
+        }
+
 class Accesstoken(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     access_cookie = models.CharField(max_length=255)
