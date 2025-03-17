@@ -6,6 +6,7 @@ import string
 
 CORS_ALLOW_ALL_ORIGINS = True  # Don't use in production
 
+SITE_ID = 1
 
 def generate_secret_key(length=50):
     """Generates a random secret key."""
@@ -70,8 +71,7 @@ X_CSRFTOKEN_HEADER = 'X-CSRFTOKEN'
 X_CSRF_TOKEN_HEADER = 'X-CSRF-TOKEN'
 
 # Application definition
-
-SITE_ID = 1
+ 
 ACCOUNT_EMAIL_VERIFICATION = "none"
 LOGOUT_REDIRECT_URL = "/"
 
