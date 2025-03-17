@@ -4000,3 +4000,15 @@ class CustomLoginView(TokenObtainPairView):
     """
     serializer_class = CustomTokenObtainPairSerializer
     permission_classes = [AllowAny]
+
+    
+ 
+
+
+def business_list(request):
+    businesses = Business.objects.all()
+    total_businesses = businesses.count()
+    return render(request, 'business_list.html', {
+        'businesses': businesses,
+        'total_businesses': total_businesses
+    })
