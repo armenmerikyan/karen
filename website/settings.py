@@ -123,13 +123,9 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication', 
     ),    
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+    'DEFAULT_PERMISSION_CLASSES': [ 
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
@@ -139,7 +135,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Access token validity
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),    # Refresh token validity
 } 
- 
+
 SPECTACULAR_SETTINGS = {
     'SCHEMA_VERSION': '3.1.0',
     'SECURITY': [],  # explicitly disable security schemes
@@ -154,7 +150,10 @@ SPECTACULAR_SETTINGS = {
     "SERVE_PERMISSIONS": [],
     "SERVERS": [{"url": "https://gigahard.ai"}],  
     "COMPONENT_SPLIT_RESPONSE": True,
-}
+    'SECURITY': [
+        {'jwtAuth': []}  # Use only one method in OpenAPI docs
+    ]
+} 
 
 ROOT_URLCONF = 'website.urls'
 
