@@ -112,6 +112,7 @@ from .models import LandingPage
 from .models import FormSubmission
 from .models import Business
 from .models import SupportTicket
+from .models import Review
 
 from .forms import LandingPageForm
 from .forms import SimpleQuestionForm
@@ -143,6 +144,8 @@ from .serializers import EmptySerializer
 from .serializers import TwitterStatusSerializer
 from .serializers import BusinessSerializer
 from .serializers import SupportTicketSerializer
+from .serializers import ReviewSerializer
+
 from .services import MemoryService
 from .services import RoomService  # Import the RoomService class
 
@@ -3838,23 +3841,56 @@ class SupportTicketDetailView(RetrieveUpdateAPIView):
     queryset = SupportTicket.objects.all()
     serializer_class = SupportTicketSerializer
 
+# ViewSet with CRUD Operations
 @extend_schema(
-    summary="Update a Support Ticket",
-    description="Fully update a support ticket (all fields required).",
-    tags=["Support Ticket"]
+    summary="List, Retrieve, Create, Update, or Delete Reviews",
+    description="API endpoint to list, retrieve, create, update, or delete reviews.",
+    tags=["Reviews"]
 )
-class SupportTicketUpdateView(UpdateAPIView):
-    """
-    API endpoint to fully update a support ticket (PUT method).
-    """
-    queryset = SupportTicket.objects.all()
-    serializer_class = SupportTicketSerializer
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    permission_classes = [AllowAny]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ["business", "stars", "reviewer_name"]  # Exact match filtering
+    search_fields = ["reviewer_name", "comment"]  # Partial search support
 
+    def get_queryset(self):
+        business_id = self.request.query_params.get('business_id')
+        if business_id:
+            return Review.objects.filter(business_id=business_id)
+        return super().get_queryset()
 
-def business_list(request):
-    businesses = Business.objects.all()
-    total_businesses = businesses.count()
-    return render(request, 'business_list.html', {
-        'businesses': businesses,
-        'total_businesses': total_businesses
-    })
+# API Views for explicit CRUD operations
+@api_view(['POST'])
+@extend_schema(summary="Create a Review", description="Endpoint to add a new review.", tags=["Reviews"])
+def create_review(request):
+    serializer = ReviewSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@extend_schema(summary="List Reviews", description="Endpoint to list all reviews.", tags=["Reviews"])
+def list_reviews(request):
+    reviews = Review.objects.all()
+    serializer = ReviewSerializer(reviews, many=True)
+    return Response(serializer.data)
+
+@api_view(['PUT', 'PATCH'])
+@extend_schema(summary="Update a Review", description="Endpoint to update a review.", tags=["Reviews"])
+def update_review(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+    serializer = ReviewSerializer(review, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@extend_schema(summary="Delete a Review", description="Endpoint to delete a review.", tags=["Reviews"])
+def delete_review(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+    review.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)

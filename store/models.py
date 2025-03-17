@@ -1076,3 +1076,24 @@ class SupportTicket(models.Model):
                 "updated_at": self.updated_at.isoformat(),
             }
         }
+
+class Review(models.Model):
+    """
+    Model for storing business reviews.
+    """
+    business = models.ForeignKey('Business', on_delete=models.CASCADE, related_name='reviews', help_text="Reviewed business.")
+    reviewer_name = models.CharField(max_length=255, help_text="Name of the reviewer.")
+    reviewer_email = models.EmailField(blank=True, null=True, help_text="Email of the reviewer (optional).")
+    stars = models.PositiveSmallIntegerField(
+        choices=[(i, str(i)) for i in range(1, 6)],
+        help_text="Star rating (1-5)."
+    )
+    comment = models.TextField(blank=True, null=True, help_text="Review comment.")
+    created_at = models.DateTimeField(auto_now_add=True, help_text="Review creation timestamp.")
+    updated_at = models.DateTimeField(auto_now=True, help_text="Last update timestamp.")
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.reviewer_name} - {self.stars}⭐ for {self.business.name}"

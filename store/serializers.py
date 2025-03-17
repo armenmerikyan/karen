@@ -7,6 +7,13 @@ from .models import ConversationTopic
 from .models import Memory
 from .models import Business
 from .models import SupportTicket
+from .models import Review
+
+# Serializer
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = '__all__'
 
 class SupportTicketSerializer(serializers.ModelSerializer):
     class Meta:
