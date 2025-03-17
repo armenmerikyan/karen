@@ -239,6 +239,16 @@ import importlib
 
 from django.db import transaction   
 
+from .utils import (
+    get_landing_page,
+    fetch_mcp_data,
+    create_business,
+    fetch_all_businesses,
+    fetch_support_ticket,
+    create_support_ticket,
+    fetch_all_support_tickets
+)
+
 def get_django_forms():
     entities = []
     
@@ -428,45 +438,7 @@ def get_landing_page(request):
     except LandingPage.DoesNotExist:
         return None
 
-def fetch_all_businesses():
-    """Fetches all businesses from the MCP API."""
-    try:
-        api_url = "https://gigahard.ai/api/businesses/"
-        response = requests.get(api_url)
-        print(f"Fetching All Businesses: {api_url}, Status: {response.status_code}")
-        if response.status_code == 200:
-            return response.json()
-        return {"error": f"MCP API returned {response.status_code}", "response": response.text}
-    except Exception as e:
-        print(f"Error fetching businesses: {str(e)}")
-        return {"error": str(e)}
 
-
-def fetch_mcp_data(business_id):
-    """Fetches MCP API data for business context based on ID."""
-    try:
-        api_url = f"https://gigahard.ai/api/businesses/{business_id}/"
-        response = requests.get(api_url)
-        print(f"Fetching MCP Data: {api_url}, Status: {response.status_code}")
-        if response.status_code == 200:
-            return response.json()
-        return {"error": f"MCP API returned {response.status_code}", "response": response.text}
-    except Exception as e:
-        print(f"Error fetching MCP data: {str(e)}")
-        return {"error": str(e)}
-
-def create_business(business_data):
-    """Creates a new business entry in Gigahard MCP."""
-    try:
-        api_url = "https://gigahard.ai/api/businesses/create/"
-        response = requests.post(api_url, json=business_data)
-        print(f"Creating Business: {business_data}, Status: {response.status_code}")
-        if response.status_code == 201:
-            return response.json()
-        return {"error": f"Business creation failed {response.status_code}", "response": response.text}
-    except Exception as e:
-        print(f"Error creating business: {str(e)}")
-        return {"error": str(e)}
 
 
 @csrf_exempt
@@ -550,7 +522,8 @@ def chatbot_response_public(request):
         }
     ],
     tool_choice="auto"  # Let OpenAI decide if API call is needed
-)
+
+) 
 
         print(f"OpenAI Response: {response}")
     except Exception as e:
