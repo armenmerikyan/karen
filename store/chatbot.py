@@ -439,11 +439,9 @@ def get_landing_page(request):
         return None
 
 
-
-
 @csrf_exempt
 def chatbot_response_public(request):
-    """Handles chatbot responses, including MCP API integration."""
+    """Handles chatbot responses, including MCP API and Support Ticket integration."""
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile or not profile.chatgpt_api_key:
         return JsonResponse({"error": "Invalid website profile or missing API key."}, status=400)
@@ -453,8 +451,8 @@ def chatbot_response_public(request):
 
     try:
         data = json.loads(request.body)
-        user_message = data.get("message", "")
-        client_id = data.get("clientId", "")
+        user_message = data.get("message", "").strip()
+        client_id = data.get("clientId", "").strip()
         if not user_message or not client_id:
             return JsonResponse({"error": "Message and clientId are required."}, status=400)
     except json.JSONDecodeError:
@@ -467,130 +465,181 @@ def chatbot_response_public(request):
         {
             "role": "system",
             "content": (
-                f"You are a chatbot assistant for a company. Website Info: {landingpage.description}. "
-                f"Goal: {landingpage.goal}. Keep responses under 200 characters."
+                "You are a chatbot assistant for a company. If a user reports an issue, determine if a support ticket is needed. "
+                "For login problems, system errors, or product malfunctions, create a support ticket using 'CREATE_TICKET'. "
+                "Ask for the user's email and issue details if missing. If it's a general inquiry, provide helpful information."
             ),
         },
         {"role": "user", "content": user_message},
     ]
 
-    # Step 1: Ask OpenAI if an API call is needed
+    # ✅ Step 1: Ask OpenAI if an API call is needed
     try:
         response = client.chat.completions.create(
-    model="gpt-4-turbo",
-    messages=messages,
-    tools=[
-        {
-            "type": "function",
-            "function": {
-                "name": "GET_BUSINESS",
-                "description": "Retrieve business details by ID.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "id": {"type": "integer", "description": "Business ID to fetch"}
-                    },
-                    "required": ["id"]
+            model="gpt-4-turbo",
+            messages=messages,
+            tools=[
+                # Business API Tools
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "GET_BUSINESS",
+                        "description": "Retrieve business details by ID.",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "id": {"type": "integer", "description": "Business ID to fetch"}
+                            },
+                            "required": ["id"]
+                        }
+                    }
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "CREATE_BUSINESS",
+                        "description": "Create a new business entry.",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "name": {"type": "string", "description": "Business name"},
+                                "industry": {"type": "string", "description": "Industry type"},
+                                "email": {"type": "string", "description": "Business contact email"},
+                                "phone": {"type": "string", "description": "Business contact phone"},
+                                "website": {"type": "string", "description": "Business website URL"}
+                            },
+                            "required": ["name", "industry"]
+                        }
+                    }
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "LIST_BUSINESSES",
+                        "description": "Retrieve a list of all businesses.",
+                        "parameters": {}
+                    }
+                },
+                # ✅ Support Ticket API Tools
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "GET_TICKET",
+                        "description": "Retrieve support ticket details by ID.",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "id": {"type": "integer", "description": "Support Ticket ID to fetch"}
+                            },
+                            "required": ["id"]
+                        }
+                    }
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "CREATE_TICKET",
+                        "description": "Create a new support ticket.",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "title": {"type": "string", "description": "Short summary of the issue"},
+                                "description": {"type": "string", "description": "Detailed description of the issue"},
+                                "priority": {"type": "string", "description": "Priority level (low, medium, high, urgent)"},
+                                "contact_email": {"type": "string", "description": "Contact email for follow-up"}
+                            },
+                            "required": ["title", "description", "priority", "contact_email"]
+                        }
+                    }
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "LIST_TICKETS",
+                        "description": "Retrieve a list of all support tickets.",
+                        "parameters": {}
+                    }
                 }
-            }
-        },
-        {
-            "type": "function",
-            "function": {
-                "name": "CREATE_BUSINESS",
-                "description": "Create a new business entry.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "name": {"type": "string", "description": "Business name"},
-                        "industry": {"type": "string", "description": "Industry type"},
-                        "email": {"type": "string", "description": "Business contact email"},
-                        "phone": {"type": "string", "description": "Business contact phone"},
-                        "website": {"type": "string", "description": "Business website URL"}
-                    },
-                    "required": ["name", "industry"]
-                }
-            }
-        },
-        {
-            "type": "function",
-            "function": {
-                "name": "LIST_BUSINESSES",
-                "description": "Retrieve a list of all businesses.",
-                "parameters": {}
-            }
-        }
-    ],
-    tool_choice="auto"  # Let OpenAI decide if API call is needed
+            ],
+            tool_choice="auto"
+        )
 
-) 
+        if not response.choices:
+            return JsonResponse({"error": "No response from OpenAI."}, status=500)
 
-        print(f"OpenAI Response: {response}")
+        tool_calls = response.choices[0].message.tool_calls if response.choices else []
+        
     except Exception as e:
-        print(f"OpenAI request failed: {str(e)}")
         return JsonResponse({"error": f"OpenAI request failed: {str(e)}"}, status=500)
 
-    tool_calls = response.choices[0].message.tool_calls if response.choices else []
+    # ✅ Step 2: Process API Calls
     mcp_data = None
     if tool_calls:
         for tool in tool_calls:
             function_args = json.loads(tool.function.arguments)
-            
+
             if tool.function.name == "GET_BUSINESS":
-                business_id = function_args.get("id")
-                print(f"Business ID extracted: {business_id}")
-                if business_id:
-                    mcp_data = fetch_mcp_data(business_id)
-                else:
-                    mcp_data = {"error": "Invalid Business ID"}
+                mcp_data = fetch_mcp_data(function_args.get("id"))
 
             elif tool.function.name == "CREATE_BUSINESS":
-                print(f"Creating Business with Data: {function_args}")
                 mcp_data = create_business(function_args)
 
             elif tool.function.name == "LIST_BUSINESSES":
-                print("Fetching All Businesses")
                 mcp_data = fetch_all_businesses()
 
-    print(f"MCP Data Retrieved: {mcp_data}")
+            elif tool.function.name == "GET_TICKET":
+                mcp_data = fetch_support_ticket(function_args.get("id"))
 
-    # Step 3: Generate Final Response
+            elif tool.function.name == "CREATE_TICKET":
+                mcp_data = create_support_ticket(function_args)
+
+            elif tool.function.name == "LIST_TICKETS":
+                mcp_data = fetch_all_support_tickets()
+
+    # ✅ Step 3: Fallback to Auto-Create Ticket if OpenAI Fails
+    if not tool_calls and ("login" in user_message.lower() or "error" in user_message.lower() or "crash" in user_message.lower()):
+        ticket_data = {
+            "title": "System Issue Detected",
+            "description": user_message,
+            "priority": "high",
+            "contact_email": data.get("contact_email", "unknown@example.com")
+        }
+        mcp_data = create_support_ticket(ticket_data)
+
+    # ✅ Step 4: Generate Final Response
     followup_messages = messages.copy()
-
     if tool_calls and mcp_data:
         followup_messages.append({
             "role": "assistant",
-            "tool_calls": tool_calls  # Maintain context
+            "tool_calls": tool_calls
         })
         followup_messages.append({
             "role": "tool",
-            "name": tool_calls[0].function.name,  # Use correct function name
-            "tool_call_id": tool_calls[0].id,  # Associate with original tool call ID
+            "name": tool_calls[0].function.name,
+            "tool_call_id": tool_calls[0].id,
             "content": json.dumps(mcp_data)
         })
     elif mcp_data:
         followup_messages.append(
-            {"role": "system", "content": f"Business Context: {json.dumps(mcp_data)}"}
+            {"role": "assistant", "content": f"Support Ticket Info: {json.dumps(mcp_data)}"}
         )
-
 
     try:
         final_response = client.chat.completions.create(
             model="gpt-4-turbo",
             messages=followup_messages
         )
-        bot_reply = final_response.choices[0].message.content
-        print(f"Final OpenAI Response: {bot_reply}")
+        bot_reply = final_response.choices[0].message.content if final_response.choices else "I'm sorry, I couldn't process your request."
     except Exception as e:
-        print(f"Final OpenAI request failed: {str(e)}")
         return JsonResponse({"error": f"Final OpenAI request failed: {str(e)}"}, status=500)
 
-    # Step 4: Save conversation and return response
+    # ✅ Step 5: Save Conversation and Return Response
     conversation, _ = Conversation.objects.get_or_create(client_id=client_id)
     Message.objects.create(conversation=conversation, role="user", content=user_message)
     Message.objects.create(conversation=conversation, role="assistant", content=bot_reply)
 
     return JsonResponse({"response": bot_reply})
+
 
 @csrf_exempt
 def chatbot_response_private(request):
