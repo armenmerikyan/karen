@@ -27,6 +27,10 @@ from django.contrib.auth.views import PasswordResetConfirmView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from store.serializers import CustomTokenObtainPairSerializer
 
+
+def custom_google_login(request):
+    return render(request, "socialaccount/login.html")
+
 urlpatterns = [  
     path('admin/', admin.site.urls),  
     
@@ -244,6 +248,9 @@ urlpatterns = [
     path('api/reviews/delete/<int:pk>/', views.delete_review, name="delete_review"),    
 
     path('oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+
+
+    path("accounts/google/login/", custom_google_login),
 
 #    path('api/register/', views.RegisterAPIView.as_view(), name='api_register'),
 #    path('api/login/', views.CustomLoginView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='api_login'),
