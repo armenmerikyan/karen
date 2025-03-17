@@ -130,6 +130,7 @@ REST_FRAMEWORK = {
 SPECTACULAR_SETTINGS = {
     'SECURITY': [],  # No security schemes included
     "OPENAPI_VERSION": "3.1.0",
+    'DEFAULT_GENERATOR_CLASS': 'drf_spectacular.generators.SchemaGenerator',
     "TITLE": "Gigahard API",
     "DESCRIPTION": "OpenAPI schema for Business MCP integration",
     "VERSION": "1.0.0",
