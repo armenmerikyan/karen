@@ -25,15 +25,10 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import PasswordResetConfirmView 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from store.serializers import CustomTokenObtainPairSerializer
-from django.shortcuts import render
+from store.serializers import CustomTokenObtainPairSerializer 
 
-def custom_google_login(request):
-    return render(request, "socialaccount/login.html")
+urlpatterns = [   
 
-urlpatterns = [  
-    path("accounts/google/login/", custom_google_login),
-    
     path('admin/', admin.site.urls),  
     
     path('', views.index, name='index'), 
