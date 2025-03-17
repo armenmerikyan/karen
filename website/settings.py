@@ -49,11 +49,6 @@ SOCIAL_AUTH_PIPELINE = (
     'store.pipeline.user_details',
 )
 
-CORS_ALLOWED_ORIGINS = [
-    'https://gamebackrooms.com',
-    'https://www.gamebackrooms.com',
-    # other allowed origins
-]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
