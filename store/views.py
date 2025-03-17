@@ -3954,14 +3954,25 @@ def delete_review(request, pk):
         ),
     ]
 )
-class RegisterView(generics.CreateAPIView):
-    """
-    API endpoint to register a new user.
-    """
-    queryset = User.objects.all()
-    serializer_class = RegisterSerializer
-    permission_classes = [AllowAny]
 
+class RegisterAPIView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserRegisterSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        return Response(
+            {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "message": "User registered successfully."
+            },
+            status=status.HTTP_201_CREATED
+        )
 
 @extend_schema(
     summary="User Login",

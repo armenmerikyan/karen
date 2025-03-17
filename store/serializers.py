@@ -16,7 +16,7 @@ class RegisterResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username", "email", "first_name", "last_name", "company_name", "company_phone", "sol_wallet_address", "created_at"]
-        
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
@@ -25,17 +25,21 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['username'] = user.username
         return token
 
-
 class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True)
+    message = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = (
-            'username', 'email', 'first_name', 'last_name',
-            'password', 'password2', 'company_name', 'company_phone', 'sol_wallet_address'
+            'id', 'username', 'email', 'first_name', 'last_name',
+            'password', 'password2', 'company_name', 'company_phone', 'sol_wallet_address', 'message'
         )
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def get_message(self, obj):
+        return "User registered successfully."
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
@@ -44,15 +48,27 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password2')
+        
+        # Extract additional fields before creating user
+        company_name = validated_data.pop('company_name', None)
+        company_phone = validated_data.pop('company_phone', None)
+        sol_wallet_address = validated_data.pop('sol_wallet_address', None)
+
+        # Create the user
         user = User.objects.create_user(
             email=validated_data['email'],
             username=validated_data['username'],
             password=validated_data['password'],
             first_name=validated_data.get('first_name', ''),
-            last_name=validated_data.get('last_name', ''),
-            company_phone=validated_data.get('company_phone', ''),
-            company_name=validated_data.get('company_name', '')
+            last_name=validated_data.get('last_name', '')
         )
+
+        # Store additional fields in user profile (assuming you extend the User model)
+        user.profile.company_name = company_name
+        user.profile.company_phone = company_phone
+        user.profile.sol_wallet_address = sol_wallet_address
+        user.profile.save()
+
         return user
 
 
