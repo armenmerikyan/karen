@@ -3928,23 +3928,20 @@ def delete_review(request, pk):
     description="Creates a new user with the provided username, email, password, and additional optional fields like company name, phone, and Solana wallet address.",
     request=RegisterSerializer,
     responses={
-        201: RegisterResponseSerializer,  # Success Response
-        400: OpenApiTypes.OBJECT   # Validation errors
+        201: UserRegisterResponse,  # Updated response schema reference
+        400: OpenApiTypes.OBJECT
     },
     tags=["Authentication"],
     examples=[
         OpenApiExample(
             name="Successful Registration",
             value={
+                "id": 1,
                 "username": "john_doe",
                 "email": "john@example.com",
-                "first_name": "John",
-                "last_name": "Doe",
-                "company_name": "Doe Inc.",
-                "company_phone": "+1234567890",
-                "sol_wallet_address": "YourSolanaAddress"
+                "message": "User registered successfully."
             },
-            request_only=True
+            response_only=True
         ),
         OpenApiExample(
             name="Validation Error - Missing Email",
