@@ -428,6 +428,20 @@ def get_landing_page(request):
     except LandingPage.DoesNotExist:
         return None
 
+def fetch_all_businesses():
+    """Fetches all businesses from the MCP API."""
+    try:
+        api_url = "https://gigahard.ai/api/businesses/"
+        response = requests.get(api_url)
+        print(f"Fetching All Businesses: {api_url}, Status: {response.status_code}")
+        if response.status_code == 200:
+            return response.json()
+        return {"error": f"MCP API returned {response.status_code}", "response": response.text}
+    except Exception as e:
+        print(f"Error fetching businesses: {str(e)}")
+        return {"error": str(e)}
+
+
 def fetch_mcp_data(business_id):
     """Fetches MCP API data for business context based on ID."""
     try:
@@ -491,44 +505,53 @@ def chatbot_response_public(request):
     # Step 1: Ask OpenAI if an API call is needed
     try:
         response = client.chat.completions.create(
-            model="gpt-4-turbo",
-            messages=messages,
-            tools=[
-                {
-                    "type": "function",
-                    "function": {
-                        "name": "GET_BUSINESS",
-                        "description": "Retrieve business details by ID.",
-                        "parameters": {
-                            "type": "object",
-                            "properties": {
-                                "id": {"type": "integer", "description": "Business ID to fetch"}
-                            },
-                            "required": ["id"]
-                        }
-                    }
-                },
-                {
-                    "type": "function",
-                    "function": {
-                        "name": "CREATE_BUSINESS",
-                        "description": "Create a new business entry.",
-                        "parameters": {
-                            "type": "object",
-                            "properties": {
-                                "name": {"type": "string", "description": "Business name"},
-                                "industry": {"type": "string", "description": "Industry type"},
-                                "email": {"type": "string", "description": "Business contact email"},
-                                "phone": {"type": "string", "description": "Business contact phone"},
-                                "website": {"type": "string", "description": "Business website URL"}
-                            },
-                            "required": ["name", "industry"]
-                        }
-                    }
+    model="gpt-4-turbo",
+    messages=messages,
+    tools=[
+        {
+            "type": "function",
+            "function": {
+                "name": "GET_BUSINESS",
+                "description": "Retrieve business details by ID.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "id": {"type": "integer", "description": "Business ID to fetch"}
+                    },
+                    "required": ["id"]
                 }
-            ],
-            tool_choice="auto"  # Let OpenAI decide if API call is needed
-        )
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "CREATE_BUSINESS",
+                "description": "Create a new business entry.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string", "description": "Business name"},
+                        "industry": {"type": "string", "description": "Industry type"},
+                        "email": {"type": "string", "description": "Business contact email"},
+                        "phone": {"type": "string", "description": "Business contact phone"},
+                        "website": {"type": "string", "description": "Business website URL"}
+                    },
+                    "required": ["name", "industry"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "LIST_BUSINESSES",
+                "description": "Retrieve a list of all businesses.",
+                "parameters": {}
+            }
+        }
+    ],
+    tool_choice="auto"  # Let OpenAI decide if API call is needed
+)
+
         print(f"OpenAI Response: {response}")
     except Exception as e:
         print(f"OpenAI request failed: {str(e)}")
@@ -536,8 +559,6 @@ def chatbot_response_public(request):
 
     tool_calls = response.choices[0].message.tool_calls if response.choices else []
     mcp_data = None
-
-    # Step 2: Handle API Call if Needed
     if tool_calls:
         for tool in tool_calls:
             function_args = json.loads(tool.function.arguments)
@@ -553,6 +574,10 @@ def chatbot_response_public(request):
             elif tool.function.name == "CREATE_BUSINESS":
                 print(f"Creating Business with Data: {function_args}")
                 mcp_data = create_business(function_args)
+
+            elif tool.function.name == "LIST_BUSINESSES":
+                print("Fetching All Businesses")
+                mcp_data = fetch_all_businesses()
 
     print(f"MCP Data Retrieved: {mcp_data}")
 
@@ -574,6 +599,7 @@ def chatbot_response_public(request):
         followup_messages.append(
             {"role": "system", "content": f"Business Context: {json.dumps(mcp_data)}"}
         )
+
 
     try:
         final_response = client.chat.completions.create(
