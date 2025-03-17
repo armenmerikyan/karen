@@ -501,9 +501,9 @@ def chatbot_response_public(request):
         return JsonResponse({"error": f"OpenAI request failed: {str(e)}"}, status=500)
 
     tool_calls = response.choices[0].message.tool_calls if response.choices else []
+    mcp_data = None
 
     # Step 2: Handle API Call if Needed
-    mcp_data = None
     if tool_calls:
         for tool in tool_calls:
             if tool.function.name == "MCP_API":
@@ -521,10 +521,17 @@ def chatbot_response_public(request):
     followup_messages = messages.copy()
 
     if tool_calls and mcp_data:
-        # Only include 'tool' role if OpenAI explicitly called the function
-        followup_messages.append(
-            {"role": "tool", "name": "MCP_API", "content": json.dumps(mcp_data)}
-        )
+        # Instead of appending as a separate message, we include it as a tool response
+        followup_messages.append({
+            "role": "assistant",
+            "tool_calls": tool_calls  # Reinforce the context of the tool call
+        })
+        followup_messages.append({
+            "role": "tool",
+            "name": "MCP_API",
+            "tool_call_id": tool_calls[0].id,  # Associate with original tool call ID
+            "content": json.dumps(mcp_data)
+        })
     elif mcp_data:
         # If OpenAI did not request a tool call, provide context as a system message
         followup_messages.append(
