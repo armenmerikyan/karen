@@ -104,7 +104,7 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
 ) 
 
-MIDDLEWARE = [ 
+MIDDLEWARE = [  
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -318,3 +318,7 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
+
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
