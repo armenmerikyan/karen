@@ -3886,6 +3886,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return super().get_queryset()
 
 # API Views for explicit CRUD operations
+
+@method_decorator(csrf_exempt, name='dispatch')
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])  # Restricts to authenticated users only
 @extend_schema(summary="Create a Review", description="Endpoint to add a new review.", tags=["Reviews"])
