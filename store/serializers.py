@@ -6,6 +6,12 @@ from .models import ConvoLog
 from .models import ConversationTopic
 from .models import Memory
 from .models import Business
+from .models import SupportTicket
+
+class SupportTicketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SupportTicket
+        fields = "__all__"
 
 class BusinessSerializer(serializers.ModelSerializer):
     class Meta:

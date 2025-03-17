@@ -1002,3 +1002,62 @@ class Business(models.Model):
                 "updated_at": self.updated_at.isoformat(),
             }
         }
+    
+class SupportTicket(models.Model):
+    """
+    MCP-Compatible Support Ticket Model
+    """
+    
+    STATUS_CHOICES = [
+        ('open', 'Open'),
+        ('in_progress', 'In Progress'),
+        ('resolved', 'Resolved'),
+        ('closed', 'Closed'),
+    ]
+    
+    PRIORITY_CHOICES = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+        ('urgent', 'Urgent'),
+    ]
+    
+    business = models.ForeignKey('Business', on_delete=models.CASCADE, related_name='support_tickets', help_text="Associated business.")
+    title = models.CharField(max_length=255, help_text="Short summary of the issue.")
+    description = models.TextField(help_text="Detailed description of the issue.")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open', help_text="Current status of the ticket.")
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium', help_text="Priority level of the ticket.")
+    created_by = models.CharField(max_length=255, help_text="Name of the person who created the ticket.")
+    contact_email = models.EmailField(help_text="Contact email for follow-up.")
+    assigned_to = models.CharField(max_length=255, blank=True, null=True, help_text="Support agent assigned to the ticket.")
+    resolution_notes = models.TextField(blank=True, null=True, help_text="Notes on how the issue was resolved.")
+    created_at = models.DateTimeField(auto_now_add=True, help_text="Ticket creation timestamp.")
+    updated_at = models.DateTimeField(auto_now=True, help_text="Last update timestamp.")
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.title} ({self.get_status_display()})"
+
+    def to_mcp_context(self):
+        """
+        Converts the support ticket object to an MCP-compatible dictionary.
+        """
+        return {
+            "id": self.id,
+            "business": self.business.to_mcp_context() if self.business else None,
+            "title": self.title,
+            "description": self.description,
+            "status": self.status,
+            "priority": self.priority,
+            "created_by": self.created_by,
+            "contact_email": self.contact_email,
+            "assigned_to": self.assigned_to,
+            "resolution_notes": self.resolution_notes,
+            "timestamps": {
+                "created_at": self.created_at.isoformat(),
+                "updated_at": self.updated_at.isoformat(),
+            }
+        }
+

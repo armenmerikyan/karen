@@ -111,6 +111,7 @@ from .models import Referral
 from .models import LandingPage
 from .models import FormSubmission
 from .models import Business
+from .models import SupportTicket
 
 from .forms import LandingPageForm
 from .forms import SimpleQuestionForm
@@ -141,6 +142,7 @@ from .serializers import MemorySerializer
 from .serializers import EmptySerializer
 from .serializers import TwitterStatusSerializer
 from .serializers import BusinessSerializer
+from .serializers import SupportTicketSerializer
 from .services import MemoryService
 from .services import RoomService  # Import the RoomService class
 
@@ -243,7 +245,7 @@ from rest_framework import generics
 from drf_spectacular.utils import extend_schema
 
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
+from rest_framework import filters, viewsets
 from rest_framework.generics import ListCreateAPIView 
 
 
@@ -3792,3 +3794,56 @@ class BusinessListCreateView(ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ["name", "industry", "city"]  # Exact match filtering
     search_fields = ["name", "industry", "city"]  # Partial search support 
+
+@extend_schema(
+    summary="List Support Tickets",
+    description="Retrieve a list of support tickets with filtering options.",
+    tags=["Support Ticket"]
+)
+class SupportTicketListView(ListAPIView):
+    """
+    API endpoint to list support tickets with filtering.
+    """
+    queryset = SupportTicket.objects.all()
+    serializer_class = SupportTicketSerializer
+    filterset_fields = ["status", "priority", "assigned_to", "business"]
+    search_fields = ["title", "description", "created_by", "contact_email"]
+    ordering_fields = ["created_at", "updated_at"]
+    ordering = ["-created_at"]
+
+@extend_schema(
+    summary="Create a Support Ticket",
+    description="Endpoint to create a new support ticket.",
+    tags=["Support Ticket"]
+)
+class SupportTicketCreateView(CreateAPIView):
+    """
+    API endpoint to create a support ticket.
+    """
+    queryset = SupportTicket.objects.all()
+    serializer_class = SupportTicketSerializer
+
+@extend_schema(
+    summary="Retrieve or Update a Support Ticket",
+    description="Retrieve details of a support ticket or update its fields.",
+    tags=["Support Ticket"]
+)
+class SupportTicketDetailView(RetrieveUpdateAPIView):
+    """
+    API endpoint to retrieve or update a support ticket.
+    Supports full and partial updates.
+    """
+    queryset = SupportTicket.objects.all()
+    serializer_class = SupportTicketSerializer
+
+@extend_schema(
+    summary="Update a Support Ticket",
+    description="Fully update a support ticket (all fields required).",
+    tags=["Support Ticket"]
+)
+class SupportTicketUpdateView(UpdateAPIView):
+    """
+    API endpoint to fully update a support ticket (PUT method).
+    """
+    queryset = SupportTicket.objects.all()
+    serializer_class = SupportTicketSerializer

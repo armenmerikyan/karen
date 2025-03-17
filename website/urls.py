@@ -229,6 +229,11 @@ urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 
+    path("api/support-tickets/", views.SupportTicketListView.as_view(), name="support-ticket-list"),  # ✅ List all tickets
+    path("api/support-tickets/create/", views.SupportTicketCreateView.as_view(), name="support-ticket-create"),  # ✅ Create a new ticket
+    path("api/support-tickets/<int:pk>/", views.SupportTicketDetailView.as_view(), name="support-ticket-detail"),  # ✅ Retrieve or update a ticket
+    path("api/support-tickets/<int:pk>/update/", views.SupportTicketUpdateView.as_view(), name="support-ticket-update"),  # ✅ Fully update a ticket
+
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
