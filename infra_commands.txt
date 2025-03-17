@@ -46,7 +46,7 @@ pip install pdfrw
 pip install geoip2
 pip install user-agents
 pip install docker
-pip install drf-spectacular
+pip install drf-spectacular django-filter
 
 python3 manage.py makemigrations
 python3 manage.py migrate
