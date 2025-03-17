@@ -251,7 +251,7 @@ import docker
 
 from rest_framework import generics  
 
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
 
 from django_filters.rest_framework import DjangoFilterBackend
