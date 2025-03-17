@@ -243,8 +243,8 @@ urlpatterns = [
     path('api/reviews/delete/<int:pk>/', views.delete_review, name="delete_review"),    
 
 
-    path('api/register/', views.RegisterView.as_view(), name='register'),
-    path('api/login/', views.TokenObtainPairView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='login'),
+    path('api/register/', views.RegisterView.as_view(), name='api_register'),
+    path('api/login/', views.TokenObtainPairView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='api_login'),
 
 ] 
 
