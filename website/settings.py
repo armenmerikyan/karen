@@ -128,8 +128,9 @@ REST_FRAMEWORK = {
 }
  
 SPECTACULAR_SETTINGS = {
-    'SECURITY': [],  # No security schemes included
-    "OPENAPI_VERSION": "3.1.0",
+    'SCHEMA_VERSION': '3.1.0',
+    'SECURITY': [],  # explicitly disable security schemes
+    'COMPONENT_SPLIT_REQUEST': True,
     'DEFAULT_GENERATOR_CLASS': 'drf_spectacular.generators.SchemaGenerator',
     "TITLE": "Gigahard API",
     "DESCRIPTION": "OpenAPI schema for Business MCP integration",
@@ -137,8 +138,7 @@ SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": "/api/businesses/",
     "SERVE_INCLUDE_SCHEMA": True,
     "SERVE_PERMISSIONS": [],
-    "SERVERS": [{"url": "https://api.gigahard.com"}], 
-    "COMPONENT_SPLIT_REQUEST": True,
+    "SERVERS": [{"url": "https://gigahard.com"}],  
     "COMPONENT_SPLIT_RESPONSE": True,
 }
 
