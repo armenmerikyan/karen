@@ -24,3 +24,4 @@ user-agents
 docker
 drf-spectacular
 django-filter
+djangorestframework-simplejwt

@@ -8,6 +8,48 @@ from .models import Memory
 from .models import Business
 from .models import SupportTicket
 from .models import Review
+from .models import User
+from django.contrib.auth.password_validation import validate_password
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        # Add custom claims here if needed
+        token['username'] = user.username
+        return token
+
+
+class UserRegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            'username', 'email', 'first_name', 'last_name',
+            'password', 'password2', 'company_name', 'company_phone', 'sol_wallet_address'
+        )
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "Passwords must match."})
+        return attrs
+
+    def create(self, validated_data):
+        validated_data.pop('password2')
+        user = User.objects.create_user(
+            email=validated_data['email'],
+            username=validated_data['username'],
+            password=validated_data['password'],
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', ''),
+            company_phone=validated_data.get('company_phone', ''),
+            company_name=validated_data.get('company_name', '')
+        )
+        return user
+
 
 # Serializer
 class ReviewSerializer(serializers.ModelSerializer):

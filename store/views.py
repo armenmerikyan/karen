@@ -24,6 +24,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.template.context_processors import csrf
 
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+
 from rest_framework.generics import CreateAPIView, ListAPIView, CreateAPIView, RetrieveUpdateAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -135,6 +137,8 @@ from .forms import TokenMarketingContentForm
 from .forms import TweetForm 
 from .forms import WebsiteProfileForm
 from .forms import UserCreationForm  # You need to create this form
+
+from .serializers import RegisterSerializer, CustomTokenObtainPairSerializer
 from .serializers import ConversationTopicSerializer
 from .serializers import TwitterStatusSerializer
 from .serializers import UserQuerySerializer
@@ -148,8 +152,7 @@ from .serializers import ReviewSerializer
 
 from .services import MemoryService
 from .services import RoomService  # Import the RoomService class
-
-
+ 
 
 
 import base64
@@ -167,12 +170,12 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser
-
-
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 from django.contrib.auth import authenticate
 
 from django.core.paginator import Paginator
@@ -3841,6 +3844,8 @@ class SupportTicketDetailView(RetrieveUpdateAPIView):
     queryset = SupportTicket.objects.all()
     serializer_class = SupportTicketSerializer
 
+
+# REVIEWS 
 # ViewSet with CRUD Operations
 @extend_schema(
     summary="List, Retrieve, Create, Update, or Delete Reviews",
@@ -3863,6 +3868,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 # API Views for explicit CRUD operations
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])  # Restricts to authenticated users only
 @extend_schema(summary="Create a Review", description="Endpoint to add a new review.", tags=["Reviews"])
 def create_review(request):
     serializer = ReviewSerializer(data=request.data)
@@ -3879,6 +3885,7 @@ def list_reviews(request):
     return Response(serializer.data)
 
 @api_view(['PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])  # Restricts to authenticated users only
 @extend_schema(summary="Update a Review", description="Endpoint to update a review.", tags=["Reviews"])
 def update_review(request, pk):
     review = get_object_or_404(Review, pk=pk)
@@ -3894,3 +3901,14 @@ def delete_review(request, pk):
     review = get_object_or_404(Review, pk=pk)
     review.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
+
+class CustomLoginView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+    permission_classes = [AllowAny]

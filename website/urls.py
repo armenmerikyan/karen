@@ -241,6 +241,10 @@ urlpatterns = [
     path('api/reviews/update/<int:pk>/', views.update_review, name="update_review"),
     path('api/reviews/delete/<int:pk>/', views.delete_review, name="delete_review"),    
 
+
+    path('api/register/', views.RegisterView.as_view(), name='register'),
+    path('api/login/', views.TokenObtainPairView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='login'),
+
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
