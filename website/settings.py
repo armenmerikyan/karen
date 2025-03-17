@@ -131,10 +131,16 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Gigahard API",
     "DESCRIPTION": "OpenAPI schema for Business MCP integration",
     "VERSION": "1.0.0",
-    "SCHEMA_PATH_PREFIX": "/api/businesses/",  # ✅ Only Business-related paths
-    "SERVE_INCLUDE_SCHEMA": False,  # ✅ Prevents schema exposure in endpoints
-    "SERVE_PERMISSIONS": [],  # ✅ No permissions required for schema access
+    "SCHEMA_PATH_PREFIX": "/api/businesses/",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SERVE_PERMISSIONS": [],
+    "SERVERS": [
+        {"url": "https://gigahard.com"},
+        # Add more servers if needed, e.g. local dev
+        {"url": "http://localhost:8000"},
+    ],
 }
+
 
 ROOT_URLCONF = 'website.urls'
 
