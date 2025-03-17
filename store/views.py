@@ -3716,6 +3716,19 @@ def submission_list(request):
 
 
 # Model Context Protocol MCP 
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+
+@extend_schema(
+    summary="Retrieve MCP-Compatible Business Context",
+    description="Returns MCP-compatible context for a specific business.",
+    parameters=[
+        OpenApiParameter(name='id', description='Business ID', required=True, type=int, location=OpenApiParameter.PATH),
+    ],
+)
+def get(self, request, id, *args, **kwargs):
+    business = self.get_object()
+    data = business.to_mcp_context()
+    return Response(data)
 
 @extend_schema(
     summary="List or Create Businesses",
@@ -3759,6 +3772,7 @@ class BusinessMCPView(generics.ListAPIView):
         businesses = self.get_queryset()
         data = [business.to_mcp_context() for business in businesses]  # Assumes `to_mcp_context` method exists
         return Response(data)
+    
     
 @extend_schema(
     summary="Create a new business",
