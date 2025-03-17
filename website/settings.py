@@ -133,7 +133,7 @@ REST_FRAMEWORK = {
 
  
 SPECTACULAR_SETTINGS = {
-    'SCHEMA_VERSION': '3.0.3',
+    'SCHEMA_VERSION': '3.1.0',
     'SECURITY': [],  # explicitly disable security schemes
     'SERVE_PERMISSIONS': ['rest_framework.permissions.AllowAny'],  # allow open access
 
@@ -144,10 +144,9 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0", 
     "SERVE_INCLUDE_SCHEMA": False,
     "SERVE_PERMISSIONS": [],
-    "SERVERS": [{"url": "https://gigahard.com"}],  
+    "SERVERS": [{"url": "https://gigahard.ai"}],  
     "COMPONENT_SPLIT_RESPONSE": True,
 }
-
 
 ROOT_URLCONF = 'website.urls'
 
