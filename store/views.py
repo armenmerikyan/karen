@@ -152,6 +152,8 @@ from .serializers import TwitterStatusSerializer
 from .serializers import BusinessSerializer
 from .serializers import SupportTicketSerializer
 from .serializers import ReviewSerializer
+from .serializers import RegisterResponseSerializer
+
 
 from .services import MemoryService
 from .services import RoomService  # Import the RoomService class
@@ -3927,7 +3929,7 @@ def delete_review(request, pk):
     description="Creates a new user with the provided username, email, password, and additional optional fields like company name, phone, and Solana wallet address.",
     request=RegisterSerializer,
     responses={
-        201: OpenApiTypes.OBJECT,  # Success Response
+        201: RegisterResponseSerializer,  # Success Response
         400: OpenApiTypes.OBJECT   # Validation errors
     },
     tags=["Authentication"],
