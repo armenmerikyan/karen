@@ -48,6 +48,7 @@ from django.utils import timezone  # Import Django's timezone module
 from openai import OpenAI
 from openai import OpenAIError  # Import OpenAIError for exception handling
 
+
 import json
 from PIL import Image
 import requests
@@ -251,6 +252,7 @@ import docker
 from rest_framework import generics  
 
 from drf_spectacular.utils import extend_schema
+from drf_spectacular.types import OpenApiTypes
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
