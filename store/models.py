@@ -1002,7 +1002,13 @@ class Business(models.Model):
                 "updated_at": self.updated_at.isoformat(),
             }
         }
-        
+
+def ticket_photo_upload(instance, filename):
+    # Generates a unique filename and organizes uploads by ticket ID.
+    extension = os.path.splitext(filename)[1]
+    unique_filename = f"{uuid4().hex}{extension}"
+    return f"ticket_photos/{instance.id}/{unique_filename}"      
+
 class SupportTicket(models.Model):
     """
     MCP-Compatible Support Ticket Model with photo and additional details
@@ -1026,7 +1032,13 @@ class SupportTicket(models.Model):
     title = models.CharField(max_length=255, help_text="Short summary of the issue.")
     description = models.TextField(help_text="Detailed description of the issue.")
     additional_details = models.TextField(blank=True, null=True, help_text="Additional details or context for the issue.")
-    photo = models.ImageField(upload_to='ticket_photos/', blank=True, null=True, help_text="Optional photo attachment related to the issue.")
+    photo = models.ImageField(
+        upload_to=ticket_photo_upload, 
+        blank=True, 
+        null=True, 
+        help_text="Optional photo attachment related to the issue."
+    )
+
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open', help_text="Current status of the ticket.")
     priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium', help_text="Priority level of the ticket.")
     created_by = models.CharField(max_length=255, help_text="Name of the person who created the ticket.")
