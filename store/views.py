@@ -3757,8 +3757,9 @@ class BusinessDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 @extend_schema(
-    summary="Retrieve All MCP-Compatible Business Contexts",
-    description="Returns MCP-compatible context for all businesses."
+    summary="Retrieve MCP-Compatible Business Context",
+    description="Returns business data formatted for MCP.",
+    responses=BusinessSerializer(many=True),  # explicitly specify the serializer
 )
 class BusinessMCPView(APIView):
     queryset = Business.objects.all()
