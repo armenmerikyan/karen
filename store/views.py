@@ -3774,10 +3774,11 @@ class BusinessCreateView(CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            business = serializer.save()
-            return Response({"message": "Business created", "id": business.id}, status=201)
-        return Response(serializer.errors, status=400) 
+        serializer.is_valid(raise_exception=True)
+        business = serializer.save()
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=201, headers=headers)
+
 
 @extend_schema(
     summary="List, Search, or Create Businesses",
@@ -3794,6 +3795,7 @@ class BusinessListCreateView(ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ["name", "industry", "city"]  # Exact match filtering
     search_fields = ["name", "industry", "city"]  # Partial search support 
+
 
 @extend_schema(
     summary="List Support Tickets",
