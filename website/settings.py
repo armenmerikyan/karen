@@ -135,9 +135,7 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     "SERVE_PERMISSIONS": [],
     "SERVERS": [
-        {"url": "https://gigahard.com"},
-        # Add more servers if needed, e.g. local dev
-        {"url": "http://localhost:8000"},
+        {"url": "https://gigahard.com"}, 
     ],
 }
 
