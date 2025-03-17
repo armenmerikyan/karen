@@ -128,6 +128,7 @@ REST_FRAMEWORK = {
 }
  
 SPECTACULAR_SETTINGS = {
+    "OPENAPI_VERSION": "3.1.0",
     "TITLE": "Gigahard API",
     "DESCRIPTION": "OpenAPI schema for Business MCP integration",
     "VERSION": "1.0.0",
@@ -135,7 +136,6 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": True,
     "SERVE_PERMISSIONS": [],
     "SERVERS": [{"url": "https://api.gigahard.com"}],
-    "OPENAPI_VERSION": "3.1.0",
     "SECURITY": [{"BearerAuth": []}],
     "COMPONENT_SPLIT_REQUEST": True,
     "COMPONENT_SPLIT_RESPONSE": True,
