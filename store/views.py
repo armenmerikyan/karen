@@ -3902,10 +3902,11 @@ def create_review(request):
 @method_decorator(csrf_exempt, name='dispatch')
 @permission_classes([IsAuthenticated])  # Restricts to authenticated users only
 @extend_schema(summary="List Reviews", description="Endpoint to list all reviews.", tags=["Reviews"])
-def list_reviews(request):
-    reviews = Review.objects.all()
-    serializer = ReviewSerializer(reviews, many=True)
-    return Response(serializer.data)
+class ListReviewsView(View):
+    def get(self, request):
+        reviews = Review.objects.all()
+        serializer = ReviewSerializer(reviews, many=True)
+        return JsonResponse(serializer.data, safe=False)
 
 @api_view(['PUT', 'PATCH'])
 @permission_classes([IsAuthenticated])  # Restricts to authenticated users only
