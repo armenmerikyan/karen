@@ -239,6 +239,7 @@ urlpatterns = [
     path('businesses/', views.business_list, name='business_list'),
  
     path('oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 
 
 
