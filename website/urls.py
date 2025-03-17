@@ -94,6 +94,7 @@ urlpatterns = [
     path('toggle-visibility/<int:token_id>/', views.toggle_visibility, name='toggle_visibility'),
     path('register/', views.register, name='register'), # create account
     path('update_profile/', views.update_profile, name='update_profile'),
+    path('accounts/profile/', views.update_profile, name='update_profile'),
 
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
