@@ -138,7 +138,9 @@ from .forms import TweetForm
 from .forms import WebsiteProfileForm
 from .forms import UserCreationForm  # You need to create this form
 
-from .serializers import RegisterSerializer, CustomTokenObtainPairSerializer
+from store.serializers import UserRegisterSerializer as RegisterSerializer
+
+from .serializers import CustomTokenObtainPairSerializer
 from .serializers import ConversationTopicSerializer
 from .serializers import TwitterStatusSerializer
 from .serializers import UserQuerySerializer
