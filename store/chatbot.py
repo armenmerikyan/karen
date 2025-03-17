@@ -441,6 +441,20 @@ def fetch_mcp_data(business_id):
         print(f"Error fetching MCP data: {str(e)}")
         return {"error": str(e)}
 
+def create_business(business_data):
+    """Creates a new business entry in Gigahard MCP."""
+    try:
+        api_url = "https://gigahard.ai/api/businesses/create/"
+        response = requests.post(api_url, json=business_data)
+        print(f"Creating Business: {business_data}, Status: {response.status_code}")
+        if response.status_code == 201:
+            return response.json()
+        return {"error": f"Business creation failed {response.status_code}", "response": response.text}
+    except Exception as e:
+        print(f"Error creating business: {str(e)}")
+        return {"error": str(e)}
+
+
 @csrf_exempt
 def chatbot_response_public(request):
     """Handles chatbot responses, including MCP API integration."""
@@ -479,20 +493,40 @@ def chatbot_response_public(request):
         response = client.chat.completions.create(
             model="gpt-4-turbo",
             messages=messages,
-            tools=[{
-                "type": "function",
-                "function": {
-                    "name": "MCP_API",
-                    "description": "Gigahard MCP API for business data retrieval.",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "id": {"type": "integer", "description": "Business ID to fetch"}
-                        },
-                        "required": ["id"]
+            tools=[
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "GET_BUSINESS",
+                        "description": "Retrieve business details by ID.",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "id": {"type": "integer", "description": "Business ID to fetch"}
+                            },
+                            "required": ["id"]
+                        }
+                    }
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "CREATE_BUSINESS",
+                        "description": "Create a new business entry.",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "name": {"type": "string", "description": "Business name"},
+                                "industry": {"type": "string", "description": "Industry type"},
+                                "email": {"type": "string", "description": "Business contact email"},
+                                "phone": {"type": "string", "description": "Business contact phone"},
+                                "website": {"type": "string", "description": "Business website URL"}
+                            },
+                            "required": ["name", "industry"]
+                        }
                     }
                 }
-            }],
+            ],
             tool_choice="auto"  # Let OpenAI decide if API call is needed
         )
         print(f"OpenAI Response: {response}")
@@ -506,8 +540,9 @@ def chatbot_response_public(request):
     # Step 2: Handle API Call if Needed
     if tool_calls:
         for tool in tool_calls:
-            if tool.function.name == "MCP_API":
-                function_args = json.loads(tool.function.arguments)
+            function_args = json.loads(tool.function.arguments)
+            
+            if tool.function.name == "GET_BUSINESS":
                 business_id = function_args.get("id")
                 print(f"Business ID extracted: {business_id}")
                 if business_id:
@@ -515,25 +550,27 @@ def chatbot_response_public(request):
                 else:
                     mcp_data = {"error": "Invalid Business ID"}
 
+            elif tool.function.name == "CREATE_BUSINESS":
+                print(f"Creating Business with Data: {function_args}")
+                mcp_data = create_business(function_args)
+
     print(f"MCP Data Retrieved: {mcp_data}")
 
     # Step 3: Generate Final Response
     followup_messages = messages.copy()
 
     if tool_calls and mcp_data:
-        # Instead of appending as a separate message, we include it as a tool response
         followup_messages.append({
             "role": "assistant",
-            "tool_calls": tool_calls  # Reinforce the context of the tool call
+            "tool_calls": tool_calls  # Maintain context
         })
         followup_messages.append({
             "role": "tool",
-            "name": "MCP_API",
+            "name": tool_calls[0].function.name,  # Use correct function name
             "tool_call_id": tool_calls[0].id,  # Associate with original tool call ID
             "content": json.dumps(mcp_data)
         })
     elif mcp_data:
-        # If OpenAI did not request a tool call, provide context as a system message
         followup_messages.append(
             {"role": "system", "content": f"Business Context: {json.dumps(mcp_data)}"}
         )
