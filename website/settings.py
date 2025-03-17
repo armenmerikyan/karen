@@ -101,7 +101,9 @@ AUTHENTICATION_BACKENDS = (
 
 AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
     'social_core.backends.google.GoogleOAuth2',
+    'oauth2_provider.backends.OAuth2Backend',
 ) 
 
 MIDDLEWARE = [  
