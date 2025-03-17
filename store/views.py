@@ -3757,22 +3757,18 @@ class BusinessDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 @extend_schema(
-    summary="Retrieve MCP-Compatible Business Context",
-    description="Returns business data formatted for Model Context Protocol (MCP).",
-    tags=["Business"],
+    summary="Retrieve All MCP-Compatible Business Contexts",
+    description="Returns MCP-compatible context for all businesses."
 )
-class BusinessMCPView(generics.ListAPIView):
-    """
-    Custom MCP-compatible API endpoint.
-    """
+class BusinessMCPView(APIView):
     queryset = Business.objects.all()
-    serializer_class = BusinessSerializer  # Ensure OpenAPI picks it up
 
     def get(self, request, *args, **kwargs):
-        businesses = self.get_queryset()
-        data = [business.to_mcp_context() for business in businesses]  # Assumes `to_mcp_context` method exists
+        businesses = self.queryset
+        data = [b.to_mcp_context() for b in businesses]
         return Response(data)
-    
+
+
     
 @extend_schema(
     summary="Create a new business",
