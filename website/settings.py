@@ -89,7 +89,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'drf_spectacular',
-    'oauth2_provider',
+    'oauth2_provider', 
 ]
 
 
@@ -131,6 +131,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),    
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ), 
     'DEFAULT_PERMISSION_CLASSES': [ 
         'rest_framework.permissions.AllowAny', 
     ],
