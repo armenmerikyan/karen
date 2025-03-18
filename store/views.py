@@ -3730,13 +3730,24 @@ def submission_list(request):
     return render(request, 'submissions.html', {'submissions': submissions, 'profile': profile})
 
 
-@csrf_exempt
+@csrf_exempt  # If you need to bypass CSRF protection
 @login_required
 def generate_token(request):
     if request.method == 'POST':
         user = request.user
+        
+        # Create or retrieve the token associated with the user
         token, created = Token.objects.get_or_create(user=user)
+        
+        # If the token was created, it will be stored in the database
+        if created:
+            # Optionally, you can log or handle the case where a new token is created.
+            print(f"New token created for user {user.username}")
+        
+        # Return the token in the response so the client can store it
         return JsonResponse({'token': token.key})
+    
+    # If the request method is not POST, return an error
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 # Model Context Protocol MCP 
