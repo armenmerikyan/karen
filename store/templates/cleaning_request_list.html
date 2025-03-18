@@ -20,7 +20,7 @@
               {% for request in cleaning_requests %}
               <tr>
                 <td>{{ request.id }}</td>
-                <td>{{ request.details|custom_filters }}</td>
+                <td>{{ request.details }}</td>
                 <td>{{ request.date }}</td>
               </tr>
               {% empty %}
