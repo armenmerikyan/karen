@@ -246,6 +246,7 @@ urlpatterns = [
 
 
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('generate-token/', views.generate_token, name='generate_token'),
 
 #    path('api/register/', views.RegisterAPIView.as_view(), name='api_register'),
 #    path('api/login/', views.CustomLoginView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='api_login'),
