@@ -238,6 +238,7 @@ urlpatterns = [
     path("api/support-tickets/<int:pk>/", views.SupportTicketDetailView.as_view(), name="support-ticket-detail"),  # ✅ Retrieve or update a ticket
     path("api/support-tickets/<int:pk>/update/", views.SupportTicketUpdateView.as_view(), name="support-ticket-update"),  # ✅ Fully update a ticket
     path('businesses/', views.business_list, name='business_list'),
+    path('businesses/delete/<int:business_id>/', views.delete_business, name='delete_business'),
  
     path('oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),

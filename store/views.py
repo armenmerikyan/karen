@@ -3977,3 +3977,10 @@ def business_list(request):
         'businesses': businesses,
         'total_businesses': total_businesses
     })
+
+def delete_business(request, business_id):
+    business = get_object_or_404(Business, id=business_id)
+    if request.method == "POST":
+        business.delete()
+        return redirect('business_list')
+    return render(request, 'delete_business.html', {'business': business})

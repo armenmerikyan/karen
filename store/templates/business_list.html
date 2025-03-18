@@ -1,15 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Directory</title>
-</head>
-<body>
-    <h1>Business Directory</h1>
-    <table border="1">
-        <thead>
-            <tr>
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">
+          <h1>Business Directory</h1>
+          <table class="table table-dark table-bordered">
+            <thead>
+              <tr>
                 <th>Name</th>
                 <th>Owner</th>
                 <th>Email</th>
@@ -18,11 +18,12 @@
                 <th>Industry</th>
                 <th>City</th>
                 <th>Country</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for business in businesses %}
-            <tr>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for business in businesses %}
+              <tr>
                 <td>{{ business.name }}</td>
                 <td>{{ business.owner }}</td>
                 <td>{{ business.email }}</td>
@@ -31,13 +32,23 @@
                 <td>{{ business.industry }}</td>
                 <td>{{ business.city }}</td>
                 <td>{{ business.country }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="8">No businesses found.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+                <td>
+                  <form action="{% url 'delete_business' business.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                  </form>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="9">No businesses found.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>      
+    </div>
+  </div>
+</section>    
+{% endblock %}
