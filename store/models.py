@@ -996,16 +996,10 @@ class Business(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, help_text="Record creation timestamp.")
     updated_at = models.DateTimeField(auto_now=True, help_text="Last update timestamp.")
 
-    # Creator Secret
-    creator_secret = models.CharField(
-        max_length=64,
-        blank=True,
-        null=True,
-        default=uuid.uuid4,
-        editable=False,
-        help_text="Auto-generated secret key for the business."
+    # Creator 
+    creator = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="businesses", help_text="User who created this business."
     )
-
     class Meta:
         ordering = ["name"]
 
@@ -1057,7 +1051,11 @@ class Business(models.Model):
                 "created_at": self.created_at.isoformat(),
                 "updated_at": self.updated_at.isoformat(),
             },
-            "creator_secret": self.creator_secret,
+            "creator": {
+                "id": self.creator.id,
+                "username": self.creator.username,
+                "email": self.creator.email,
+            } if self.creator else None,
         }
 
 def ticket_photo_upload(instance, filename):

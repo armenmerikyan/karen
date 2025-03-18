@@ -3824,17 +3824,18 @@ class BusinessListCreateView(ListCreateAPIView):
 class BusinessUpdateView(generics.RetrieveUpdateDestroyAPIView):
     """
     API endpoint to retrieve, update, or delete a business.
-    Updates require `creator_secret` to authenticate ownership.
+    Updates require authentication and validation of ownership.
     """
     queryset = Business.objects.all()
     serializer_class = BusinessSerializer
+    permission_classes = [IsAuthenticated]  # Ensures user authentication
 
     def update(self, request, *args, **kwargs):
         business = self.get_object()
-        creator_secret = request.data.get("creator_secret")
 
-        if not creator_secret or creator_secret != business.creator_secret:
-            raise PermissionDenied("Invalid or missing creator secret.")
+        # Ensure the authenticated user is the creator
+        if request.user != business.creator:
+            raise PermissionDenied("You do not have permission to update this business.")
 
         return super().update(request, *args, **kwargs)
 
