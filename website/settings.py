@@ -328,6 +328,10 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+CORS_ALLOWED_ORIGINS = [
+    "https://gigahard.ai",
+    "http://localhost:8000",  # Add local dev environment if needed
+] 
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
