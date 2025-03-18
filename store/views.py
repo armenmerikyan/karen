@@ -3825,14 +3825,22 @@ class BusinessCreateView(CreateAPIView):
 
         return Response(response_data, status=201, headers=headers)
 
+class CustomHeaderAuthentication(TokenAuthentication):
+    def authenticate(self, request):
+        # Look for the token in the custom header (e.g., X-API-Key)
+        token = request.META.get('HTTP_X_API_KEY')  # Django adds headers with the prefix 'HTTP_'
+        if token:
+            return self.authenticate_credentials(token)
+        return None
+    
 @extend_schema(
     summary="List, Search, or Create Businesses",
     description="API endpoint to list, search, or create a new business. Supports filtering by name, industry, and city.",
     tags=["Business"]
-) 
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
+)  
 class BusinessListCreateView(ListCreateAPIView):
+    authentication_classes = [CustomHeaderAuthentication]
+    permission_classes = [IsAuthenticated]
     """
     API endpoint to list, search, or create businesses.
     Supports search by name, industry, and city.
