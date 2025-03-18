@@ -174,6 +174,8 @@ SPECTACULAR_SETTINGS = {
     ],
 } 
 
+CORS_ALLOW_CREDENTIALS = True
+
 ROOT_URLCONF = 'website.urls'
 
 TEMPLATES = [
