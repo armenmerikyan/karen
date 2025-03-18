@@ -999,7 +999,7 @@ class Business(models.Model):
     # Creator Secret
     creator_secret = models.CharField(
         max_length=64,
-        blank=True
+        blank=True,
         null=True,
         default=uuid.uuid4,
         editable=False,
