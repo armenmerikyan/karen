@@ -26,6 +26,7 @@ from django.template.context_processors import csrf
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 
 from rest_framework.generics import CreateAPIView, ListAPIView, CreateAPIView, RetrieveUpdateAPIView, UpdateAPIView
 from rest_framework.response import Response
@@ -3757,7 +3758,6 @@ class BusinessDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Business.objects.all()
     serializer_class = BusinessSerializer
 
-
 @extend_schema(
     summary="Retrieve MCP-Compatible Business Context",
     description="Returns business data formatted for MCP.",
@@ -3770,8 +3770,6 @@ class BusinessMCPView(APIView):
         businesses = self.queryset
         data = [b.to_mcp_context() for b in businesses]
         return Response(data)
-
-
     
 @extend_schema(
     summary="Create a new business",
@@ -3800,7 +3798,6 @@ class BusinessCreateView(CreateAPIView):
 
         return Response(response_data, status=201, headers=headers)
 
-
 @extend_schema(
     summary="List, Search, or Create Businesses",
     description="API endpoint to list, search, or create a new business. Supports filtering by name, industry, and city.",
@@ -3819,6 +3816,27 @@ class BusinessListCreateView(ListCreateAPIView):
     filterset_fields = ["name", "industry", "city"]  # Exact match filtering
     search_fields = ["name", "industry", "city"]  # Partial search support 
 
+@extend_schema(
+    summary="Retrieve, Update, or Delete a Business",
+    description="API endpoint to retrieve, update, or delete a business by ID. Updating requires `creator_secret`.",
+    tags=["Business"]
+)
+class BusinessDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API endpoint to retrieve, update, or delete a business.
+    Updates require `creator_secret` to authenticate ownership.
+    """
+    queryset = Business.objects.all()
+    serializer_class = BusinessSerializer
+
+    def update(self, request, *args, **kwargs):
+        business = self.get_object()
+        creator_secret = request.data.get("creator_secret")
+
+        if not creator_secret or creator_secret != business.creator_secret:
+            raise PermissionDenied("Invalid or missing creator secret.")
+
+        return super().update(request, *args, **kwargs)
 
 @extend_schema(
     summary="List Support Tickets",
