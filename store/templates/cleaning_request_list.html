@@ -12,20 +12,38 @@
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Details</th>
-                <th>Date</th>
+                <th>Customer</th>
+                <th>Cleaning Type</th>
+                <th>Cleaning Level</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Zip Code</th>
+                <th>Scheduled Date</th>
+                <th>Status</th>
+                <th>Phone</th>
+                <th>Email</th>
               </tr>
             </thead>
             <tbody>
               {% for request in cleaning_requests %}
               <tr>
                 <td>{{ request.id }}</td>
-                <td>{{ request.details }}</td>
-                <td>{{ request.date }}</td>
+                <td>{{ request.customer.username }}</td>
+                <td>{{ request.get_cleaning_type_display }}</td>
+                <td>{{ request.get_cleaning_level_display }}</td>
+                <td>{{ request.address_line1 }} {% if request.address_line2 %}, {{ request.address_line2 }}{% endif %}</td>
+                <td>{{ request.city }}</td>
+                <td>{{ request.state }}</td>
+                <td>{{ request.zip_code }}</td>
+                <td>{{ request.scheduled_date|date:"Y-m-d H:i" }}</td>
+                <td>{{ request.get_status_display }}</td>
+                <td>{{ request.phone }}</td>
+                <td>{{ request.email }}</td>
               </tr>
               {% empty %}
               <tr>
-                <td colspan="3" class="text-center">No cleaning requests found.</td>
+                <td colspan="12" class="text-center">No cleaning requests found.</td>
               </tr>
               {% endfor %}
             </tbody>
