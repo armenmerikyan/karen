@@ -12,6 +12,7 @@
               <tr>
                 <th>Name</th>
                 <th>Owner</th>
+                <th>Creator</th>
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Website</th>
@@ -26,6 +27,7 @@
               <tr>
                 <td>{{ business.name }}</td>
                 <td>{{ business.owner }}</td>
+                <td>{{ business.creator }}</td>
                 <td>{{ business.email }}</td>
                 <td>{{ business.phone }}</td>
                 <td><a href="{{ business.website }}" target="_blank">{{ business.website }}</a></td>
@@ -41,7 +43,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="9">No businesses found.</td>
+                <td colspan="10">No businesses found.</td>
               </tr>
               {% endfor %}
             </tbody>
