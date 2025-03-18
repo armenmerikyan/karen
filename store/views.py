@@ -3766,6 +3766,14 @@ def get(self, request, id, *args, **kwargs):
 
 
 
+class CustomHeaderAuthentication(TokenAuthentication):
+    def authenticate(self, request):
+        # Look for the token in the custom header (e.g., X-API-Key)
+        token = request.META.get('HTTP_X_API_KEY')  # Django adds headers with the prefix 'HTTP_'
+        if token:
+            return self.authenticate_credentials(token)
+        return None
+    
 @extend_schema(
     summary="Retrieve, Update, or Delete a Business",
     description="API endpoint to retrieve, update, or delete a business by ID.",
@@ -3800,9 +3808,10 @@ class BusinessCreateView(CreateAPIView):
     """
     API endpoint to create a new business.
     """
+    authentication_classes = [CustomHeaderAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset = Business.objects.all()
-    serializer_class = BusinessSerializer
-    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can create a business
+    serializer_class = BusinessSerializer 
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -3824,14 +3833,6 @@ class BusinessCreateView(CreateAPIView):
         }
 
         return Response(response_data, status=201, headers=headers)
-
-class CustomHeaderAuthentication(TokenAuthentication):
-    def authenticate(self, request):
-        # Look for the token in the custom header (e.g., X-API-Key)
-        token = request.META.get('HTTP_X_API_KEY')  # Django adds headers with the prefix 'HTTP_'
-        if token:
-            return self.authenticate_credentials(token)
-        return None
     
 @extend_schema(
     summary="List, Search, or Create Businesses",
