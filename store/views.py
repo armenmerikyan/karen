@@ -261,7 +261,7 @@ from drf_spectacular.types import OpenApiTypes
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 from rest_framework.generics import ListCreateAPIView 
-
+ 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
@@ -3729,6 +3729,14 @@ def submission_list(request):
     submissions = FormSubmission.objects.all().order_by('-created_at')
     return render(request, 'submissions.html', {'submissions': submissions, 'profile': profile})
 
+
+@login_required
+def generate_token(request):
+    if request.method == 'POST':
+        user = request.user
+        token, created = Token.objects.get_or_create(user=user)
+        return JsonResponse({'token': token.key})
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 # Model Context Protocol MCP 
 

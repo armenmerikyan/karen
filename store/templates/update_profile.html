@@ -19,11 +19,38 @@
                 <p><div id="walletAddress"></div>  </p>
 
                 <p><button id="connectButton" class="btn btn-primary">Connect to Phantom</button> </p> 
+                <HR>
+                  <p><button id="generateTokenButton" class="btn btn-success">Generate Token</button></p>
+                  <p>Token: <span id="tokenDisplay"></span></p>                
             </div>
         </div>
     </div>
 </section>
-
+<!-- Add JavaScript to handle the button click -->
+<script>
+  document.getElementById('generateTokenButton').addEventListener('click', function () {
+      fetch('/generate-token/', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token for security
+          },
+          credentials: 'include'  // Include cookies for authentication
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.token) {
+              document.getElementById('tokenDisplay').textContent = data.token;
+          } else {
+              document.getElementById('tokenDisplay').textContent = 'Error generating token';
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          document.getElementById('tokenDisplay').textContent = 'Error generating token';
+      });
+  });
+</script>
 <script>
     // Function to convert ArrayBuffer to Base64
     function arrayBufferToBase64(buffer) {
