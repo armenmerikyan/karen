@@ -3799,8 +3799,8 @@ class BusinessCreateView(CreateAPIView):
     description="API endpoint to list, search, or create a new business. Supports filtering by name, industry, and city.",
     tags=["Business"]
 ) 
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
+#@authentication_classes([TokenAuthentication])
+#@permission_classes([IsAuthenticated])
 class BusinessListCreateView(ListCreateAPIView):
     """
     API endpoint to list, search, or create businesses.
