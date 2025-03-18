@@ -164,7 +164,14 @@ SPECTACULAR_SETTINGS = {
     "COMPONENT_SPLIT_RESPONSE": True,
     'SECURITY': [
         {'jwtAuth': []}  # Use only one method in OpenAPI docs
-    ]
+    ],
+    'SWAGGER_UI_SETTINGS': {
+        "deepLinking": True,
+        "defaultModelsExpandDepth": -1,
+    },
+    'AUTHENTICATION_WHITELIST': [  # Add only one scheme
+        'rest_framework.authentication.TokenAuthentication',
+    ],
 } 
 
 ROOT_URLCONF = 'website.urls'
