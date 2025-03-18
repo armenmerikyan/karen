@@ -23,6 +23,7 @@ from urllib.parse import quote
 from django.views.decorators.csrf import csrf_exempt
 from django.template.context_processors import csrf
 
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
