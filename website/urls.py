@@ -228,7 +228,8 @@ urlpatterns = [
     path('api/businesses/', views.BusinessListCreateView.as_view(), name='business-list'),
     path('api/businesses/<int:pk>/', views.BusinessDetailView.as_view(), name='business-detail'),
     path('api/businesses/mcp/', views.BusinessMCPView.as_view(), name='business-mcp'),
-    path("api/businesses/create/", views.BusinessCreateView.as_view(), name="business-create"),  # ✅ New endpoint for creating a business
+    path("api/businesses/create/", views.BusinessCreateView.as_view(), name="business-create"),  # ✅ New endpoint for creating a business 
+    path('business/<int:pk>/update/', views.BusinessUpdateView.as_view(), name='business-update'),
 
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
@@ -239,7 +240,7 @@ urlpatterns = [
     path("api/support-tickets/<int:pk>/update/", views.SupportTicketUpdateView.as_view(), name="support-ticket-update"),  # ✅ Fully update a ticket
     path('businesses/', views.business_list, name='business_list'),
     path('businesses/delete/<int:business_id>/', views.delete_business, name='delete_business'),
- 
+
     path('oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 

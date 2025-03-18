@@ -3821,7 +3821,7 @@ class BusinessListCreateView(ListCreateAPIView):
     description="API endpoint to retrieve, update, or delete a business by ID. Updating requires `creator_secret`.",
     tags=["Business"]
 )
-class BusinessDetailView(generics.RetrieveUpdateDestroyAPIView):
+class BusinessUpdateView(generics.RetrieveUpdateDestroyAPIView):
     """
     API endpoint to retrieve, update, or delete a business.
     Updates require `creator_secret` to authenticate ownership.
