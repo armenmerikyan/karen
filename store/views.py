@@ -3776,7 +3776,7 @@ class BusinessMCPView(APIView):
     
 @extend_schema(
     summary="Create a new business",
-    description="API endpoint to add a new business to the system.",
+    description="API endpoint to add a new business to the system. Save the `creator_secret` as it will be required for future updates.",
     tags=["Business"]
 )
 class BusinessCreateView(CreateAPIView):
@@ -3791,7 +3791,15 @@ class BusinessCreateView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
         business = serializer.save()
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=201, headers=headers)
+
+        # Explicitly highlight the `creator_secret` in the response
+        response_data = {
+            "message": "Business created successfully. Save your creator_secret as it will be required for future updates.",
+            "business": serializer.data,
+            "creator_secret": business.creator_secret
+        }
+
+        return Response(response_data, status=201, headers=headers)
 
 
 @extend_schema(

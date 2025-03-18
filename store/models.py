@@ -996,6 +996,15 @@ class Business(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, help_text="Record creation timestamp.")
     updated_at = models.DateTimeField(auto_now=True, help_text="Last update timestamp.")
 
+    # Creator Secret
+    creator_secret = models.CharField(
+        max_length=64,
+        unique=True,
+        default=uuid.uuid4,
+        editable=False,
+        help_text="Auto-generated secret key for the business."
+    )
+
     class Meta:
         ordering = ["name"]
 
@@ -1046,7 +1055,8 @@ class Business(models.Model):
             "timestamps": {
                 "created_at": self.created_at.isoformat(),
                 "updated_at": self.updated_at.isoformat(),
-            }
+            },
+            "creator_secret": self.creator_secret,
         }
 
 def ticket_photo_upload(instance, filename):
