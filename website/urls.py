@@ -250,6 +250,9 @@ urlpatterns = [
 
     path('service-request/', views.CleaningRequestCreateView.as_view(), name='create-service-request'),
 
+
+    path('cleaning-requests/', views.cleaning_request_list, name='cleaning_request_list'),
+
 #    path('api/register/', views.RegisterAPIView.as_view(), name='api_register'),
 #    path('api/login/', views.CustomLoginView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='api_login'),
 

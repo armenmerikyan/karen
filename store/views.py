@@ -3769,6 +3769,10 @@ def delete_business(request, business_id):
         return redirect('business_list')
     return render(request, 'delete_business.html', {'business': business})
 
+@admin_required 
+def cleaning_request_list(request):
+    cleaning_requests = CleaningRequest.objects.all()
+    return render(request, 'cleaning_request_list.html', {'cleaning_requests': cleaning_requests})
 
 # Model Context Protocol MCP 
 
