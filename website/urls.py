@@ -26,6 +26,7 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import PasswordResetConfirmView 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from store.serializers import CustomTokenObtainPairSerializer 
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 urlpatterns = [   
 
@@ -242,6 +243,7 @@ urlpatterns = [
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 
 
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
 
 #    path('api/register/', views.RegisterAPIView.as_view(), name='api_register'),
 #    path('api/login/', views.CustomLoginView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='api_login'),
