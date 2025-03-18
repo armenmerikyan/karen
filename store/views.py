@@ -3730,6 +3730,7 @@ def submission_list(request):
     return render(request, 'submissions.html', {'submissions': submissions, 'profile': profile})
 
 
+@csrf_exempt
 @login_required
 def generate_token(request):
     if request.method == 'POST':
