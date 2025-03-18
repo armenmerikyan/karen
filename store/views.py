@@ -254,14 +254,16 @@ import docker
 
 from rest_framework import generics  
 
-from drf_spectacular.utils import extend_schema, OpenApiExample
-from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes 
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 from rest_framework.generics import ListCreateAPIView 
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+
 
 version = "00.00.06"
 logger = logging.getLogger(__name__)
@@ -3720,8 +3722,6 @@ def submit_form(request):
         print("Error occurred:", str(e))
         return JsonResponse({'error': 'Failed to process form', 'details': str(e)}, status=500)
 
-
-
 @admin_required 
 def submission_list(request):
     profile = get_latest_profile()
@@ -3730,7 +3730,6 @@ def submission_list(request):
 
 
 # Model Context Protocol MCP 
-from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 @extend_schema(
     summary="Retrieve MCP-Compatible Business Context",
