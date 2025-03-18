@@ -12,7 +12,13 @@ from .models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import Token
+from .models import CleaningRequest
 
+class CleaningRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CleaningRequest
+        fields = '__all__'
+        
 class TokenSerializer(serializers.ModelSerializer):
     mcp_context = serializers.SerializerMethodField()
 

@@ -120,6 +120,7 @@ from .models import FormSubmission
 from .models import Business
 from .models import SupportTicket
 from .models import Review
+from .models import CleaningRequest
 
 from .forms import LandingPageForm
 from .forms import SimpleQuestionForm
@@ -157,6 +158,7 @@ from .serializers import SupportTicketSerializer
 from .serializers import ReviewSerializer
 from .serializers import RegisterResponseSerializer
 from .serializers import TokenSerializer
+from .serializers import CleaningRequestSerializer
 
 from .services import MemoryService
 from .services import RoomService  # Import the RoomService class
@@ -3750,6 +3752,24 @@ def generate_token(request):
     # If the request method is not POST, return an error
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
+@admin_required 
+def business_list(request):
+    businesses = Business.objects.all()
+    total_businesses = businesses.count()
+    return render(request, 'business_list.html', {
+        'businesses': businesses,
+        'total_businesses': total_businesses
+    })
+
+@admin_required 
+def delete_business(request, business_id):
+    business = get_object_or_404(Business, id=business_id)
+    if request.method == "POST":
+        business.delete()
+        return redirect('business_list')
+    return render(request, 'delete_business.html', {'business': business})
+
+
 # Model Context Protocol MCP 
 
 @extend_schema(
@@ -4026,17 +4046,20 @@ class CustomLoginView(TokenObtainPairView):
  
 
 
-def business_list(request):
-    businesses = Business.objects.all()
-    total_businesses = businesses.count()
-    return render(request, 'business_list.html', {
-        'businesses': businesses,
-        'total_businesses': total_businesses
-    })
 
-def delete_business(request, business_id):
-    business = get_object_or_404(Business, id=business_id)
-    if request.method == "POST":
-        business.delete()
-        return redirect('business_list')
-    return render(request, 'delete_business.html', {'business': business})
+
+@extend_schema(
+    summary="Create a Cleaning Request",
+    description="Order home and business cleaning services through MaidsApp.com.",
+    tags=["Cleaning Request"]
+)
+class CleaningRequestCreateView(generics.CreateAPIView):
+    queryset = CleaningRequest.objects.all()
+    serializer_class = CleaningRequestSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Service request created successfully!", "data": serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

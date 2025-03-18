@@ -1152,3 +1152,98 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.reviewer_name} - {self.stars}⭐ for {self.business.name}"
+
+
+class CleaningRequest(models.Model):
+    CLEANING_TYPE_CHOICES = [
+        ('home', 'Home Cleaning'),
+        ('business', 'Business Cleaning'),
+    ]
+    CLEANING_LEVEL_CHOICES = [
+        ('basic', 'Basic Cleaning'),
+        ('deep', 'Deep Cleaning'),
+        ('move_out', 'Move-Out Cleaning'),
+        ('post_construction', 'Post-Construction Cleaning'),
+        ('airbnb', 'Airbnb Cleaning'),
+    ]
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('scheduled', 'Scheduled'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+        ('canceled', 'Canceled'),
+    ]
+    
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cleaning_requests', help_text='The user who requested the cleaning service.')
+    cleaning_type = models.CharField(max_length=10, choices=CLEANING_TYPE_CHOICES, help_text='Type of cleaning requested (home or business).')
+    cleaning_level = models.CharField(max_length=20, choices=CLEANING_LEVEL_CHOICES, default='basic', help_text='Level of cleaning required (basic, deep, move-out, post-construction).')
+    address_line1 = models.CharField(max_length=255, help_text='Primary address line of the location to be cleaned.')
+    address_line2 = models.CharField(max_length=255, blank=True, null=True, help_text='Additional address details (e.g., apartment number).')
+    city = models.CharField(max_length=100, help_text='City where the cleaning service is needed.')
+    state = models.CharField(max_length=50, help_text='State where the cleaning service is needed.')
+    zip_code = models.CharField(max_length=10, help_text='Postal code of the cleaning location.')
+    email = models.EmailField(help_text='Email address of the customer requesting the service.')
+    phone = models.CharField(max_length=20, help_text='Phone number of the customer requesting the service.')
+    facebook = models.URLField(blank=True, null=True, help_text="Facebook profile or page URL.")
+    instagram = models.URLField(blank=True, null=True, help_text="Instagram profile URL.")
+    twitter = models.URLField(blank=True, null=True, help_text="Twitter (X) profile URL.")
+    linkedin = models.URLField(blank=True, null=True, help_text="LinkedIn profile or page URL.")
+    youtube = models.URLField(blank=True, null=True, help_text="YouTube channel URL.")
+    tiktok = models.URLField(blank=True, null=True, help_text="TikTok profile URL.")
+    snapchat = models.URLField(blank=True, null=True, help_text="Snapchat profile URL.")
+    pinterest = models.URLField(blank=True, null=True, help_text="Pinterest profile URL.")
+    reddit = models.URLField(blank=True, null=True, help_text="Reddit profile or subreddit URL.")
+    discord = models.URLField(blank=True, null=True, help_text="Discord server or profile URL.")
+    telegram = models.URLField(blank=True, null=True, help_text="Telegram channel or profile URL.")
+    github = models.URLField(blank=True, null=True, help_text="GitHub profile or repository URL.")
+    medium = models.URLField(blank=True, null=True, help_text="Medium profile or blog URL.")
+    whatsapp = models.URLField(blank=True, null=True, help_text="WhatsApp contact link URL.")
+    wechat = models.URLField(blank=True, null=True, help_text="WeChat contact or profile URL.")
+    scheduled_date = models.DateTimeField(help_text='Date and time scheduled for the cleaning service.')
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending', help_text='Current status of the cleaning request.')
+    special_instructions = models.TextField(blank=True, null=True, help_text='Any special instructions or notes for the cleaning service.')
+    created_at = models.DateTimeField(auto_now_add=True, help_text='Timestamp when the request was created.')
+    updated_at = models.DateTimeField(auto_now=True, help_text='Timestamp when the request was last updated.')
+    
+    def __str__(self):
+        return f"{self.get_cleaning_type_display()} - {self.address_line1} ({self.get_status_display()})"
+    
+    def to_mcp_context(self):
+        return { 
+            "customer": {
+                "id": self.customer.id,
+                "email": self.email,
+                "phone": self.phone,
+                "social_media": {
+                "facebook": self.social_media.get("facebook"),
+                "instagram": self.social_media.get("instagram"),
+                "twitter": self.social_media.get("twitter"),
+                "linkedin": self.social_media.get("linkedin"),
+                "youtube": self.social_media.get("youtube"),
+                "tiktok": self.social_media.get("tiktok"),
+                "snapchat": self.social_media.get("snapchat"),
+                "pinterest": self.social_media.get("pinterest"),
+                "reddit": self.social_media.get("reddit"),
+                "discord": self.social_media.get("discord"),
+                "telegram": self.social_media.get("telegram"),
+                "github": self.social_media.get("github"),
+                "medium": self.social_media.get("medium"),
+                "whatsapp": self.social_media.get("whatsapp"),
+                "wechat": self.social_media.get("wechat"),
+            }
+            },
+            "cleaning_type": self.cleaning_type,
+            "address": {
+                "line1": self.address_line1,
+                "line2": self.address_line2,
+                "city": self.city,
+                "state": self.state,
+                "zip_code": self.zip_code,
+            },
+            "scheduled_date": self.scheduled_date.isoformat(),
+            "status": self.status,
+            "special_instructions": self.special_instructions,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
+        }
