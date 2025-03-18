@@ -1247,3 +1247,102 @@ class CleaningRequest(models.Model):
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
         }
+
+
+class ImmigrationCase(models.Model):
+    # Applicant Information
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    date_of_birth = models.DateField()
+    email = models.EmailField(unique=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    country_of_birth = models.CharField(max_length=100)
+    country_of_citizenship = models.CharField(max_length=100)
+
+    # Case Details
+    case_type = models.CharField(
+        max_length=100,
+        choices=[
+            ("Asylum", "Asylum"),
+            ("Green Card", "Green Card"),
+            ("Citizenship", "Citizenship"),
+            ("Work Visa", "Work Visa"),
+            ("Family Petition", "Family Petition"),
+            ("Other", "Other"),
+        ]
+    )
+    case_status = models.CharField(
+        max_length=50,
+        choices=[
+            ("Pending", "Pending"),
+            ("Approved", "Approved"),
+            ("Denied", "Denied"),
+            ("In Review", "In Review"),
+        ],
+        default="Pending"
+    )
+    application_date = models.DateField()
+    receipt_number = models.CharField(max_length=50, blank=True, null=True)
+    uscis_office = models.CharField(max_length=100, blank=True, null=True)
+
+    # Immigration History
+    visa_type = models.CharField(max_length=50, blank=True, null=True)
+    date_of_entry = models.DateField(blank=True, null=True)
+    current_status = models.CharField(max_length=100, blank=True, null=True)
+    previous_visa_denials = models.BooleanField(default=False)
+    deportation_history = models.BooleanField(default=False)
+    deportation_details = models.TextField(blank=True, null=True)
+
+    # Legal Representation
+    attorney_name = models.CharField(max_length=200, blank=True, null=True)
+    law_firm_name = models.CharField(max_length=200, blank=True, null=True)
+    attorney_email = models.EmailField(blank=True, null=True)
+    attorney_phone = models.CharField(max_length=20, blank=True, null=True)
+
+    # Additional Notes
+    additional_notes = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} - {self.case_type}"
+
+    def to_mcp_context(self):
+        """Converts the model instance into a structured dictionary compliant with Model Context Protocol."""
+        return {
+            "applicant": {
+                "first_name": self.first_name,
+                "last_name": self.last_name,
+                "date_of_birth": self.date_of_birth.strftime("%Y-%m-%d"),
+                "email": self.email,
+                "phone_number": self.phone_number,
+                "country_of_birth": self.country_of_birth,
+                "country_of_citizenship": self.country_of_citizenship,
+            },
+            "case_details": {
+                "case_type": self.case_type,
+                "case_status": self.case_status,
+                "application_date": self.application_date.strftime("%Y-%m-%d"),
+                "receipt_number": self.receipt_number,
+                "uscis_office": self.uscis_office,
+            },
+            "immigration_history": {
+                "visa_type": self.visa_type,
+                "date_of_entry": self.date_of_entry.strftime("%Y-%m-%d") if self.date_of_entry else None,
+                "current_status": self.current_status,
+                "previous_visa_denials": self.previous_visa_denials,
+                "deportation_history": self.deportation_history,
+                "deportation_details": self.deportation_details,
+            },
+            "legal_representation": {
+                "attorney_name": self.attorney_name,
+                "law_firm_name": self.law_firm_name,
+                "attorney_email": self.attorney_email,
+                "attorney_phone": self.attorney_phone,
+            },
+            "additional_notes": self.additional_notes,
+            "timestamps": {
+                "created_at": self.created_at.isoformat(),
+                "updated_at": self.updated_at.isoformat(),
+            }
+        }

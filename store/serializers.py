@@ -13,6 +13,55 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import Token
 from .models import CleaningRequest
+from .models import ImmigrationCase
+
+class ImmigrationCaseSerializer(serializers.ModelSerializer):
+    """Serializer for ImmigrationCase model, ensuring MCP compliance."""
+    
+    class Meta:
+        model = ImmigrationCase
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        """Converts the model instance into a structured dictionary following MCP."""
+        data = super().to_representation(instance)
+        return {
+            "applicant": {
+                "first_name": data["first_name"],
+                "last_name": data["last_name"],
+                "date_of_birth": data["date_of_birth"],
+                "email": data["email"],
+                "phone_number": data["phone_number"],
+                "country_of_birth": data["country_of_birth"],
+                "country_of_citizenship": data["country_of_citizenship"],
+            },
+            "case_details": {
+                "case_type": data["case_type"],
+                "case_status": data["case_status"],
+                "application_date": data["application_date"],
+                "receipt_number": data["receipt_number"],
+                "uscis_office": data["uscis_office"],
+            },
+            "immigration_history": {
+                "visa_type": data["visa_type"],
+                "date_of_entry": data["date_of_entry"],
+                "current_status": data["current_status"],
+                "previous_visa_denials": data["previous_visa_denials"],
+                "deportation_history": data["deportation_history"],
+                "deportation_details": data["deportation_details"],
+            },
+            "legal_representation": {
+                "attorney_name": data["attorney_name"],
+                "law_firm_name": data["law_firm_name"],
+                "attorney_email": data["attorney_email"],
+                "attorney_phone": data["attorney_phone"],
+            },
+            "additional_notes": data["additional_notes"],
+            "timestamps": {
+                "created_at": data["created_at"],
+                "updated_at": data["updated_at"],
+            }
+        }
 
 class CleaningRequestSerializer(serializers.ModelSerializer):
     class Meta:

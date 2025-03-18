@@ -121,6 +121,7 @@ from .models import Business
 from .models import SupportTicket
 from .models import Review
 from .models import CleaningRequest
+from .models import ImmigrationCase
 
 from .forms import LandingPageForm
 from .forms import SimpleQuestionForm
@@ -159,6 +160,7 @@ from .serializers import ReviewSerializer
 from .serializers import RegisterResponseSerializer
 from .serializers import TokenSerializer
 from .serializers import CleaningRequestSerializer
+from .serializers import ImmigrationCaseSerializer
 
 from .services import MemoryService
 from .services import RoomService  # Import the RoomService class
@@ -4047,11 +4049,6 @@ class CustomLoginView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
     permission_classes = [AllowAny]
 
- 
-
-
-
-
 @extend_schema(
     summary="Create a Cleaning Request",
     description="Order home and business cleaning services through MaidsApp.com.",
@@ -4066,4 +4063,25 @@ class CleaningRequestCreateView(generics.CreateAPIView):
         if serializer.is_valid():
             serializer.save()
             return Response({"message": "Service request created successfully!", "data": serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@extend_schema(
+    summary="Create an Immigration Case",
+    description="Submit an intake form for an immigration case in the United States.",
+    tags=["Immigration Case"]
+)
+class ImmigrationCaseCreateView(generics.CreateAPIView):
+    """API View to submit a new immigration intake form."""
+    queryset = ImmigrationCase.objects.all()
+    serializer_class = ImmigrationCaseSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            instance = serializer.save()
+            return Response(
+                {"message": "Intake form submitted successfully!", "case_id": instance.id},
+                status=status.HTTP_201_CREATED
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
