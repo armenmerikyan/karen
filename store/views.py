@@ -3794,7 +3794,7 @@ class BusinessCreateView(CreateAPIView):
 
         # Explicitly highlight the `creator_secret` in the response
         response_data = {
-            "message": "Business created successfully. Save your creator_secret as it will be required for future updates.",
+            "message": "Business created successfully. Important: Save your creator secret as it will be required for future updates.",
             "business": serializer.data,
             "creator_secret": business.creator_secret
         }
