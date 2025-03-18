@@ -3814,6 +3814,10 @@ class BusinessCreateView(CreateAPIView):
     serializer_class = BusinessSerializer 
 
     def post(self, request, *args, **kwargs):
+
+        if not request.user or not request.user.is_authenticated:
+            return Response({"error": "Authentication required"}, status=403)
+                
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
