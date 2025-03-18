@@ -259,6 +259,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 from rest_framework.generics import ListCreateAPIView 
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 version = "00.00.06"
 logger = logging.getLogger(__name__)
@@ -3795,9 +3796,8 @@ class BusinessCreateView(CreateAPIView):
     summary="List, Search, or Create Businesses",
     description="API endpoint to list, search, or create a new business. Supports filtering by name, industry, and city.",
     tags=["Business"]
-)
-@permission_classes([IsAuthenticated])  # Restricts to authenticated users only
-class BusinessListCreateView(ListCreateAPIView):
+) 
+class BusinessListCreateView(LoginRequiredMixin, ListCreateAPIView):
     """
     API endpoint to list, search, or create businesses.
     Supports search by name, industry, and city.
