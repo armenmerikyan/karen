@@ -3782,18 +3782,25 @@ class BusinessCreateView(CreateAPIView):
     """
     queryset = Business.objects.all()
     serializer_class = BusinessSerializer
+    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can create a business
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        business = serializer.save()
+
+        # Assign the authenticated user as the creator
+        business = serializer.save(creator=request.user)
+
         headers = self.get_success_headers(serializer.data)
 
-        # Explicitly highlight the `creator_secret` in the response
         response_data = {
-            "message": "Business created successfully. Important: Save your creator secret as it will be required for future updates.",
+            "message": "Business created successfully.",
             "business": serializer.data,
-            "creator_secret": business.creator_secret
+            "creator": {
+                "id": request.user.id,
+                "username": request.user.username,
+                "email": request.user.email,
+            },
         }
 
         return Response(response_data, status=201, headers=headers)
