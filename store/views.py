@@ -4240,9 +4240,53 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny]  # Adjust permissions as needed
 
 
+# Hardcoded dealer email (replace with actual dealer email)
+DEALER_EMAIL = "armenmerikyan@gmail.com"
+
+# SendGrid API Key (store this in your environment variables)
+SENDGRID_API_KEY = os.getenv("EMAIL_HOST_PASSWORD")
+
+def send_email_to_dealer(instance):
+    """
+    Sends an email to the dealer with the car finder request details.
+    """
+    if not SENDGRID_API_KEY:
+        print("SendGrid API Key is missing!")
+        return
+
+    sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
+
+    subject = "New Car Finder Request"
+    body = f"""
+    A new car finder request has been submitted.
+
+    Budget: ${instance.budget_min} - ${instance.budget_max}
+    Vehicle Type: {instance.vehicle_type}
+    Primary Use: {instance.primary_use}
+    Passengers: {instance.passengers}
+    Preferred Brand: {instance.brand_preference}
+    Preferred Style: {instance.preferred_style}
+    Purchase Timeline: {instance.purchase_timeline}
+
+    Please review and reach out to the customer if this matches your inventory.
+    """
+
+    message = Mail(
+        from_email="info@gigahard.ai",
+        to_emails=DEALER_EMAIL,
+        subject=subject,
+        plain_text_content=body
+    )
+
+    try:
+        response = sg.send(message)
+        print(f"Email sent to dealer: {response.status_code}")
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+
 @extend_schema(
     summary="Create Car Finder Response",
-    description="Submit a car preference form to find the best car match based on budget, features, and personal preferences.",
+    description="Submit a car preference form to find the best car match based on budget, features, and personal preferences. A notification email is sent to the dealer upon submission.",
     tags=["Car Finder"],
     request=CarFinderResponseSerializer,
     responses={201: CarFinderResponseSerializer, 400: "Bad Request"}
@@ -4256,10 +4300,15 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         """
-        Custom create method to ensure MCP compliance.
+        Custom create method to ensure MCP compliance and notify the dealer via email.
         """
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             instance = serializer.save()
+
+            # Send email notification to dealer
+            send_email_to_dealer(instance)
+
             return Response(instance.to_mcp_context(), status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
