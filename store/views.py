@@ -4086,7 +4086,7 @@ class CleaningRequestCreateView(generics.CreateAPIView):
             "service_date": cleaning_data.get("service_date", "Not provided"),
             "email": cleaning_data.get("email", "No email provided"),
             "phone": cleaning_data.get("phone", "No phone provided"),
-            "address": cleaning_data.get("line1", "No address provided"),
+            "line1": cleaning_data.get("line1", "No address provided"),
             "city": cleaning_data.get("city", "No city provided"),
             "state": cleaning_data.get("state", "No state provided"),
             "zip_code": cleaning_data.get("zip_code", "No zip code provided"),
