@@ -3794,11 +3794,23 @@ def get(self, request, id, *args, **kwargs):
 
 class CustomHeaderAuthentication(TokenAuthentication):
     def authenticate(self, request):
-        # Look for the token in the custom header (e.g., X-API-Key)
-        token = request.META.get('HTTP_X_API_KEY')  # Django adds headers with the prefix 'HTTP_'
-        if token:
-            return self.authenticate_credentials(token)
-        return None
+        token = request.META.get("HTTP_X_API_KEY")  # Get the token from headers
+        if not token:
+            return None  # No authentication attempt
+
+        return self.authenticate_credentials(token)  # Pass token to credentials method
+
+    def authenticate_credentials(self, key):
+        try:
+            token = CustomToken.objects.get(key=key)
+        except CustomToken.DoesNotExist:
+            raise AuthenticationFailed("Invalid token")
+
+        if not token.user.is_active:
+            raise AuthenticationFailed("User inactive or deleted")
+
+        return (token.user, token)  # Ensure this tuple is returned
+    
     
 @extend_schema(
     summary="Retrieve, Update, or Delete a Business",
