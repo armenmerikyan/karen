@@ -4074,29 +4074,28 @@ class CleaningRequestCreateView(generics.CreateAPIView):
     queryset = CleaningRequest.objects.all()
     serializer_class = CleaningRequestSerializer
 
-    def perform_create(self, serializer):
-        instance = serializer.save()
-        self.send_confirmation_email(instance)
-        return instance
-
-    def send_confirmation_email(self, cleaning_request):
+    def send_confirmation_email(self, cleaning_data):
         sg = sendgrid.SendGridAPIClient(api_key=settings.EMAIL_HOST_PASSWORD)
         
         subject = "New Cleaning Request Received"
 
-        html_content = render_to_string("emails/provider_notification.html", { 
-            "service_date": cleaning_request.scheduled_date,
-            "email": cleaning_request.email,
-            "phone": cleaning_request.phone,
-            "line1": cleaning_request.address_line1,
-            "city": cleaning_request.city,
-            "state": cleaning_request.state,
-            "zip_code": cleaning_request.zip_code,
-            "notes": cleaning_request.special_instructions,
-            "tracking_code": cleaning_request.tracking_code
+        # Render the email template with booking details
+        html_content = render_to_string("emails/provider_notification.html", {
+            "customer_name": cleaning_data.get("customer_name", "Unknown"),
+            "service_type": cleaning_data.get("service_type", "Not specified"),
+            "service_date": cleaning_data.get("service_date", "Not provided"),
+            "email": cleaning_data.get("email", "No email provided"),
+            "phone": cleaning_data.get("phone", "No phone provided"),
+            "line1": cleaning_data.get("line1", "No address provided"),
+            "city": cleaning_data.get("city", "No city provided"),
+            "state": cleaning_data.get("state", "No state provided"),
+            "zip_code": cleaning_data.get("zip_code", "No zip code provided"),
+            "notes": cleaning_data.get("notes", "No additional notes")
         })
 
+        # Provider email - Change this to dynamic provider selection if needed
         provider_email = "armenmerikyan@gmail.com"
+
         message = Mail(
             from_email=Email("no-reply@gigahard.ai", "MaidsApp"),
             to_emails=To(provider_email),
