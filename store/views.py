@@ -123,6 +123,7 @@ from .models import Review
 from .models import CleaningRequest
 from .models import ImmigrationCase
 from .models import Letter
+from .models import CarFinderResponse
 
 from .forms import LandingPageForm
 from .forms import SimpleQuestionForm
@@ -163,6 +164,7 @@ from .serializers import TokenSerializer
 from .serializers import CleaningRequestSerializer
 from .serializers import ImmigrationCaseSerializer
 from .serializers import LetterSerializer
+from .serializers import CarFinderResponseSerializer
 
 from .services import MemoryService
 from .services import RoomService  # Import the RoomService class
@@ -4236,3 +4238,28 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [AllowAny]  # Adjust permissions as needed
+
+
+@extend_schema(
+    summary="Create Car Finder Response",
+    description="Submit a car preference form to find the best car match based on budget, features, and personal preferences.",
+    tags=["Car Finder"],
+    request=CarFinderResponseSerializer,
+    responses={201: CarFinderResponseSerializer, 400: "Bad Request"}
+)
+class CarFinderResponseCreateView(generics.CreateAPIView):
+    """
+    API endpoint to create a new CarFinderResponse.
+    """
+    queryset = CarFinderResponse.objects.all()
+    serializer_class = CarFinderResponseSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        Custom create method to ensure MCP compliance.
+        """
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            instance = serializer.save()
+            return Response(instance.to_mcp_context(), status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

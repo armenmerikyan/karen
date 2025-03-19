@@ -1394,3 +1394,164 @@ class Letter(models.Model):
                 "created_at": self.timestamp.isoformat(),
             }
         }
+    
+    
+class CarFinderResponse(models.Model):
+    # Budget & Financing
+    budget_min = models.PositiveIntegerField(
+        null=True, blank=True, 
+        help_text="Minimum budget in USD (e.g., 10000 for $10,000)"
+    )
+    budget_max = models.PositiveIntegerField(
+        null=True, blank=True, 
+        help_text="Maximum budget in USD (e.g., 30000 for $30,000)"
+    )
+    financing = models.BooleanField(
+        default=False, 
+        help_text="Are you open to financing options?"
+    )
+    leasing = models.BooleanField(
+        default=False, 
+        help_text="Would you consider leasing instead of buying?"
+    )
+
+    # Vehicle Type & Purpose
+    vehicle_type = models.CharField(
+        max_length=50, choices=[
+            ('sedan', 'Sedan'), ('suv', 'SUV'), ('truck', 'Truck'), 
+            ('coupe', 'Coupe'), ('convertible', 'Convertible'), 
+            ('electric', 'Electric'), ('hybrid', 'Hybrid')
+        ], null=True, blank=True,
+        help_text="Select the type of vehicle you are looking for."
+    )
+    
+    primary_use = models.CharField(
+        max_length=50, choices=[
+            ('daily_commute', 'Daily Commute'), ('family', 'Family'), 
+            ('off_road', 'Off-road'), ('business', 'Business'),
+            ('luxury', 'Luxury'), ('performance', 'Performance')
+        ], null=True, blank=True,
+        help_text="What will you primarily use this car for?"
+    )
+
+    passengers = models.PositiveIntegerField(
+        null=True, blank=True,
+        help_text="Number of passengers you need to fit comfortably."
+    )
+
+    # Fuel Efficiency & Power
+    prioritize_fuel_efficiency = models.BooleanField(
+        default=False, 
+        help_text="Do you prioritize fuel efficiency over performance?"
+    )
+    prefer_electric_or_hybrid = models.BooleanField(
+        default=False, 
+        help_text="Are you interested in an electric or hybrid vehicle?"
+    )
+
+    # Features & Preferences
+    safety_features = models.BooleanField(
+        default=False, 
+        help_text="Do you want advanced safety features like blind-spot monitoring or lane assist?"
+    )
+    tech_features = models.BooleanField(
+        default=False, 
+        help_text="Are modern tech features important to you (e.g., Apple CarPlay, GPS, Bluetooth)?"
+    )
+    luxury_features = models.BooleanField(
+        default=False, 
+        help_text="Do you prefer premium features like leather seats, sunroof, or heated seats?"
+    )
+    awd_4wd_needed = models.BooleanField(
+        default=False, 
+        help_text="Do you need AWD or 4WD for snow/off-road driving?"
+    )
+
+    # New vs. Used
+    open_to_used = models.BooleanField(
+        default=True, 
+        help_text="Are you open to buying a used car?"
+    )
+    max_mileage = models.PositiveIntegerField(
+        null=True, blank=True, 
+        help_text="What is the maximum mileage you are comfortable with? (For used cars)"
+    )
+
+    # Brand & Style
+    brand_preference = models.CharField(
+        max_length=100, null=True, blank=True, 
+        help_text="Do you have a preferred brand (e.g., Toyota, BMW, Ford)?"
+    )
+    preferred_style = models.CharField(
+        max_length=50, choices=[
+            ('sporty', 'Sporty'), ('luxury', 'Luxury'), 
+            ('classic', 'Classic'), ('practical', 'Practical')
+        ], null=True, blank=True,
+        help_text="What style of car do you prefer?"
+    )
+
+    # Timeline & Location
+    purchase_timeline = models.CharField(
+        max_length=50, choices=[
+            ('asap', 'ASAP'), ('1_3_months', '1-3 Months'), ('browsing', 'Just Browsing')
+        ], null=True, blank=True,
+        help_text="How soon are you looking to buy a car?"
+    )
+
+    local_only = models.BooleanField(
+        default=True, 
+        help_text="Do you want to limit your search to local dealerships only?"
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True, 
+        help_text="Timestamp when this response was submitted."
+    )
+
+    def to_mcp_context(self):
+        """
+        Converts the model instance into a context-compliant dictionary
+        for integration with AI models, APIs, or external systems.
+        """
+        return {
+            "budget": {
+                "min": self.budget_min,
+                "max": self.budget_max,
+                "financing": self.financing,
+                "leasing": self.leasing,
+            },
+            "vehicle_preferences": {
+                "type": self.vehicle_type,
+                "primary_use": self.primary_use,
+                "passengers": self.passengers,
+            },
+            "fuel_efficiency": {
+                "prioritize": self.prioritize_fuel_efficiency,
+                "electric_or_hybrid": self.prefer_electric_or_hybrid,
+            },
+            "features": {
+                "safety": self.safety_features,
+                "tech": self.tech_features,
+                "luxury": self.luxury_features,
+                "awd_4wd": self.awd_4wd_needed,
+            },
+            "new_vs_used": {
+                "open_to_used": self.open_to_used,
+                "max_mileage": self.max_mileage,
+            },
+            "brand_and_style": {
+                "preferred_brand": self.brand_preference,
+                "preferred_style": self.preferred_style,
+            },
+            "timeline": {
+                "purchase_timeline": self.purchase_timeline,
+                "local_only": self.local_only,
+            },
+            "metadata": {
+                "created_at": self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            }
+        }
+
+    def __str__(self):
+        return f"Car Finder Response {self.id} - {self.created_at.strftime('%Y-%m-%d')}"
+
