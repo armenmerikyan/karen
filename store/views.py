@@ -4092,13 +4092,13 @@ class CleaningRequestCreateView(generics.CreateAPIView):
     serializer_class = CleaningRequestSerializer
 
     def send_confirmation_email(self, cleaning_data):
-        sg = sendgrid.SendGridAPIClient(api_key=settings.SENDGRID_API_KEY)
+        sg = sendgrid.SendGridAPIClient(api_key=settings.EMAIL_HOST_PASSWORD)
         subject = "Your Cleaning Request Confirmation"
         content = f"Dear Customer,\n\nYour cleaning request has been received:\n\n{cleaning_data}\n\nThank you for choosing MaidsApp.com!"
 
         message = Mail(
-            from_email="no-reply@maidsapp.com",
-            to_emails=to_email,
+            from_email="no-reply@gigahard.ai",
+            to_emails="armenmerikyan@gmail.com",
             subject=subject,
             plain_text_content=content
         )
