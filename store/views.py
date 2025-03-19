@@ -4080,7 +4080,6 @@ class CleaningRequestCreateView(generics.CreateAPIView):
             return Response({"message": "Service request created successfully!", "data": serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 '''    
-
 @extend_schema(
     summary="Create a Cleaning Request",
     description="Order home and business cleaning services through MaidsApp.com.",
@@ -4091,7 +4090,7 @@ class CleaningRequestCreateView(generics.CreateAPIView):
     queryset = CleaningRequest.objects.all()
     serializer_class = CleaningRequestSerializer
 
-    def send_confirmation_email(self, cleaning_data):
+    def send_confirmation_email(self, to_email, cleaning_data):
         sg = sendgrid.SendGridAPIClient(api_key=settings.EMAIL_HOST_PASSWORD)
         subject = "Your Cleaning Request Confirmation"
         content = f"Dear Customer,\n\nYour cleaning request has been received:\n\n{cleaning_data}\n\nThank you for choosing MaidsApp.com!"
@@ -4114,7 +4113,7 @@ class CleaningRequestCreateView(generics.CreateAPIView):
             self.send_confirmation_email(request.data.get("email"), serializer.data)
             return Response({"message": "Service request created successfully!", "data": serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
 @extend_schema(
     summary="Create an Immigration Case",
     description="Submit an intake form for an immigration case in the United States.",
