@@ -6,12 +6,13 @@ from django.db.utils import OperationalError, ProgrammingError
 class StoreConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'store'
-
+    '''
     def ready(self):
         """
         This method is called when the application is fully loaded and ready to run.
         It runs every time the server is restarted.
         """
+        
         try:
             # Import your model here to avoid circular imports
             from store.models import LandingPage  # Import the LandingPage model
@@ -32,4 +33,5 @@ class StoreConfig(AppConfig):
 
         except (OperationalError, ProgrammingError) as e:
             # Handle cases where the database is not available (e.g., during initial setup or migrations)
-            print(f"Could not fetch activated domains: {e}")
+            print(f"Could not fetch activated domains: {e}")'
+    '''        
