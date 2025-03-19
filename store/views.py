@@ -4243,7 +4243,6 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
 # Hardcoded dealer email (replace with actual dealer email)
 DEALER_EMAIL = "armenmerikyan@gmail.com"
 
- 
 @extend_schema(
     summary="Create Car Finder Response",
     description="Submit a car preference form to find the best car match based on budget, features, and personal preferences. A notification email is sent to the dealer upon submission.",
@@ -4274,11 +4273,11 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
         })
 
         # Dealer email (change to dynamic selection if needed)
-        dealer_email = DEALER_EMAIL
+        dealer_email = DEALER_EMAIL  # Ensure this is defined in settings.py
 
         message = Mail(
-            from_email=Email("no-reply@gigahard.ai", "Virtual Car Dealer"),
-            to_emails=To(dealer_email),
+            from_email="no-reply@gigahard.ai",  # Fix: Use a string instead of Email()
+            to_emails=dealer_email,
             subject=subject,
             html_content=html_content
         )
@@ -4286,13 +4285,14 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
         try:
             sg.send(message)
         except Exception as e:
+            # Log error instead of printing (better for production)
             print(f"Error sending email: {e}")
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             car_finder_response = serializer.save()
-            self.send_confirmation_email(serializer.data)
+            self.send_confirmation_email(serializer.validated_data)  # Fix: Use validated_data
             return Response(
                 {"message": "Car Finder request created successfully!", "data": serializer.data}, 
                 status=status.HTTP_201_CREATED
