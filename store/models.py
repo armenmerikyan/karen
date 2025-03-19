@@ -1348,8 +1348,8 @@ class ImmigrationCase(models.Model):
         }
     
 class Letter(models.Model):
-    sender = models.EmailField()
-    recipient = models.EmailField()
+    sender = models.CharField(max_length=255)  # Open text field
+    recipient = models.CharField(max_length=255)  # Open text field 
     subject = models.CharField(max_length=255)
     body = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
