@@ -4143,3 +4143,56 @@ class LetterSearchView(generics.ListAPIView):
             queryset = queryset.filter(subject__icontains=subject)
         
         return queryset
+    
+@extend_schema(
+    tags=["Reviews"],
+    summary="List & Create Reviews",
+    description="Retrieve a list of reviews or create a new one. Supports filtering by business ID, rating, and text search.",
+    parameters=[
+        OpenApiParameter(name="business_id", description="Filter reviews by business ID", required=False, type=int),
+        OpenApiParameter(name="stars", description="Filter reviews by star rating (1-5)", required=False, type=int),
+        OpenApiParameter(name="search", description="Search reviews by comment or reviewer name", required=False, type=str),
+    ],
+)
+class ReviewListCreateView(generics.ListCreateAPIView):
+    """
+    API view for listing all reviews and creating a new review.
+    Supports filtering by business ID, review stars, and review text.
+    """
+    serializer_class = ReviewSerializer
+    permission_classes = [AllowAny]  # Adjust as needed
+
+    def get_queryset(self):
+        """
+        Filters reviews based on business_id, stars, or search text in comment/reviewer name.
+        Example: 
+        - /reviews/?business_id=1
+        - /reviews/?stars=5
+        - /reviews/?search=great
+        """
+        queryset = Review.objects.all()
+        business_id = self.request.query_params.get('business_id')
+        stars = self.request.query_params.get('stars')
+        search = self.request.query_params.get('search')
+
+        if business_id:
+            queryset = queryset.filter(business_id=business_id)
+        if stars:
+            queryset = queryset.filter(stars=stars)
+        if search:
+            queryset = queryset.filter(Q(comment__icontains=search) | Q(reviewer_name__icontains=search))
+
+        return queryset
+
+@extend_schema(
+    summary="View Review Detail",
+    description="View Review Detail for listed Business.",
+    tags=["Review"]
+)
+class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API view for retrieving, updating, or deleting a single review.
+    """
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    permission_classes = [AllowAny]  # Adjust permissions as needed

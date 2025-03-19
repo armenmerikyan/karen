@@ -261,6 +261,8 @@ urlpatterns = [
 
 #    path('api/register/', views.RegisterAPIView.as_view(), name='api_register'),
 #    path('api/login/', views.CustomLoginView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='api_login'),
+    path('reviews/', views.ReviewListCreateView.as_view(), name='review-list-create'),
+    path('reviews/<int:pk>/', views.ReviewDetailView.as_view(), name='review-detail'),
 
 ] 
 
