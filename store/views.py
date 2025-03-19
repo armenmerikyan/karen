@@ -4084,8 +4084,7 @@ class CleaningRequestCreateView(generics.CreateAPIView):
         
         subject = "New Cleaning Request Received"
 
-        html_content = render_to_string("emails/provider_notification.html", {
-            "service_type": cleaning_request.get_cleaning_type_display(),
+        html_content = render_to_string("emails/provider_notification.html", { 
             "service_date": cleaning_request.scheduled_date,
             "email": cleaning_request.email,
             "phone": cleaning_request.phone,
