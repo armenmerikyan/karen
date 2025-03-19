@@ -6,6 +6,32 @@
 
 ## Key Features
 
+## Model Context Protocol (MCP) Server
+
+Overview
+
+- The Model Context Protocol (MCP) Server provides an API-driven approach to managing business context and support services. This server enables businesses to integrate their data with MCP-compatible formats, authenticate via custom header authentication, and manage business records efficiently.
+
+Features
+
+- Business Management: Create, retrieve, update, and delete business records.
+
+- Authentication: Custom header-based API key authentication.
+
+- Support Ticket System: Manage support tickets for businesses.
+
+- User Authentication: Register and log in users with JWT authentication.
+
+- Cleaning & Immigration Services: API endpoints for submitting cleaning and immigration case requests.
+
+- Letter Management: Create and search for letters.
+
+LIVE 
+
+## AI MicroAgent
+
+Check out our AI MicroAgent: [AI MicroAgent Chat](https://chatgpt.com/g/g-67d73144560c819199fae7be98138390-aimicroagent)
+
 ### Customer Relationship Management 
 - Customer Relationship Management (CRM)  
 - Loyalty Program Management  
