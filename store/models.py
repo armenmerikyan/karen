@@ -7,6 +7,7 @@ import uuid
 import re
 from django.core.exceptions import ValidationError
 import random
+import string
 
 def default_uuid():
     return str(uuid.uuid4())
