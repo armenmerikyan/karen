@@ -4262,6 +4262,10 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
 
         # Render email template with car request details
         html_content = render_to_string("emails/dealer_notification.html", {
+            "contact_name": car_finder_data.get("contact_name", "Not provided"),
+            "contact_email": car_finder_data.get("contact_email", "Not provided"),
+            "contact_phone": car_finder_data.get("contact_phone", "Not provided"),
+            "contact_address": car_finder_data.get("contact_address", "Not provided"),
             "budget_min": car_finder_data.get("budget_min", "Not specified"),
             "budget_max": car_finder_data.get("budget_max", "Not specified"),
             "vehicle_type": car_finder_data.get("vehicle_type", "Not specified"),

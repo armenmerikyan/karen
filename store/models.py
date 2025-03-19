@@ -1395,8 +1395,24 @@ class Letter(models.Model):
             }
         }
     
-    
+
 class CarFinderResponse(models.Model):
+    contact_name = models.CharField(
+        max_length=255, null=True, blank=True,
+        help_text="Full name of the contact person."
+    )
+    contact_email = models.EmailField(
+        null=True, blank=True,
+        help_text="Email address of the contact person."
+    )
+    contact_phone = models.CharField(
+        max_length=20, null=True, blank=True,
+        help_text="Phone number of the contact person."
+    )
+    contact_address = models.TextField(
+        null=True, blank=True,
+        help_text="Address of the contact person."
+    )    
     # Budget & Financing
     budget_min = models.PositiveIntegerField(
         null=True, blank=True, 
@@ -1514,6 +1530,12 @@ class CarFinderResponse(models.Model):
         for integration with AI models, APIs, or external systems.
         """
         return {
+            "contact": {
+                "name": self.contact_name,
+                "email": self.contact_email,
+                "phone": self.contact_phone,
+                "address": self.contact_address,
+            },            
             "budget": {
                 "min": self.budget_min,
                 "max": self.budget_max,
