@@ -4291,6 +4291,7 @@ def send_email_to_dealer(instance):
     request=CarFinderResponseSerializer,
     responses={201: CarFinderResponseSerializer, 400: "Bad Request"}
 )
+@csrf_exempt
 class CarFinderResponseCreateView(generics.CreateAPIView):
     """
     API endpoint to create a new CarFinderResponse.
