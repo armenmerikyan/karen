@@ -1346,3 +1346,36 @@ class ImmigrationCase(models.Model):
                 "updated_at": self.updated_at.isoformat(),
             }
         }
+    
+class Letter(models.Model):
+    sender = models.EmailField()
+    recipient = models.EmailField()
+    subject = models.CharField(max_length=255)
+    body = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-timestamp']  # Orders by latest first
+        verbose_name = "Letter"
+        verbose_name_plural = "Letters"
+
+    def __str__(self):
+        return f"Letter from {self.sender} to {self.recipient} - {self.subject}"
+
+    def get_absolute_url(self):
+        return reverse('letter_detail', args=[str(self.id)])
+
+    def to_mcp_context(self):
+        """
+        Converts the Letter object to an MCP-compatible dictionary.
+        """
+        return {
+            "id": self.id,
+            "sender": self.sender,
+            "recipient": self.recipient,
+            "subject": self.subject,
+            "body": self.body,
+            "timestamps": {
+                "created_at": self.timestamp.isoformat(),
+            }
+        }

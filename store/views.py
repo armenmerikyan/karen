@@ -122,6 +122,7 @@ from .models import SupportTicket
 from .models import Review
 from .models import CleaningRequest
 from .models import ImmigrationCase
+from .models import Letter
 
 from .forms import LandingPageForm
 from .forms import SimpleQuestionForm
@@ -161,6 +162,7 @@ from .serializers import RegisterResponseSerializer
 from .serializers import TokenSerializer
 from .serializers import CleaningRequestSerializer
 from .serializers import ImmigrationCaseSerializer
+from .serializers import LetterSerializer
 
 from .services import MemoryService
 from .services import RoomService  # Import the RoomService class
@@ -4097,3 +4099,47 @@ class ImmigrationCaseCreateView(generics.CreateAPIView):
                 status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@extend_schema(
+    summary="Create a Letter",
+    description="Submit a letter with sender, recipient, subject, and body.",
+    tags=["Letter"]
+)
+class LetterCreateView(generics.CreateAPIView):
+    """API View to submit a new letter."""
+    queryset = Letter.objects.all()
+    serializer_class = LetterSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            instance = serializer.save()
+            return Response(
+                {"message": "Letter submitted successfully!", "letter_id": instance.id},
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@extend_schema(
+    summary="Search Letters",
+    description="Search for letters by sender, recipient, or subject.",
+    tags=["Letter"]
+)
+class LetterSearchView(generics.ListAPIView):
+    """API View to search letters."""
+    serializer_class = LetterSerializer
+
+    def get_queryset(self):
+        queryset = Letter.objects.all()
+        sender = self.request.query_params.get('sender', None)
+        recipient = self.request.query_params.get('recipient', None)
+        subject = self.request.query_params.get('subject', None)
+        
+        if sender:
+            queryset = queryset.filter(sender__icontains=sender)
+        if recipient:
+            queryset = queryset.filter(recipient__icontains=recipient)
+        if subject:
+            queryset = queryset.filter(subject__icontains=subject)
+        
+        return queryset

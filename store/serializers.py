@@ -14,6 +14,13 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import Token
 from .models import CleaningRequest
 from .models import ImmigrationCase
+from .models import Letter
+
+
+class LetterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Letter
+        fields = ['id', 'sender', 'recipient', 'subject', 'body', 'timestamp']
 
 class ImmigrationCaseSerializer(serializers.ModelSerializer):
     """Serializer for ImmigrationCase model, ensuring MCP compliance."""
