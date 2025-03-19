@@ -4297,6 +4297,7 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
     """
     queryset = CarFinderResponse.objects.all()
     serializer_class = CarFinderResponseSerializer
+    permission_classes = [AllowAny]  # Adjust as needed
 
     def create(self, request, *args, **kwargs):
         """
