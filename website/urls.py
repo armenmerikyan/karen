@@ -258,6 +258,7 @@ urlpatterns = [
 
     path('letters/create/', views.LetterCreateView.as_view(), name='letter-create'),
     path('letters/search/', views.LetterSearchView.as_view(), name='letter-search'),    
+    path('api/car-finder/', views.CarFinderResponseCreateView.as_view(), name='car-finder-create'),
 
 #    path('api/register/', views.RegisterAPIView.as_view(), name='api_register'),
 #    path('api/login/', views.CustomLoginView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='api_login'),
