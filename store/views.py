@@ -4277,7 +4277,7 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
         dealer_email = DEALER_EMAIL
 
         message = Mail(
-            from_email=Email("no-reply@gigahard.ai", "Car Finder AI"),
+            from_email=Email("no-reply@gigahard.ai"),
             to_emails=To(dealer_email),
             subject=subject,
             html_content=html_content
