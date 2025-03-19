@@ -168,7 +168,7 @@ from .services import MemoryService
 from .services import RoomService  # Import the RoomService class
  
 import sendgrid 
-from sendgrid.helpers.mail import Mail
+from sendgrid.helpers.mail import Mail, Email, To, Content
 
 import base64
 import base58
@@ -4064,7 +4064,7 @@ class CustomLoginView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
     permission_classes = [AllowAny]
 
-'''
+   
 @extend_schema(
     summary="Create a Cleaning Request",
     description="Order home and business cleaning services through MaidsApp.com.",
@@ -4074,34 +4074,31 @@ class CleaningRequestCreateView(generics.CreateAPIView):
     queryset = CleaningRequest.objects.all()
     serializer_class = CleaningRequestSerializer
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Service request created successfully!", "data": serializer.data}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-'''    
-@extend_schema(
-    summary="Create a Cleaning Request",
-    description="Order home and business cleaning services through MaidsApp.com.",
-    tags=["Cleaning Request"]
-)
-class CleaningRequestCreateView(generics.CreateAPIView):
-    #profile = get_latest_profile()
-    queryset = CleaningRequest.objects.all()
-    serializer_class = CleaningRequestSerializer
-
-    def send_confirmation_email(self, to_email, cleaning_data):
+    def send_confirmation_email(self, cleaning_data):
         sg = sendgrid.SendGridAPIClient(api_key=settings.EMAIL_HOST_PASSWORD)
-        subject = "Your Cleaning Request Confirmation"
-        content = f"Dear Customer,\n\nYour cleaning request has been received:\n\n{cleaning_data}\n\nThank you for choosing MaidsApp.com!"
+        
+        subject = "New Cleaning Request Received"
+
+        # Render the email template with booking details
+        html_content = render_to_string("emails/provider_notification.html", {
+            "customer_name": cleaning_data.get("customer_name", "Unknown"),
+            "service_type": cleaning_data.get("service_type", "Not specified"),
+            "service_date": cleaning_data.get("service_date", "Not provided"),
+            "email": cleaning_data.get("email", "No email provided"),
+            "phone": cleaning_data.get("phone", "No phone provided"),
+            "notes": cleaning_data.get("notes", "No additional notes")
+        })
+
+        # Provider email - Change this to dynamic provider selection if needed
+        provider_email = "provider@example.com"
 
         message = Mail(
-            from_email="no-reply@gigahard.ai",
-            to_emails="armenmerikyan@gmail.com",
+            from_email=Email("no-reply@gigahard.ai", "MaidsApp"),
+            to_emails=To(provider_email),
             subject=subject,
-            plain_text_content=content
+            html_content=html_content
         )
+
         try:
             sg.send(message)
         except Exception as e:
@@ -4111,8 +4108,11 @@ class CleaningRequestCreateView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             cleaning_request = serializer.save()
-            self.send_confirmation_email(request.data.get("email"), serializer.data)
-            return Response({"message": "Service request created successfully!", "data": serializer.data}, status=status.HTTP_201_CREATED)
+            self.send_confirmation_email(serializer.data)
+            return Response(
+                {"message": "Service request created successfully!", "data": serializer.data}, 
+                status=status.HTTP_201_CREATED
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 @extend_schema(

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Cleaning Request Received</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: #ffffff; padding: 20px; border-radius: 8px; }
+        .details { background: #f9f9f9; padding: 10px; border-radius: 5px; }
+        p { font-size: 16px; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 style="color: #333;">New Cleaning Request</h2>
+        <p>Dear Service Provider,</p>
+        <p>You have received a new cleaning request with the following details:</p>
+        <div class="details">
+            <p><strong>Customer Name:</strong> {{ customer_name }}</p>
+            <p><strong>Service Type:</strong> {{ service_type }}</p>
+            <p><strong>Requested Date:</strong> {{ service_date }}</p>
+            <p><strong>Customer Email:</strong> {{ email }}</p>
+            <p><strong>Customer Phone:</strong> {{ phone }}</p>
+            <p><strong>Additional Notes:</strong> {{ notes }}</p>
+        </div>
+        <p>Please contact the customer to confirm the appointment.</p>  
+    </div>
+</body>
+</html>
