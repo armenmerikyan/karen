@@ -6,6 +6,7 @@ import os
 import uuid
 import re
 from django.core.exceptions import ValidationError
+import random
 
 def default_uuid():
     return str(uuid.uuid4())
@@ -1208,10 +1209,19 @@ class CleaningRequest(models.Model):
     special_instructions = models.TextField(blank=True, null=True, help_text='Any special instructions or notes for the cleaning service.')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Timestamp when the request was created.')
     updated_at = models.DateTimeField(auto_now=True, help_text='Timestamp when the request was last updated.')
+    tracking_code = models.CharField(max_length=6, unique=True, blank=True, null=True, help_text='Unique 6-digit alphanumeric tracking code.')
     
     def __str__(self):
         return f"{self.get_cleaning_type_display()} - {self.address_line1} ({self.get_status_display()})"
     
+    def save(self, *args, **kwargs):
+        if not self.tracking_code:
+            self.tracking_code = self.generate_tracking_code()
+        super().save(*args, **kwargs)
+
+    def generate_tracking_code(self):
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+ 
     def to_mcp_context(self):
         return { 
             "customer": {
@@ -1246,6 +1256,7 @@ class CleaningRequest(models.Model):
             },
             "scheduled_date": self.scheduled_date.isoformat(),
             "status": self.status,
+            "tracking_code": self.tracking_code,
             "special_instructions": self.special_instructions,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
