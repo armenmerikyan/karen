@@ -4090,7 +4090,7 @@ class CleaningRequestCreateView(generics.CreateAPIView):
         })
 
         # Provider email - Change this to dynamic provider selection if needed
-        provider_email = "provider@example.com"
+        provider_email = "armenmerikyan@gmail.com"
 
         message = Mail(
             from_email=Email("no-reply@gigahard.ai", "MaidsApp"),
