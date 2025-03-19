@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Car Finder Request</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin: auto;
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+        }
+        p {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.6;
+        }
+        .info {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🚗 New Car Finder Request</h2>
+        <p>Hello,</p>
+        <p>A new car finder request has been submitted. Here are the details:</p>
+        
+        <div class="info">
+            <p><strong>Budget Range:</strong> ${{ budget_min }} - ${{ budget_max }}</p>
+            <p><strong>Vehicle Type:</strong> {{ vehicle_type }}</p>
+            <p><strong>Primary Use:</strong> {{ primary_use }}</p>
+            <p><strong>Passenger Capacity:</strong> {{ passengers }}</p>
+            <p><strong>Preferred Brand:</strong> {{ brand_preference }}</p>
+            <p><strong>Preferred Style:</strong> {{ preferred_style }}</p>
+            <p><strong>Purchase Timeline:</strong> {{ purchase_timeline }}</p>
+        </div>
+
+        <p>Please review and reach out to the customer if this matches your inventory.</p>
+
+        <div class="footer">
+            <p>🚘 <strong>Car Finder AI</strong> | Helping customers find the best deals</p>
+        </div>
+    </div>
+</body>
+</html>
