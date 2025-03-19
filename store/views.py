@@ -167,7 +167,8 @@ from .serializers import LetterSerializer
 from .services import MemoryService
 from .services import RoomService  # Import the RoomService class
  
-import sendgrid
+import sendgrid 
+from sendgrid.helpers.mail import Mail
 
 import base64
 import base58
