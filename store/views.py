@@ -4087,7 +4087,7 @@ class CleaningRequestCreateView(generics.CreateAPIView):
     tags=["Cleaning Request"]
 )
 class CleaningRequestCreateView(generics.CreateAPIView):
-    profile = get_latest_profile()
+    #profile = get_latest_profile()
     queryset = CleaningRequest.objects.all()
     serializer_class = CleaningRequestSerializer
 
