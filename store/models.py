@@ -581,6 +581,9 @@ class WebsiteProfile(models.Model):
     dockerhub_username = models.CharField(max_length=255, help_text="The DockerHub username.", blank=True, null=True)
     dockerhub_password = models.CharField(max_length=255, help_text="The DockerHub password. Store securely!", blank=True, null=True)
 
+    sendgrid_email = models.CharField(max_length=255, help_text="Send Grid Email.", blank=True, null=True)
+    sendgrid_key = models.CharField(max_length=255, help_text="Send Grid API Key", blank=True, null=True)
+
     def __str__(self):
         return self.name
 

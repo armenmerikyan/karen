@@ -167,7 +167,7 @@ from .serializers import LetterSerializer
 from .services import MemoryService
 from .services import RoomService  # Import the RoomService class
  
-
+import sendgrid
 
 import base64
 import base58
@@ -4063,6 +4063,7 @@ class CustomLoginView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
     permission_classes = [AllowAny]
 
+'''
 @extend_schema(
     summary="Create a Cleaning Request",
     description="Order home and business cleaning services through MaidsApp.com.",
@@ -4078,7 +4079,41 @@ class CleaningRequestCreateView(generics.CreateAPIView):
             serializer.save()
             return Response({"message": "Service request created successfully!", "data": serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+'''    
+
+@extend_schema(
+    summary="Create a Cleaning Request",
+    description="Order home and business cleaning services through MaidsApp.com.",
+    tags=["Cleaning Request"]
+)
+class CleaningRequestCreateView(generics.CreateAPIView):
+    profile = get_latest_profile()
+    queryset = CleaningRequest.objects.all()
+    serializer_class = CleaningRequestSerializer
+
+    def send_confirmation_email(self, cleaning_data):
+        sg = sendgrid.SendGridAPIClient(api_key=settings.SENDGRID_API_KEY)
+        subject = "Your Cleaning Request Confirmation"
+        content = f"Dear Customer,\n\nYour cleaning request has been received:\n\n{cleaning_data}\n\nThank you for choosing MaidsApp.com!"
+
+        message = Mail(
+            from_email="no-reply@maidsapp.com",
+            to_emails=to_email,
+            subject=subject,
+            plain_text_content=content
+        )
+        try:
+            sg.send(message)
+        except Exception as e:
+            print(f"Error sending email: {e}")
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            cleaning_request = serializer.save()
+            self.send_confirmation_email(request.data.get("email"), serializer.data)
+            return Response({"message": "Service request created successfully!", "data": serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @extend_schema(
     summary="Create an Immigration Case",

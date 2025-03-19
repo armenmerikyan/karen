@@ -159,6 +159,16 @@
                       {{ form.dockerhub_password|add_class:"form-control" }}
                       <small class="form-text text-muted">{{ form.dockerhub_password.help_text }}</small>
                   </div>
+                  <div class="form-group">
+                      <label for="{{ form.sendgrid_email.id_for_label }}" class="form-label">Send Grid Email</label>
+                      {{ form.sendgrid_email|add_class:"form-control" }}
+                      <small class="form-text text-muted">{{ form.sendgrid_email.help_text }}</small>
+                  </div>
+                  <div class="form-group">
+                      <label for="{{ form.sendgrid_key.id_for_label }}" class="form-label">Send Grid Api Key</label>
+                      {{ form.sendgrid_key|add_class:"form-control" }}
+                      <small class="form-text text-muted">{{ form.sendgrid_key.help_text }}</small>
+                  </div>
                   
                 </div>
                 <button type="submit" class="btn btn-primary">Add Profile</button>
