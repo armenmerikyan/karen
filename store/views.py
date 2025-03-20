@@ -277,6 +277,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from oauth2_provider.views import TokenView 
 from oauth2_provider.models import AccessToken
 from oauth2_provider.views import AuthorizationView
+from oauth2_provider.decorators import protected_resource
 from datetime import timedelta
 
 version = "00.00.06"
