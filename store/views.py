@@ -3916,13 +3916,13 @@ class BusinessMCPView(APIView):
         return Response(data)
     
 
-@login_required
-@protected_resource(scopes=["userinfo"])    
 @extend_schema(
     summary="Create a new business",
     description="API endpoint to add a new business to the system. Save the `creator_secret` as it will be required for future updates.",
     tags=["Business"]
 )
+@login_required
+@protected_resource(scopes=["userinfo"])    
 class BusinessCreateView(CreateAPIView):
     """
     API endpoint to create a new business.
