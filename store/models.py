@@ -71,7 +71,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
     objects = UserManager()
-
+    
+    def get_short_name(self):
+        return self.first_name or self.email  # Or any other relevant attribute
+    
 def category_upload_to(instance, filename):
     name, ext = os.path.splitext(filename)
     return f"category/{instance.id}.png"
