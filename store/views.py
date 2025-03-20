@@ -3921,8 +3921,8 @@ class BusinessMCPView(APIView):
     description="API endpoint to add a new business to the system. Save the `creator_secret` as it will be required for future updates.",
     tags=["Business"]
 )
-@login_required
-@protected_resource(scopes=["userinfo"])    
+#@login_required
+#@protected_resource(scopes=["userinfo"])    
 class BusinessCreateView(CreateAPIView):
     """
     API endpoint to create a new business.
