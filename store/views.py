@@ -3905,6 +3905,7 @@ class CustomHeaderAuthentication(TokenAuthentication):
 
         return (token.user, token)  # Ensure this tuple is returned
     
+'''    
     
 @extend_schema(
     summary="Retrieve, Update, or Delete a Business",
@@ -4067,6 +4068,7 @@ class SupportTicketUpdateView(generics.UpdateAPIView):
     serializer_class = SupportTicketSerializer
     permission_classes = [IsAuthenticated]
 
+'''
 
 # REVIEWS 
  
