@@ -16,6 +16,24 @@ from .models import CleaningRequest
 from .models import ImmigrationCase
 from .models import Letter
 from .models import CarFinderResponse
+from .models import WebsiteCreationResponse
+
+class WebsiteCreationResponseSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
+
+    class Meta:
+        model = WebsiteCreationResponse
+        fields = [
+            "id", "contact_name", "contact_email", "contact_phone",
+            "business_name", "industry", "business_description", "target_audience",
+            "primary_goal", "other_goal_description",
+            "requires_ecommerce", "requires_booking", "requires_blog", "requires_membership",
+            "requires_contact_form", "requires_live_chat", "custom_features",
+            "preferred_style", "color_scheme", "reference_websites",
+            "has_domain", "domain_name", "requires_hosting",
+            "timeline", "budget_range",
+            "additional_notes", "created_at"
+        ]
 
 class CarFinderResponseSerializer(serializers.ModelSerializer):
     class Meta:

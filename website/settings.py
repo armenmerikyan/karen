@@ -130,6 +130,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',  # API Token
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
     ),    
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
@@ -344,3 +345,13 @@ CORS_ALLOWED_ORIGINS = [
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+
+
+OAUTH2_PROVIDER = {
+    "SCOPES": {
+        "read": "Read access to your account",
+        "write": "Write access to your account",
+        "profile": "Access to user profile information",
+        "email": "Access to user's email",
+    }
+}

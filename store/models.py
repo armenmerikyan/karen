@@ -1577,3 +1577,194 @@ class CarFinderResponse(models.Model):
     def __str__(self):
         return f"Car Finder Response {self.id} - {self.created_at.strftime('%Y-%m-%d')}"
 
+
+class WebsiteCreationResponse(models.Model):
+    # Contact Information
+    contact_name = models.CharField(
+        max_length=255, null=True, blank=True,
+        help_text="Full name of the person filling out this form."
+    )
+    contact_email = models.EmailField(
+        null=True, blank=True,
+        help_text="Email address of the person filling out this form."
+    )
+    contact_phone = models.CharField(
+        max_length=20, null=True, blank=True,
+        help_text="Phone number of the contact person."
+    )
+
+    # Business Information
+    business_name = models.CharField(
+        max_length=255, null=True, blank=True,
+        help_text="Name of the business or organization."
+    )
+    industry = models.CharField(
+        max_length=100, null=True, blank=True,
+        help_text="Industry the business operates in (e.g., Retail, Tech, Healthcare)."
+    )
+    business_description = models.TextField(
+        null=True, blank=True,
+        help_text="Brief description of the business and its services/products."
+    )
+    target_audience = models.TextField(
+        null=True, blank=True,
+        help_text="Describe the target audience or customer base."
+    )
+
+    # Website Goals
+    primary_goal = models.CharField(
+        max_length=100, choices=[
+            ('informational', 'Informational'),
+            ('ecommerce', 'E-commerce'),
+            ('portfolio', 'Portfolio'),
+            ('blog', 'Blog'),
+            ('booking', 'Booking System'),
+            ('membership', 'Membership-based'),
+            ('other', 'Other')
+        ], null=True, blank=True,
+        help_text="What is the primary goal of the website?"
+    )
+    other_goal_description = models.TextField(
+        null=True, blank=True,
+        help_text="If 'Other' is selected, describe the website goal."
+    )
+
+    # Features & Functionality
+    requires_ecommerce = models.BooleanField(
+        default=False, help_text="Does the website need e-commerce functionality?"
+    )
+    requires_booking = models.BooleanField(
+        default=False, help_text="Does the website need an appointment booking system?"
+    )
+    requires_blog = models.BooleanField(
+        default=False, help_text="Does the website need a blog?"
+    )
+    requires_membership = models.BooleanField(
+        default=False, help_text="Will the website have a membership system?"
+    )
+    requires_contact_form = models.BooleanField(
+        default=True, help_text="Should the website include a contact form?"
+    )
+    requires_live_chat = models.BooleanField(
+        default=False, help_text="Does the website need a live chat feature?"
+    )
+    custom_features = models.TextField(
+        null=True, blank=True,
+        help_text="Any additional custom features needed?"
+    )
+
+    # Design Preferences
+    preferred_style = models.CharField(
+        max_length=50, choices=[
+            ('modern', 'Modern'),
+            ('minimalist', 'Minimalist'),
+            ('corporate', 'Corporate'),
+            ('creative', 'Creative'),
+            ('classic', 'Classic')
+        ], null=True, blank=True,
+        help_text="Preferred design style for the website."
+    )
+    color_scheme = models.CharField(
+        max_length=100, null=True, blank=True,
+        help_text="Preferred color scheme for the website (e.g., Blue & White)."
+    )
+    reference_websites = models.TextField(
+        null=True, blank=True,
+        help_text="List any websites you like for inspiration."
+    )
+
+    # Domain & Hosting
+    has_domain = models.BooleanField(
+        default=False, help_text="Do you already have a domain name?"
+    )
+    domain_name = models.CharField(
+        max_length=255, null=True, blank=True,
+        help_text="Enter the domain name if available."
+    )
+    requires_hosting = models.BooleanField(
+        default=True, help_text="Do you need web hosting services?"
+    )
+
+    # Timeline & Budget
+    timeline = models.CharField(
+        max_length=50, choices=[
+            ('asap', 'ASAP'),
+            ('1_3_months', '1-3 Months'),
+            ('flexible', 'Flexible')
+        ], null=True, blank=True,
+        help_text="Preferred timeline for website completion."
+    )
+    budget_range = models.CharField(
+        max_length=50, choices=[
+            ('under_1000', 'Under $1,000'),
+            ('1000_5000', '$1,000 - $5,000'),
+            ('5000_10000', '$5,000 - $10,000'),
+            ('10000_plus', 'Over $10,000')
+        ], null=True, blank=True,
+        help_text="What is your estimated budget for the website?"
+    )
+
+    # Additional Information
+    additional_notes = models.TextField(
+        null=True, blank=True,
+        help_text="Any additional notes or special requirements?"
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text="Timestamp when this response was submitted."
+    )
+
+    def __str__(self):
+        return f"Website Creation Response {self.id} - {self.business_name if self.business_name else 'No Name'}"
+
+    def to_mcp_context(self):
+        """
+        Converts the model instance into a structured dictionary.
+        """
+        return {
+            "contact": {
+                "name": self.contact_name,
+                "email": self.contact_email,
+                "phone": self.contact_phone,
+            },
+            "business": {
+                "name": self.business_name,
+                "industry": self.industry,
+                "description": self.business_description,
+                "target_audience": self.target_audience,
+            },
+            "website_goals": {
+                "primary_goal": self.primary_goal,
+                "other_goal": self.other_goal_description,
+            },
+            "features": {
+                "ecommerce": self.requires_ecommerce,
+                "booking": self.requires_booking,
+                "blog": self.requires_blog,
+                "membership": self.requires_membership,
+                "contact_form": self.requires_contact_form,
+                "live_chat": self.requires_live_chat,
+                "custom_features": self.custom_features,
+            },
+            "design": {
+                "style": self.preferred_style,
+                "color_scheme": self.color_scheme,
+                "reference_websites": self.reference_websites,
+            },
+            "domain_hosting": {
+                "has_domain": self.has_domain,
+                "domain_name": self.domain_name,
+                "requires_hosting": self.requires_hosting,
+            },
+            "timeline_budget": {
+                "timeline": self.timeline,
+                "budget": self.budget_range,
+            },
+            "additional_info": {
+                "notes": self.additional_notes,
+            },
+            "metadata": {
+                "created_at": self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            }
+        }
