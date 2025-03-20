@@ -242,8 +242,6 @@ urlpatterns = [
     path('businesses/delete/<int:business_id>/', views.delete_business, name='delete_business'),
 
     path('oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    path('o/token/', views.CustomTokenView.as_view(), name='token'),
-    path('o/authorize/', views.CustomAuthorizationView.as_view(), name="authorize"),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 
 
