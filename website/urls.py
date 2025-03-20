@@ -27,12 +27,26 @@ from django.contrib.auth.views import PasswordResetConfirmView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from store.serializers import CustomTokenObtainPairSerializer 
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.routers import DefaultRouter
+from store.views import MemoryViewSet, CharacterViewSet
+
+
+memory_character_router = DefaultRouter()
+memory_character_router.register(r'memories', MemoryViewSet, basename='memory')
+memory_character_router.register(r'characters', CharacterViewSet, basename='character')
 
 urlpatterns = [   
 
     path('admin/', admin.site.urls),  
     
     path('', views.index, name='index'), 
+
+    path('api/memory-character/', include(memory_character_router.urls)),  # Use a unique prefix
+    path('api/memory-character/memories/<int:pk>/characters/', MemoryViewSet.as_view({'get': 'characters'}), name='memory-characters'),
+    path('api/memory-character/characters/<int:pk>/add_memory/', CharacterViewSet.as_view({'post': 'add_memory'}), name='character-add-memory'),
+    path('api/memory-character/characters/<int:pk>/remove_memory/', CharacterViewSet.as_view({'post': 'remove_memory'}), name='character-remove-memory'),
+    path('api/memory-character/characters/<int:pk>/shared_memories/', CharacterViewSet.as_view({'get': 'shared_memories'}), name='character-shared-memories'),
+
     path('verify_signature/', views.verify_signature, name='verify_signature'),    
     path('api/add-handle/', views.add_social_media_handle, name='api_add_handle'),
     path('toggle_handle/<int:handle_id>/', views.toggle_handle_status, name='toggle_handle_status'),
