@@ -1779,7 +1779,7 @@ class Memory(models.Model):
     MCP-Compliant with structured retrieval methods.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=255)
+    memory_title = models.CharField(max_length=255)
     content = models.TextField()  # The actual memory description
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -1790,7 +1790,7 @@ class Memory(models.Model):
         """Returns a structured context representation for AI processing."""
         return {
             "id": str(self.id),
-            "title": self.title,
+            "memory_title": self.title,
             "content": self.content,
             "created_at": self.created_at.isoformat(),
         }

@@ -27,13 +27,13 @@ class MemorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Memory
-        fields = ["id", "title", "content", "created_at"]
+        fields = ["id", "memory_title", "content", "created_at"]
 
     def to_mcp_context(self):
         """Returns MCP-compliant memory context."""
         return {
             "id": str(self.instance.id),
-            "title": self.instance.title,
+            "memory_title": self.instance.memory_title,
             "content": self.instance.content,
             "created_at": self.instance.created_at.isoformat(),
         }
