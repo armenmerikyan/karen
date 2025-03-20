@@ -348,6 +348,7 @@ CSRF_COOKIE_SECURE = True
 
 
 OAUTH2_PROVIDER = {
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 3600,  # Example: 1 hour expiration
     "SCOPES": {
         "read": "Read access to your account",
         "write": "Write access to your account",

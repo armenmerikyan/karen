@@ -283,6 +283,41 @@ logger = logging.getLogger(__name__)
 register = template.Library()
 CADDY_API_URL = "http://localhost:2019/config/apps/http/servers/srv0/routes"
 
+class CustomAuthorizationView(AuthorizationView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+
+        if response.status_code == 302:  # OAuth2 usually redirects, so intercept it
+            user = request.user
+            application = self.get_application()  # Get the OAuth2 application
+
+            # Generate access token manually
+            expires = now() + timedelta(seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+            access_token = AccessToken.objects.create(
+                user=user,
+                application=application,
+                token="example_token",  # Generate a real token using a secure method
+                expires=expires,
+                scope="read write",
+            )
+
+            # Generate refresh token
+            refresh_token = RefreshToken.objects.create(
+                user=user,
+                application=application,
+                token="example_token",  # Generate a real refresh token
+                access_token=access_token,
+            )
+
+            return JsonResponse({
+                "access_token": access_token.token,
+                "token_type": "bearer",
+                "refresh_token": refresh_token.token,
+                "expires_in": (expires - now()).seconds
+            })
+
+        return response
+
 class CustomTokenView(TokenView):
     def post(self, request, *args, **kwargs):
         # Call the parent class method
