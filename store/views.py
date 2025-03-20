@@ -3915,6 +3915,9 @@ class BusinessMCPView(APIView):
         data = [b.to_mcp_context() for b in businesses]
         return Response(data)
     
+
+@login_required
+@protected_resource(scopes=["userinfo"])    
 @extend_schema(
     summary="Create a new business",
     description="API endpoint to add a new business to the system. Save the `creator_secret` as it will be required for future updates.",
@@ -3924,8 +3927,8 @@ class BusinessCreateView(CreateAPIView):
     """
     API endpoint to create a new business.
     """
-    authentication_classes = [CustomHeaderAuthentication]
-    permission_classes = [IsAuthenticated]
+    #authentication_classes = [CustomHeaderAuthentication]
+    #permission_classes = [IsAuthenticated]
     queryset = Business.objects.all()
     serializer_class = BusinessSerializer 
 
