@@ -23,6 +23,7 @@ from urllib.parse import quote
 from django.views.decorators.csrf import csrf_exempt
 from django.template.context_processors import csrf
 
+from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -125,6 +126,7 @@ from .models import ImmigrationCase
 from .models import Letter
 from .models import CarFinderResponse
 from .models import WebsiteCreationResponse
+from .models import Character, Memory
 
 from .forms import LandingPageForm
 from .forms import SimpleQuestionForm
@@ -148,6 +150,7 @@ from .forms import TweetForm
 from .forms import WebsiteProfileForm
 from .forms import UserCreationForm  # You need to create this form
 
+from .serializers import CharacterSerializer, MemorySerializer
 from .serializers import UserRegisterSerializer as RegisterSerializer
 from .serializers import CustomTokenObtainPairSerializer
 from .serializers import ConversationTopicSerializer
@@ -4387,3 +4390,89 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
                 status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@extend_schema(
+    summary="Manage Memories",
+    description="Create, retrieve, update, and delete shared memories for AI-driven characters.",
+    tags=["Memories"]
+)
+class MemoryViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint to create, retrieve, update, and delete memories.
+    """
+    queryset = Memory.objects.all().order_by("-created_at")
+    serializer_class = MemorySerializer
+
+    @extend_schema(
+        summary="Get Characters with Memory",
+        description="Retrieve all characters that share a specific memory.",
+        tags=["Memories"]
+    )
+    @action(detail=True, methods=["get"])
+    def characters(self, request, pk=None):
+        """Get all characters that share this memory."""
+        memory = self.get_object()
+        characters = memory.characters.all()
+        return Response(CharacterSerializer(characters, many=True).data)
+
+
+@extend_schema(
+    summary="Manage Characters",
+    description="Create, retrieve, update, and delete AI-driven characters with unique personalities and shared memories.",
+    tags=["Characters"]
+)
+class CharacterViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint to create, retrieve, update, and delete characters.
+    """
+    queryset = Character.objects.all().order_by("-created_at")
+    serializer_class = CharacterSerializer
+
+    @extend_schema(
+        summary="Add Memory to Character",
+        description="Attach a memory to a specific character.",
+        tags=["Characters"]
+    )
+    @action(detail=True, methods=["post"])
+    def add_memory(self, request, pk=None):
+        """Attach a memory to a character."""
+        character = self.get_object()
+        memory_id = request.data.get("memory_id")
+
+        if not memory_id:
+            return Response({"error": "Memory ID is required"}, status=400)
+
+        memory = get_object_or_404(Memory, id=memory_id)
+        character.memories.add(memory)
+        return Response({"message": f"Memory '{memory.title}' added to {character.name}."})
+
+    @extend_schema(
+        summary="Remove Memory from Character",
+        description="Detach a specific memory from a character.",
+        tags=["Characters"]
+    )
+    @action(detail=True, methods=["post"])
+    def remove_memory(self, request, pk=None):
+        """Detach a memory from a character."""
+        character = self.get_object()
+        memory_id = request.data.get("memory_id")
+
+        if not memory_id:
+            return Response({"error": "Memory ID is required"}, status=400)
+
+        memory = get_object_or_404(Memory, id=memory_id)
+        character.memories.remove(memory)
+        return Response({"message": f"Memory '{memory.title}' removed from {character.name}."})
+
+    @extend_schema(
+        summary="Get Shared Memories",
+        description="Retrieve all memories that this character shares with other characters.",
+        tags=["Characters"]
+    )
+    @action(detail=True, methods=["get"])
+    def shared_memories(self, request, pk=None):
+        """Get shared memories between this character and others."""
+        character = self.get_object()
+        shared_memories = character.memories.all()
+        return Response(MemorySerializer(shared_memories, many=True).data)

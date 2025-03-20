@@ -1771,3 +1771,108 @@ class WebsiteCreationResponse(models.Model):
                 "created_at": self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             }
         }
+    
+
+class Memory(models.Model):
+    """
+    Represents a stored memory that can be shared across multiple characters.
+    MCP-Compliant with structured retrieval methods.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=255)
+    content = models.TextField()  # The actual memory description
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+    def to_mcp_context(self):
+        """Returns a structured context representation for AI processing."""
+        return {
+            "id": str(self.id),
+            "title": self.title,
+            "content": self.content,
+            "created_at": self.created_at.isoformat(),
+        }
+
+
+class Character(models.Model):
+    """
+    A Character model that supports multiple shared memories.
+    Fully MCP-Compliant with structured access and context methods.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    # Core Personality Traits
+    intelligence = models.PositiveSmallIntegerField(default=5)
+    creativity = models.PositiveSmallIntegerField(default=5)
+    confidence = models.PositiveSmallIntegerField(default=5)
+    humor = models.PositiveSmallIntegerField(default=5)
+    emotional_resilience = models.PositiveSmallIntegerField(default=5)
+    curiosity = models.PositiveSmallIntegerField(default=5)
+    work_ethic = models.PositiveSmallIntegerField(default=5)
+    adaptability = models.PositiveSmallIntegerField(default=5)
+    ambition = models.PositiveSmallIntegerField(default=5)
+
+    # Many-to-Many Relationship: Characters can share the same memories
+    memories = models.ManyToManyField(Memory, blank=True, related_name="characters")
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Character"
+        verbose_name_plural = "Characters"
+
+    def __str__(self):
+        return self.name
+
+    ## 🚀 MCP-COMPLIANT METHODS 🚀 ##
+
+    def to_mcp_context(self):
+        """Returns structured personality data for AI processing."""
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "description": self.description,
+            "traits": {
+                "intelligence": self.intelligence,
+                "creativity": self.creativity,
+                "confidence": self.confidence,
+                "humor": self.humor,
+                "emotional_resilience": self.emotional_resilience,
+                "curiosity": self.curiosity,
+                "work_ethic": self.work_ethic,
+                "adaptability": self.adaptability,
+                "ambition": self.ambition,
+            },
+            "memories": [memory.to_mcp_context() for memory in self.memories.all()],
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
+        }
+
+    def add_memory(self, memory):
+        """Adds a memory to this character, ensuring it's not duplicated."""
+        self.memories.add(memory)
+
+    def remove_memory(self, memory):
+        """Removes a memory from this character."""
+        self.memories.remove(memory)
+
+    def forget_oldest_memory(self):
+        """Forget the oldest memory (FIFO-style)."""
+        oldest_memory = self.memories.order_by("created_at").first()
+        if oldest_memory:
+            self.memories.remove(oldest_memory)
+            return oldest_memory
+        return None
+
+    def shared_memories_with(self, other_character):
+        """Finds memories shared between this character and another."""
+        return self.memories.filter(characters=other_character)
+
+    def retrieve_memory_context(self):
+        """Returns all memories in a structured context format."""
+        return [memory.to_mcp_context() for memory in self.memories.all()]    

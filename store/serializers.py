@@ -17,7 +17,68 @@ from .models import ImmigrationCase
 from .models import Letter
 from .models import CarFinderResponse
 from .models import WebsiteCreationResponse
+from .models import Character, Memory
 
+class MemorySerializer(serializers.ModelSerializer):
+    """
+    Serializer for Memory model.
+    Converts Memory instances into MCP-compliant JSON format.
+    """
+
+    class Meta:
+        model = Memory
+        fields = ["id", "title", "content", "created_at"]
+
+    def to_mcp_context(self):
+        """Returns MCP-compliant memory context."""
+        return {
+            "id": str(self.instance.id),
+            "title": self.instance.title,
+            "content": self.instance.content,
+            "created_at": self.instance.created_at.isoformat(),
+        }
+
+
+class CharacterSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Character model.
+    Converts Character instances into MCP-compliant JSON format.
+    """
+
+    # Nested MemorySerializer to show memory details in Character response
+    memories = MemorySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Character
+        fields = [
+            "id", "name", "description", "created_at", "updated_at",
+            "intelligence", "creativity", "confidence", "humor", 
+            "emotional_resilience", "curiosity", "work_ethic", "adaptability", 
+            "ambition", "memories"
+        ]
+
+    def to_mcp_context(self):
+        """Returns MCP-compliant character context."""
+        return {
+            "id": str(self.instance.id),
+            "name": self.instance.name,
+            "description": self.instance.description,
+            "traits": {
+                "intelligence": self.instance.intelligence,
+                "creativity": self.instance.creativity,
+                "confidence": self.instance.confidence,
+                "humor": self.instance.humor,
+                "emotional_resilience": self.instance.emotional_resilience,
+                "curiosity": self.instance.curiosity,
+                "work_ethic": self.instance.work_ethic,
+                "adaptability": self.instance.adaptability,
+                "ambition": self.instance.ambition,
+            },
+            "memories": [memory.to_mcp_context() for memory in self.instance.memories.all()],
+            "created_at": self.instance.created_at.isoformat(),
+            "updated_at": self.instance.updated_at.isoformat(),
+        }
+    
 class WebsiteCreationResponseSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
 
