@@ -270,8 +270,8 @@ urlpatterns = [
     path("intake-form/", views.ImmigrationCaseCreateView.as_view(), name="intake-form"),
 
 
-    path('letters/create/', views.LetterCreateView.as_view(), name='letter-create'),
-    path('letters/search/', views.LetterSearchView.as_view(), name='letter-search'),    
+    #path('letters/create/', views.LetterCreateView.as_view(), name='letter-create'),
+    #path('letters/search/', views.LetterSearchView.as_view(), name='letter-search'),    
     path('api/car-finder/', views.CarFinderResponseCreateView.as_view(), name='car-finder-create'),
 
     #path('api/register/', views.RegisterAPIView.as_view(), name='api_register'),

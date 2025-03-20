@@ -4234,6 +4234,8 @@ class ImmigrationCaseCreateView(generics.CreateAPIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+'''
+
 @extend_schema(
     summary="Create a Letter",
     description="Submit a letter with sender, recipient, subject, and body.",
@@ -4277,7 +4279,9 @@ class LetterSearchView(generics.ListAPIView):
             queryset = queryset.filter(subject__icontains=subject)
         
         return queryset
-    
+
+''' 
+
 @extend_schema(
     tags=["Reviews"],
     summary="List & Create Reviews",
