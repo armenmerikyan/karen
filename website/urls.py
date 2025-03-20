@@ -260,10 +260,11 @@ urlpatterns = [
     path('letters/search/', views.LetterSearchView.as_view(), name='letter-search'),    
     path('api/car-finder/', views.CarFinderResponseCreateView.as_view(), name='car-finder-create'),
 
-#    path('api/register/', views.RegisterAPIView.as_view(), name='api_register'),
-#    path('api/login/', views.CustomLoginView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='api_login'),
+    #path('api/register/', views.RegisterAPIView.as_view(), name='api_register'),
+    #path('api/login/', views.CustomLoginView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='api_login'),
     #path('reviews/', views.ReviewListCreateView.as_view(), name='review-list-create'),
     #path('reviews/<int:pk>/', views.ReviewDetailView.as_view(), name='review-detail'),
+    path('o/token/', views.CustomTokenView.as_view(), name='token'),
 
 ] 
 
