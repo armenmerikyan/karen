@@ -268,6 +268,7 @@ import docker
 
 from rest_framework import generics  
 
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes 
 
@@ -4396,9 +4397,50 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
     
 
 @extend_schema(
-    summary="Manage Memories",
-    description="Create, retrieve, update, and delete shared memories for AI-driven characters.",
-    tags=["Memories"]
+    summary="Manage AI Memories",
+    description=(
+        "This endpoint allows creating, retrieving, updating, and deleting memories for AI-driven characters. "
+        "Memories are structured objects that store contextual information and can be referenced by AI agents. "
+        "Each memory can belong to a user, room, or AI agent, and contains metadata for structured retrieval."
+    ),
+    tags=["Memories"],
+    request=MemorySerializer,
+    responses={
+        200: MemorySerializer,
+        201: MemorySerializer,
+        400: OpenApiResponse(description="Invalid request data"),
+        404: OpenApiResponse(description="Memory not found"),
+    },
+    parameters=[
+        OpenApiParameter(
+            name="type",
+            description="Filter memories by type (e.g., experience, fact, interaction).",
+            required=False,
+            type=str,
+            location=OpenApiParameter.QUERY
+        ),
+        OpenApiParameter(
+            name="user_id",
+            description="Filter memories by associated user.",
+            required=False,
+            type=str,
+            location=OpenApiParameter.QUERY
+        ),
+        OpenApiParameter(
+            name="room_id",
+            description="Filter memories by associated room.",
+            required=False,
+            type=str,
+            location=OpenApiParameter.QUERY
+        ),
+        OpenApiParameter(
+            name="agent_id",
+            description="Filter memories by associated AI agent.",
+            required=False,
+            type=str,
+            location=OpenApiParameter.QUERY
+        ),
+    ]
 )
 class MemoryViewSet(viewsets.ModelViewSet):
     """
