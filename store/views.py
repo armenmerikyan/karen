@@ -274,12 +274,32 @@ from rest_framework.generics import ListCreateAPIView
  
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-
+from oauth2_provider.views import TokenView 
+from oauth2_provider.models import AccessToken
+from datetime import timedelta
 
 version = "00.00.06"
 logger = logging.getLogger(__name__)
 register = template.Library()
 CADDY_API_URL = "http://localhost:2019/config/apps/http/servers/srv0/routes"
+
+class CustomTokenView(TokenView):
+    def post(self, request, *args, **kwargs):
+        # Call the parent class method
+        response = super().post(request, *args, **kwargs)
+
+        # Optionally, modify the response here
+        if response.status_code == 200:
+            data = response.data
+            expires_in = timedelta(seconds=data['expires_in'])
+            response.data = {
+                "access_token": data['access_token'],
+                "token_type": "bearer",
+                "refresh_token": data.get('refresh_token', ''),
+                "expires_in": expires_in.total_seconds(),
+            }
+        return response
+    
 
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
