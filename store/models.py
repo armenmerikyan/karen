@@ -478,26 +478,6 @@ class Log(models.Model):
         ordering = ['-created_at']  # Optional: order by newest created first
 
 
-class Memory(models.Model):
-    id = models.AutoField(primary_key=True)  # Default primary key
-    external_id = models.CharField(max_length=255, unique=True) 
-    type = models.CharField(max_length=100)  # Type of memory
-    created_at_external = models.DateTimeField(auto_now_add=True)  # External creation timestamp
-    created_at = models.DateTimeField(auto_now_add=True)  # Internal creation timestamp
-    content = models.TextField()  # Memory content
-    embedding = models.TextField(null=True, blank=True)  # Serialized embedding data
-    user_id = models.CharField(max_length=255)  # User ID associated with the memory
-    room_id = models.CharField(max_length=255, null=True, blank=True)  # Associated room ID
-    agent_id = models.CharField(max_length=255, null=True, blank=True)  # Associated agent ID
-    unique = models.BooleanField(default=False)  # Indicates if the memory is unique
-
-    def __str__(self):
-        return f"Memory {self.id} - {self.type}"
-
-    class Meta:
-        db_table = 'memories'  # Explicit table name
-        ordering = ['-created_at']  # Optional: order by newest created first
-
         
 class Account(models.Model):
     id = models.AutoField(primary_key=True)  # Default primary key
@@ -1775,24 +1755,52 @@ class WebsiteCreationResponse(models.Model):
 
 class Memory(models.Model):
     """
-    Represents a stored memory that can be shared across multiple characters.
+    Represents a stored memory that can be shared across multiple characters,
+    with support for external systems and AI embeddings.
     MCP-Compliant with structured retrieval methods.
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    memory_title = models.CharField(max_length=255)
-    content = models.TextField()  # The actual memory description
-    created_at = models.DateTimeField(auto_now_add=True)
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)  # Unique ID
+    external_id = models.CharField(max_length=255, unique=True, null=True, blank=True)  # External reference
+    type = models.CharField(max_length=100)  # Type of memory (e.g., "experience", "fact", "interaction")
+    
+    memory_title = models.CharField(max_length=255)  # Title or label of memory
+    content = models.TextField()  # Detailed memory description
+    
+    created_at_external = models.DateTimeField(null=True, blank=True)  # External creation timestamp
+    created_at = models.DateTimeField(auto_now_add=True)  # Internal creation timestamp
+
+    embedding = models.TextField(null=True, blank=True)  # Serialized AI embedding data
+
+    # Associations
+    user_id = models.CharField(max_length=255, null=True, blank=True)  # Associated user
+    room_id = models.CharField(max_length=255, null=True, blank=True)  # Associated room
+    agent_id = models.CharField(max_length=255, null=True, blank=True)  # Associated AI agent
+
+    unique = models.BooleanField(default=False)  # Indicates uniqueness
+
+    class Meta:
+        db_table = 'memories'
+        ordering = ['-created_at']
 
     def __str__(self):
-        return self.title
+        return f"Memory {self.id} - {self.memory_title}"
 
     def to_mcp_context(self):
-        """Returns a structured context representation for AI processing."""
+        """Returns a structured MCP-compliant memory representation."""
         return {
             "id": str(self.id),
-            "memory_title": self.title,
+            "external_id": self.external_id,
+            "type": self.type,
+            "memory_title": self.memory_title,
             "content": self.content,
+            "created_at_external": self.created_at_external.isoformat() if self.created_at_external else None,
             "created_at": self.created_at.isoformat(),
+            "embedding": self.embedding,
+            "user_id": self.user_id,
+            "room_id": self.room_id,
+            "agent_id": self.agent_id,
+            "unique": self.unique,
         }
 
 
