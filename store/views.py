@@ -472,11 +472,20 @@ def update_profile(request):
         form = UserProfileUpdateForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect('index')  # Redirect to profile page after update
+            return redirect('index')
+
     else:
         form = UserProfileUpdateForm(instance=request.user)
-    
-    return render(request, 'update_profile.html', {'form': form, 'profile': profile, 'user': request.user})
+
+    # Fetch the OAuth token (if stored in the session after login)
+    my_token = request.session.get('access_token', None)  # None if not found
+
+    return render(request, 'update_profile.html', {
+        'form': form,
+        'profile': profile,
+        'user': request.user,
+        'MY_TOKEN': my_token,  # Add token to context
+    })
 
 def admin_required(view_func):
     """
