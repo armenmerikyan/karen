@@ -242,6 +242,7 @@ urlpatterns = [
     path('businesses/delete/<int:business_id>/', views.delete_business, name='delete_business'),
 
     path('oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    path('o/token/', views.CustomTokenView.as_view(), name='token'),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 
 
@@ -264,7 +265,6 @@ urlpatterns = [
     #path('api/login/', views.CustomLoginView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='api_login'),
     #path('reviews/', views.ReviewListCreateView.as_view(), name='review-list-create'),
     #path('reviews/<int:pk>/', views.ReviewDetailView.as_view(), name='review-detail'),
-    path('o/token/', views.CustomTokenView.as_view(), name='token'),
 
 ] 
 
