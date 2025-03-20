@@ -284,6 +284,21 @@ logger = logging.getLogger(__name__)
 register = template.Library()
 CADDY_API_URL = "http://localhost:2019/config/apps/http/servers/srv0/routes"
 
+
+@login_required
+@protected_resource(scopes=["userinfo"])
+def userinfo(request):
+    user = request.user
+    return JsonResponse({
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "company_name": user.company_name,
+        "wallet_address": user.sol_wallet_address,  # If applicable
+    })
+
 class CustomAuthorizationView(AuthorizationView):
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
