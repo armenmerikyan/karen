@@ -4353,7 +4353,6 @@ def call_node_script(request):
         return JsonResponse({'status': 'error', 'output': e.stderr}, status=500)
 
     
-
 def handle_list_view(request):
     profile = get_latest_profile()
     handles = TwitterHandleChecker.objects.all()
@@ -4368,13 +4367,26 @@ def handle_list_view(request):
         margin = 50
         y = height - margin
 
+        # Title
         p.setFont("Helvetica-Bold", 16)
         p.drawString(margin, y, "Twitter Handle Check Report")
         y -= 30
 
+        # WebsiteProfile summary
         p.setFont("Helvetica", 12)
+        if profile:
+            p.drawString(margin, y, f"Project: {profile.name}")
+            y -= 15
+            p.drawString(margin, y, f"About: {profile.about_us[:100]}...")
+            y -= 15
+            p.drawString(margin, y, f"Wallet: {profile.wallet}")
+            y -= 15
+            p.drawString(margin, y, f"X Handle: @{profile.x_handle}")
+            y -= 25
+
+        # Handles list
         for handle in handles:
-            if y < 100:  # Prevent writing too low
+            if y < 100:
                 p.showPage()
                 y = height - margin
                 p.setFont("Helvetica", 12)
@@ -4383,6 +4395,7 @@ def handle_list_view(request):
             y -= 15
             p.drawString(margin + 20, y, f"Checked At: {handle.checked_at.strftime('%Y-%m-%d %H:%M:%S')}")
             y -= 15
+
             result_lines = handle.result.splitlines() or ['']
             for line in result_lines:
                 if y < 50:
@@ -4391,6 +4404,7 @@ def handle_list_view(request):
                     p.setFont("Helvetica", 12)
                 p.drawString(margin + 20, y, f"Note: {line}")
                 y -= 15
+
             y -= 10  # Space between entries
 
         p.showPage()
