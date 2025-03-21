@@ -4368,8 +4368,12 @@ def handle_list_view(request):
     download_type = request.GET.get('type')
 
     if download_type == 'txt':
+        # Generate a random 4-character string
+        random_suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+        filename = f"handles_{random_suffix}.txt"
+
         response = HttpResponse(content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename="handles_list.txt"'
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
         lines = []
 
