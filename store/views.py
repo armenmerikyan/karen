@@ -4511,14 +4511,20 @@ class CharacterViewSet(viewsets.ModelViewSet):
 
 # TWITTER CHECKER  
 def call_node_script(request):
-    handle = request.GET.get('handle')  # e.g., /run-twitter-login/?handle=prezthedegen
+    handle = request.GET.get('handle')
 
     if not handle:
         return JsonResponse({'status': 'error', 'message': 'Missing `handle` parameter'}, status=400)
 
     try:
+        command = (
+            'source ~/.nvm/nvm.sh && '
+            'nvm use 18 && '  # or whatever version you installed
+            f'node /root/jena/src/twitter.login.js {handle}'
+        )
+
         result = subprocess.run(
-            ['node', '/root/jena/src/twitter.login.js', handle],
+            ['bash', '-c', command],
             capture_output=True,
             text=True,
             check=True
