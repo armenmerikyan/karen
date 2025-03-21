@@ -4405,10 +4405,10 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
 @extend_schema(
     summary="Manage AI Memories",
     description=(
-        "This endpoint allows creating, retrieving, updating, and deleting memories for AI-driven characters. "
-        "Memories are structured objects that store contextual information and can be referenced by AI agents. "
-        "Each memory can belong to a user, room, or AI agent, and contains metadata for structured retrieval."
-    ),
+        "Create, retrieve, update, and delete memories for AI characters. "
+        "Each memory can belong to a user, room, or agent and stores contextual data "
+        "for AI agents to reference."
+    ),  # 263 characters
     tags=["Memories"],
     request=MemorySerializer,
     responses={
@@ -4420,28 +4420,28 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
     parameters=[
         OpenApiParameter(
             name="type",
-            description="Filter memories by type (e.g., experience, fact, interaction).",
+            description="Filter by memory type (e.g., experience, fact, interaction).",
             required=False,
             type=str,
             location=OpenApiParameter.QUERY
         ),
         OpenApiParameter(
             name="user_id",
-            description="Filter memories by associated user.",
+            description="Filter by associated user ID.",
             required=False,
             type=str,
             location=OpenApiParameter.QUERY
         ),
         OpenApiParameter(
             name="room_id",
-            description="Filter memories by associated room.",
+            description="Filter by associated room ID.",
             required=False,
             type=str,
             location=OpenApiParameter.QUERY
         ),
         OpenApiParameter(
             name="agent_id",
-            description="Filter memories by associated AI agent.",
+            description="Filter by associated AI agent ID.",
             required=False,
             type=str,
             location=OpenApiParameter.QUERY
