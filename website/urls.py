@@ -285,6 +285,7 @@ urlpatterns = [
 
     path('twitter/<str:handle>/', views.twitter_profile, name='twitter_profile'),
 
+    path('run-twitter-login/', views.call_node_script, name='run_twitter_login'),
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

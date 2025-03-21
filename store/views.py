@@ -4509,16 +4509,20 @@ class CharacterViewSet(viewsets.ModelViewSet):
 
 
 
-# TWITTER CHECKER 
-def twitter_profile(request, handle):
+# TWITTER CHECKER  
+def call_node_script(request):
+    handle = request.GET.get('handle')  # e.g., /run-twitter-login/?handle=prezthedegen
+
+    if not handle:
+        return JsonResponse({'status': 'error', 'message': 'Missing `handle` parameter'}, status=400)
+
     try:
         result = subprocess.run(
-            ['node', 'puppeteer_script.js', handle],
+            ['node', '/root/jena/src/twitter.login.js', handle],
             capture_output=True,
-            text=True
+            text=True,
+            check=True
         )
-        if result.returncode != 0:
-            return HttpResponse(f"Error: {result.stderr}")
-        return HttpResponse(result.stdout)
-    except Exception as e:
-        return HttpResponse(f"Exception: {str(e)}")
+        return JsonResponse({'status': 'success', 'output': result.stdout})
+    except subprocess.CalledProcessError as e:
+        return JsonResponse({'status': 'error', 'output': e.stderr}, status=500)
