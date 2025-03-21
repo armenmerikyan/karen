@@ -288,7 +288,7 @@ from oauth2_provider.decorators import protected_resource
 
 from datetime import timedelta
 
-from .utils.decorators import mcp_endpoint
+from .utils.decorators import mcp_endpoint 
 
 
 version = "00.00.06"
