@@ -13,10 +13,10 @@
               <li>
                 <strong>{{ handle.handle }}</strong> - 
                 {{ handle.status }} 
-                (Checked at: {{ handle.checked_at|date:"Y-m-d H:i" }})
-                <HR>
+                (Checked at: {{ handle.checked_at|date:"Y-m-d H:i" }}) <BR>
                 {{handle.result}}
-              </li>
+                <HR>
+               </li>
             {% empty %}
               <li>No handle checks found.</li>
             {% endfor %}
