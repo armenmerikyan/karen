@@ -282,8 +282,7 @@ urlpatterns = [
     #path('reviews/<int:pk>/', views.ReviewDetailView.as_view(), name='review-detail'),
     path("api/userinfo/", views.userinfo, name="userinfo"),
 
-
-    path('twitter/<str:handle>/', views.twitter_profile, name='twitter_profile'),
+ 
 
     path('run-twitter-login/', views.call_node_script, name='run_twitter_login'),
 ] 
