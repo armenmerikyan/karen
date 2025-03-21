@@ -1759,25 +1759,13 @@ class Memory(models.Model):
     with support for external systems and AI embeddings.
     MCP-Compliant with structured retrieval methods.
     """
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)  # Unique ID
-    external_id = models.CharField(max_length=255, unique=True, null=True, blank=True)  # External reference
-    type = models.CharField(max_length=100)  # Type of memory (e.g., "experience", "fact", "interaction")
-    
-    memory_title = models.CharField(max_length=255)  # Title or label of memory
+   
+     
     content = models.TextField()  # Detailed memory description
-    
-    created_at_external = models.DateTimeField(null=True, blank=True)  # External creation timestamp
-    created_at = models.DateTimeField(auto_now_add=True)  # Internal creation timestamp
-
-    embedding = models.TextField(null=True, blank=True)  # Serialized AI embedding data
-
-    # Associations
-    user_id = models.CharField(max_length=255, null=True, blank=True)  # Associated user
-    room_id = models.CharField(max_length=255, null=True, blank=True)  # Associated room
-    agent_id = models.CharField(max_length=255, null=True, blank=True)  # Associated AI agent
-
-    unique = models.BooleanField(default=False)  # Indicates uniqueness
+     
+    created_at = models.DateTimeField(auto_now_add=True)  # Internal creation timestamp 
+ 
+ 
 
     class Meta:
         db_table = 'memories'
@@ -1789,18 +1777,9 @@ class Memory(models.Model):
     def to_mcp_context(self):
         """Returns a structured MCP-compliant memory representation."""
         return {
-            "id": str(self.id),
-            "external_id": self.external_id,
-            "type": self.type,
-            "memory_title": self.memory_title,
-            "content": self.content,
-            "created_at_external": self.created_at_external.isoformat() if self.created_at_external else None,
-            "created_at": self.created_at.isoformat(),
-            "embedding": self.embedding,
-            "user_id": self.user_id,
-            "room_id": self.room_id,
-            "agent_id": self.agent_id,
-            "unique": self.unique,
+            "id": str(self.id),   
+            "content": self.content, 
+            "created_at": self.created_at.isoformat(), 
         }
 
 
@@ -1808,8 +1787,7 @@ class Character(models.Model):
     """
     A Character model that supports multiple shared memories.
     Fully MCP-Compliant with structured access and context methods.
-    """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    """ 
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

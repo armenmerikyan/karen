@@ -4406,8 +4406,7 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
     summary="Manage AI Memories",
     description=(
         "Create, retrieve, update, and delete memories for AI characters. "
-        "Each memory can belong to a user, room, or agent and stores contextual data "
-        "for AI agents to reference."
+        "Each memory stores contextual data that can be used by AI agents."
     ),
     tags=["Memories"],
     request=MemorySerializer,
@@ -4436,7 +4435,6 @@ class MemoryViewSet(viewsets.ModelViewSet):
         memory = self.get_object()
         characters = memory.characters.all()
         return Response(CharacterSerializer(characters, many=True).data)
-
 
 @extend_schema(
     summary="Manage Characters",
