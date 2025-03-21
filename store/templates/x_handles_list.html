@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">   
+          <h2>Twitter Handle Checks</h2>
+          <ul>
+            {% for handle in handles %}
+              <li>
+                <strong>{{ handle.handle }}</strong> - 
+                {{ handle.status }} 
+                (Checked at: {{ handle.checked_at|date:"Y-m-d H:i" }})
+              </li>
+            {% empty %}
+              <li>No handle checks found.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>      
+    </div>
+  </div>
+</section>    
+{% endblock %}

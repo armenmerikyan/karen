@@ -4347,3 +4347,7 @@ def call_node_script(request):
         )
 
         return JsonResponse({'status': 'error', 'output': e.stderr}, status=500)
+    
+def handle_list_view(request):
+    handles = TwitterHandleChecker.objects.all()
+    return render(request, 'x_handles_list.html', {'handles': handles})

@@ -1754,13 +1754,39 @@ class WebsiteCreationResponse(models.Model):
     
  
  
-    
-
 class TwitterHandleChecker(models.Model):
-    handle = models.CharField(max_length=100)
-    status = models.CharField(max_length=50)
-    result = models.TextField()
-    checked_at = models.DateTimeField(auto_now_add=True)
+    handle = models.CharField(
+        max_length=100,
+        help_text="Twitter handle to be checked (without @)",
+        verbose_name="Twitter Handle"
+    )
+    status = models.CharField(
+        max_length=50,
+        help_text="Current status of the handle (e.g., available, taken)",
+        verbose_name="Status"
+    )
+    result = models.TextField(
+        help_text="Detailed result or notes from the handle check",
+        verbose_name="Check Result"
+    )
+    checked_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text="Timestamp when the handle was checked",
+        verbose_name="Checked At"
+    )
+
+    class Meta:
+        verbose_name = "Twitter Handle Checker"
+        verbose_name_plural = "Twitter Handle Checkers"
+        ordering = ['-checked_at']
 
     def __str__(self):
-        return self.handle
+        return f"{self.handle} - {self.status}"
+
+    def to_dict(self):
+        return {
+            "handle": self.handle,
+            "status": self.status,
+            "result": self.result,
+            "checked_at": self.checked_at.isoformat(),
+        }
