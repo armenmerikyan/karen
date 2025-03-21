@@ -287,8 +287,7 @@ from oauth2_provider.decorators import protected_resource
 
 
 from datetime import timedelta
-
-from .utils.decorators import mcp_endpoint 
+ 
 
 
 version = "00.00.06"
@@ -4513,8 +4512,7 @@ class CharacterViewSet(viewsets.ModelViewSet):
 
 
 
-# TWITTER CHECKER  
-@mcp_endpoint(model_name='TwitterHandleChecker', description='Checks x status of a Twitter handle using Puppeteer')
+# TWITTER CHECKER   
 def call_node_script(request):
     handle = request.GET.get('handle')
 
