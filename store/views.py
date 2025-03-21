@@ -4519,7 +4519,7 @@ def call_node_script(request):
     try:
         command = (
             'source ~/.nvm/nvm.sh && '
-            'nvm use 18 && '  # or whatever version you installed
+            'nvm use 20 && '  # or whatever version you installed
             f'node /root/jena/src/twitter.login.js {handle}'
         )
 
