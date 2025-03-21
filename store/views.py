@@ -282,6 +282,8 @@ from oauth2_provider.decorators import protected_resource
 from datetime import timedelta
   
 from weasyprint import HTML
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 version = "00.00.06"
 logger = logging.getLogger(__name__)
@@ -4308,47 +4310,38 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
  
 # TWITTER CHECKER   
 
-def call_node_script(request):
-    handle = request.GET.get('handle')
+def handle_list_view(request):
+    handles = TwitterHandleChecker.objects.all()
+    download_type = request.GET.get('type')
 
-    if not handle:
-        return JsonResponse({'status': 'error', 'message': 'Missing `handle` parameter'}, status=400)
+    if download_type == 'pdf':
+        # Create the PDF object in memory
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="handles_list.pdf"'
 
-    try:
-        command = (
-            'source ~/.nvm/nvm.sh && '
-            'nvm use 20 && '
-            f'node /root/jena/src/twitter.login.js {handle}'
-        )
+        p = canvas.Canvas(response, pagesize=letter)
+        width, height = letter
 
-        result = subprocess.run(
-            ['bash', '-c', command],
-            capture_output=True,
-            text=True,
-            check=True
-        )
+        y = height - 50  # Start from top
 
-        # Remove first two lines from stdout
-        filtered_output = '\n'.join(result.stdout.splitlines()[2:])
+        p.setFont("Helvetica-Bold", 14)
+        p.drawString(50, y, "Twitter Handles List")
+        y -= 30
 
-        # Save successful check to DB
-        TwitterHandleChecker.objects.create(
-            handle=handle,
-            status='success',
-            result=filtered_output
-        )
+        p.setFont("Helvetica", 12)
+        for handle in handles:
+            if y < 50:
+                p.showPage()
+                y = height - 50
+                p.setFont("Helvetica", 12)
+            p.drawString(50, y, f"@{handle.handle} - Checked: {handle.checked}")
+            y -= 20
 
-        return JsonResponse({'status': 'success', 'output': filtered_output})
+        p.showPage()
+        p.save()
+        return response
 
-    except subprocess.CalledProcessError as e:
-        # Save failed check to DB
-        TwitterHandleChecker.objects.create(
-            handle=handle,
-            status='error',
-            result=e.stderr
-        )
-
-        return JsonResponse({'status': 'error', 'output': e.stderr}, status=500)
+    return render(request, 'x_handles_list.html', {'handles': handles})
 
     
 def handle_list_view(request):

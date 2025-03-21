@@ -50,6 +50,7 @@ pip install drf-spectacular django-filter
 pip install djangorestframework-simplejwt
 pip install django-oauth-toolkit
 pip install weasyprint
+pip install reportlab
 
 python3 manage.py makemigrations
 python3 manage.py migrate
