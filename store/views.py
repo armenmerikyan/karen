@@ -241,10 +241,11 @@ from PyPDF2 import PdfReader, PdfWriter
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
     
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import Paragraph
+from reportlab.lib.styles import getSampleStyleSheet 
 from reportlab.platypus import Frame
-from reportlab.lib.units import inch 
+from reportlab.lib.units import inch  
+from reportlab.platypus import Paragraph, Spacer, SimpleDocTemplate, PageBreak
+ 
 
 import pdfminer
 from pdfminer.high_level import extract_text
@@ -4368,71 +4369,40 @@ def handle_list_view(request):
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="handles_list.pdf"'
 
-        p = canvas.Canvas(response, pagesize=letter)
-        width, height = letter
-        margin = 50
-        y = height - margin
+        # Use Platypus document builder
+        doc = SimpleDocTemplate(response, pagesize=letter,
+                                rightMargin=50, leftMargin=50,
+                                topMargin=50, bottomMargin=50)
 
         styles = getSampleStyleSheet()
-        normal_style = styles["Normal"]
+        normal = styles['Normal']
+        title = styles['Title']
+        story = []
 
         # Title
-        p.setFont("Helvetica-Bold", 16)
-        p.drawString(margin, y, "Twitter Handle Check Report")
-        y -= 30
+        story.append(Paragraph("Twitter Handle Check Report", title))
+        story.append(Spacer(1, 0.3 * inch))
 
         # WebsiteProfile summary
-        p.setFont("Helvetica", 12)
         if profile:
-            p.drawString(margin, y, f"Project: {profile.name}")
-            y -= 15
+            story.append(Paragraph(f"<b>Project:</b> {profile.name}", normal))
             about = profile.about_us or ""
-            about = (about[:97] + "...") if len(about) > 100 else about
-            p.drawString(margin, y, f"About: {about}")
-            y -= 15
-            p.drawString(margin, y, f"Wallet: {profile.wallet}")
-            y -= 15
-            p.drawString(margin, y, f"X Handle: @{profile.x_handle}")
-            y -= 25
-
-        # Setup dimensions for Paragraph rendering
-        frame_width = width - 2 * margin
-        frame_x = margin
+            short_about = (about[:97] + "...") if len(about) > 100 else about
+            story.append(Paragraph(f"<b>About:</b> {short_about}", normal))
+            story.append(Paragraph(f"<b>Wallet:</b> {profile.wallet}", normal))
+            story.append(Paragraph(f"<b>X Handle:</b> @{profile.x_handle}", normal))
+            story.append(Spacer(1, 0.2 * inch))
 
         for handle in handles:
-            if y < 100:
-                p.showPage()
-                y = height - margin
-                p.setFont("Helvetica", 12)
-
-            p.drawString(margin, y, f"@{handle.handle}  |  Status: {handle.status}")
-            y -= 15
-            p.drawString(margin + 20, y, f"Checked At: {handle.checked_at.strftime('%Y-%m-%d %H:%M:%S')}")
-            y -= 15
-
-            # Handle result with line wrapping
+            story.append(Paragraph(f"<b>@{handle.handle}</b> | Status: {handle.status}", normal))
+            story.append(Paragraph(f"Checked At: {handle.checked_at.strftime('%Y-%m-%d %H:%M:%S')}", normal))
             result_text = handle.result or ""
             safe_result = result_text.replace('\n', '<br/>')
-            para = Paragraph(f"<b>Note:</b> {safe_result}", normal_style)
+            story.append(Paragraph(f"<b>Note:</b> {safe_result}", normal))
+            story.append(Spacer(1, 0.3 * inch))
 
-            # Measure height needed
-            para_width, para_height = para.wrap(frame_width, height)
-
-            # If not enough space, go to new page
-            if y - para_height < 50:
-                p.showPage()
-                y = height - margin
-                p.setFont("Helvetica", 12)
-
-            # Create and render paragraph in frame
-            frame_height = y - 50
-            f = Frame(frame_x, 50, frame_width, frame_height, showBoundary=0)
-            f.addFromList([para], p)
-
-            y -= para_height + 20  # Reserve vertical space for next entry
-
-        p.showPage()
-        p.save()
+        doc.build(story)
         return response
 
     return render(request, 'x_handles_list.html', {'handles': handles, 'profile': profile})
+
