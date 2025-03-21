@@ -4362,52 +4362,40 @@ def call_node_script(request):
 
         return JsonResponse({'status': 'error', 'output': e.stderr}, status=500)
 
-   
 def handle_list_view(request):
     profile = get_latest_profile()
     handles = TwitterHandleChecker.objects.all()
     download_type = request.GET.get('type')
 
-    if download_type == 'pdf':
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="handles_list.pdf"'
+    if download_type == 'txt':
+        response = HttpResponse(content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename="handles_list.txt"'
 
-        # Use Platypus document builder
-        doc = SimpleDocTemplate(response, pagesize=letter,
-                                rightMargin=50, leftMargin=50,
-                                topMargin=50, bottomMargin=50)
-
-        styles = getSampleStyleSheet()
-        normal = styles['Normal']
-        title = styles['Title']
-        story = []
+        lines = []
 
         # Title
-        story.append(Paragraph("Twitter Handle Check Report", title))
-        story.append(Spacer(1, 0.3 * inch))
+        lines.append("Twitter Handle Check Report\n")
+        lines.append("=" * 40 + "\n\n")
 
         # WebsiteProfile summary
         if profile:
-            story.append(Paragraph(f"<b>Project:</b> {profile.name}", normal))
+            lines.append(f"Project: {profile.name}\n")
             about = profile.about_us or ""
             short_about = (about[:97] + "...") if len(about) > 100 else about
-            safe_about = escape(short_about).replace('\n', '<br/>')
-            story.append(Paragraph(f"<b>About:</b> {safe_about}", normal))
+            lines.append(f"About: {short_about}\n")
+            lines.append(f"Wallet: {profile.wallet}\n")
+            lines.append(f"X Handle: @{profile.x_handle}\n")
+            lines.append("\n")
 
-            story.append(Paragraph(f"<b>Wallet:</b> {profile.wallet}", normal))
-            story.append(Paragraph(f"<b>X Handle:</b> @{profile.x_handle}", normal))
-            story.append(Spacer(1, 0.2 * inch))
-
+        # Handle details
         for handle in handles:
-            story.append(Paragraph(f"<b>@{handle.handle}</b> | Status: {handle.status}", normal))
-            story.append(Paragraph(f"Checked At: {handle.checked_at.strftime('%Y-%m-%d %H:%M:%S')}", normal))
+            lines.append(f"@{handle.handle} | Status: {handle.status}\n")
+            lines.append(f"Checked At: {handle.checked_at.strftime('%Y-%m-%d %H:%M:%S')}\n")
             result_text = handle.result or ""
-            safe_result = result_text.replace('\n', '<br/>')
-            story.append(Paragraph(f"<b>Note:</b> {safe_result}", normal))
-            story.append(Spacer(1, 0.3 * inch))
+            lines.append(f"Note: {result_text}\n")
+            lines.append("-" * 30 + "\n")
 
-        doc.build(story)
+        response.write("\n".join(lines))
         return response
 
     return render(request, 'x_handles_list.html', {'handles': handles, 'profile': profile})
-
