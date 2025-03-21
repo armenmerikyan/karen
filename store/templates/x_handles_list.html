@@ -10,9 +10,13 @@
           <h2>Twitter Handle Checks</h2>
 
           <div class="mb-3">
-          <a href="{% url 'handle-list' %}?type=pdf" class="btn btn-success mb-3" target="_blank">
-            Download PDF Report
-          </a>
+            <a href="{% url 'handle-list' %}?type=pdf" class="btn btn-success mb-3" target="_blank">
+              Download PDF Report
+            </a>
+            <br>
+            <a href="https://chatgpt.com/g/g-67dd221e4600819193f08719c0412f27-crypto-oracle" target="_blank">
+              ChatGPT: Crypto Oracle
+            </a>
           </div>
 
           <div class="mb-3">
@@ -45,26 +49,32 @@
 
 <script>
   function submitHandle() {
-    const handle = document.getElementById('handleInput').value.trim();
+    const handleInput = document.getElementById('handleInput');
+    const handle = handleInput.value.trim();
     const statusMsg = document.getElementById('statusMsg');
+
     if (!handle) {
       statusMsg.innerHTML = '<span class="text-warning">Please enter a handle.</span>';
       return;
     }
 
+    handleInput.disabled = true;
     statusMsg.innerHTML = '<span class="text-info">Checking handle...</span>';
 
     fetch(`/run-twitter-login/?handle=${encodeURIComponent(handle)}`)
       .then(response => response.json())
       .then(data => {
         if (data.status === 'success') {
-          statusMsg.innerHTML = '<span class="text-success">Check complete. Refresh the page to see results.</span>';
+          statusMsg.innerHTML = `<span class="text-success">Check complete for <strong>@${handle}</strong>. Refresh the page to see results.</span>`;
         } else {
-          statusMsg.innerHTML = '<span class="text-danger">Error: ' + data.output + '</span>';
+          statusMsg.innerHTML = `<span class="text-danger">Error: ${data.output}</span>`;
         }
       })
       .catch(error => {
-        statusMsg.innerHTML = '<span class="text-danger">Request failed: ' + error + '</span>';
+        statusMsg.innerHTML = `<span class="text-danger">Request failed: ${error}</span>`;
+      })
+      .finally(() => {
+        handleInput.disabled = false;
       });
   }
 </script>
