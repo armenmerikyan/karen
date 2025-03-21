@@ -83,16 +83,7 @@ urlpatterns = [
     path('add/', views.create_tweet, name='tweet_add'),  # URL for creating a new tweet
     path('toggle-scam-filter/', views.toggle_scam_filter, name='toggle_scam_filter'),
     path('marketcap_async_search/', views.marketcap_async_search, name='marketcap_async_search'), 
-
-
-    path('save_room/', views.save_room_view, name='save_room'),
-    path('rooms/', views.room_list_view, name='room_list'),  # URL for listing rooms
-    path('api/save_room/', views.save_room, name='save_room'),
-
-    path('memories/', views.memory_list, name='memory-list'),  # This will render the HTML page
-
-    path('memory/', views.MemoryView.as_view(), name='create_memory'),
-    path('memory/<int:memory_id>/', views.MemoryView.as_view(), name='memory_detail'),
+ 
     path('website_profiles/', views.list_and_add_website_profiles, name='list_and_add_website_profiles'),
     path('admin_panel/', views.admin_panel, name='admin_panel'),
     path('logout/', views.custom_logout_view, name='logout'),
