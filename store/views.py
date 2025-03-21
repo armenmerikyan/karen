@@ -4408,7 +4408,7 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
         "Create, retrieve, update, and delete memories for AI characters. "
         "Each memory can belong to a user, room, or agent and stores contextual data "
         "for AI agents to reference."
-    ),  # 263 characters
+    ),
     tags=["Memories"],
     request=MemorySerializer,
     responses={
@@ -4416,37 +4416,7 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
         201: MemorySerializer,
         400: OpenApiResponse(description="Invalid request data"),
         404: OpenApiResponse(description="Memory not found"),
-    },
-    parameters=[
-        OpenApiParameter(
-            name="type",
-            description="Filter by memory type (e.g., experience, fact, interaction).",
-            required=False,
-            type=str,
-            location=OpenApiParameter.QUERY
-        ),
-        OpenApiParameter(
-            name="user_id",
-            description="Filter by associated user ID.",
-            required=False,
-            type=str,
-            location=OpenApiParameter.QUERY
-        ),
-        OpenApiParameter(
-            name="room_id",
-            description="Filter by associated room ID.",
-            required=False,
-            type=str,
-            location=OpenApiParameter.QUERY
-        ),
-        OpenApiParameter(
-            name="agent_id",
-            description="Filter by associated AI agent ID.",
-            required=False,
-            type=str,
-            location=OpenApiParameter.QUERY
-        ),
-    ]
+    }
 )
 class MemoryViewSet(viewsets.ModelViewSet):
     """
