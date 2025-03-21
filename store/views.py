@@ -294,6 +294,7 @@ from textwrap import wrap
 
 
 from html import escape
+import string
 
 version = "00.00.06"
 logger = logging.getLogger(__name__)
@@ -4361,6 +4362,7 @@ def call_node_script(request):
         )
 
         return JsonResponse({'status': 'error', 'output': e.stderr}, status=500)
+
 
 def handle_list_view(request):
     profile = get_latest_profile()
