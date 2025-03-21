@@ -8,15 +8,25 @@
       <div class="row">
         <div class="col-md-12 text-left">   
           <h2>Twitter Handle Checks</h2>
+
+          <div class="mb-3">
+            <label for="handleInput" class="form-label">Enter Twitter Handle:</label>
+            <input type="text" id="handleInput" class="form-control" placeholder="e.g. elonmusk" />
+            <button class="btn btn-primary mt-2" onclick="submitHandle()">Check Handle</button>
+            <div id="statusMsg" class="mt-3"></div>
+          </div>
+
+          <hr>
+
           <ul>
             {% for handle in handles %}
               <li>
                 <strong>{{ handle.handle }}</strong> - 
                 {{ handle.status }} 
-                (Checked at: {{ handle.checked_at|date:"Y-m-d H:i" }}) <BR>
-                {{handle.result}}
-                <HR>
-               </li>
+                (Checked at: {{ handle.checked_at|date:"Y-m-d H:i" }}) <br>
+                <pre>{{ handle.result }}</pre>
+                <hr>
+              </li>
             {% empty %}
               <li>No handle checks found.</li>
             {% endfor %}
@@ -26,4 +36,30 @@
     </div>
   </div>
 </section>    
+
+<script>
+  function submitHandle() {
+    const handle = document.getElementById('handleInput').value.trim();
+    const statusMsg = document.getElementById('statusMsg');
+    if (!handle) {
+      statusMsg.innerHTML = '<span class="text-warning">Please enter a handle.</span>';
+      return;
+    }
+
+    statusMsg.innerHTML = '<span class="text-info">Checking handle...</span>';
+
+    fetch(`/run-twitter-login/?handle=${encodeURIComponent(handle)}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          statusMsg.innerHTML = '<span class="text-success">Check complete. Refresh the page to see results.</span>';
+        } else {
+          statusMsg.innerHTML = '<span class="text-danger">Error: ' + data.output + '</span>';
+        }
+      })
+      .catch(error => {
+        statusMsg.innerHTML = '<span class="text-danger">Request failed: ' + error + '</span>';
+      });
+  }
+</script>
 {% endblock %}
