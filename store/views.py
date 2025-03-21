@@ -4510,6 +4510,7 @@ class CharacterViewSet(viewsets.ModelViewSet):
 
 
 # TWITTER CHECKER  
+@mcp_endpoint(model_name='TwitterHandleChecker', description='Checks x status of a Twitter handle using Puppeteer')
 def call_node_script(request):
     handle = request.GET.get('handle')
 
@@ -4519,7 +4520,7 @@ def call_node_script(request):
     try:
         command = (
             'source ~/.nvm/nvm.sh && '
-            'nvm use 20 && '  # or whatever version you installed
+            'nvm use 20 && '
             f'node /root/jena/src/twitter.login.js {handle}'
         )
 
