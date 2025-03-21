@@ -4359,27 +4359,38 @@ def handle_list_view(request):
     download_type = request.GET.get('type')
 
     if download_type == 'pdf':
-        # Create the PDF object in memory
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="handles_list.pdf"'
 
         p = canvas.Canvas(response, pagesize=letter)
         width, height = letter
+        margin = 50
+        y = height - margin
 
-        y = height - 50  # Start from top
-
-        p.setFont("Helvetica-Bold", 14)
-        p.drawString(50, y, "Twitter Handles List")
+        p.setFont("Helvetica-Bold", 16)
+        p.drawString(margin, y, "Twitter Handle Check Report")
         y -= 30
 
         p.setFont("Helvetica", 12)
         for handle in handles:
-            if y < 50:
+            if y < 100:  # Prevent writing too low
                 p.showPage()
-                y = height - 50
+                y = height - margin
                 p.setFont("Helvetica", 12)
-            p.drawString(50, y, f"@{handle.handle} - Checked: {handle.checked}")
-            y -= 20
+
+            p.drawString(margin, y, f"@{handle.handle}  |  Status: {handle.status}")
+            y -= 15
+            p.drawString(margin + 20, y, f"Checked At: {handle.checked_at.strftime('%Y-%m-%d %H:%M:%S')}")
+            y -= 15
+            result_lines = handle.result.splitlines() or ['']
+            for line in result_lines:
+                if y < 50:
+                    p.showPage()
+                    y = height - margin
+                    p.setFont("Helvetica", 12)
+                p.drawString(margin + 20, y, f"Note: {line}")
+                y -= 15
+            y -= 10  # Space between entries
 
         p.showPage()
         p.save()
