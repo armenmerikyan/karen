@@ -240,7 +240,12 @@ from PyPDF2 import PdfReader, PdfWriter
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-   
+    
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Paragraph
+from reportlab.platypus import Frame
+from reportlab.lib.units import inch 
+
 import pdfminer
 from pdfminer.high_level import extract_text
 
@@ -4354,8 +4359,6 @@ def call_node_script(request):
         return JsonResponse({'status': 'error', 'output': e.stderr}, status=500)
 
    
-
- 
 def handle_list_view(request):
     profile = get_latest_profile()
     handles = TwitterHandleChecker.objects.all()
@@ -4370,6 +4373,9 @@ def handle_list_view(request):
         margin = 50
         y = height - margin
 
+        styles = getSampleStyleSheet()
+        normal_style = styles["Normal"]
+
         # Title
         p.setFont("Helvetica-Bold", 16)
         p.drawString(margin, y, "Twitter Handle Check Report")
@@ -4380,14 +4386,21 @@ def handle_list_view(request):
         if profile:
             p.drawString(margin, y, f"Project: {profile.name}")
             y -= 15
-            p.drawString(margin, y, f"About: {profile.about_us[:100]}...")
+            about = profile.about_us or ""
+            about = (about[:97] + "...") if len(about) > 100 else about
+            p.drawString(margin, y, f"About: {about}")
             y -= 15
             p.drawString(margin, y, f"Wallet: {profile.wallet}")
             y -= 15
             p.drawString(margin, y, f"X Handle: @{profile.x_handle}")
             y -= 25
 
-        # Handles list
+        # Frame for paragraphs (wrapped text)
+        frame_width = width - 2 * margin
+        frame_x = margin
+        frame_y = 0
+        frame_height = y - 50  # reserve space
+
         for handle in handles:
             if y < 100:
                 p.showPage()
@@ -4399,18 +4412,24 @@ def handle_list_view(request):
             p.drawString(margin + 20, y, f"Checked At: {handle.checked_at.strftime('%Y-%m-%d %H:%M:%S')}")
             y -= 15
 
-            result_lines = handle.result.splitlines() or ['']
-            for line in result_lines:
-                wrapped_lines = wrap(line, width=90)  # Adjust width as needed
-                for wrapped_line in wrapped_lines:
-                    if y < 50:
-                        p.showPage()
-                        y = height - margin
-                        p.setFont("Helvetica", 12)
-                    p.drawString(margin + 20, y, f"Note: {wrapped_line}")
-                    y -= 15
+            # Prepare result paragraph
+            result_text = handle.result or ""
+            para = Paragraph(f"<b>Note:</b> {result_text.replace('\n', '<br/>')}", normal_style)
 
-            y -= 10  # Space between entries
+            # Set frame height based on remaining y space
+            frame_height = y - 50
+            if frame_height < 100:
+                p.showPage()
+                y = height - margin
+                frame_height = y - 50
+                p.setFont("Helvetica", 12)
+
+            # Render paragraph in frame
+            f = Frame(frame_x, 50, frame_width, frame_height, showBoundary=0)
+            f.addFromList([para], p)
+
+            # Estimate y drop
+            y -= para.wrap(frame_width, frame_height)[1] + 20
 
         p.showPage()
         p.save()
