@@ -4308,6 +4308,7 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
  
  
 # TWITTER CHECKER   
+
 def call_node_script(request):
     handle = request.GET.get('handle')
 
@@ -4327,6 +4328,22 @@ def call_node_script(request):
             text=True,
             check=True
         )
+
+        # Save successful check to DB
+        TwitterHandleChecker.objects.create(
+            handle=handle,
+            status='success',
+            result=result.stdout
+        )
+
         return JsonResponse({'status': 'success', 'output': result.stdout})
+
     except subprocess.CalledProcessError as e:
+        # Save failed check to DB
+        TwitterHandleChecker.objects.create(
+            handle=handle,
+            status='error',
+            result=e.stderr
+        )
+
         return JsonResponse({'status': 'error', 'output': e.stderr}, status=500)
