@@ -4309,7 +4309,7 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
  
  
 # TWITTER CHECKER   
-
+@admin_required
 def call_node_script(request):
     handle = request.GET.get('handle')
 
@@ -4354,7 +4354,6 @@ def call_node_script(request):
 
     
 
-@admin_required
 def handle_list_view(request):
     profile = get_latest_profile()
     handles = TwitterHandleChecker.objects.all()
