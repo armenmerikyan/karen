@@ -217,8 +217,7 @@ import stripe
 from decimal import Decimal
 
 from django.contrib.auth import login, get_backends
-from django.contrib.sites.shortcuts import get_current_site
-from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site 
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
@@ -281,8 +280,8 @@ from oauth2_provider.decorators import protected_resource
 
 
 from datetime import timedelta
- 
-
+  
+from weasyprint import HTML
 
 version = "00.00.06"
 logger = logging.getLogger(__name__)
@@ -4354,4 +4353,14 @@ def call_node_script(request):
     
 def handle_list_view(request):
     handles = TwitterHandleChecker.objects.all()
+    download_type = request.GET.get('type')
+
+    if download_type == 'pdf':
+        html_string = render_to_string('x_handles_list.html', {'handles': handles})
+        pdf_file = HTML(string=html_string).write_pdf()
+
+        response = HttpResponse(pdf_file, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="handles_list.pdf"'
+        return response
+
     return render(request, 'x_handles_list.html', {'handles': handles})
