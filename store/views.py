@@ -95,8 +95,7 @@ from .models import ConversationTopic
 from .models import Token as PumpFunToken
 from .models import RaidLink
 from .models import Tweet
-from .models import Room
-from .models import Memory
+from .models import Room 
 from .models import WebsiteProfile
 from .models import TokenProfile
 from .models import TokenProfile
@@ -167,9 +166,7 @@ from .serializers import CleaningRequestSerializer
 from .serializers import ImmigrationCaseSerializer
 from .serializers import LetterSerializer
 from .serializers import CarFinderResponseSerializer
-from .serializers import WebsiteCreationResponseSerializer
-from .services import MemoryService
-from .services import RoomService  # Import the RoomService class
+from .serializers import WebsiteCreationResponseSerializer 
  
 import sendgrid 
 from sendgrid.helpers.mail import Mail, Email, To, Content
@@ -2484,100 +2481,7 @@ def marketcap_async_search(request):
     except Exception as e:
         print("An error occurred while rendering the template:", e)
         return render(request, 'error.html', {'error_message': 'An error occurred while rendering the template.'})
-
-@extend_schema(exclude=True)
-@csrf_exempt  # For simplicity, disable CSRF validation (for testing)
-def save_room_view(request):
-    if request.method == 'POST':
-        try:
-            # Extract data from POST request (you can also use JSON or form data)
-            external_id = request.POST.get('external_id')
-            external_date_created = request.POST.get('external_date_created')
-
-            # Call the RoomService to save the room
-            room = RoomService.save_room(external_id, external_date_created)
-
-            # Return success response
-            return JsonResponse({"message": "Room saved successfully", "room_id": room.id})
-        
-        except Exception as e:
-            # Return error response
-            return JsonResponse({"error": str(e)}, status=400)
-
-    return JsonResponse({"error": "Only POST requests are allowed."}, status=400)
-
-@extend_schema(exclude=True)
-@api_view(['POST'])
-def save_room(request):
-    try:
-        # Extract data from request
-        external_id = request.data.get('external_id')
-        external_date_created_str = request.data.get('external_date_created')
-        
-        if not external_id or not external_date_created_str:
-            return Response({"error": "Invalid data"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Convert external_date_created to datetime
-        external_date_created = datetime.strptime(external_date_created_str, "%Y-%m-%d %H:%M:%S")
-        
-        # Save room to the database
-        room = Room.objects.create(
-            external_id=external_id,
-            external_date_created=external_date_created
-        )
-        
-        # Return success response
-        return Response({"message": "Room saved successfully", "room_id": room.id}, status=status.HTTP_201_CREATED)
-    
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-def room_list_view(request):
-    # Get all rooms from the database, ordered by created_at (newest first)
-    rooms = Room.objects.all().order_by('-created_at')
-
-    # Pass the rooms to the template
-    return render(request, 'room_list.html', {'rooms': rooms})
-
-def memory_list(request):
-    memories = Memory.objects.all()
-    return render(request, 'memory_list.html', {'memories': memories})
-
-@extend_schema(exclude=True)
-class MemoryView(APIView):
-    def post(self, request):
-        serializer = MemorySerializer(data=request.data)
-        if serializer.is_valid():
-            memory = MemoryService.create_memory(serializer.validated_data)
-            return Response(MemorySerializer(memory).data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def get(self, request, memory_id=None):
-        if memory_id:
-            memory = MemoryService.get_memory_by_id(memory_id)
-            if memory:
-                return Response(MemorySerializer(memory).data)
-            return Response({"detail": "Memory not found."}, status=status.HTTP_404_NOT_FOUND)
-        # Return all memories if no ID is provided
-        memories = Memory.objects.all()
-        return Response(MemorySerializer(memories, many=True).data)
-
-    def put(self, request, memory_id):
-        memory = MemoryService.get_memory_by_id(memory_id)
-        if not memory:
-            return Response({"detail": "Memory not found."}, status=status.HTTP_404_NOT_FOUND)
-        serializer = MemorySerializer(memory, data=request.data, partial=True)
-        if serializer.is_valid():
-            updated_memory = MemoryService.update_memory(memory_id, serializer.validated_data)
-            return Response(MemorySerializer(updated_memory).data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, memory_id):
-        if MemoryService.delete_memory(memory_id):
-            return Response({"detail": "Memory deleted."}, status=status.HTTP_204_NO_CONTENT)
-        return Response({"detail": "Memory not found."}, status=status.HTTP_404_NOT_FOUND)
-
+ 
 
 @csrf_exempt
 @admin_required
