@@ -4395,11 +4395,9 @@ def handle_list_view(request):
             p.drawString(margin, y, f"X Handle: @{profile.x_handle}")
             y -= 25
 
-        # Frame for paragraphs (wrapped text)
+        # Frame setup
         frame_width = width - 2 * margin
         frame_x = margin
-        frame_y = 0
-        frame_height = y - 50  # reserve space
 
         for handle in handles:
             if y < 100:
@@ -4412,24 +4410,25 @@ def handle_list_view(request):
             p.drawString(margin + 20, y, f"Checked At: {handle.checked_at.strftime('%Y-%m-%d %H:%M:%S')}")
             y -= 15
 
-            # Prepare result paragraph
+            # Prepare wrapped result using Paragraph
             result_text = handle.result or ""
-            para = Paragraph(f"<b>Note:</b> {result_text.replace('\n', '<br/>')}", normal_style)
+            safe_result = result_text.replace('\n', '<br/>')
+            para = Paragraph(f"<b>Note:</b> {safe_result}", normal_style)
 
-            # Set frame height based on remaining y space
-            frame_height = y - 50
+            frame_height = y - 50  # Reserve bottom margin
             if frame_height < 100:
                 p.showPage()
                 y = height - margin
                 frame_height = y - 50
                 p.setFont("Helvetica", 12)
 
-            # Render paragraph in frame
+            # Draw paragraph in frame
             f = Frame(frame_x, 50, frame_width, frame_height, showBoundary=0)
             f.addFromList([para], p)
 
-            # Estimate y drop
-            y -= para.wrap(frame_width, frame_height)[1] + 20
+            # Update Y position
+            para_width, para_height = para.wrap(frame_width, frame_height)
+            y -= para_height + 20
 
         p.showPage()
         p.save()
