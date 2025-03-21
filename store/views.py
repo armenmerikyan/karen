@@ -4355,6 +4355,7 @@ def call_node_script(request):
     
 
 def handle_list_view(request):
+    profile = get_latest_profile()
     handles = TwitterHandleChecker.objects.all()
     download_type = request.GET.get('type')
 
@@ -4396,4 +4397,4 @@ def handle_list_view(request):
         p.save()
         return response
 
-    return render(request, 'x_handles_list.html', {'handles': handles})
+    return render(request, 'x_handles_list.html', {'handles': handles, 'profile': profile})

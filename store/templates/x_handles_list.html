@@ -10,6 +10,12 @@
           <h2>Twitter Handle Checks</h2>
 
           <div class="mb-3">
+          <a href="{% url 'handle-list' %}?type=pdf" class="btn btn-success mb-3" target="_blank">
+            Download PDF Report
+          </a>
+          </div>
+
+          <div class="mb-3">
             <label for="handleInput" class="form-label">Enter Twitter Handle:</label>
             <input type="text" id="handleInput" class="form-control" placeholder="e.g. elonmusk" />
             <button class="btn btn-primary mt-2" onclick="submitHandle()">Check Handle</button>
