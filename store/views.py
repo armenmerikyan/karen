@@ -292,6 +292,9 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from textwrap import wrap
 
+
+from html import escape
+
 version = "00.00.06"
 logger = logging.getLogger(__name__)
 register = template.Library()
@@ -4388,7 +4391,9 @@ def handle_list_view(request):
             story.append(Paragraph(f"<b>Project:</b> {profile.name}", normal))
             about = profile.about_us or ""
             short_about = (about[:97] + "...") if len(about) > 100 else about
-            story.append(Paragraph(f"<b>About:</b> {short_about}", normal))
+            safe_about = escape(short_about).replace('\n', '<br/>')
+            story.append(Paragraph(f"<b>About:</b> {safe_about}", normal))
+
             story.append(Paragraph(f"<b>Wallet:</b> {profile.wallet}", normal))
             story.append(Paragraph(f"<b>X Handle:</b> @{profile.x_handle}", normal))
             story.append(Spacer(1, 0.2 * inch))
