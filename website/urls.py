@@ -239,11 +239,11 @@ urlpatterns = [
     path('contact_us_api/', views.submit_form, name='contact_us_api'),
     path('submissions/', views.submission_list, name='submission_list'),
 
-    path('api/businesses/', views.BusinessListCreateView.as_view(), name='business-list'),
-    path('api/businesses/<int:pk>/', views.BusinessDetailView.as_view(), name='business-detail'),
-    path('api/businesses/mcp/', views.BusinessMCPView.as_view(), name='business-mcp'),
-    path("api/businesses/create/", views.BusinessCreateView.as_view(), name="business-create"),  # ✅ New endpoint for creating a business 
-    path('business/<int:pk>/update/', views.BusinessUpdateView.as_view(), name='business-update'),
+    #path('api/businesses/', views.BusinessListCreateView.as_view(), name='business-list'),
+    #path('api/businesses/<int:pk>/', views.BusinessDetailView.as_view(), name='business-detail'),
+    #path('api/businesses/mcp/', views.BusinessMCPView.as_view(), name='business-mcp'),
+    #path("api/businesses/create/", views.BusinessCreateView.as_view(), name="business-create"),  # ✅ New endpoint for creating a business 
+    #path('business/<int:pk>/update/', views.BusinessUpdateView.as_view(), name='business-update'),
 
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
