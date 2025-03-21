@@ -4395,7 +4395,7 @@ def handle_list_view(request):
             p.drawString(margin, y, f"X Handle: @{profile.x_handle}")
             y -= 25
 
-        # Frame setup
+        # Setup dimensions for Paragraph rendering
         frame_width = width - 2 * margin
         frame_x = margin
 
@@ -4410,25 +4410,26 @@ def handle_list_view(request):
             p.drawString(margin + 20, y, f"Checked At: {handle.checked_at.strftime('%Y-%m-%d %H:%M:%S')}")
             y -= 15
 
-            # Prepare wrapped result using Paragraph
+            # Handle result with line wrapping
             result_text = handle.result or ""
             safe_result = result_text.replace('\n', '<br/>')
             para = Paragraph(f"<b>Note:</b> {safe_result}", normal_style)
 
-            frame_height = y - 50  # Reserve bottom margin
-            if frame_height < 100:
+            # Measure height needed
+            para_width, para_height = para.wrap(frame_width, height)
+
+            # If not enough space, go to new page
+            if y - para_height < 50:
                 p.showPage()
                 y = height - margin
-                frame_height = y - 50
                 p.setFont("Helvetica", 12)
 
-            # Draw paragraph in frame
+            # Create and render paragraph in frame
+            frame_height = y - 50
             f = Frame(frame_x, 50, frame_width, frame_height, showBoundary=0)
             f.addFromList([para], p)
 
-            # Update Y position
-            para_width, para_height = para.wrap(frame_width, frame_height)
-            y -= para_height + 20
+            y -= para_height + 20  # Reserve vertical space for next entry
 
         p.showPage()
         p.save()
