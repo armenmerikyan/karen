@@ -284,6 +284,7 @@ from datetime import timedelta
 from weasyprint import HTML
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from textwrap import wrap
 
 version = "00.00.06"
 logger = logging.getLogger(__name__)
@@ -4352,7 +4353,9 @@ def call_node_script(request):
 
         return JsonResponse({'status': 'error', 'output': e.stderr}, status=500)
 
-    
+   
+
+ 
 def handle_list_view(request):
     profile = get_latest_profile()
     handles = TwitterHandleChecker.objects.all()
@@ -4398,12 +4401,14 @@ def handle_list_view(request):
 
             result_lines = handle.result.splitlines() or ['']
             for line in result_lines:
-                if y < 50:
-                    p.showPage()
-                    y = height - margin
-                    p.setFont("Helvetica", 12)
-                p.drawString(margin + 20, y, f"Note: {line}")
-                y -= 15
+                wrapped_lines = wrap(line, width=90)  # Adjust width as needed
+                for wrapped_line in wrapped_lines:
+                    if y < 50:
+                        p.showPage()
+                        y = height - margin
+                        p.setFont("Helvetica", 12)
+                    p.drawString(margin + 20, y, f"Note: {wrapped_line}")
+                    y -= 15
 
             y -= 10  # Space between entries
 
