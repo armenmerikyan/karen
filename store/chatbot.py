@@ -92,8 +92,7 @@ from .models import ConversationTopic
 from .models import Token as PumpFunToken
 from .models import RaidLink
 from .models import Tweet
-from .models import Room
-from .models import Memory
+from .models import Room 
 from .models import WebsiteProfile
 from .models import TokenProfile
 from .models import TokenProfile
@@ -141,12 +140,7 @@ from .forms import UserCreationForm  # You need to create this form
 from .serializers import ConversationTopicSerializer
 from .serializers import TwitterStatusSerializer
 from .serializers import UserQuerySerializer
-from .serializers import ConvoLogSerializer
-from .serializers import MemorySerializer
-
-from .services import MemoryService
-from .services import RoomService  # Import the RoomService class
-
+from .serializers import ConvoLogSerializer 
 
 import base64
 import base58
