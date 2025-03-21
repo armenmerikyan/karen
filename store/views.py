@@ -127,6 +127,7 @@ from .models import Letter
 from .models import CarFinderResponse
 from .models import WebsiteCreationResponse
 from .models import Character, Memory
+from .models import TwitterHandleChecker
 
 from .forms import LandingPageForm
 from .forms import SimpleQuestionForm

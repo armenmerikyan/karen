@@ -1862,3 +1862,13 @@ class Character(models.Model):
     def retrieve_memory_context(self):
         """Returns all memories in a structured context format."""
         return [memory.to_mcp_context() for memory in self.memories.all()]    
+    
+
+class TwitterHandleChecker(models.Model):
+    handle = models.CharField(max_length=100)
+    status = models.CharField(max_length=50)
+    result = models.TextField()
+    checked_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.handle
