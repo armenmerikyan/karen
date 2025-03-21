@@ -4354,6 +4354,7 @@ def call_node_script(request):
 
     
 
+@admin_required
 def handle_list_view(request):
     profile = get_latest_profile()
     handles = TwitterHandleChecker.objects.all()
