@@ -4495,3 +4495,30 @@ class CharacterViewSet(viewsets.ModelViewSet):
         character = self.get_object()
         shared_memories = character.memories.all()
         return Response(MemorySerializer(shared_memories, many=True).data)
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+# TWITTER CHECKER 
+def twitter_profile(request, handle):
+    try:
+        result = subprocess.run(
+            ['node', 'puppeteer_script.js', handle],
+            capture_output=True,
+            text=True
+        )
+        if result.returncode != 0:
+            return HttpResponse(f"Error: {result.stderr}")
+        return HttpResponse(result.stdout)
+    except Exception as e:
+        return HttpResponse(f"Exception: {str(e)}")
