@@ -4329,14 +4329,17 @@ def call_node_script(request):
             check=True
         )
 
+        # Remove first two lines from stdout
+        filtered_output = '\n'.join(result.stdout.splitlines()[2:])
+
         # Save successful check to DB
         TwitterHandleChecker.objects.create(
             handle=handle,
             status='success',
-            result=result.stdout
+            result=filtered_output
         )
 
-        return JsonResponse({'status': 'success', 'output': result.stdout})
+        return JsonResponse({'status': 'success', 'output': filtered_output})
 
     except subprocess.CalledProcessError as e:
         # Save failed check to DB
@@ -4347,6 +4350,7 @@ def call_node_script(request):
         )
 
         return JsonResponse({'status': 'error', 'output': e.stderr}, status=500)
+
     
 def handle_list_view(request):
     handles = TwitterHandleChecker.objects.all()
