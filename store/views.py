@@ -4370,14 +4370,14 @@ def call_node_script(request):
 def handle_list_view(request):
     profile = get_latest_profile()
 
-    # Subquery to get latest entry per handle
-    latest_for_handle = TwitterHandleChecker.objects.filter(
-        handle=OuterRef('handle')
-    ).order_by('-checked_at')  # or '-id' if needed
+    handles = TwitterHandleChecker.objects.all().order_by('-checked_at')
 
-    distinct_handles = TwitterHandleChecker.objects.filter(
-        id__in=Subquery(latest_for_handle.values('id')[:1])
-    ).order_by('-checked_at')
+    # Get distinct handle names only
+    distinct_handle_names = (
+        TwitterHandleChecker.objects
+        .values_list('handle', flat=True)
+        .distinct()
+    )
 
     download_type = request.GET.get('type')
 
@@ -4400,7 +4400,7 @@ def handle_list_view(request):
             lines.append(f"Wallet: {profile.wallet}\n")
             lines.append(f"X Handle: @{profile.x_handle}\n\n")
 
-        for handle in distinct_handles:
+        for handle in handles:
             lines.append(f"@{handle.handle} | Status: {handle.status}\n")
             lines.append(f"Checked At: {handle.checked_at.strftime('%Y-%m-%d %H:%M:%S')}\n")
             lines.append(f"Note: {handle.result or ''}\n")
@@ -4410,6 +4410,7 @@ def handle_list_view(request):
         return response
 
     return render(request, 'x_handles_list.html', {
-        'handles': distinct_handles,
-        'profile': profile
+        'handles': handles,
+        'profile': profile,
+        'distinct_handle_names': distinct_handle_names,
     })
