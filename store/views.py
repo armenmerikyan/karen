@@ -298,6 +298,7 @@ import string
 
 from django.db.models import Count
 from django.db.models import Max
+from django.db.models import OuterRef, Subquery
 
 version = "00.00.06"
 logger = logging.getLogger(__name__)
@@ -4365,19 +4366,19 @@ def call_node_script(request):
         )
 
         return JsonResponse({'status': 'error', 'output': e.stderr}, status=500)
-
+ 
 
 def handle_list_view(request):
     profile = get_latest_profile()
 
-    # Get only distinct handles (latest per handle if needed)
-    handles = (
-        TwitterHandleChecker.objects
-        .values('handle')
-        .annotate(latest_id=Max('id'))
-        .values_list('latest_id', flat=True)
-    )
-    distinct_handles = TwitterHandleChecker.objects.filter(id__in=handles).order_by('-checked_at')
+    # Subquery to get latest entry per handle
+    latest_for_handle = TwitterHandleChecker.objects.filter(
+        handle=OuterRef('handle')
+    ).order_by('-checked_at')  # or '-id' if needed
+
+    distinct_handles = TwitterHandleChecker.objects.filter(
+        id__in=Subquery(latest_for_handle.values('id')[:1])
+    ).order_by('-checked_at')
 
     download_type = request.GET.get('type')
 
@@ -4413,4 +4414,3 @@ def handle_list_view(request):
         'handles': distinct_handles,
         'profile': profile
     })
-
