@@ -29,7 +29,24 @@
           <hr> 
 {% if distinct_handle_names %}
   <div class="mb-4">
-    <strong>All Distinct Handles:</strong><br>
+    <strong>All Distinct Handles:</strong>
+    <span id="handle-names">{{ distinct_handle_names|join:", " }}</span>
+    <button onclick="copyHandles()" title="Copy to clipboard">
+    <i class="fa-solid fa-copy"></i>
+    </button>
+    
+    <script>
+      function copyHandles() {
+        const text = document.getElementById("handle-names").innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          alert("Copied to clipboard!");
+        }).catch(err => {
+          console.error("Failed to copy: ", err);
+        });
+      }
+    </script>
+        
+    <br>
         {{ distinct_handle_names|join:", "}}
   </div>
 {% endif %}
