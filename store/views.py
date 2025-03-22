@@ -297,6 +297,7 @@ from html import escape
 import string
 
 from django.db.models import Count
+from django.db.models import Max
 
 version = "00.00.06"
 logger = logging.getLogger(__name__)
