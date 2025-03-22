@@ -27,7 +27,21 @@
           </div>
 
           <hr>
-
+          <ul>
+            {% for handle in handles %}
+              <li>
+                <strong>{{ handle.handle }}</strong> - 
+                {{ handle.status }} 
+                (Checked at: {{ handle.checked_at|date:"Y-m-d H:i" }}) <br>
+                <pre>{{ handle.result }}</pre>
+                <hr>
+              </li>
+            {% empty %}
+              <li>No handle checks found.</li>
+            {% endfor %}
+          </ul>
+          <hr>
+          
           <ul>
             {% for handle in handles %}
               <li>

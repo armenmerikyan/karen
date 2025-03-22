@@ -296,6 +296,8 @@ from textwrap import wrap
 from html import escape
 import string
 
+from django.db.models import Count
+
 version = "00.00.06"
 logger = logging.getLogger(__name__)
 register = template.Library()
@@ -4366,11 +4368,19 @@ def call_node_script(request):
 
 def handle_list_view(request):
     profile = get_latest_profile()
-    handles = TwitterHandleChecker.objects.all()
+
+    # Get only distinct handles (latest per handle if needed)
+    handles = (
+        TwitterHandleChecker.objects
+        .values('handle')
+        .annotate(latest_id=Max('id'))
+        .values_list('latest_id', flat=True)
+    )
+    distinct_handles = TwitterHandleChecker.objects.filter(id__in=handles).order_by('-checked_at')
+
     download_type = request.GET.get('type')
 
     if download_type == 'txt':
-        # Generate a random 4-character string
         random_suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
         filename = f"handles_{random_suffix}.txt"
 
@@ -4378,30 +4388,28 @@ def handle_list_view(request):
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
         lines = []
-
-        # Title
         lines.append("Twitter Handle Check Report\n")
         lines.append("=" * 40 + "\n\n")
 
-        # WebsiteProfile summary
         if profile:
             lines.append(f"Project: {profile.name}\n")
             about = profile.about_us or ""
             short_about = (about[:97] + "...") if len(about) > 100 else about
             lines.append(f"About: {short_about}\n")
             lines.append(f"Wallet: {profile.wallet}\n")
-            lines.append(f"X Handle: @{profile.x_handle}\n")
-            lines.append("\n")
+            lines.append(f"X Handle: @{profile.x_handle}\n\n")
 
-        # Handle details
-        for handle in handles:
+        for handle in distinct_handles:
             lines.append(f"@{handle.handle} | Status: {handle.status}\n")
             lines.append(f"Checked At: {handle.checked_at.strftime('%Y-%m-%d %H:%M:%S')}\n")
-            result_text = handle.result or ""
-            lines.append(f"Note: {result_text}\n")
+            lines.append(f"Note: {handle.result or ''}\n")
             lines.append("-" * 30 + "\n")
 
         response.write("\n".join(lines))
         return response
 
-    return render(request, 'x_handles_list.html', {'handles': handles, 'profile': profile})
+    return render(request, 'x_handles_list.html', {
+        'handles': distinct_handles,
+        'profile': profile
+    })
+
