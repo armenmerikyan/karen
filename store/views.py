@@ -4685,6 +4685,7 @@ def user_chatbot_response_private(request, character_id):
     system_message = (
         f"You are a real person named {character.name}, your personality is: {character.persona}.\n"
         f"Relevant memories:\n{retrieved_context}\n"
+        "Please keep your responses brief and on point."
     )
 
     # 2. Get or create the conversation
