@@ -4672,3 +4672,7 @@ def chatbot_response_private(request, character_id):
             return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
     else:
         return JsonResponse({"error": "Invalid request method"}, status=400)    
+
+def chat_view(request, character_id):
+    chat_url = reverse('chatbot_response_private', kwargs={'character_id': character_id})
+    return render(request, 'agents/character_chat.html', {'chat_url': chat_url})

@@ -28,7 +28,10 @@
 
               <!-- Clickable link that triggers the update via JavaScript -->
               <a href="#" onclick="updateModel(); return false;">Update Model</a>
+              <hr>
 
+              <a href="{% url 'chat_view' form.instance.id %}">Chat with Bot</a>
+              <hr>
 
             {% endif %}
 
