@@ -4567,7 +4567,7 @@ def fine_tune_character(request, character_id):
 
     try:
         # Assume user has chatgpt_api_key stored in their profile
-        client = OpenAI(api_key=user.profile.chatgpt_api_key)
+        client = OpenAI(api_key=user.chatgpt_api_key)
         uploaded = client.files.create(file=open(tmp_file_path, "rb"), purpose="fine-tune")
         fine_tune_job = client.fine_tuning.jobs.create(training_file=uploaded.id, model="gpt-3.5-turbo")
 
