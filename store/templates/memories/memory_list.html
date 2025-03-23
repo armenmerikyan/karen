@@ -15,8 +15,9 @@
           {% endif %}
 
           </h2>
+          <p>
           <a href="{% url 'add_memory' %}{% if character %}?character={{ character.id }}{% endif %}">➕ Add New Memory</a>
-
+          </p>
           <ul>
             {% for memory in memories %}
               <li>
