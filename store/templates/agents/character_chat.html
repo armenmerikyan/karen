@@ -38,7 +38,7 @@
     }
   </style>
   <script>
-    const CHARACTER_ID = {{ character_id }};
+    const CHARACTER_ID = {{ character.id }};
     const CHAT_URL = `/user_chatbot/${CHARACTER_ID}/response/`;
 
     function getCookie(name) {
@@ -118,8 +118,11 @@
 </head>
 <body class="bg-light">
   <div id="chatContainer">
+    <div class="mb-3">
+      <h1>Chat with {{ character.name }}</h1>
+    </div>
     <div class="mb-3 text-start d-flex align-items-center justify-content-start gap-3">
-      <a href="{% url 'character_update' character_id %}" class="btn btn-secondary">
+      <a href="{% url 'character_update' character.id %}" class="btn btn-secondary">
         ← Back
       </a>
       <!-- 🔊 Text-to-Speech Toggle -->

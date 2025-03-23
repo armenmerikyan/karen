@@ -4739,6 +4739,6 @@ def user_chatbot_response_private(request, character_id):
     except Exception as e:
         return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
 
-
 def chat_view(request, character_id):
-    return render(request, 'agents/character_chat.html', {'character_id': character_id})
+    character = get_object_or_404(Character, id=character_id)
+    return render(request, 'agents/character_chat.html', {'character': character})
