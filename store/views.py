@@ -4479,7 +4479,8 @@ def add_memory(request):
             memory.user = request.user
             memory.character = character  # set manually
             memory.save()
-            return redirect('memory_list')  # or redirect to character-specific memory list
+            # Redirect to the memory list, forwarding the character id as a query parameter.
+            return redirect(reverse('memory_list') + f"?character={character_id}")
     else:
         form = CharacterMemoryForm()
 
@@ -4604,7 +4605,7 @@ def copy_model_to_current(request, character_id):
     
 
 @csrf_exempt
-def chatbot_response_private(request, character_id):
+def user_chatbot_response_private(request, character_id):
     # Check if the user is authenticated
     if not request.user.is_authenticated:
         print("DEBUG: User not authenticated")

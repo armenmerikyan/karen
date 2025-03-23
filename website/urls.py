@@ -281,7 +281,7 @@ urlpatterns = [
 
     path('fine-tune/<int:character_id>/', views.fine_tune_character, name='fine_tune_character'),
     path('characters/<int:character_id>/copy-model/', views.copy_model_to_current, name='copy_model_to_current'),
-    path('user_chatbot/<int:character_id>/response/', views.chatbot_response_private, name='user_chatbot_response_private'),
+    path('user_chatbot/<int:character_id>/response/', views.user_chatbot_response_private, name='user_chatbot_response_private'),
     path('chat/<int:character_id>/', views.chat_view, name='chat_view'),
     
 
