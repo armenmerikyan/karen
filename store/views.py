@@ -4572,12 +4572,13 @@ def fine_tune_character(request, character_id):
         fine_tune_job = client.fine_tuning.jobs.create(training_file=uploaded.id, model="gpt-3.5-turbo")
 
         # Save fine-tuned model ID to character
-        character.chatgpt_model_id = fine_tune_job.fine_tuned_model or ""
-        character.chatgpt_model_id_current = fine_tune_job.fine_tuned_model or ""
+        character.chatgpt_model_id = fine_tune_job.id  
         character.save()
 
-        return JsonResponse({"success": True, "model_id": fine_tune_job.fine_tuned_model})
+        return JsonResponse({"success": True, "model_id": fine_tune_job.id})
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
     finally:
         os.remove(tmp_file_path)
+
+       
