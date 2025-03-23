@@ -4652,6 +4652,7 @@ def user_chatbot_response_private(request, character_id):
 
     # Determine model to use
     model_id = "gpt-3.5-turbo"
+    '''
     if character.chatgpt_model_id_current:
         try:
             fine_tune_status = client.fine_tuning.jobs.retrieve(character.chatgpt_model_id_current)
@@ -4659,7 +4660,8 @@ def user_chatbot_response_private(request, character_id):
                 model_id = fine_tune_status.fine_tuned_model
         except Exception as e:
             print("DEBUG: Fine-tune retrieval error:", str(e))
-
+    '''
+    
     # ========== MEMORY RETRIEVAL SECTION ==========
     embedding_response = client.embeddings.create(
         input=user_message,
