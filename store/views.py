@@ -4678,16 +4678,35 @@ def user_chatbot_response_private(request, character_id):
     top_memories = sorted(memory_similarities, key=lambda x: x[0], reverse=True)[:3]
     retrieved_context = "\n".join([m[1] for m in top_memories])
 
+    # 1. Build the system message once (persona + relevant memories)
     system_message = (
         f"You are a helpful chatbot assistant. The character's personality is: {character.persona}.\n"
         f"Relevant memories:\n{retrieved_context}\n"
         "Please keep your responses brief and on point."
     )
 
-    messages = [
-        {"role": "system", "content": system_message},
-        {"role": "user", "content": user_message}
-    ]
+    # 2. Get or create the conversation
+    conversation, _ = Conversation.objects.get_or_create(
+        user=request.user,
+        character=character,
+    )
+
+    # 3. Rebuild the last 10 messages from the conversation
+    chat_history = list(
+        conversation.messages.all()
+        .order_by('-timestamp')[:10]
+        .values('role', 'content')
+    )[::-1]  # reverse to get oldest first
+
+    # 4. Add the current user message
+    chat_history.append({
+        "role": "user",
+        "content": user_message
+    })
+
+    # 5. Final message list sent to GPT
+    messages = [{"role": "system", "content": system_message}] + chat_history
+
 
     try:
         response = client.chat.completions.create(
