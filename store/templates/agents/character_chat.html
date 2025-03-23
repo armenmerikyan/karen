@@ -11,7 +11,7 @@
 
           <h1>Chat with Bot</h1>
 
-          <div id="chatWindow" class="bg-light text-dark p-2 mb-2" style="border: 1px solid #ccc; width: 100%; max-width: 600px; height: 400px; overflow-y: scroll;">
+          <div id="chatWindow" style="border: 1px solid #ccc; padding: 10px; width: 100%; max-width: 600px; height: 400px; overflow-y: scroll; background: #f9f9f9; color: black;">
             <!-- Chat messages will appear here -->
           </div>
 
@@ -23,19 +23,9 @@
     </div>
   </div>
 </section>    
+{% endblock %}
 
-<style>
-  .message {
-    margin-bottom: 10px;
-  }
-  .user {
-    color: blue;
-  }
-  .bot {
-    color: green;
-  }
-</style>
-
+{% block extra_js %}
 <script>
   function getCookie(name) {
     let cookieValue = null;
@@ -60,6 +50,7 @@
     const chatWindow = document.getElementById('chatWindow');
     const userMessageDiv = document.createElement('div');
     userMessageDiv.classList.add('message', 'user');
+    userMessageDiv.style.color = 'blue';
     userMessageDiv.textContent = "You: " + messageText;
     chatWindow.appendChild(userMessageDiv);
     chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -77,14 +68,15 @@
     .then(data => {
       const botMessageDiv = document.createElement('div');
       botMessageDiv.classList.add('message', 'bot');
-      botMessageDiv.textContent = data.response ? "Bot: " + data.response : "Error: " + (data.error || 'Unknown');
+      botMessageDiv.style.color = 'green';
+      botMessageDiv.textContent = data.response ? "Bot: " + data.response : "Error: " + (data.error || 'Unknown error');
       chatWindow.appendChild(botMessageDiv);
       chatWindow.scrollTop = chatWindow.scrollHeight;
     })
     .catch(error => {
       console.error('Error:', error);
       const errorDiv = document.createElement('div');
-      errorDiv.classList.add('message', 'bot');
+      errorDiv.style.color = 'red';
       errorDiv.textContent = "Error: " + error;
       chatWindow.appendChild(errorDiv);
       chatWindow.scrollTop = chatWindow.scrollHeight;
