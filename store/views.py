@@ -4520,7 +4520,7 @@ def delete_memory(request, pk):
 @csrf_exempt
 @login_required
 def fine_tune_character(request, character_id):
-    if request.method != "POST":
+    if request.method != "GET":
         return JsonResponse({"error": "Only POST requests are allowed"}, status=400)
 
     user = request.user
