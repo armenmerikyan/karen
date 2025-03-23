@@ -12,7 +12,8 @@
             {% for character in characters %}
               <li class="list-group-item bg-dark text-light mb-2">
                 <strong>{{ character.name }}</strong><br>
-                <small>{{ character.persona|linebreaks }}</small><br>
+                <small>{{ character.persona|truncatechars:400|linebreaks }}</small><br>
+
                 <a href="{% url 'character_update' character.pk %}" class="btn btn-sm btn-secondary mt-2">Edit</a>
               </li>
             {% empty %}
