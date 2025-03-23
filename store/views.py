@@ -127,7 +127,9 @@ from .models import CarFinderResponse
 from .models import WebsiteCreationResponse 
 from .models import TwitterHandleChecker
 from .models import CharacterMemory
+from .models import UserCharacter
 
+from .forms import UserCharacterForm
 from .forms import CharacterMemoryForm
 from .forms import LandingPageForm
 from .forms import SimpleQuestionForm
@@ -4417,8 +4419,6 @@ def handle_list_view(request):
         'distinct_handle_names': distinct_handle_names,
     })
 
-from .models import UserCharacter
-from .forms import UserCharacterForm
 
 @login_required
 def character_list(request):
@@ -4441,6 +4441,22 @@ def character_create(request):
 @login_required
 def character_update(request, pk):
     character = get_object_or_404(UserCharacter, pk=pk, user=request.user)
+    model_status = None
+    model_error = None
+
+    # Check fine-tuning status if the character has a chatgpt_model_id_current and the API key exists
+    if character.chatgpt_model_id_current and request.user.openai_api_key:
+        try:
+            client = OpenAI(api_key=request.user.openai_api_key)
+            fine_tune_status = client.fine_tuning.jobs.retrieve(character.chatgpt_model_id_current)
+            model_status = fine_tune_status.status
+            # If an error object exists, capture its message
+            if fine_tune_status.error:
+                model_error = fine_tune_status.error.message
+        except Exception as e:
+            model_status = "Error"
+            model_error = str(e)
+    
     if request.method == 'POST':
         form = UserCharacterForm(request.POST, instance=character)
         if form.is_valid():
@@ -4448,7 +4464,15 @@ def character_update(request, pk):
             return redirect('character_list')
     else:
         form = UserCharacterForm(instance=character)
-    return render(request, 'agents/character_form.html', {'form': form, 'is_edit': True})
+    
+    context = {
+        'form': form,
+        'is_edit': True,
+        'model_status': model_status,
+        'model_error': model_error,
+        'character': character,
+    }
+    return render(request, 'agents/character_form.html', context)
 
 
 @login_required

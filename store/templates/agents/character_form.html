@@ -25,6 +25,17 @@
               <div id="train-status" class="mt-3"></div>
 
               <hr>
+              {% if model_status %}
+                <div>
+                  <strong>Model Status:</strong> {{ model_status }}
+                </div>
+                {% if model_error %}
+                  <div style="color: red;">
+                    <strong>Error:</strong> {{ model_error }}
+                  </div>
+                {% endif %}
+                <hr>
+              {% endif %}
 
               <!-- Clickable link that triggers the update via JavaScript -->
               <a href="#" onclick="updateModel(); return false;">Update Model</a>
