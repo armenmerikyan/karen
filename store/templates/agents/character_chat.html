@@ -37,42 +37,6 @@
       color: #198754;
     }
   </style>
-
-<script>
-  let voices = [];
-
-  function populateVoices() {
-    voices = speechSynthesis.getVoices();
-    const voiceSelect = document.getElementById('voiceSelect');
-    voiceSelect.innerHTML = '';
-
-    voices.forEach((voice, index) => {
-      const option = document.createElement('option');
-      option.value = index;
-      option.textContent = `${voice.name} (${voice.lang})${voice.default ? ' — DEFAULT' : ''}`;
-      voiceSelect.appendChild(option);
-    });
-  }
-
-  // Load voices when available
-  speechSynthesis.onvoiceschanged = populateVoices;
-
-  // Use selected voice for TTS
-  function speakText(text) {
-    const selectedIndex = document.getElementById('voiceSelect').value;
-    const selectedVoice = voices[selectedIndex];
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.voice = selectedVoice;
-    speechSynthesis.speak(utterance);
-  }
-
-  // Replace the old TTS block with this in your fetch .then
-  // ...
-  if (document.getElementById('ttsToggle').checked && data.response) {
-    speakText(data.response);
-  }
-</script>
-
   <script>
     const CHARACTER_ID = {{ character.id }};
     const CHAT_URL = `/user_chatbot/${CHARACTER_ID}/response/`;
@@ -90,6 +54,31 @@
         }
       }
       return cookieValue;
+    }
+
+    let voices = [];
+
+    function populateVoices() {
+      voices = speechSynthesis.getVoices();
+      const voiceSelect = document.getElementById('voiceSelect');
+      voiceSelect.innerHTML = '';
+
+      voices.forEach((voice, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `${voice.name} (${voice.lang})${voice.default ? ' — DEFAULT' : ''}`;
+        voiceSelect.appendChild(option);
+      });
+    }
+
+    speechSynthesis.onvoiceschanged = populateVoices;
+
+    function speakText(text) {
+      const selectedIndex = document.getElementById('voiceSelect').value;
+      const selectedVoice = voices[selectedIndex];
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.voice = selectedVoice;
+      speechSynthesis.speak(utterance);
     }
 
     function sendMessage() {
@@ -123,10 +112,9 @@
           chatWindow.appendChild(botMessageDiv);
           chatWindow.scrollTop = chatWindow.scrollHeight;
 
-          // 🔊 Text-to-Speech if toggle is on
+          // 🔊 Text-to-Speech if enabled
           if (document.getElementById('ttsToggle').checked && data.response) {
-            const utterance = new SpeechSynthesisUtterance(data.response);
-            speechSynthesis.speak(utterance);
+            speakText(data.response);
           }
       })
       .catch(error => {
@@ -149,6 +137,8 @@
           sendMessage();
         }
       });
+
+      populateVoices();
     });
   </script>
 </head>
@@ -157,25 +147,23 @@
     <div class="mb-3">
       <h1>Chat with {{ character.name }}</h1>
     </div>
-    <div class="mb-3 text-start d-flex align-items-center justify-content-start gap-3">
+    <div class="mb-3 text-start d-flex flex-wrap align-items-center gap-3">
       <a href="{% url 'character_update' character.id %}" class="btn btn-secondary">
         ← Back
       </a>
+      
       <!-- 🔊 Text-to-Speech Toggle -->
       <div class="form-check form-switch mb-0">
         <input class="form-check-input" type="checkbox" id="ttsToggle">
         <label class="form-check-label" for="ttsToggle">🔊 Enable Text-to-Speech</label>
       </div>
-      <!-- Voice Selection Dropdown -->
-      <div class="form-group">
-        <label for="voiceSelect">🎤 Select Voice</label>
-        <select class="form-select" id="voiceSelect"></select>
+
+      <!-- 🎤 Voice Selection -->
+      <div class="form-group mb-0">
+        <label for="voiceSelect" class="form-label mb-0">🎤 Voice</label>
+        <select class="form-select" id="voiceSelect" style="min-width: 200px;"></select>
       </div>
-
-
     </div>
-    
-
 
     <!-- Chat Window -->
     <div id="chatWindow" class="mb-3"></div>
