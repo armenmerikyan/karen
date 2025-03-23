@@ -4624,10 +4624,6 @@ def copy_model_to_current(request, character_id):
 
 @csrf_exempt
 def user_chatbot_response_private(request, character_id):
-
-    print("DEBUG: character_id:", character_id)
-    print("DEBUG: user:", request.user)
-
     if not request.user.is_authenticated:
         return JsonResponse({"response": "Please log in to use the chat feature."})
 
@@ -4644,7 +4640,7 @@ def user_chatbot_response_private(request, character_id):
         user_message = data.get("message", "")
         if not user_message:
             return JsonResponse({"error": "No message provided"}, status=400)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
         return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
 
     # Initialize OpenAI client
@@ -4652,7 +4648,6 @@ def user_chatbot_response_private(request, character_id):
 
     # Determine model to use
     model_id = "gpt-3.5-turbo"
-    '''
     if character.chatgpt_model_id_current:
         try:
             fine_tune_status = client.fine_tuning.jobs.retrieve(character.chatgpt_model_id_current)
@@ -4660,20 +4655,23 @@ def user_chatbot_response_private(request, character_id):
                 model_id = fine_tune_status.fine_tuned_model
         except Exception as e:
             print("DEBUG: Fine-tune retrieval error:", str(e))
-    '''
-    
+
     # ========== MEMORY RETRIEVAL SECTION ==========
+    # Step 1: Embed user query
     embedding_response = client.embeddings.create(
         input=user_message,
         model="text-embedding-3-small"
     )
     query_embedding = embedding_response.data[0].embedding
 
+    # Step 2: Retrieve top relevant memories
+    
     memories = character.memories.all()
     memory_similarities = []
 
     for memory in memories:
         if not memory.embedding:
+            # Embed memory on the fly if not yet embedded (consider storing this in DB later)
             mem_embed_resp = client.embeddings.create(
                 input=memory.content,
                 model="text-embedding-3-small"
@@ -4684,34 +4682,21 @@ def user_chatbot_response_private(request, character_id):
         similarity = 1 - spatial.distance.cosine(query_embedding, memory.embedding)
         memory_similarities.append((similarity, memory.content))
 
+    # Step 3: Sort & get top 3 similar memories
     top_memories = sorted(memory_similarities, key=lambda x: x[0], reverse=True)[:3]
     retrieved_context = "\n".join([m[1] for m in top_memories])
 
-    # ========== CONVERSATION HISTORY ==========
-    conversation = Conversation.objects.filter(user=request.user, character=character).order_by('-created_at').first()
-
-    if not conversation:
-        conversation = Conversation.objects.create(user=request.user, character=character)
-
-    recent_messages = Message.objects.filter(conversation=conversation).order_by('-timestamp')[:10]
+    # ========== CHAT COMPLETION SECTION ==========
+    system_message = (
+        f"You are a helpful chatbot assistant. The character's personality is: {character.persona}.\n"
+        f"Relevant memories:\n{retrieved_context}\n"
+        "Please keep your responses brief and on point."
+    )
 
     messages = [
-        {"role": "system", "content": (
-            f"You are a helpful chatbot assistant. The character's personality is: {character.persona}.\n"
-            f"Relevant memories:\n{retrieved_context}\n"
-            "Please keep your responses brief and on point."
-        )}
+        {"role": "system", "content": system_message},
+        {"role": "user", "content": user_message}
     ]
-
-    for msg in reversed(recent_messages):
-        messages.append({"role": msg.role, "content": msg.content})
-
-    messages.append({"role": "user", "content": user_message})
-
-    # ========== OPENAI CHAT COMPLETION ==========
-
-    print("DEBUG: Using model_id:", model_id)
-    print("DEBUG: Character persona:", character.persona)
 
     try:
         response = client.chat.completions.create(
@@ -4719,16 +4704,11 @@ def user_chatbot_response_private(request, character_id):
             messages=messages
         )
         bot_reply = response.choices[0].message.content
-
-        # Save messages to DB
-        Message.objects.create(conversation=conversation, role="user", content=user_message)
-        Message.objects.create(conversation=conversation, role="assistant", content=bot_reply)
-
         return JsonResponse({"response": bot_reply})
     except Exception as e:
         return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
 
-
+ 
 
 def chat_view(request, character_id):
     return render(request, 'agents/character_chat.html', {'character_id': character_id})
