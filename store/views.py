@@ -4603,32 +4603,38 @@ def copy_model_to_current(request, character_id):
         return JsonResponse({"error": "No fine-tuned model available to copy."}, status=400)
     
 
-
 @csrf_exempt
 def chatbot_response_private(request, character_id):
     # Check if the user is authenticated
     if not request.user.is_authenticated:
+        print("DEBUG: User not authenticated")
         return JsonResponse({"response": "Please log in to use the chat feature."})
     
     # Retrieve the character object for the current user
     character = get_object_or_404(UserCharacter, id=character_id, user=request.user)
+    print("DEBUG: Retrieved character:", character)
     
     # Ensure the API key is available on the user object
     if not request.user.openai_api_key:
+        print("DEBUG: API key not found on user object")
         return JsonResponse({"error": "ChatGPT API key is missing."}, status=400)
     
-    print("API Key:", request.user.openai_api_key)  # Debug: Print API key
+    print("DEBUG: API Key:", request.user.openai_api_key)  # Debug: Print API key
 
     if request.method == "POST":
         try:
+            print("DEBUG: Request body:", request.body)
             data = json.loads(request.body)
+            print("DEBUG: Parsed JSON data:", data)
             user_message = data.get("message", "")
             if not user_message:
+                print("DEBUG: No message provided in data")
                 return JsonResponse({"error": "No message provided"}, status=400)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
+            print("DEBUG: JSON decode error:", str(e))
             return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
         
-        print("Request Data:", data)  # Debug: Print request data
+        print("DEBUG: User Message:", user_message)
 
         # Initialize the OpenAI client with the API key from the user object
         client = OpenAI(api_key=request.user.openai_api_key)
@@ -4638,37 +4644,52 @@ def chatbot_response_private(request, character_id):
             f"You are a helpful chatbot assistant. The character's personality is: {character.persona}. "
             "Please keep your responses brief and on point."
         )
+        print("DEBUG: System Message:", system_message)
         
         messages = [
             {"role": "system", "content": system_message},
             {"role": "user", "content": user_message}
         ]
+        print("DEBUG: Chat messages:", messages)
         
         # Determine which model to use, defaulting to "gpt-3.5-turbo"
         model_id = "gpt-3.5-turbo"
         if character.chatgpt_model_id_current:
             try:
+                print("DEBUG: Retrieving fine-tuning job for ID:", character.chatgpt_model_id_current)
                 fine_tune_status = client.fine_tuning.jobs.retrieve(character.chatgpt_model_id_current)
+                print("DEBUG: Fine-tune job status object:", fine_tune_status)
                 if fine_tune_status.status == 'succeeded' and fine_tune_status.fine_tuned_model:
                     model_id = fine_tune_status.fine_tuned_model
-                    print("Using fine-tuned model:", model_id)
+                    print("DEBUG: Fine-tuning succeeded. Using fine-tuned model:", model_id)
+                    # Optionally cache the fine-tuned model id for future requests
+                    character.chatgpt_model_id_current = model_id
+                    character.save()
                 else:
-                    print("Fine-tuning not succeeded yet, using default model")
+                    print("DEBUG: Fine-tuning not succeeded. Status:", fine_tune_status.status)
+                    print("DEBUG: Fine-tuned model property:", fine_tune_status.fine_tuned_model)
+                    print("DEBUG: Using default model:", model_id)
             except Exception as e:
-                print("Error retrieving fine-tune status:", e)
+                print("DEBUG: Exception retrieving fine-tune job:", str(e))
+        
+        print("DEBUG: Final model used:", model_id)
         
         # Call the OpenAI API using the chosen model
         try:
+            print("DEBUG: Sending request to OpenAI with model:", model_id)
             response = client.chat.completions.create(
                 model=model_id,
                 messages=messages
             )
+            print("DEBUG: Raw OpenAI response:", response)
             bot_reply = response.choices[0].message.content
+            print("DEBUG: Bot reply:", bot_reply)
             return JsonResponse({"response": bot_reply})
         except Exception as e:
-            print("OpenAI API Error:", str(e))
+            print("DEBUG: OpenAI API Error:", str(e))
             return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
     else:
+        print("DEBUG: Invalid request method:", request.method)
         return JsonResponse({"error": "Invalid request method"}, status=400)
 
 def chat_view(request, character_id):
