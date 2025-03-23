@@ -4640,13 +4640,11 @@ def user_chatbot_response_private(request, character_id):
         user_message = data.get("message", "")
         if not user_message:
             return JsonResponse({"error": "No message provided"}, status=400)
-    except json.JSONDecodeError as e:
+    except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
 
-    # Initialize OpenAI client
     client = OpenAI(api_key=request.user.openai_api_key)
 
-    # Determine model to use
     model_id = "gpt-3.5-turbo"
     if character.chatgpt_model_id_current:
         try:
@@ -4656,22 +4654,17 @@ def user_chatbot_response_private(request, character_id):
         except Exception as e:
             print("DEBUG: Fine-tune retrieval error:", str(e))
 
-    # ========== MEMORY RETRIEVAL SECTION ==========
-    # Step 1: Embed user query
     embedding_response = client.embeddings.create(
         input=user_message,
         model="text-embedding-3-small"
     )
     query_embedding = embedding_response.data[0].embedding
 
-    # Step 2: Retrieve top relevant memories
-    
     memories = character.memories.all()
     memory_similarities = []
 
     for memory in memories:
         if not memory.embedding:
-            # Embed memory on the fly if not yet embedded (consider storing this in DB later)
             mem_embed_resp = client.embeddings.create(
                 input=memory.content,
                 model="text-embedding-3-small"
@@ -4682,11 +4675,9 @@ def user_chatbot_response_private(request, character_id):
         similarity = 1 - spatial.distance.cosine(query_embedding, memory.embedding)
         memory_similarities.append((similarity, memory.content))
 
-    # Step 3: Sort & get top 3 similar memories
     top_memories = sorted(memory_similarities, key=lambda x: x[0], reverse=True)[:3]
     retrieved_context = "\n".join([m[1] for m in top_memories])
 
-    # ========== CHAT COMPLETION SECTION ==========
     system_message = (
         f"You are a helpful chatbot assistant. The character's personality is: {character.persona}.\n"
         f"Relevant memories:\n{retrieved_context}\n"
@@ -4704,11 +4695,31 @@ def user_chatbot_response_private(request, character_id):
             messages=messages
         )
         bot_reply = response.choices[0].message.content
+
+        # ====== CONVERSATION + MESSAGE SAVING SECTION ======
+        conversation, _ = Conversation.objects.get_or_create(
+            user=request.user,
+            character=character,
+        )
+
+        Message.objects.create(
+            conversation=conversation,
+            role="user",
+            content=user_message
+        )
+
+        Message.objects.create(
+            conversation=conversation,
+            role="assistant",
+            content=bot_reply
+        )
+        # ===================================================
+
         return JsonResponse({"response": bot_reply})
+
     except Exception as e:
         return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
 
- 
 
 def chat_view(request, character_id):
     return render(request, 'agents/character_chat.html', {'character_id': character_id})
