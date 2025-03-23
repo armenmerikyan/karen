@@ -122,7 +122,7 @@ class TokenMarketingContentForm(forms.ModelForm):
 class UserProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name' ]
+        fields = ['first_name', 'last_name', 'openai_api_key']
         
 class UserCreationForm(UserCreationForm): 
     class Meta:

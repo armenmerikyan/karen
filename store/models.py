@@ -67,9 +67,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     current_field = models.CharField(max_length=255, blank=True, null=True)
     current_field_help_text = models.CharField(max_length=500, blank=True, null=True)
     current_intent_is_done = models.BooleanField(default=False)
+    
+    openai_api_key = models.CharField(max_length=255, blank=True, null=True)
         
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
+    
     objects = UserManager()
     
     def get_short_name(self):
