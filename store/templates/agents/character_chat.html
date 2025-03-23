@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <title>Chat with Bot</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
     html, body {
       height: 100%;
@@ -149,21 +151,26 @@
     </div>
     <div class="mb-3 text-start d-flex flex-wrap align-items-center gap-3">
       <a href="{% url 'character_update' character.id %}" class="btn btn-secondary">
-        ← Back
+        <i class="fas fa-arrow-left me-1"></i> Back
       </a>
       
       <!-- 🔊 Text-to-Speech Toggle -->
       <div class="form-check form-switch mb-0">
         <input class="form-check-input" type="checkbox" id="ttsToggle">
-        <label class="form-check-label" for="ttsToggle">🔊 Enable Text-to-Speech</label>
+        <label class="form-check-label" for="ttsToggle">
+          <i class="fas fa-volume-up me-1"></i> Enable Text-to-Speech
+        </label>
       </div>
     
       <!-- 🎤 Voice Selection -->
       <div class="d-flex align-items-center gap-2 mb-0">
-        <label for="voiceSelect" class="form-label mb-0">🎤 Voice</label>
+        <label for="voiceSelect" class="form-label mb-0">
+          <i class="fas fa-microphone me-1"></i>Voice
+        </label>
         <select class="form-select" id="voiceSelect" style="min-width: 200px;"></select>
       </div>
     </div>
+    
     
 
     <!-- Chat Window -->
