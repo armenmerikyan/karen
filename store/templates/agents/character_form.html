@@ -17,6 +17,10 @@
               <a href="{% url 'memory_list' %}?character={{ form.instance.pk }}" class="btn btn-info mt-3">
                 <i class="fas fa-brain"></i> View Memories for {{ form.instance.name }}
               </a>
+              <HR>
+              <a href="{% url 'fine_tune_character' form.instance.pk %}" class="btn btn-warning mt-3 ml-2">
+                <i class="fas fa-robot"></i> Train Character
+              </a>              
             {% endif %}
 
 

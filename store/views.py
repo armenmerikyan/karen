@@ -4516,3 +4516,68 @@ def delete_memory(request, pk):
         memory.delete()
         return redirect('memory_list')
     return render(request, 'memories/memory_confirm_delete.html', {'memory': memory})
+
+@csrf_exempt
+@login_required
+def fine_tune_character(request, character_id):
+    if request.method != "POST":
+        return JsonResponse({"error": "Only POST requests are allowed"}, status=400)
+
+    user = request.user
+    character = get_object_or_404(UserCharacter, id=character_id, user=user)
+    memories = character.memories.all().order_by('timestamp')
+
+    # Prepare training data
+    training_data = []
+    # Add system prompt
+    training_data.append({
+        "messages": [
+            {"role": "system", "content": character.persona},
+            {"role": "user", "content": "Let's get started."},
+            {"role": "assistant", "content": "I'm ready!"}
+        ]
+    })
+
+    # Add character memories as conversation-style examples
+    for memory in memories:
+        if memory.memory_type == "conversation":
+            # Assuming a format like "User: ... Assistant: ..."
+            parts = memory.content.split("Assistant:")
+            if len(parts) == 2:
+                training_data.append({
+                    "messages": [
+                        {"role": "user", "content": parts[0].replace("User:", "").strip()},
+                        {"role": "assistant", "content": parts[1].strip()}
+                    ]
+                })
+        else:
+            # Reflection, observation, event
+            training_data.append({
+                "messages": [
+                    {"role": "system", "content": f"Note: {memory.memory_type}"},
+                    {"role": "assistant", "content": memory.content}
+                ]
+            })
+
+    # Save as jsonl file
+    with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix=".jsonl") as tmp_file:
+        for entry in training_data:
+            tmp_file.write(json.dumps(entry) + "\n")
+        tmp_file_path = tmp_file.name
+
+    try:
+        # Assume user has chatgpt_api_key stored in their profile
+        client = OpenAI(api_key=user.profile.chatgpt_api_key)
+        uploaded = client.files.create(file=open(tmp_file_path, "rb"), purpose="fine-tune")
+        fine_tune_job = client.fine_tuning.jobs.create(training_file=uploaded.id, model="gpt-3.5-turbo")
+
+        # Save fine-tuned model ID to character
+        character.chatgpt_model_id = fine_tune_job.fine_tuned_model or ""
+        character.chatgpt_model_id_current = fine_tune_job.fine_tuned_model or ""
+        character.save()
+
+        return JsonResponse({"success": True, "model_id": fine_tune_job.fine_tuned_model})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+    finally:
+        os.remove(tmp_file_path)
