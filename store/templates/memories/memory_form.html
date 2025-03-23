@@ -12,8 +12,10 @@
           {% if character %}
             <p>
               <strong>Character:</strong> {{ character.name }}<br>
-              <a href="{% url 'character_detail' character.id %}" class="btn btn-link">← Back to {{ character.name }}</a>
+              <a href="{% url 'character_update' character.id %}" class="btn btn-link">← Edit {{ character.name }}</a>
             </p>
+          {% else %}
+            <a href="{% url 'character_list' %}" class="btn btn-link">← Back to Characters</a>
           {% endif %}
 
           <form method="post">
