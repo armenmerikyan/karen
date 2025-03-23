@@ -4426,8 +4426,9 @@ def handle_list_view(request):
 
 @login_required
 def character_list(request):
+    profile = get_latest_profile()
     characters = UserCharacter.objects.filter(user=request.user)
-    return render(request, 'agents/character_list.html', {'characters': characters})
+    return render(request, 'agents/character_list.html', {'characters': characters, 'profile': profile})
 
 @login_required
 def character_create(request):
@@ -4444,6 +4445,7 @@ def character_create(request):
 
 @login_required
 def character_update(request, pk):
+    profile = get_latest_profile()
     character = get_object_or_404(UserCharacter, pk=pk, user=request.user)
     model_status = None
     model_error = None
@@ -4475,6 +4477,7 @@ def character_update(request, pk):
         'model_status': model_status,
         'model_error': model_error,
         'character': character,
+        'profile': profile,
     }
     return render(request, 'agents/character_form.html', context)
 
