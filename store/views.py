@@ -4458,7 +4458,7 @@ def memory_list(request):
     character_id = request.GET.get('character')
     if character_id:
         memories = memories.filter(character_id=character_id)
-        character = get_object_or_404(Character, pk=character_id, user=request.user)
+        character = get_object_or_404(UserCharacter, pk=character_id, user=request.user)
     return render(request, 'memories/memory_list.html', {
         'memories': memories,
         'character': character
@@ -4470,7 +4470,7 @@ def add_memory(request):
     if not character_id:
         return redirect('memory_list')  # or return 404
 
-    character = get_object_or_404(Character, pk=character_id, user=request.user)
+    character = get_object_or_404(UserCharacter, pk=character_id, user=request.user)
 
     if request.method == 'POST':
         form = CharacterMemoryForm(request.POST)
