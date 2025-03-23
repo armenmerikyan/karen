@@ -4567,9 +4567,12 @@ def fine_tune_character(request, character_id):
     for memory in memories:
         training_data.append({
             "messages": [
-                {"role": "system", "content": f"Memory: {memory.content.strip()}"}
+                {"role": "system", "content": f"Memory: {memory.content.strip()}"},
+                {"role": "user", "content": "Got it."},
+                {"role": "assistant", "content": "Understood."}
             ]
         })
+
 
     # Save as jsonl file
     with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix=".jsonl") as tmp_file:
