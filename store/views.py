@@ -4681,11 +4681,12 @@ def user_chatbot_response_private(request, character_id):
     top_memories = sorted(memory_similarities, key=lambda x: x[0], reverse=True)[:3]
     retrieved_context = "\n".join([m[1] for m in top_memories])
 
-    # 1. Build the system message once (persona + relevant memories)
+    # 1. Build the system message once (persona + relevant memories)    
     system_message = (
-        f"You are a helpful person. The character's personality is: {character.persona}.\n"
+        f"You are {character.name}, a fictional character with the following personality: {character.persona}.\n"
+        f"Use this information to stay in character during the conversation.\n"
         f"Relevant memories:\n{retrieved_context}\n"
-        "Please keep your responses brief and on point."
+        "Always respond in character and avoid generic assistant behavior. Do not say you're an AI."
     )
 
     # 2. Get or create the conversation
