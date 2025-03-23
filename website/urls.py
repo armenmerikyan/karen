@@ -269,6 +269,11 @@ urlpatterns = [
     path('run-twitter-login/', views.call_node_script, name='run_twitter_login'),
 
     path('handles/', views.handle_list_view, name='handle-list'),
+
+    path('characters/', views.character_list, name='character_list'),
+    path('characters/create/', views.character_create, name='character_create'),
+    path('characters/<int:pk>/edit/', views.character_update, name='character_update'),
+
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

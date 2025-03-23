@@ -21,6 +21,12 @@ from .models import QuestionAnswer
 from .models import Referral
 from .models import LandingPage
 
+from .models import UserCharacter
+
+class UserCharacterForm(forms.ModelForm):
+    class Meta:
+        model = UserCharacter
+        fields = ['name', 'persona', 'chatgpt_model_id', 'chatgpt_model_id_current']
 
 class ReferralForm(forms.ModelForm):
     usable_for_chatgpt = True  # Move this to class level

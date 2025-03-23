@@ -4414,3 +4414,36 @@ def handle_list_view(request):
         'profile': profile,
         'distinct_handle_names': distinct_handle_names,
     })
+
+from .models import UserCharacter
+from .forms import UserCharacterForm
+
+@login_required
+def character_list(request):
+    characters = UserCharacter.objects.filter(user=request.user)
+    return render(request, 'agents/character_list.html', {'characters': characters})
+
+@login_required
+def character_create(request):
+    if request.method == 'POST':
+        form = UserCharacterForm(request.POST)
+        if form.is_valid():
+            character = form.save(commit=False)
+            character.user = request.user
+            character.save()
+            return redirect('character_list')
+    else:
+        form = UserCharacterForm()
+    return render(request, 'agents/character_form.html', {'form': form, 'is_edit': False})
+
+@login_required
+def character_update(request, pk):
+    character = get_object_or_404(UserCharacter, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = UserCharacterForm(request.POST, instance=character)
+        if form.is_valid():
+            form.save()
+            return redirect('character_list')
+    else:
+        form = UserCharacterForm(instance=character)
+    return render(request, 'agents/character_form.html', {'form': form, 'is_edit': True})

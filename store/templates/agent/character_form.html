@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">   
+          <h2>{% if is_edit %}Edit{% else %}Create{% endif %} Character</h2>
+          <form method="post" class="mt-4">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success">Save</button>
+            <a href="{% url 'character_list' %}" class="btn btn-outline-light ml-2">Back</a>
+          </form>
+        </div>
+      </div>      
+    </div>
+  </div>
+</section>    
+{% endblock %}

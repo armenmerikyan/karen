@@ -69,7 +69,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     current_intent_is_done = models.BooleanField(default=False)
     
     openai_api_key = models.CharField(max_length=255, blank=True, null=True)
-        
+
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
     
@@ -1793,3 +1793,25 @@ class TwitterHandleChecker(models.Model):
             "result": self.result,
             "checked_at": self.checked_at.isoformat(),
         }
+
+
+class UserCharacter(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='characters')
+    name = models.CharField(max_length=100)
+    persona = models.TextField(help_text="Character personality or system prompt")
+    chatgpt_model_id = models.CharField(
+        max_length=255,
+        help_text="The ChatGPT Fine-Tuned Model ID.",
+        blank=True,
+        null=True
+    )
+    chatgpt_model_id_current = models.CharField(
+        max_length=255,
+        help_text="The ChatGPT Fine-Tuned Model ID currently active.",
+        blank=True,
+        null=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.user.username})"

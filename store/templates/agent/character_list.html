@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">   
+          <h2>Your Characters</h2>
+          <a href="{% url 'character_create' %}" class="btn btn-primary mb-3">Create New Character</a>
+          <ul class="list-group">
+            {% for character in characters %}
+              <li class="list-group-item bg-dark text-light mb-2">
+                <strong>{{ character.name }}</strong><br>
+                <small>{{ character.persona|linebreaks }}</small><br>
+                <a href="{% url 'character_update' character.pk %}" class="btn btn-sm btn-secondary mt-2">Edit</a>
+              </li>
+            {% empty %}
+              <li class="list-group-item bg-dark text-light">No characters yet.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>      
+    </div>
+  </div>
+</section>    
+{% endblock %}
