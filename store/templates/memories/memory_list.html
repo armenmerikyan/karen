@@ -11,7 +11,7 @@
 
           {% if character %}  
             {{ character.name }}<br>
-            <a href="{% url 'character_detail' character.id %}" class="btn btn-link">← Back to {{ character.name }}</a>
+            <a href="{% url 'character_update' character.id %}" class="btn btn-link">← Back to {{ character.name }}</a>
           {% endif %}
 
           </h2>
