@@ -25,7 +25,7 @@
               <div id="train-status" class="mt-3"></div>
 
               <hr>
-              
+
               <!-- Clickable link that triggers the update via JavaScript -->
               <a href="#" onclick="updateModel(); return false;">Update Model</a>
 
@@ -40,49 +40,52 @@
     </div>
   </div>
 </section>  
+{% if form.instance and form.instance.id %}
 <script>
-  // Function to get CSRF token from cookies
-  function getCookie(name) {
-      let cookieValue = null;
-      if (document.cookie && document.cookie !== '') {
-          const cookies = document.cookie.split(';');
-          for (let i = 0; i < cookies.length; i++){
-              const cookie = cookies[i].trim();
-              if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                  break;
-              }
-          }
-      }
-      return cookieValue;
-  }
-  
-  // Function to call the copy_model_to_current endpoint
-  function updateModel() {
-      const url = "{% url 'copy_model_to_current' character.id %}"; // URL from Django's URL tag
-      fetch(url, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': getCookie('csrftoken')  // Include CSRF token
-          },
-          credentials: 'include'
-      })
-      .then(response => response.json())
-      .then(data => {
-          if (data.success) {
-              // You can update your page with new model info if needed
-              alert("Model updated successfully: " + data.chatgpt_model_id_current);
-          } else {
-              alert("Error updating model: " + data.error);
-          }
-      })
-      .catch(error => {
-          console.error("Error:", error);
-          alert("An error occurred while updating the model.");
-      });
-  }
-  </script>
+// Function to get CSRF token from cookies
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++){
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Function to call the copy_model_to_current endpoint
+function updateModel() {
+    const url = "{% url 'copy_model_to_current' form.instance.id %}";
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Model updated successfully: " + data.chatgpt_model_id_current);
+        } else {
+            alert("Error updating model: " + data.error);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred while updating the model.");
+    });
+}
+</script>
+
+ 
+
   
    
 <script>
