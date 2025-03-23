@@ -7,7 +7,14 @@
       <div class="row">
         <div class="col-md-12 text-left">   
 
-          <h2>Your Memories{% if character %} with {{ character.name }}{% endif %}</h2>
+          <h2>Your Memories 
+
+          {% if character %}  
+            {{ character.name }}<br>
+            <a href="{% url 'character_detail' character.id %}" class="btn btn-link">← Back to {{ character.name }}</a>
+          {% endif %}
+
+          </h2>
           <a href="{% url 'add_memory' %}{% if character %}?character={{ character.id }}{% endif %}">➕ Add New Memory</a>
 
           <ul>
