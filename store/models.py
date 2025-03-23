@@ -843,6 +843,7 @@ class QuestionAnswer(models.Model):
 class Conversation(models.Model):
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     client_id = models.CharField(max_length=255, null=True, blank=True, db_index=True)
+    character = models.ForeignKey('UserCharacter', null=True, blank=True, on_delete=models.SET_NULL, related_name='conversations')
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Message(models.Model):
