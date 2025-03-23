@@ -1,0 +1,14 @@
+<h2>Your Memories</h2>
+<a href="{% url 'add_memory' %}">➕ Add New Memory</a>
+<ul>
+  {% for memory in memories %}
+    <li>
+      <strong>{{ memory.character.name }}</strong>: {{ memory.content|truncatechars:80 }}
+      <br>
+      <a href="{% url 'edit_memory' memory.pk %}">✏️ Edit</a> |
+      <a href="{% url 'delete_memory' memory.pk %}">🗑️ Delete</a>
+    </li>
+  {% empty %}
+    <li>No memories found.</li>
+  {% endfor %}
+</ul>

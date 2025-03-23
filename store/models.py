@@ -1815,3 +1815,46 @@ class UserCharacter(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.user.username})"
+    
+
+class CharacterMemory(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='character_memories'
+    )
+    character = models.ForeignKey(
+        'UserCharacter',
+        on_delete=models.CASCADE,
+        related_name='memories'
+    )
+    content = models.TextField(help_text="The memory content or thought.")
+    timestamp = models.DateTimeField(auto_now_add=True)
+    importance = models.FloatField(
+        default=0.5,
+        help_text="Optional: A score from 0 to 1 indicating how important this memory is."
+    )
+    memory_type = models.CharField(
+        max_length=50,
+        choices=[
+            ('observation', 'Observation'),
+            ('reflection', 'Reflection'),
+            ('event', 'Event'),
+            ('conversation', 'Conversation'),
+        ],
+        default='observation'
+    )
+    embedding = models.JSONField(
+        blank=True,
+        null=True,
+        help_text="Optional: Vector embedding of the memory content for semantic search."
+    )
+
+    def __str__(self):
+        return f"Memory for {self.character.name} at {self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"
+
+    def save(self, *args, **kwargs):
+        # Automatically set the user from the character if not provided
+        if not self.user and self.character:
+            self.user = self.character.user
+        super().save(*args, **kwargs)

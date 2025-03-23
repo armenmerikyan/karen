@@ -22,7 +22,31 @@ from .models import Referral
 from .models import LandingPage
 
 from .models import UserCharacter
+from .models import CharacterMemory
 
+class CharacterMemoryForm(forms.ModelForm):
+    class Meta:
+        model = CharacterMemory
+        fields = ['character', 'content', 'importance', 'memory_type']
+        widgets = {
+            'character': forms.Select(attrs={'class': 'form-control'}),
+            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'importance': forms.NumberInput(attrs={'class': 'form-control', 'step': 0.1, 'min': 0, 'max': 1}),
+            'memory_type': forms.Select(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'character': 'Select Character',
+            'content': 'Memory',
+            'importance': 'Importance (0.0 - 1.0)',
+            'memory_type': 'Type of Memory',
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['character'].queryset = user.characters.all()
+            
 class UserCharacterForm(forms.ModelForm):
     class Meta:
         model = UserCharacter

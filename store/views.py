@@ -126,7 +126,9 @@ from .models import Letter
 from .models import CarFinderResponse
 from .models import WebsiteCreationResponse 
 from .models import TwitterHandleChecker
+from .models import CharacterMemory
 
+from .forms import CharacterMemoryForm
 from .forms import LandingPageForm
 from .forms import SimpleQuestionForm
 from .forms import QuestionAnswerForm
@@ -4447,3 +4449,46 @@ def character_update(request, pk):
     else:
         form = UserCharacterForm(instance=character)
     return render(request, 'agents/character_form.html', {'form': form, 'is_edit': True})
+
+
+
+@login_required
+def memory_list(request):
+    memories = CharacterMemory.objects.filter(user=request.user)
+    character_id = request.GET.get('character')
+    if character_id:
+        memories = memories.filter(character_id=character_id)
+    return render(request, 'memories/memory_list.html', {'memories': memories})
+
+@login_required
+def add_memory(request):
+    if request.method == 'POST':
+        form = CharacterMemoryForm(request.POST, user=request.user)
+        if form.is_valid():
+            memory = form.save(commit=False)
+            memory.user = request.user
+            memory.save()
+            return redirect('memory_list')
+    else:
+        form = CharacterMemoryForm(user=request.user)
+    return render(request, 'memories/memory_form.html', {'form': form, 'title': 'Add Memory'})
+
+@login_required
+def edit_memory(request, pk):
+    memory = get_object_or_404(CharacterMemory, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = CharacterMemoryForm(request.POST, instance=memory, user=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('memory_list')
+    else:
+        form = CharacterMemoryForm(instance=memory, user=request.user)
+    return render(request, 'memories/memory_form.html', {'form': form, 'title': 'Edit Memory'})
+
+@login_required
+def delete_memory(request, pk):
+    memory = get_object_or_404(CharacterMemory, pk=pk, user=request.user)
+    if request.method == 'POST':
+        memory.delete()
+        return redirect('memory_list')
+    return render(request, 'memories/memory_confirm_delete.html', {'memory': memory})

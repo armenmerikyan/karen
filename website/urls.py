@@ -273,6 +273,11 @@ urlpatterns = [
     path('characters/', views.character_list, name='character_list'),
     path('characters/create/', views.character_create, name='character_create'),
     path('characters/<int:pk>/edit/', views.character_update, name='character_update'),
+    
+    path('memories/', views.memory_list, name='memory_list'),
+    path('memories/add/', views.add_memory, name='add_memory'),
+    path('memories/<int:pk>/edit/', views.edit_memory, name='edit_memory'),
+    path('memories/<int:pk>/delete/', views.delete_memory, name='delete_memory'),
 
 ] 
 
