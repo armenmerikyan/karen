@@ -4601,3 +4601,74 @@ def copy_model_to_current(request, character_id):
         })
     else:
         return JsonResponse({"error": "No fine-tuned model available to copy."}, status=400)
+    
+
+
+@csrf_exempt
+def chatbot_response_private(request, character_id):
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        return JsonResponse({"response": "Please log in to use the chat feature."})
+    
+    # Retrieve the character object for the current user
+    character = get_object_or_404(UserCharacter, id=character_id, user=request.user)
+    
+    # Fetch the latest WebsiteProfile to get the ChatGPT API key
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not request.user:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+    if not request.user.openai_api_key:
+        return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
+    
+    print("API Key:", request.user.openai_api_key)  # Debug: Print API key
+
+    if request.method == "POST":
+        # Parse the user's message from the request body
+        try:
+            data = json.loads(request.body)
+            user_message = data.get("message", "")
+            if not user_message:
+                return JsonResponse({"error": "No message provided"}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
+        
+        print("Request Data:", data)  # Debug: Print request data
+
+        # Initialize the OpenAI client with the API key from the profile
+        client = OpenAI(api_key=request.user.openai_api_key)
+        
+        # Build a system message using the character's persona
+        system_message = (
+            f"You are a helpful chatbot assistant. The character's personality is: {character.persona}."
+            " Please keep your responses brief and on point."
+        )
+        
+        messages = [
+            {"role": "system", "content": system_message},
+            {"role": "user", "content": user_message}
+        ]
+        
+        # Attempt to retrieve the fine-tuning job status using the character's model id
+        try:
+            fine_tune_status = client.fine_tuning.jobs.retrieve(character.chatgpt_model_id_current)
+            if fine_tune_status.status == 'succeeded':
+                model_id = fine_tune_status.fine_tuned_model
+            else:
+                model_id = "gpt-3.5-turbo"
+        except Exception as e:
+            print("Error retrieving fine-tune status:", e)
+            model_id = "gpt-3.5-turbo"
+        
+        # Call the OpenAI API using the chosen model
+        try:
+            response = client.chat.completions.create(
+                model=model_id,
+                messages=messages
+            )
+            bot_reply = response.choices[0].message.content
+            return JsonResponse({"response": bot_reply})
+        except Exception as e:
+            print("OpenAI API Error:", str(e))
+            return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=400)    
