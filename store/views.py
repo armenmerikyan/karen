@@ -4565,24 +4565,11 @@ def fine_tune_character(request, character_id):
 
     # Add character memories as conversation-style examples
     for memory in memories:
-        if memory.memory_type == "conversation":
-            # Assuming a format like "User: ... Assistant: ..."
-            parts = memory.content.split("Assistant:")
-            if len(parts) == 2:
-                training_data.append({
-                    "messages": [
-                        {"role": "user", "content": parts[0].replace("User:", "").strip()},
-                        {"role": "assistant", "content": parts[1].strip()}
-                    ]
-                })
-        else:
-            # Reflection, observation, event
-            training_data.append({
-                "messages": [
-                    {"role": "system", "content": f"Note: {memory.memory_type}"},
-                    {"role": "assistant", "content": memory.content}
-                ]
-            })
+        training_data.append({
+            "messages": [
+                {"role": "system", "content": f"Memory: {memory.content.strip()}"}
+            ]
+        })
 
     # Save as jsonl file
     with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix=".jsonl") as tmp_file:
