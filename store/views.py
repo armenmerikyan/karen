@@ -4451,14 +4451,18 @@ def character_update(request, pk):
     return render(request, 'agents/character_form.html', {'form': form, 'is_edit': True})
 
 
-
 @login_required
 def memory_list(request):
     memories = CharacterMemory.objects.filter(user=request.user)
+    character = None
     character_id = request.GET.get('character')
     if character_id:
         memories = memories.filter(character_id=character_id)
-    return render(request, 'memories/memory_list.html', {'memories': memories})
+        character = get_object_or_404(Character, pk=character_id, user=request.user)
+    return render(request, 'memories/memory_list.html', {
+        'memories': memories,
+        'character': character
+    })
 
 @login_required
 def add_memory(request):

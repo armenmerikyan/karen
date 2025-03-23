@@ -13,8 +13,9 @@
             <button type="submit" class="btn btn-success">Save</button>
             <a href="{% url 'character_list' %}" class="btn btn-outline-light ml-2">Back</a>
             {% if form.instance.pk %}
+              <HR>
               <a href="{% url 'memory_list' %}?character={{ form.instance.pk }}" class="btn btn-info mt-3">
-                🧠 View Memories for {{ form.instance.name }}
+                <i class="fas fa-brain"></i> View Memories for {{ form.instance.name }}
               </a>
             {% endif %}
 
