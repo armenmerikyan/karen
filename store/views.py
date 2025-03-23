@@ -4448,7 +4448,7 @@ def character_update(request, pk):
     if character.chatgpt_model_id_current and request.user.openai_api_key:
         try:
             client = OpenAI(api_key=request.user.openai_api_key)
-            fine_tune_status = client.fine_tuning.jobs.retrieve(character.chatgpt_model_id_current)
+            fine_tune_status = client.fine_tuning.jobs.retrieve(character.chatgpt_model_id)
             model_status = fine_tune_status.status
             # If an error object exists, capture its message
             if fine_tune_status.error:
