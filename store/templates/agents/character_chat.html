@@ -1,86 +1,107 @@
-{% extends 'base.html' %}
 {% load static %}
-{% load custom_filters %}
-
-{% block content %}
-<section class="py-0">
-  <div class="container-fluid">
-    <div class="container mt-5 text-light">         
-      <div class="row">
-        <div class="col-md-12 text-left">   
-
-          <h1>Chat with Bot</h1>
-
-          <div id="chatWindow" style="border: 1px solid #ccc; padding: 10px; width: 100%; max-width: 600px; height: 400px; overflow-y: scroll; background: #f9f9f9; color: black;">
-            <!-- Chat messages will appear here -->
-          </div>
-
-          <input type="text" id="userMessage" placeholder="Type your message here..." style="width:80%;">
-          <button type="button" onclick="sendMessage()">Send</button>
-
-        </div>
-      </div>      
-    </div>
-  </div>
-</section>    
-{% endblock %}
-
-{% block extra_js %}
-<script>
-  function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-      const cookies = document.cookie.split(';');
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat with Bot</title>
+  <style>
+    /* Basic styling for the chat window */
+    #chatWindow {
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: 500px;
+      height: 400px;
+      overflow-y: scroll;
+      margin-bottom: 10px;
+      background: #f9f9f9;
     }
-    return cookieValue;
-  }
+    .message {
+      margin-bottom: 10px;
+    }
+    .user {
+      color: blue;
+    }
+    .bot {
+      color: green;
+    }
+  </style>
+  <script>
+    // Function to retrieve the CSRF token from cookies
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++){
+              const cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+    }
 
-  function sendMessage() {
-    const userMessageInput = document.getElementById('userMessage');
-    const messageText = userMessageInput.value.trim();
-    if (!messageText) return;
+    // Function to send the user's message to the chatbot endpoint
+    function sendMessage() {
+      const userMessageInput = document.getElementById('userMessage');
+      const messageText = userMessageInput.value;
+      if (!messageText) {
+        return;
+      }
+      
+      // Append user's message to the chat window
+      const chatWindow = document.getElementById('chatWindow');
+      const userMessageDiv = document.createElement('div');
+      userMessageDiv.classList.add('message', 'user');
+      userMessageDiv.textContent = "You: " + messageText;
+      chatWindow.appendChild(userMessageDiv);
+      chatWindow.scrollTop = chatWindow.scrollHeight;  // Scroll to bottom
 
-    const chatWindow = document.getElementById('chatWindow');
-    const userMessageDiv = document.createElement('div');
-    userMessageDiv.classList.add('message', 'user');
-    userMessageDiv.style.color = 'blue';
-    userMessageDiv.textContent = "You: " + messageText;
-    chatWindow.appendChild(userMessageDiv);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-    userMessageInput.value = '';
+      // Clear the input field
+      userMessageInput.value = '';
 
-    fetch("{{ chat_url }}", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': getCookie('csrftoken')
-      },
-      body: JSON.stringify({ message: messageText })
-    })
-    .then(response => response.json())
-    .then(data => {
-      const botMessageDiv = document.createElement('div');
-      botMessageDiv.classList.add('message', 'bot');
-      botMessageDiv.style.color = 'green';
-      botMessageDiv.textContent = data.response ? "Bot: " + data.response : "Error: " + (data.error || 'Unknown error');
-      chatWindow.appendChild(botMessageDiv);
-      chatWindow.scrollTop = chatWindow.scrollHeight;
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      const errorDiv = document.createElement('div');
-      errorDiv.style.color = 'red';
-      errorDiv.textContent = "Error: " + error;
-      chatWindow.appendChild(errorDiv);
-      chatWindow.scrollTop = chatWindow.scrollHeight;
-    });
-  }
-</script>
-{% endblock %}
+      // Prepare the data to send
+      const data = { message: messageText };
+
+      // Use the chat_url passed from Django context
+      fetch("{{ chat_url }}", {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': getCookie('csrftoken')
+          },
+          body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(data => {
+          const botMessageDiv = document.createElement('div');
+          botMessageDiv.classList.add('message', 'bot');
+          if(data.response) {
+              botMessageDiv.textContent = "Bot: " + data.response;
+          } else if(data.error) {
+              botMessageDiv.textContent = "Error: " + data.error;
+          }
+          chatWindow.appendChild(botMessageDiv);
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          const errorDiv = document.createElement('div');
+          errorDiv.classList.add('message', 'bot');
+          errorDiv.textContent = "Error: " + error;
+          chatWindow.appendChild(errorDiv);
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+      });
+    }
+  </script>
+</head>
+<body>
+  <h1>Chat with Bot</h1>
+  <div id="chatWindow">
+    <!-- Chat messages will appear here -->
+  </div>
+  <input type="text" id="userMessage" placeholder="Type your message here..." style="width:400px;">
+  <button type="button" onclick="sendMessage()">Send</button>
+</body>
+</html>
