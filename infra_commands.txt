@@ -51,6 +51,7 @@ pip install djangorestframework-simplejwt
 pip install django-oauth-toolkit
 pip install weasyprint
 pip install reportlab
+pip install scipy
 
 python3 manage.py makemigrations
 python3 manage.py migrate

@@ -28,3 +28,4 @@ djangorestframework-simplejwt
 django-oauth-toolkit
 weasyprint
 reportlab
+scipy
