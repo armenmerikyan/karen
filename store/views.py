@@ -4709,6 +4709,7 @@ def user_chatbot_response_private(request, character_id):
     # ========== OPENAI CHAT COMPLETION ==========
 
     print("DEBUG: Using model_id:", model_id)
+    print("DEBUG: Character persona:", character.persona)
 
     try:
         response = client.chat.completions.create(
