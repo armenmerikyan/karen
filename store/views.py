@@ -4624,6 +4624,10 @@ def copy_model_to_current(request, character_id):
 
 @csrf_exempt
 def user_chatbot_response_private(request, character_id):
+
+    print("DEBUG: character_id:", character_id)
+    print("DEBUG: user:", request.user)
+
     if not request.user.is_authenticated:
         return JsonResponse({"response": "Please log in to use the chat feature."})
 
