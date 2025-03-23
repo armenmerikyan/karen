@@ -18,6 +18,8 @@
 
 {% block extra_js %}
 <script>
+document.addEventListener("DOMContentLoaded", function () {
+
   function character_get_cookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -33,7 +35,7 @@
     return cookieValue;
   }
 
-  function character_send_message() {
+  window.character_send_message = function () {
     const inputField = document.getElementById('character_user_message');
     const messageText = inputField.value.trim();
     if (!messageText) return;
@@ -74,5 +76,7 @@
       chatWindow.scrollTop = chatWindow.scrollHeight;
     });
   }
+
+});
 </script>
 {% endblock %}
