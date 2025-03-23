@@ -4581,4 +4581,23 @@ def fine_tune_character(request, character_id):
     finally:
         os.remove(tmp_file_path)
 
-       
+@csrf_exempt
+@login_required
+def copy_model_to_current(request, character_id):
+    if request.method != "POST":
+        return JsonResponse({"error": "Only POST requests are allowed"}, status=400)
+
+    # Retrieve the UserCharacter object for the current user
+    character = get_object_or_404(UserCharacter, id=character_id, user=request.user)
+    
+    # Check if there is a fine-tuned model id available to copy
+    if character.chatgpt_model_id:
+        character.chatgpt_model_id_current = character.chatgpt_model_id
+        character.save()
+        return JsonResponse({
+            "success": True,
+            "message": "Fine-tuned model has been copied to current.",
+            "chatgpt_model_id_current": character.chatgpt_model_id_current
+        })
+    else:
+        return JsonResponse({"error": "No fine-tuned model available to copy."}, status=400)

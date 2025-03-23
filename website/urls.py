@@ -280,6 +280,7 @@ urlpatterns = [
     path('memories/<int:pk>/delete/', views.delete_memory, name='delete_memory'),
 
     path('fine-tune/<int:character_id>/', views.fine_tune_character, name='fine_tune_character'),
+    path('characters/<int:character_id>/copy-model/', views.copy_model_to_current, name='copy_model_to_current'),
 
 ] 
 
