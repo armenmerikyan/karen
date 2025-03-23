@@ -37,6 +37,42 @@
       color: #198754;
     }
   </style>
+
+<script>
+  let voices = [];
+
+  function populateVoices() {
+    voices = speechSynthesis.getVoices();
+    const voiceSelect = document.getElementById('voiceSelect');
+    voiceSelect.innerHTML = '';
+
+    voices.forEach((voice, index) => {
+      const option = document.createElement('option');
+      option.value = index;
+      option.textContent = `${voice.name} (${voice.lang})${voice.default ? ' — DEFAULT' : ''}`;
+      voiceSelect.appendChild(option);
+    });
+  }
+
+  // Load voices when available
+  speechSynthesis.onvoiceschanged = populateVoices;
+
+  // Use selected voice for TTS
+  function speakText(text) {
+    const selectedIndex = document.getElementById('voiceSelect').value;
+    const selectedVoice = voices[selectedIndex];
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.voice = selectedVoice;
+    speechSynthesis.speak(utterance);
+  }
+
+  // Replace the old TTS block with this in your fetch .then
+  // ...
+  if (document.getElementById('ttsToggle').checked && data.response) {
+    speakText(data.response);
+  }
+</script>
+
   <script>
     const CHARACTER_ID = {{ character.id }};
     const CHAT_URL = `/user_chatbot/${CHARACTER_ID}/response/`;
@@ -130,6 +166,13 @@
         <input class="form-check-input" type="checkbox" id="ttsToggle">
         <label class="form-check-label" for="ttsToggle">🔊 Enable Text-to-Speech</label>
       </div>
+      <!-- Voice Selection Dropdown -->
+      <div class="form-group">
+        <label for="voiceSelect">🎤 Select Voice</label>
+        <select class="form-select" id="voiceSelect"></select>
+      </div>
+
+
     </div>
     
 
