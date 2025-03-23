@@ -305,6 +305,7 @@ from django.db.models import Max
 from django.db.models import OuterRef, Subquery
 
 from scipy import spatial
+import ast
 
 version = "00.00.06"
 logger = logging.getLogger(__name__)
@@ -4625,6 +4626,8 @@ def copy_model_to_current(request, character_id):
         return JsonResponse({"error": "No fine-tuned model available to copy."}, status=400)
     
 
+logger = logging.getLogger(__name__)
+
 @csrf_exempt
 def user_chatbot_response_private(request, character_id):
     if not request.user.is_authenticated:
@@ -4655,33 +4658,46 @@ def user_chatbot_response_private(request, character_id):
             if fine_tune_status.status == 'succeeded' and fine_tune_status.fine_tuned_model:
                 model_id = fine_tune_status.fine_tuned_model
         except Exception as e:
-            print("DEBUG: Fine-tune retrieval error:", str(e))
+            logger.warning("Fine-tune retrieval error: %s", str(e))
 
-    embedding_response = client.embeddings.create(
-        input=user_message,
-        model="text-embedding-3-small"
-    )
-    query_embedding = embedding_response.data[0].embedding
+    try:
+        embedding_response = client.embeddings.create(
+            input=user_message,
+            model="text-embedding-3-small"
+        )
+        if not embedding_response.data:
+            return JsonResponse({"error": "Failed to generate embedding"}, status=500)
+        query_embedding = embedding_response.data[0].embedding
+    except Exception as e:
+        logger.error("Embedding generation error: %s", str(e))
+        return JsonResponse({"error": "Failed to generate query embedding"}, status=500)
 
-    memories = character.memories.all()
     memory_similarities = []
 
-    for memory in memories:
-        if not memory.embedding:
-            mem_embed_resp = client.embeddings.create(
-                input=memory.content,
-                model="text-embedding-3-small"
-            )
-            memory.embedding = mem_embed_resp.data[0].embedding
-            memory.save()
+    for memory in character.memories.all():
+        try:
+            if not memory.embedding:
+                mem_embed_resp = client.embeddings.create(
+                    input=memory.content,
+                    model="text-embedding-3-small"
+                )
+                memory.embedding = mem_embed_resp.data[0].embedding
+                memory.save()
 
-        similarity = 1 - spatial.distance.cosine(query_embedding, memory.embedding)
-        memory_similarities.append((similarity, memory.content))
+            # Convert string embedding if needed
+            if isinstance(memory.embedding, str):
+                memory_embedding = ast.literal_eval(memory.embedding)
+            else:
+                memory_embedding = memory.embedding
+
+            similarity = 1 - spatial.distance.cosine(query_embedding, memory_embedding)
+            memory_similarities.append((similarity, memory.content))
+        except Exception as e:
+            logger.warning("Memory similarity failed for memory ID %s: %s", memory.id, str(e))
 
     top_memories = sorted(memory_similarities, key=lambda x: x[0], reverse=True)[:3]
     retrieved_context = "\n".join([m[1] for m in top_memories])
 
-    # 1. Build the system message once (persona + relevant memories)    
     system_message = (
         f"You are {character.name}, a fictional character with the following personality: {character.persona}.\n"
         f"Use this information to stay in character during the conversation.\n"
@@ -4689,28 +4705,23 @@ def user_chatbot_response_private(request, character_id):
         "Always respond in character and avoid generic assistant behavior. Do not say you're an AI."
     )
 
-    # 2. Get or create the conversation
     conversation, _ = Conversation.objects.get_or_create(
         user=request.user,
         character=character,
     )
 
-    # 3. Rebuild the last 10 messages from the conversation
     chat_history = list(
         conversation.messages.all()
         .order_by('-timestamp')[:10]
         .values('role', 'content')
-    )[::-1]  # reverse to get oldest first
+    )[::-1]
 
-    # 4. Add the current user message
     chat_history.append({
         "role": "user",
         "content": user_message
     })
 
-    # 5. Final message list sent to GPT
     messages = [{"role": "system", "content": system_message}] + chat_history
-
 
     try:
         response = client.chat.completions.create(
@@ -4719,29 +4730,23 @@ def user_chatbot_response_private(request, character_id):
         )
         bot_reply = response.choices[0].message.content
 
-        # ====== CONVERSATION + MESSAGE SAVING SECTION ======
-        conversation, _ = Conversation.objects.get_or_create(
-            user=request.user,
-            character=character,
-        )
-
+        # Save conversation messages
         Message.objects.create(
             conversation=conversation,
             role="user",
             content=user_message
         )
-
         Message.objects.create(
             conversation=conversation,
             role="assistant",
             content=bot_reply
         )
-        # ===================================================
 
         return JsonResponse({"response": bot_reply})
 
     except Exception as e:
-        return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
+        logger.error("Chat generation failed: %s", str(e))
+        return JsonResponse({"error": "An internal error occurred."}, status=500)
 
 def chat_view(request, character_id):
     character = get_object_or_404(UserCharacter, id=character_id)
