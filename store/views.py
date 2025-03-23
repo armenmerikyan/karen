@@ -4688,8 +4688,6 @@ def user_chatbot_response_private(request, character_id):
                     model_id = fine_tune_status.fine_tuned_model
                     print("DEBUG: Fine-tuning succeeded. Using fine-tuned model:", model_id)
                     # Optionally cache the fine-tuned model id for future requests
-                    character.chatgpt_model_id_current = model_id
-                    character.save()
                 else:
                     print("DEBUG: Fine-tuning not succeeded. Status:", fine_tune_status.status)
                     print("DEBUG: Fine-tuned model property:", fine_tune_status.fine_tuned_model)
