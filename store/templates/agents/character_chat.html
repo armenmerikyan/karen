@@ -25,6 +25,9 @@
     }
   </style>
   <script>
+    const CHARACTER_ID = {{ character_id }};
+    const CHAT_URL = `/user_chatbot/${CHARACTER_ID}/response/`;
+
     function getCookie(name) {
       let cookieValue = null;
       if (document.cookie && document.cookie !== '') {
@@ -55,7 +58,7 @@
 
       const data = { message: messageText };
 
-      fetch("{{ chat_url }}", {
+      fetch(CHAT_URL, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',

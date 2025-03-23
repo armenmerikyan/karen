@@ -4718,6 +4718,7 @@ def user_chatbot_response_private(request, character_id):
     except Exception as e:
         return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
 
+
+
 def chat_view(request, character_id):
-    chat_url = reverse('user_chatbot_response_private', kwargs={'character_id': character_id})
-    return render(request, 'agents/character_chat.html', {'chat_url': chat_url})
+    return render(request, 'agents/character_chat.html', {'character_id': character_id})
