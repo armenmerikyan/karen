@@ -4381,9 +4381,11 @@ def handle_list_view(request):
     # Get distinct handle names only
     distinct_handle_names = (
         TwitterHandleChecker.objects
+        .order_by('handle')
         .values_list('handle', flat=True)
         .distinct()
     )
+
 
     download_type = request.GET.get('type')
 
