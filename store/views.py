@@ -4462,28 +4462,48 @@ def memory_list(request):
 
 @login_required
 def add_memory(request):
+    character_id = request.GET.get('character')
+    if not character_id:
+        return redirect('memory_list')  # or return 404
+
+    character = get_object_or_404(Character, pk=character_id, user=request.user)
+
     if request.method == 'POST':
-        form = CharacterMemoryForm(request.POST, user=request.user)
+        form = CharacterMemoryForm(request.POST)
         if form.is_valid():
             memory = form.save(commit=False)
             memory.user = request.user
+            memory.character = character  # set manually
             memory.save()
-            return redirect('memory_list')
+            return redirect('memory_list')  # or redirect to character-specific memory list
     else:
-        form = CharacterMemoryForm(user=request.user)
-    return render(request, 'memories/memory_form.html', {'form': form, 'title': 'Add Memory'})
+        form = CharacterMemoryForm()
+
+    return render(request, 'memories/memory_form.html', {
+        'form': form,
+        'title': 'Add Memory',
+        'character': character,  # optional, if you want to show character name on page
+    })
+
 
 @login_required
 def edit_memory(request, pk):
     memory = get_object_or_404(CharacterMemory, pk=pk, user=request.user)
+
     if request.method == 'POST':
-        form = CharacterMemoryForm(request.POST, instance=memory, user=request.user)
+        form = CharacterMemoryForm(request.POST, instance=memory)
         if form.is_valid():
             form.save()
             return redirect('memory_list')
     else:
-        form = CharacterMemoryForm(instance=memory, user=request.user)
-    return render(request, 'memories/memory_form.html', {'form': form, 'title': 'Edit Memory'})
+        form = CharacterMemoryForm(instance=memory)
+
+    return render(request, 'memories/memory_form.html', {
+        'form': form,
+        'title': 'Edit Memory',
+        'character': memory.character,  # optional: show on page
+    })
+
 
 @login_required
 def delete_memory(request, pk):
