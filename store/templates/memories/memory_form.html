@@ -1,7 +1,35 @@
-<h2>{{ title }}</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">💾 Save</button>
-  <a href="{% url 'memory_list' %}">⬅️ Cancel</a>
-</form>
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">
+      <div class="row">
+        <div class="col-md-12 text-left">
+          <h2 class="mb-4">{{ title }}</h2>
+
+          {% if character %}
+            <p><strong>Character:</strong> {{ character.name }}</p>
+          {% endif %}
+
+          <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+              <div class="form-group mb-3">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                  <div class="text-danger">{{ field.errors|join:", " }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{% url 'memory_list' %}" class="btn btn-secondary">Cancel</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

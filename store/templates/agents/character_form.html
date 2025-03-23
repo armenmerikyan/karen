@@ -1,35 +1,28 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
-
 {% block content %}
 <section class="py-0">
   <div class="container-fluid">
-    <div class="container mt-5 text-light">
+    <div class="container mt-5 text-light">         
       <div class="row">
-        <div class="col-md-12 text-left">
-          <h2 class="mb-4">{{ title }}</h2>
-
-          {% if character %}
-            <p><strong>Character:</strong> {{ character.name }}</p>
-          {% endif %}
-
-          <form method="post">
+        <div class="col-md-12 text-left">   
+          <h2>{% if is_edit %}Edit{% else %}Create{% endif %} Character</h2>
+          <form method="post" class="mt-4">
             {% csrf_token %}
-            {% for field in form %}
-              <div class="form-group mb-3">
-                {{ field.label_tag }}
-                {{ field }}
-                {% if field.errors %}
-                  <div class="text-danger">{{ field.errors|join:", " }}</div>
-                {% endif %}
-              </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-primary">Save</button>
-            <a href="{% url 'memory_list' %}" class="btn btn-secondary">Cancel</a>
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success">Save</button>
+            <a href="{% url 'character_list' %}" class="btn btn-outline-light ml-2">Back</a>
+            {% if form.instance.pk %}
+              <a href="{% url 'memory_list' %}?character={{ form.instance.pk }}" class="btn btn-info mt-3">
+                🧠 View Memories for {{ form.instance.name }}
+              </a>
+            {% endif %}
+
+
           </form>
         </div>
-      </div>
+      </div>      
     </div>
   </div>
-</section>
+</section>    
 {% endblock %}
