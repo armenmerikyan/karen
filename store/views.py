@@ -4827,7 +4827,7 @@ def register_mcp(request):
         tools.append(tool)
 
     try:
-        client = openai.OpenAI(api_key=user.openai_api_key)
+        client = OpenAI(api_key=user.openai_api_key)
 
         response = client.chat.completions.create(
             model="gpt-4-turbo",
