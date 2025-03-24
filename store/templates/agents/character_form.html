@@ -40,8 +40,11 @@
               <!-- Clickable link that triggers the update via JavaScript -->
               <a href="#" onclick="updateModel(); return false;">Update Model</a>
               <hr>
-
-              <a href="{% url 'chat_view' form.instance.id %}">Start Chat</a>
+              
+              <a href="{% url 'chat_view' form.instance.id %}" class="btn btn-success">
+                <i class="fas fa-comments"></i> Start Chat
+              </a>
+              
               <hr>
 
             {% endif %}
