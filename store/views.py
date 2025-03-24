@@ -4337,7 +4337,9 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
 @admin_required
 def call_node_script(request):
     handle = request.GET.get('handle')
-
+    if handle:
+        handle = handle.lstrip('@')
+        
     if not handle:
         return JsonResponse({'status': 'error', 'message': 'Missing `handle` parameter'}, status=400)
 
