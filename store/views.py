@@ -4806,6 +4806,8 @@ def user_chatbot_response_private(request, character_id):
         return JsonResponse({"response": bot_reply})
 
     except Exception as e:
+        logger.debug("Final messages being sent to OpenAI: %s", json.dumps(messages, indent=2))
+
         logger.error("Chat processing failed: %s", str(e))
         return JsonResponse({"error": "An internal error occurred."}, status=500)
 
