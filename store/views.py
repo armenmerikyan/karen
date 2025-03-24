@@ -4440,6 +4440,7 @@ def character_list(request):
 
 @login_required
 def character_create(request):
+    profile = get_latest_profile()
     if request.method == 'POST':
         form = UserCharacterForm(request.POST)
         if form.is_valid():
@@ -4449,7 +4450,7 @@ def character_create(request):
             return redirect('character_list')
     else:
         form = UserCharacterForm()
-    return render(request, 'agents/character_form.html', {'form': form, 'is_edit': False})
+    return render(request, 'agents/character_form.html', {'form': form, 'is_edit': False, 'profile': profile})
 
 @login_required
 def character_update(request, pk):
