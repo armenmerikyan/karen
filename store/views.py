@@ -4649,7 +4649,6 @@ def user_chatbot_response_private(request, character_id):
         return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
 
     client = OpenAI(api_key=request.user.openai_api_key)
-
     model_id = "gpt-4-1106-preview"
 
     try:
@@ -4738,7 +4737,7 @@ def user_chatbot_response_private(request, character_id):
         )
 
         tool_calls = response.choices[0].message.tool_calls if response.choices else []
-        final_messages = messages
+        assistant_message = response.choices[0].message
 
         if tool_calls:
             for tool in tool_calls:
@@ -4762,31 +4761,26 @@ def user_chatbot_response_private(request, character_id):
                         except Exception as e:
                             logger.warning("Embedding for new memory failed: %s", str(e))
 
-                    # Only append the tool message if tool_calls were present and valid
-            followup_messages = messages + [
-                {
-                    "role": "tool",
-                    "tool_call_id": tool.id,
-                    "content": json.dumps({"status": "success", "content": content})
-                }
-            ]
+                    # Include assistant message with tool_calls + tool response
+                    followup_messages = messages + [
+                        {
+                            "role": "assistant",
+                            "content": None,
+                            "tool_calls": [tool.model_dump()]  # Assumes pydantic object
+                        },
+                        {
+                            "role": "tool",
+                            "tool_call_id": tool.id,
+                            "content": json.dumps({"status": "success", "content": content})
+                        }
+                    ]
 
-            final_response = client.chat.completions.create(
-                model=model_id,
-                messages=followup_messages
-            )
- 
-            for tool in tool_calls:
-                tool_result = {
-                    "tool_call_id": tool.id,
-                    "content": json.dumps({"status": "success", "content": content})
-                }
+                    final_response = client.chat.completions.create(
+                        model=model_id,
+                        messages=followup_messages
+                    )
 
-                final_response = client.chat.completions.create(
-                    model=model_id,
-                    messages=followup_messages
-                )
-                break
+                    break  # Only handle one tool call for now
 
         else:
             final_response = response
@@ -4802,8 +4796,6 @@ def user_chatbot_response_private(request, character_id):
         logger.error("Final messages being sent to OpenAI: %s", json.dumps(messages, indent=2))
         logger.error("Chat processing failed: %s", str(e))
         return JsonResponse({"error": "An internal error occurred."}, status=500)
-
-
 
 
 def chat_view(request, character_id):
