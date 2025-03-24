@@ -4377,7 +4377,7 @@ def call_node_script(request):
 def handle_list_view(request):
     profile = get_latest_profile()
 
-    handles = TwitterHandleChecker.objects.all().order_by('-checked_at')[:100]
+    handles = TwitterHandleChecker.objects.all().order_by('-checked_at')[:300]
 
     # Get distinct handle names only
     distinct_handle_names = (
