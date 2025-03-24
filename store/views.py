@@ -4803,31 +4803,39 @@ def register_mcp(request):
     except Exception:
         return JsonResponse({"error": "Invalid JSON in schema response."}, status=500)
 
-    # Extract 'Business' schema
-    parameters_schema = full_schema.get("components", {}).get("schemas", {}).get("Business")
+    schemas = full_schema.get("components", {}).get("schemas", {})
+    if not schemas:
+        return JsonResponse({"error": "No schemas found in OpenAPI spec."}, status=400)
 
-    if not parameters_schema:
-        return JsonResponse({"error": "'Business' schema not found in OpenAPI spec."}, status=400)
+    tools = []
 
-    parameters_schema["type"] = "object"
+    for name, schema in schemas.items():
+        if not isinstance(schema, dict):
+            continue  # Skip malformed schemas
+
+        # Ensure type is object
+        schema["type"] = "object"
+
+        tool = {
+            "type": "function",
+            "function": {
+                "name": f"{name}_api",
+                "description": f"API function for interacting with {name} schema.",
+                "parameters": schema
+            }
+        }
+        tools.append(tool)
 
     try:
         client = openai.OpenAI(api_key=user.openai_api_key)
 
         response = client.chat.completions.create(
             model="gpt-4-turbo",
-            messages=[{"role": "system", "content": "Registering MCP API"}],
-            tools=[{
-                "type": "function",
-                "function": {
-                    "name": "MCP_API",
-                    "description": "Gigahard MCP API for business data retrieval.",
-                    "parameters": parameters_schema
-                }
-            }],
+            messages=[{"role": "system", "content": "Registering all MCP APIs"}],
+            tools=tools,
             tool_choice="auto"
         )
 
-        return JsonResponse({"status": "MCP registered", "openai_response": response.dict()})
+        return JsonResponse({"status": "All MCP APIs registered", "tool_count": len(tools), "openai_response": response.dict()})
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)    
+        return JsonResponse({"error": str(e)}, status=500)
