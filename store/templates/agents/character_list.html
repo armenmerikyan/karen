@@ -13,13 +13,10 @@
               <li class="list-group-item bg-dark text-light mb-2">
                 <strong>{{ character.name }}</strong><br>
                 <small>{{ character.persona|truncatechars:400|linebreaks }}</small><br>
-
-                <a href="{% url 'character_update' character.pk %}" class="btn btn-sm btn-secondary mt-2">Edit</a>
+                
+                <a href="{% url 'character_update' character.pk %}" class="btn btn-success"><i class="fas fa-edit"></i> Edit</a>                
                 <a href="{% url 'chat_view' character.id %}" class="btn btn-success"><i class="fas fa-comments"></i>Chat</a>
-
-                <a href="{% url 'memory_list' %}?character={{ character.id }}" class="btn btn-info mt-3">
-                  <i class="fas fa-brain"></i> Memories
-                </a>                
+                <a href="{% url 'memory_list' %}?character={{ character.id }}" class="btn btn-success"><i class="fas fa-brain"></i> Memories</a>                
               </li>
             {% empty %}
               <li class="list-group-item bg-dark text-light">No characters yet.</li>
