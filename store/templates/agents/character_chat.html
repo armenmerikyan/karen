@@ -68,7 +68,6 @@
       voices = speechSynthesis.getVoices();
       const voiceSelect = document.getElementById('voiceSelect');
       voiceSelect.innerHTML = '';
-
       voices.forEach((voice, index) => {
         const option = document.createElement('option');
         option.value = index;
@@ -105,15 +104,13 @@
 
       userMessageInput.value = '';
 
-      const data = { message: messageText };
-
       fetch(CHAT_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRFToken': getCookie('csrftoken')
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify({ message: messageText })
       })
       .then(response => response.json())
       .then(data => {
@@ -149,21 +146,20 @@
       userMessageInput.focus();
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', () => {
       const userMessageInput = document.getElementById('userMessage');
-      userMessageInput.addEventListener('keydown', function (event) {
+      const micButton = document.getElementById('micButton');
+      const micIcon = micButton.querySelector('i');
+      const SILENCE_TIMEOUT = 4000;
+
+      populateVoices();
+
+      userMessageInput.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
           event.preventDefault();
           sendMessage();
         }
       });
-
-      populateVoices();
-
-      const micButton = document.getElementById("micButton");
-      const micIcon = micButton.querySelector("i");
-      const userMessage = document.getElementById("userMessage");
-      const SILENCE_TIMEOUT = 4000;
 
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
@@ -172,47 +168,47 @@
         return;
       }
 
-      window.recognition = new SpeechRecognition();
-      window.recognition.lang = 'en-US';
-      window.recognition.interimResults = false;
-      window.recognition.maxAlternatives = 1;
-      window.recognition.continuous = true;
-
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.continuous = true;
+      window.recognition = recognition;
       window.listening = false;
-      let autoSubmitTimer = null;
 
-      const resetAutoSubmitTimer = () => {
+      let autoSubmitTimer = null;
+      let lastTranscript = "";
+
+      function resetAutoSubmitTimer() {
         if (autoSubmitTimer) clearTimeout(autoSubmitTimer);
         autoSubmitTimer = setTimeout(() => {
-          if (userMessage.value.trim() !== "") {
+          if (userMessageInput.value.trim()) {
             sendMessage();
           }
         }, SILENCE_TIMEOUT);
-      };
+      }
 
-      const startListening = () => {
+      function startListening() {
         try {
-          window.recognition.start();
+          recognition.start();
           micIcon.style.color = "red";
           micButton.classList.add("active");
-          userMessage.focus();
           window.listening = true;
-          resetAutoSubmitTimer();
         } catch (e) {
-          console.error(e);
+          console.error("Start failed:", e);
         }
-      };
+      }
 
-      const stopListening = () => {
-        window.listening = false;
+      function stopListening() {
+        try {
+          recognition.stop();
+        } catch (e) {
+          console.error("Stop failed:", e);
+        }
         micIcon.style.color = "orange";
         micButton.classList.remove("active");
-        if (autoSubmitTimer) {
-          clearTimeout(autoSubmitTimer);
-          autoSubmitTimer = null;
-        }
-        window.recognition.stop();
-      };
+        window.listening = false;
+        if (autoSubmitTimer) clearTimeout(autoSubmitTimer);
+      }
 
       micButton.addEventListener("click", () => {
         if (window.listening) {
@@ -222,50 +218,43 @@
         }
       });
 
-      let lastTranscript = "";
-
-      window.recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript.trim();
-
-        // Avoid repeated transcript
-        if (transcript === lastTranscript) {
-          console.log("Duplicate transcript ignored:", transcript);
-          return;
-        }
-
+      recognition.onresult = (event) => {
+        const transcript = event.results[event.results.length - 1][0].transcript.trim();
+        if (transcript === lastTranscript) return; // prevent duplicate
         lastTranscript = transcript;
 
-        // Submit if "done talking" spoken
-        if (transcript.toLowerCase().includes("done talking") && userMessage.value.trim() !== "") {
-          if (autoSubmitTimer) clearTimeout(autoSubmitTimer);
+        if (transcript.toLowerCase().includes("done talking") && userMessageInput.value.trim()) {
           sendMessage();
           return;
         }
 
-        if (userMessage.value.trim() !== '') {
-          userMessage.value += ' ';
+        if (userMessageInput.value.trim() !== '') {
+          userMessageInput.value += ' ';
         }
-        userMessage.value += transcript;
+        userMessageInput.value += transcript;
         resetAutoSubmitTimer();
       };
 
-      window.recognition.onend = () => {
-        // Reset last transcript on recognition end
-        lastTranscript = "";
-
+      recognition.onend = () => {
+        lastTranscript = ""; // Clear for next cycle
         if (window.listening) {
           setTimeout(() => {
             try {
-              window.recognition.start();
+              recognition.start();
             } catch (e) {
-              console.error(e);
+              console.error("Restart failed:", e);
             }
-          }, 500);
-        } else {
-          micIcon.style.color = "orange";
+          }, 300);
         }
       };
 
+      recognition.onerror = (event) => {
+        console.error("Recognition error:", event.error);
+        stopListening();
+      };
+
+      micIcon.style.color = "orange";
+    });
   </script>
 </body>
 </html>
