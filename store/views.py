@@ -4793,7 +4793,7 @@ def register_mcp(request):
 
     # Get local OpenAPI schema from the same server
     schema_url = request.build_absolute_uri('/api/schema/')
-    schema_response = requests.get(schema_url)
+    schema_response = requests.get(schema_url, headers={"Accept": "application/json"})
 
     if schema_response.status_code != 200:
         return JsonResponse({"error": "Failed to fetch schema."}, status=schema_response.status_code)
