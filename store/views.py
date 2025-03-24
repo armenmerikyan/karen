@@ -4339,7 +4339,7 @@ def call_node_script(request):
     handle = request.GET.get('handle')
     if handle:
         handle = handle.lstrip('@')
-        
+
     if not handle:
         return JsonResponse({'status': 'error', 'message': 'Missing `handle` parameter'}, status=400)
 
@@ -4385,12 +4385,14 @@ def handle_list_view(request):
     handles = TwitterHandleChecker.objects.all().order_by('-checked_at')[:300]
 
     # Get distinct handle names only
-    distinct_handle_names = (
-        TwitterHandleChecker.objects
-        .order_by('handle')
-        .values_list('handle', flat=True)
-        .distinct()
-    )
+    distinct_handle_names = [
+        handle.lstrip('@') for handle in (
+            TwitterHandleChecker.objects
+            .order_by('handle')
+            .values_list('handle', flat=True)
+            .distinct()
+        )
+    ]
 
 
     download_type = request.GET.get('type')
