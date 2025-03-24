@@ -1,8 +1,53 @@
 {% extends 'base.html' %}
-
 {% load custom_filters %}
 
 {% block content %}
+
+<!-- Gigahard Services Section -->
+<section class="py-5 bg-dark text-light">
+  <div class="container">
+    <h2 class="text-center mb-5">What Gigahard Offers</h2>
+    <div class="row text-center">
+
+      <!-- Agent Store -->
+      <div class="col-md-4 mb-4">
+        <div class="card bg-secondary h-100 shadow-lg border-0">
+          <div class="card-body">
+            <h4 class="card-title">🛒 Agent Store</h4>
+            <p class="card-text">
+              Browse, list, and buy access to powerful AI agents. A marketplace for intelligent digital workers.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent-as-a-Service -->
+      <div class="col-md-4 mb-4">
+        <div class="card bg-secondary h-100 shadow-lg border-0">
+          <div class="card-body">
+            <h4 class="card-title">🤖 Agent-as-a-Service</h4>
+            <p class="card-text">
+              Use or resell pre-built agents. White-label solutions for businesses, creators, and communities.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent Hosting -->
+      <div class="col-md-4 mb-4">
+        <div class="card bg-secondary h-100 shadow-lg border-0">
+          <div class="card-body">
+            <h4 class="card-title">☁️ Agent Hosting</h4>
+            <p class="card-text">
+              Run your agents in isolated Docker containers hosted on our secure, scalable cloud platform.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
 
 <!-- Displaying JSON data -->
 <section class="py-0">
@@ -18,22 +63,19 @@
         </div>
         {% endif %}
         <div class="col-md-12 text-center mt-4">  
-
           <h2 class="card-title text-center mb-4">Solana Wallet Address</h2>
           <p class="card-text text-center">
             Our AI-driven agents streamline workflows, boost revenue, and enhance customer experiences. Join our presale and be part of the future of business automation!
-
-Send all donations, payments, and other funds to the following Solana wallet address:
+            <br><br>
+            Send all donations, payments, and other funds to the following Solana wallet address:
           </p>
           <div class="alert alert-info text-center">
               <strong>Solana Wallet Address:</strong> <br>
               <code class="text-break"><a href="https://solscan.io/account/{{profile.wallet}}" >{{profile.wallet}}</a></code>
           </div>
           <p class="text-center">Thank you for your support!</p>
-
-          
-             
         </div>
+
         <div class="col-md-12 text-center">   
             <h2 class="card-title text-center mb-4">x.com handle</h2>
             <p class="card-text text-center">Please follow x account at:</p>
@@ -49,13 +91,12 @@ Send all donations, payments, and other funds to the following Solana wallet add
           {% for token in tokens %}
           <li>
               {{ token.name }} - {{ token.address }}  
-              <BR>
+              <br>
               {{ token.description }}  
           </li>
           {% endfor %}    
         </div>        
       </div>
-      
     </div>
   </div>
 </section>    
