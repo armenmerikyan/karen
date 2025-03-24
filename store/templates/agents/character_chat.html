@@ -49,7 +49,7 @@
         recognition.start();
         micIcon.style.color = "red";
         micButton.classList.add("active");
-        // Set focus to the message input when starting listening.
+        // Set focus to the message box when starting listening.
         userMessage.focus();
         listening = true;
         resetAutoSubmitTimer();
@@ -81,6 +81,7 @@
         }
         userMessage.value += transcript;
   
+        // If "done talking" is detected, send message immediately.
         if (transcript.toLowerCase().includes("done talking") && userMessage.value.trim() !== "") {
           sendMessage();
           if (autoSubmitTimer) {
@@ -111,9 +112,14 @@
         }
       };
   
+      // Set the initial state of the mic icon.
       micIcon.style.color = "orange";
+  
+      // Expose startListening globally so that chat.js can call it.
+      window.startListening = startListening;
     });
   </script>
+  
   
 </head>
 <body class="bg-light">

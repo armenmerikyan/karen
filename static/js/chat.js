@@ -30,11 +30,15 @@ function populateVoices() {
 
 speechSynthesis.onvoiceschanged = populateVoices;
 
-function speakText(text) {
+// Updated speakText to accept an optional callback that fires when speaking is finished.
+function speakText(text, callback) {
   const selectedIndex = document.getElementById('voiceSelect').value;
   const selectedVoice = voices[selectedIndex];
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.voice = selectedVoice;
+  if (callback) {
+    utterance.onend = callback;
+  }
   speechSynthesis.speak(utterance);
 }
 
@@ -70,7 +74,17 @@ function sendMessage() {
     chatWindow.scrollTop = chatWindow.scrollHeight;
 
     if (document.getElementById('ttsToggle').checked && data.response) {
-      speakText(data.response);
+      // When TTS is enabled, speak the response then restart listening when finished.
+      speakText(data.response, function() {
+        if (typeof window.startListening === 'function') {
+          window.startListening();
+        }
+      });
+    } else {
+      // Restart listening immediately if TTS is disabled.
+      if (typeof window.startListening === 'function') {
+        window.startListening();
+      }
     }
   })
   .catch(error => {
@@ -80,6 +94,10 @@ function sendMessage() {
     errorDiv.textContent = "Error: " + error;
     chatWindow.appendChild(errorDiv);
     chatWindow.scrollTop = chatWindow.scrollHeight;
+    // Optionally restart listening even if there's an error.
+    if (typeof window.startListening === 'function') {
+      window.startListening();
+    }
   });
 
   userMessageInput.focus();
