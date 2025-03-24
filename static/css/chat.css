@@ -29,3 +29,11 @@ html, body {
     color: #198754;
   }
   
+  #micButton i {
+    color: yellow; /* default */
+  }
+  
+  #micButton.active i {
+    color: red; /* listening */
+  }
+  
