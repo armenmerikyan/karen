@@ -4770,7 +4770,11 @@ def user_chatbot_response_private(request, character_id):
                 if tool.function.name == "ADD_MEMORY":
                     content = function_args.get("content", "")
                     if content:
-                        new_memory = character.memories.create(content=content)
+                        new_memory = character.memories.create(
+                            content=content,
+                            user=request.user
+                        )
+
                         try:
                             embed = client.embeddings.create(input=content, model="text-embedding-3-small")
                             new_memory.embedding = embed.data[0].embedding
