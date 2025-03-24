@@ -27,7 +27,7 @@
         return;
       }
       
-      // Expose recognition and listening globally
+      // Global recognition instance and tracking variable.
       window.recognition = new SpeechRecognition();
       window.recognition.lang = 'en-US';
       window.recognition.interimResults = false;
@@ -35,6 +35,9 @@
       window.recognition.continuous = true; // Keep the mic on continuously
 
       window.listening = false;
+      // Holds the last transcript that triggered sendMessage
+      window.lastSentTranscript = '';
+
       let autoSubmitTimer = null;
 
       const resetAutoSubmitTimer = () => {
@@ -47,7 +50,11 @@
       };
 
       const startListening = () => {
-        window.recognition.start();
+        try {
+          window.recognition.start();
+        } catch (e) {
+          console.error(e);
+        }
         micIcon.style.color = "red";
         micButton.classList.add("active");
         userMessage.focus();
@@ -63,7 +70,11 @@
           clearTimeout(autoSubmitTimer);
           autoSubmitTimer = null;
         }
-        window.recognition.stop();
+        try {
+          window.recognition.stop();
+        } catch (e) {
+          console.error(e);
+        }
       };
 
       micButton.addEventListener("click", () => {
@@ -75,22 +86,39 @@
       });
       
       window.recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
+        // Only process final results.
+        let finalTranscript = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          }
+        }
+        if (!finalTranscript) return;
         
-        // If the transcript includes "done talking" and there's text, trigger sendMessage.
-        if (transcript.toLowerCase().includes("done talking") && userMessage.value.trim() !== "") {
-          sendMessage();
-          if (autoSubmitTimer) {
-            clearTimeout(autoSubmitTimer);
-            autoSubmitTimer = null;
+        const triggerPhrase = "done talking";
+        let processedTranscript = finalTranscript;
+        
+        // If the final transcript ends with the trigger phrase, remove it.
+        if (processedTranscript.toLowerCase().endsWith(triggerPhrase)) {
+          processedTranscript = processedTranscript.slice(0, -triggerPhrase.length).trim();
+          // Only trigger send if there's content and it isn’t identical to the last submission.
+          if (processedTranscript && processedTranscript !== window.lastSentTranscript) {
+            userMessage.value = processedTranscript;
+            window.lastSentTranscript = processedTranscript;
+            if (autoSubmitTimer) {
+              clearTimeout(autoSubmitTimer);
+              autoSubmitTimer = null;
+            }
+            sendMessage();
           }
           return;
         }
-        // Append recognized text to the input.
+        
+        // Otherwise, append the final transcript to the input.
         if (userMessage.value.trim() !== '') {
           userMessage.value += ' ';
         }
-        userMessage.value += transcript;
+        userMessage.value += processedTranscript;
         resetAutoSubmitTimer();
       };
 

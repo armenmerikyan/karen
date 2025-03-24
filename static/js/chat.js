@@ -14,7 +14,7 @@ function getCookie(name) {
 }
 
 let voices = [];
-let isSubmitting = false; // flag to prevent duplicate submissions
+let isSubmitting = false; // Prevent duplicate submissions
 
 function populateVoices() {
   voices = speechSynthesis.getVoices();
@@ -40,7 +40,7 @@ function speakText(text) {
 }
 
 function sendMessage() {
-  if (isSubmitting) return; // prevent duplicate submissions
+  if (isSubmitting) return;
   isSubmitting = true;
   
   const userMessageInput = document.getElementById('userMessage');
@@ -57,7 +57,7 @@ function sendMessage() {
   chatWindow.appendChild(userMessageDiv);
   chatWindow.scrollTop = chatWindow.scrollHeight;
   
-  // Clear the input immediately so subsequent voice events won’t resend the same message.
+  // Clear the input immediately.
   userMessageInput.value = '';
 
   const data = { message: messageText };
@@ -92,6 +92,8 @@ function sendMessage() {
   })
   .finally(() => {
     isSubmitting = false;
+    // Clear the lastSentTranscript so that new speech can trigger a send.
+    window.lastSentTranscript = '';
     // Restart recognition if still active.
     if (window.listening && window.recognition) {
       try {
