@@ -12,6 +12,47 @@
     const CHAT_URL = `/user_chatbot/${CHARACTER_ID}/response/`;
   </script>
   <script src="{% static 'js/chat.js' %}" defer></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const micButton = document.getElementById("micButton");
+      const userMessage = document.getElementById("userMessage");
+  
+      // Check for browser support
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        micButton.disabled = true;
+        micButton.title = "Speech recognition not supported in this browser.";
+        return;
+      }
+  
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+  
+      micButton.addEventListener("click", () => {
+        recognition.start();
+        micButton.classList.add("active");
+      });
+  
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        userMessage.value = transcript;
+        micButton.classList.remove("active");
+      };
+  
+      recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        micButton.classList.remove("active");
+      };
+  
+      recognition.onend = () => {
+        micButton.classList.remove("active");
+      };
+    });
+  </script>
+  
 </head>
 <body class="bg-light">
   <div id="chatContainer">
@@ -22,6 +63,10 @@
       <a href="{% url 'character_update' character.id %}" class="btn btn-secondary">
         <i class="fas fa-arrow-left me-1"></i> Back
       </a>
+      <button type="button" class="btn btn-outline-secondary" id="micButton">
+        <i class="fas fa-microphone"></i>
+      </button>
+      
       <div class="form-check form-switch mb-0">
         <input class="form-check-input" type="checkbox" id="ttsToggle">
         <label class="form-check-label" for="ttsToggle">
