@@ -4737,25 +4737,27 @@ def user_chatbot_response_private(request, character_id):
         }
     ]
 
-    using_tools = tools and model_id.startswith("ft:")
-    model_for_tools = "gpt-4-1106-preview" if using_tools else model_id
-
     try:
-        chat_args = {
-            "model": model_for_tools,
-            "messages": messages,
-        }
+        # First, run the model using the fine-tuned model (no tools)
+        response = client.chat.completions.create(
+            model=model_id,
+            messages=messages
+        )
 
-        if using_tools:
-            chat_args["tools"] = tools
-            chat_args["tool_choice"] = "auto"
-
-        response = client.chat.completions.create(**chat_args)
         tool_calls = getattr(response.choices[0].message, "tool_calls", []) if response.choices else []
 
-        final_messages = messages
-
         if tool_calls:
+            # If tool calls are detected, rerun with GPT-4 and tools
+            response = client.chat.completions.create(
+                model="gpt-4-1106-preview",
+                messages=messages,
+                tools=tools,
+                tool_choice="auto"
+            )
+
+            tool_calls = getattr(response.choices[0].message, "tool_calls", []) if response.choices else []
+            final_messages = messages
+
             for tool in tool_calls:
                 try:
                     function_args = json.loads(tool.function.arguments)
@@ -4785,10 +4787,12 @@ def user_chatbot_response_private(request, character_id):
                         }
                     ]
 
-        final_response = client.chat.completions.create(
-            model="gpt-4-1106-preview" if tool_calls else model_id,
-            messages=final_messages
-        )
+            final_response = client.chat.completions.create(
+                model="gpt-4-1106-preview",
+                messages=final_messages
+            )
+        else:
+            final_response = response
 
         bot_reply = final_response.choices[0].message.content if final_response.choices else "I'm not sure what to say."
 
@@ -4801,8 +4805,6 @@ def user_chatbot_response_private(request, character_id):
         logger.error("Final messages being sent to OpenAI: %s", json.dumps(messages, indent=2))
         logger.error("Chat processing failed: %s", str(e))
         return JsonResponse({"error": "An internal error occurred."}, status=500)
-
-
 
 
 def chat_view(request, character_id):
