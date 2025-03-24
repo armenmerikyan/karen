@@ -4630,6 +4630,7 @@ def copy_model_to_current(request, character_id):
     
 
 logger = logging.getLogger(__name__)
+
 @csrf_exempt
 def user_chatbot_response_private(request, character_id):
     if not request.user.is_authenticated:
@@ -4650,15 +4651,7 @@ def user_chatbot_response_private(request, character_id):
 
     client = OpenAI(api_key=request.user.openai_api_key)
 
-    # Default to fine-tuned model if available
-    model_id = "gpt-3.5-turbo"
-    if character.chatgpt_model_id_current:
-        try:
-            fine_tune_status = client.fine_tuning.jobs.retrieve(character.chatgpt_model_id_current)
-            if fine_tune_status.status == 'succeeded' and fine_tune_status.fine_tuned_model:
-                model_id = fine_tune_status.fine_tuned_model
-        except Exception as e:
-            logger.warning("Fine-tune retrieval error: %s", str(e))
+    model_id = "gpt-4-1106-preview"
 
     try:
         embedding_response = client.embeddings.create(
@@ -4737,22 +4730,15 @@ def user_chatbot_response_private(request, character_id):
         }
     ]
 
-    using_tools = tools and model_id.startswith("ft:")
-    model_for_tools = "gpt-4-1106-preview" if using_tools else model_id
-
     try:
-        chat_args = {
-            "model": model_for_tools,
-            "messages": messages,
-        }
+        response = client.chat.completions.create(
+            model=model_id,
+            messages=messages,
+            tools=tools,
+            tool_choice="auto"
+        )
 
-        if using_tools:
-            chat_args["tools"] = tools
-            chat_args["tool_choice"] = "auto"
-
-        response = client.chat.completions.create(**chat_args)
-        tool_calls = getattr(response.choices[0].message, "tool_calls", []) if response.choices else []
-
+        tool_calls = response.choices[0].message.tool_calls if response.choices else []
         final_messages = messages
 
         if tool_calls:
@@ -4785,10 +4771,12 @@ def user_chatbot_response_private(request, character_id):
                         }
                     ]
 
-        final_response = client.chat.completions.create(
-            model="gpt-4-1106-preview" if tool_calls else model_id,
-            messages=final_messages
-        )
+            final_response = client.chat.completions.create(
+                model=model_id,
+                messages=final_messages
+            )
+        else:
+            final_response = response
 
         bot_reply = final_response.choices[0].message.content if final_response.choices else "I'm not sure what to say."
 
