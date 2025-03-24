@@ -4787,11 +4787,29 @@ class AddMemoryView(APIView):
 @require_GET
 def register_mcp(request):
     user = request.user
+    character_id = request.GET.get('character_id')
 
     if not user.openai_api_key:
         return JsonResponse({"error": "User does not have an OpenAI API key."}, status=400)
 
-    # Get local OpenAPI schema from the same server
+    # Try to get character (optional)
+    character = None
+    model_id = "gpt-3.5-turbo"
+    if character_id:
+        try:
+            character = UserCharacter.objects.get(id=character_id, user=user)
+            if character.chatgpt_model_id_current:
+                client = OpenAI(api_key=user.openai_api_key)
+                try:
+                    fine_tune_status = client.fine_tuning.jobs.retrieve(character.chatgpt_model_id_current)
+                    if fine_tune_status.status == 'succeeded' and fine_tune_status.fine_tuned_model:
+                        model_id = fine_tune_status.fine_tuned_model
+                except Exception as e:
+                    logger.warning("Fine-tune retrieval error: %s", str(e))
+        except UserCharacter.DoesNotExist:
+            return JsonResponse({"error": "Character not found."}, status=404)
+
+    # Get schema
     schema_url = request.build_absolute_uri('/api/schema/')
     schema_response = requests.get(schema_url, headers={"Accept": "application/json"})
 
@@ -4814,15 +4832,13 @@ def register_mcp(request):
 
     for name, schema in schemas.items():
         if not isinstance(schema, dict):
-            continue  # skip invalid
-
-        # Skip if not type: object or has disallowed keywords
+            continue
         if schema.get("type") != "object":
             continue
         if any(k in schema for k in ["enum", "anyOf", "oneOf", "allOf", "not"]):
             continue
 
-        schema["type"] = "object"  # enforce object type
+        schema["type"] = "object"
 
         tool = {
             "type": "function",
@@ -4835,7 +4851,7 @@ def register_mcp(request):
 
         try:
             client.chat.completions.create(
-                model="gpt-4-turbo",
+                model=model_id,
                 messages=[{"role": "system", "content": f"Registering {name}_api"}],
                 tools=[tool],
                 tool_choice="auto"
@@ -4846,6 +4862,7 @@ def register_mcp(request):
 
     return JsonResponse({
         "status": "MCP registration completed",
+        "model_used": model_id,
         "registered_count": len(registered),
         "failed_count": len(failed),
         "registered": registered,
