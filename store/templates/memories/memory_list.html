@@ -36,8 +36,8 @@
                 <!-- Left side: Clickable title for editing -->
                 <a href="{% url 'edit_memory' memory.pk %}" class="text-decoration-none text-light flex-grow-1 me-3">
                   <strong>{{ forloop.counter }}.</strong> 
+                  <small class="text-muted"><i class="fas fa-quote-left me-1"></i>{{ memory.content|truncatechars:80 }}</small>
                 </a>
-                <small class="text-muted"><i class="fas fa-quote-left me-1"></i>{{ memory.content|truncatechars:80 }}</small>
 
                 <!-- Delete button to the far right -->
                 <a href="{% url 'delete_memory' memory.pk %}" class="btn btn-outline-danger btn-sm">
