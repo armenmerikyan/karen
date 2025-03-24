@@ -4646,7 +4646,7 @@ def user_chatbot_response_private(request, character_id):
 
     try:
         data = json.loads(request.body)
-        user_message = data.get("message", "")
+        user_message = data.get("message", "").strip()
         if not user_message:
             return JsonResponse({"error": "No message provided"}, status=400)
     except json.JSONDecodeError:
@@ -4663,6 +4663,7 @@ def user_chatbot_response_private(request, character_id):
         except Exception as e:
             logger.warning("Fine-tune retrieval error: %s", str(e))
 
+    # Generate embedding for the current message
     try:
         embedding_response = client.embeddings.create(
             input=user_message,
@@ -4675,8 +4676,8 @@ def user_chatbot_response_private(request, character_id):
         logger.error("Embedding generation error: %s", str(e))
         return JsonResponse({"error": "Failed to generate query embedding"}, status=500)
 
+    # Memory similarity check
     memory_similarities = []
-
     for memory in character.memories.all():
         try:
             if not memory.embedding:
@@ -4687,16 +4688,14 @@ def user_chatbot_response_private(request, character_id):
                 memory.embedding = mem_embed_resp.data[0].embedding
                 memory.save()
 
-            # Convert string embedding if needed
-            if isinstance(memory.embedding, str):
-                memory_embedding = ast.literal_eval(memory.embedding)
-            else:
-                memory_embedding = memory.embedding
+            embedding = memory.embedding
+            if isinstance(embedding, str):
+                embedding = ast.literal_eval(embedding)
 
-            similarity = 1 - spatial.distance.cosine(query_embedding, memory_embedding)
+            similarity = 1 - spatial.distance.cosine(query_embedding, embedding)
             memory_similarities.append((similarity, memory.content))
         except Exception as e:
-            logger.warning("Memory similarity failed for memory ID %s: %s", memory.id, str(e))
+            logger.warning("Similarity check failed for memory ID %s: %s", memory.id, str(e))
 
     top_memories = sorted(memory_similarities, key=lambda x: x[0], reverse=True)[:3]
     retrieved_context = "\n".join([m[1] for m in top_memories])
@@ -4705,7 +4704,8 @@ def user_chatbot_response_private(request, character_id):
         f"You are {character.name}, a fictional character with the following personality: {character.persona}.\n"
         f"Use this information to stay in character during the conversation.\n"
         f"Relevant memories:\n{retrieved_context}\n"
-        "Always respond in character and avoid generic assistant behavior. Do not say you're an AI."
+        "If the user shares something meaningful that should be remembered, call ADD_MEMORY.\n"
+        "Always respond in character and do not say you're an AI."
     )
 
     conversation, _ = Conversation.objects.get_or_create(
@@ -4719,37 +4719,77 @@ def user_chatbot_response_private(request, character_id):
         .values('role', 'content')
     )[::-1]
 
-    chat_history.append({
-        "role": "user",
-        "content": user_message
-    })
-
+    chat_history.append({"role": "user", "content": user_message})
     messages = [{"role": "system", "content": system_message}] + chat_history
+
+    tools = [
+        {
+            "type": "function",
+            "function": {
+                "name": "ADD_MEMORY",
+                "description": "Add a memory to the character's memory bank.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "content": {
+                            "type": "string",
+                            "description": "The memory content to store."
+                        }
+                    },
+                    "required": ["content"]
+                }
+            }
+        }
+    ]
 
     try:
         response = client.chat.completions.create(
             model=model_id,
+            messages=messages,
+            tools=tools,
+            tool_choice="auto"
+        )
+
+        tool_calls = response.choices[0].message.tool_calls if response.choices else []
+
+        if tool_calls:
+            for tool in tool_calls:
+                function_args = json.loads(tool.function.arguments)
+                if tool.function.name == "ADD_MEMORY":
+                    content = function_args.get("content", "")
+                    if content:
+                        new_memory = character.memories.create(content=content)
+                        try:
+                            embed = client.embeddings.create(input=content, model="text-embedding-3-small")
+                            new_memory.embedding = embed.data[0].embedding
+                            new_memory.save()
+                        except Exception as e:
+                            logger.warning("Embedding for new memory failed: %s", str(e))
+
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tool.id,
+                        "name": tool.function.name,
+                        "content": json.dumps({"status": "success", "content": content})
+                    })
+
+        # Continue chat after tool use
+        final_response = client.chat.completions.create(
+            model=model_id,
             messages=messages
         )
-        bot_reply = response.choices[0].message.content
+        bot_reply = final_response.choices[0].message.content if final_response.choices else "I'm not sure what to say."
 
-        # Save conversation messages
-        Message.objects.create(
-            conversation=conversation,
-            role="user",
-            content=user_message
-        )
-        Message.objects.create(
-            conversation=conversation,
-            role="assistant",
-            content=bot_reply
-        )
+        Message.objects.create(conversation=conversation, role="user", content=user_message)
+        Message.objects.create(conversation=conversation, role="assistant", content=bot_reply)
 
         return JsonResponse({"response": bot_reply})
 
     except Exception as e:
-        logger.error("Chat generation failed: %s", str(e))
+        logger.error("Chat processing failed: %s", str(e))
         return JsonResponse({"error": "An internal error occurred."}, status=500)
+
+
 
 def chat_view(request, character_id):
     character = get_object_or_404(UserCharacter, id=character_id)
