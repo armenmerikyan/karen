@@ -43,7 +43,7 @@
   
       const stopListening = () => {
         recognition.stop();
-        micIcon.style.color = "yellow";
+        micIcon.style.color = "green";
         micButton.classList.remove("active");
         listening = false;
       };
@@ -73,12 +73,12 @@
         if (listening) {
           setTimeout(startListening, 250);
         } else {
-          micIcon.style.color = "yellow";
+          micIcon.style.color = "green";
         }
       };
   
       // Set default state
-      micIcon.style.color = "yellow";
+      micIcon.style.color = "green";
     });
   </script>
   

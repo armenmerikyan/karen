@@ -30,7 +30,7 @@ html, body {
   }
   
   #micButton i {
-    color: yellow; /* default */
+    color: green; /* default */
   }
   
   #micButton.active i {
