@@ -1795,46 +1795,37 @@ class TwitterHandleChecker(models.Model):
             "checked_at": self.checked_at.isoformat(),
         }
 
-
 class UserCharacter(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='characters')
     name = models.CharField(max_length=100)
     persona = models.TextField(help_text="Character personality or system prompt")
-    chatgpt_model_id = models.CharField(
-        max_length=255,
-        help_text="The ChatGPT Fine-Tuned Model ID.",
-        blank=True,
-        null=True
-    )
-    chatgpt_model_id_current = models.CharField(
-        max_length=255,
-        help_text="The ChatGPT Fine-Tuned Model ID currently active.",
-        blank=True,
-        null=True
-    )
+    chatgpt_model_id = models.CharField(max_length=255, blank=True, null=True)
+    chatgpt_model_id_current = models.CharField(max_length=255, blank=True, null=True)
+    external_id = models.CharField(max_length=255, blank=True, null=True)
+    metadata = models.JSONField(blank=True, null=True, help_text="Additional context (e.g., backstory, goals)")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.name} ({self.user.username})"
     
+    def to_mcp_context(self):
+        return {
+            "id": str(self.external_id or self.id),
+            "name": self.name,
+            "persona": self.persona,
+            "model_id": self.chatgpt_model_id_current or self.chatgpt_model_id,
+            "metadata": self.metadata or {},
+            "created_at": self.created_at.isoformat(),
+            "user_id": self.user.id,
+            "type": "agent",  # optional: could be "agent", "npc", etc.
+        }
 
 class CharacterMemory(models.Model):
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='character_memories'
-    )
-    character = models.ForeignKey(
-        'UserCharacter',
-        on_delete=models.CASCADE,
-        related_name='memories'
-    )
-    content = models.TextField(help_text="The memory content or thought.")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='character_memories')
+    character = models.ForeignKey(UserCharacter, on_delete=models.CASCADE, related_name='memories')
+    content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
-    importance = models.FloatField(
-        default=0.5,
-        help_text="Optional: A score from 0 to 1 indicating how important this memory is."
-    )
+    importance = models.FloatField(default=0.5)
     memory_type = models.CharField(
         max_length=50,
         choices=[
@@ -1845,17 +1836,30 @@ class CharacterMemory(models.Model):
         ],
         default='observation'
     )
-    embedding = models.JSONField(
-        blank=True,
-        null=True,
-        help_text="Optional: Vector embedding of the memory content for semantic search."
-    )
+    embedding = models.JSONField(blank=True, null=True)
+    source = models.CharField(max_length=255, blank=True, null=True)
+    tags = models.JSONField(blank=True, null=True)
+    metadata = models.JSONField(blank=True, null=True)
 
     def __str__(self):
         return f"Memory for {self.character.name} at {self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"
 
     def save(self, *args, **kwargs):
-        # Automatically set the user from the character if not provided
         if not self.user and self.character:
             self.user = self.character.user
         super().save(*args, **kwargs)
+        
+    def to_mcp_context(self):
+        return {
+            "id": str(self.id),
+            "character_id": str(self.character.external_id or self.character.id),
+            "user_id": self.user.id,
+            "content": self.content,
+            "timestamp": self.timestamp.isoformat(),
+            "importance": self.importance,
+            "memory_type": self.memory_type,
+            "embedding": self.embedding,
+            "source": self.source,
+            "tags": self.tags or [],
+            "metadata": self.metadata or {},
+        }
