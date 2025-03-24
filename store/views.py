@@ -4745,7 +4745,7 @@ def user_chatbot_response_private(request, character_id):
 
     # Use GPT-4 if tools are required (fine-tuned models don't support tools)
     using_tools = tools and model_id.startswith("ft:")
-    model_for_tools = "gpt-4" if using_tools else model_id
+    model_for_tools = "gpt-4-1106-preview" if using_tools else model_id
 
     try:
         chat_args = {
@@ -4854,7 +4854,7 @@ def register_mcp(request):
 
     # Try to get character (optional)
     character = None
-    model_id = "gpt-4" 
+    model_id = "gpt-4-1106-preview" 
 
     # Get schema
     schema_url = request.build_absolute_uri('/api/schema/')
