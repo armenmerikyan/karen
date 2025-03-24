@@ -6,12 +6,12 @@
   <title>Chat with Bot</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="{% static 'css/chat.css' %}"> 
+  <link rel="stylesheet" href="{% static 'css/chat.css?v=5' %}"> 
   <script>
     const CHARACTER_ID = {{ character.id }};
     const CHAT_URL = `/user_chatbot/${CHARACTER_ID}/response/`;
   </script>
-  <script src="{% static 'js/chat.js' %}" defer></script>
+  <script src="{% static 'js/chat.js?v=1' %}" defer></script>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -19,7 +19,7 @@
       const micIcon = micButton.querySelector("i");
       const userMessage = document.getElementById("userMessage");
       const SILENCE_TIMEOUT = 4000; // 4 seconds timeout, adjust as needed
-
+  
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
         micButton.disabled = true;
@@ -31,12 +31,11 @@
       recognition.lang = 'en-US';
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
-      // Use non-continuous mode so we control restarting manually
       recognition.continuous = false;
-
+  
       let listening = false;
       let autoSubmitTimer = null;
-
+  
       const resetAutoSubmitTimer = () => {
         if (autoSubmitTimer) clearTimeout(autoSubmitTimer);
         autoSubmitTimer = setTimeout(() => {
@@ -45,15 +44,17 @@
           }
         }, SILENCE_TIMEOUT);
       };
-
+  
       const startListening = () => {
         recognition.start();
         micIcon.style.color = "red";
         micButton.classList.add("active");
+        // Set focus to the message input when starting listening.
+        userMessage.focus();
         listening = true;
         resetAutoSubmitTimer();
       };
-
+  
       const stopListening = () => {
         listening = false;
         micIcon.style.color = "orange";
@@ -64,7 +65,7 @@
         }
         recognition.stop();
       };
-
+  
       micButton.addEventListener("click", () => {
         if (listening) {
           stopListening();
@@ -72,16 +73,14 @@
           startListening();
         }
       });
-
+  
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
-        // Append transcript to input (add a space if necessary)
         if (userMessage.value.trim() !== '') {
           userMessage.value += ' ';
         }
         userMessage.value += transcript;
-
-        // If transcript includes "done talking", submit immediately (if input is not empty)
+  
         if (transcript.toLowerCase().includes("done talking") && userMessage.value.trim() !== "") {
           sendMessage();
           if (autoSubmitTimer) {
@@ -92,14 +91,13 @@
         }
         resetAutoSubmitTimer();
       };
-
+  
       recognition.onerror = (event) => {
         console.error("Speech recognition error:", event.error);
         stopListening();
       };
-
+  
       recognition.onend = () => {
-        // Increase delay slightly before restarting to accommodate slower speakers
         if (listening) {
           setTimeout(() => {
             try {
@@ -112,11 +110,11 @@
           micIcon.style.color = "orange";
         }
       };
-
-      // Set the initial state of the mic icon.
+  
       micIcon.style.color = "orange";
     });
   </script>
+  
 </head>
 <body class="bg-light">
   <div id="chatContainer">
