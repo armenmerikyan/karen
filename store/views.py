@@ -4630,7 +4630,6 @@ def copy_model_to_current(request, character_id):
     
 
 logger = logging.getLogger(__name__)
-
 @csrf_exempt
 def user_chatbot_response_private(request, character_id):
     if not request.user.is_authenticated:
@@ -4763,18 +4762,32 @@ def user_chatbot_response_private(request, character_id):
                         except Exception as e:
                             logger.warning("Embedding for new memory failed: %s", str(e))
 
-                    final_messages = messages + [
-                        {
-                            "role": "tool",
-                            "tool_call_id": tool.id,
-                            "content": json.dumps({"status": "success", "content": content})
-                        }
-                    ]
+                    # Only append the tool message if tool_calls were present and valid
+            followup_messages = messages + [
+                {
+                    "role": "tool",
+                    "tool_call_id": tool.id,
+                    "content": json.dumps({"status": "success", "content": content})
+                }
+            ]
 
             final_response = client.chat.completions.create(
                 model=model_id,
-                messages=final_messages
+                messages=followup_messages
             )
+ 
+            for tool in tool_calls:
+                tool_result = {
+                    "tool_call_id": tool.id,
+                    "content": json.dumps({"status": "success", "content": content})
+                }
+
+                final_response = client.chat.completions.create(
+                    model=model_id,
+                    messages=followup_messages
+                )
+                break
+
         else:
             final_response = response
 
