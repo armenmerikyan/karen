@@ -4737,71 +4737,56 @@ def user_chatbot_response_private(request, character_id):
         }
     ]
 
+    using_tools = tools and model_id.startswith("ft:")
+    model_for_tools = "gpt-4-1106-preview" if using_tools else model_id
+
     try:
-        # First, run the model using the fine-tuned model (no tools)
-        initial_response = client.chat.completions.create(
-            model=model_id,
-            messages=messages
-        )
+        chat_args = {
+            "model": model_for_tools,
+            "messages": messages,
+        }
 
-        # Check if the assistant called a tool (which fine-tuned models cannot do)
-        # If not, use the original response
-        if initial_response.choices and hasattr(initial_response.choices[0].message, "tool_calls"):
-            tool_calls = initial_response.choices[0].message.tool_calls
-        else:
-            tool_calls = []
+        if using_tools:
+            chat_args["tools"] = tools
+            chat_args["tool_choice"] = "auto"
 
-        # If no tool calls were triggered, respond with original output
-        if not tool_calls:
-            bot_reply = initial_response.choices[0].message.content if initial_response.choices else "I'm not sure what to say."
+        response = client.chat.completions.create(**chat_args)
+        tool_calls = getattr(response.choices[0].message, "tool_calls", []) if response.choices else []
 
-            Message.objects.create(conversation=conversation, role="user", content=user_message)
-            Message.objects.create(conversation=conversation, role="assistant", content=bot_reply)
-
-            return JsonResponse({"response": bot_reply})
-
-        # Tool was intended, rerun with GPT-4 and tools enabled
-        tool_response = client.chat.completions.create(
-            model="gpt-4-1106-preview",
-            messages=messages,
-            tools=tools,
-            tool_choice="auto"
-        )
-
-        tool_calls = tool_response.choices[0].message.tool_calls if tool_response.choices else []
         final_messages = messages
 
-        for tool in tool_calls:
-            try:
-                function_args = json.loads(tool.function.arguments)
-            except Exception as e:
-                logger.error("Tool arguments parsing failed: %s", tool.function.arguments)
-                raise
+        if tool_calls:
+            for tool in tool_calls:
+                try:
+                    function_args = json.loads(tool.function.arguments)
+                except Exception as e:
+                    logger.error("Tool arguments parsing failed: %s", tool.function.arguments)
+                    raise
 
-            if tool.function.name == "ADD_MEMORY":
-                content = function_args.get("content", "")
-                if content:
-                    new_memory = character.memories.create(
-                        content=content,
-                        user=request.user
-                    )
-                    try:
-                        embed = client.embeddings.create(input=content, model="text-embedding-3-small")
-                        new_memory.embedding = embed.data[0].embedding
-                        new_memory.save()
-                    except Exception as e:
-                        logger.warning("Embedding for new memory failed: %s", str(e))
+                if tool.function.name == "ADD_MEMORY":
+                    content = function_args.get("content", "")
+                    if content:
+                        new_memory = character.memories.create(
+                            content=content,
+                            user=request.user
+                        )
+                        try:
+                            embed = client.embeddings.create(input=content, model="text-embedding-3-small")
+                            new_memory.embedding = embed.data[0].embedding
+                            new_memory.save()
+                        except Exception as e:
+                            logger.warning("Embedding for new memory failed: %s", str(e))
 
-                final_messages = messages + [
-                    {
-                        "role": "tool",
-                        "tool_call_id": tool.id,
-                        "content": json.dumps({"status": "success", "content": content})
-                    }
-                ]
+                    final_messages = messages + [
+                        {
+                            "role": "tool",
+                            "tool_call_id": tool.id,
+                            "content": json.dumps({"status": "success", "content": content})
+                        }
+                    ]
 
         final_response = client.chat.completions.create(
-            model="gpt-4-1106-preview",
+            model="gpt-4-1106-preview" if tool_calls else model_id,
             messages=final_messages
         )
 
@@ -4816,6 +4801,7 @@ def user_chatbot_response_private(request, character_id):
         logger.error("Final messages being sent to OpenAI: %s", json.dumps(messages, indent=2))
         logger.error("Chat processing failed: %s", str(e))
         return JsonResponse({"error": "An internal error occurred."}, status=500)
+
 
 
 
