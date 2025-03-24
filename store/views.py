@@ -4503,6 +4503,7 @@ def memory_list(request):
 
 @login_required
 def add_memory(request):
+    profile = get_latest_profile()
     character_id = request.GET.get('character')
     if not character_id:
         return redirect('memory_list')  # or return 404
@@ -4525,11 +4526,13 @@ def add_memory(request):
         'form': form,
         'title': 'Add Memory',
         'character': character,  # optional, if you want to show character name on page
+        'profile': profile,
     })
 
 
 @login_required
 def edit_memory(request, pk):
+    profile = get_latest_profile()
     memory = get_object_or_404(CharacterMemory, pk=pk, user=request.user)
 
     if request.method == 'POST':
@@ -4544,6 +4547,7 @@ def edit_memory(request, pk):
         'form': form,
         'title': 'Edit Memory',
         'character': memory.character,  # optional: show on page
+        'profile': profile,
     })
 
 
