@@ -16,7 +16,30 @@ from .models import ImmigrationCase
 from .models import Letter
 from .models import CarFinderResponse
 from .models import WebsiteCreationResponse 
- 
+from .models import CharacterMemory
+
+class CharacterMemorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CharacterMemory
+        fields = [
+            'id',
+            'user',
+            'character',
+            'content',
+            'timestamp',
+            'importance',
+            'memory_type',
+            'embedding',
+            'source',
+            'tags',
+            'metadata',
+        ]
+        read_only_fields = ['id', 'timestamp', 'embedding', 'user']
+
+    def create(self, validated_data):
+        character = validated_data.get('character')
+        validated_data['user'] = character.user
+        return super().create(validated_data) 
     
 class WebsiteCreationResponseSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)

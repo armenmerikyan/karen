@@ -171,7 +171,8 @@ from .serializers import ImmigrationCaseSerializer
 from .serializers import LetterSerializer
 from .serializers import CarFinderResponseSerializer
 from .serializers import WebsiteCreationResponseSerializer 
- 
+from .serializers import CharacterMemorySerializer
+
 import sendgrid 
 from sendgrid.helpers.mail import Mail, Email, To, Content
 
@@ -4751,3 +4752,29 @@ def user_chatbot_response_private(request, character_id):
 def chat_view(request, character_id):
     character = get_object_or_404(UserCharacter, id=character_id)
     return render(request, 'agents/character_chat.html', {'character': character})
+
+
+@extend_schema(
+    summary="Add a Memory",
+    description="Submit a memory linked to a character, including content, type, importance, and metadata.",
+    tags=["Memory"],
+    request=CharacterMemorySerializer,
+    responses={
+        201: CharacterMemorySerializer,
+        400: {"type": "object", "properties": {"status": {"type": "string"}, "errors": {"type": "object"}}},
+    }
+)
+class AddMemoryView(APIView):
+    def post(self, request):
+        serializer = CharacterMemorySerializer(data=request.data)
+        if serializer.is_valid():
+            memory = serializer.save()
+            return Response({
+                'status': 'success',
+                'memory_id': memory.id,
+                'mcp_context': memory.to_mcp_context()
+            }, status=status.HTTP_201_CREATED)
+        return Response({
+            'status': 'error',
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
