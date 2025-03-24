@@ -4844,7 +4844,6 @@ class AddMemoryView(APIView):
 
 @csrf_exempt
 @login_required
-@require_GET
 def register_mcp(request):
     user = request.user 
 
