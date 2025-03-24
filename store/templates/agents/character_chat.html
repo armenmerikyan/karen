@@ -30,16 +30,30 @@
       recognition.lang = 'en-US';
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
-      recognition.continuous = false; // each session ends after speaking, but we’ll restart it
+      recognition.continuous = false;
+  
+      let listening = false;
   
       const startListening = () => {
         recognition.start();
+        micIcon.style.color = "red";
         micButton.classList.add("active");
-        micIcon.style.color = "red"; // red when listening
+        listening = true;
+      };
+  
+      const stopListening = () => {
+        recognition.stop();
+        micIcon.style.color = "yellow";
+        micButton.classList.remove("active");
+        listening = false;
       };
   
       micButton.addEventListener("click", () => {
-        startListening();
+        if (listening) {
+          stopListening();
+        } else {
+          startListening();
+        }
       });
   
       recognition.onresult = (event) => {
@@ -49,15 +63,22 @@
   
       recognition.onerror = (event) => {
         console.error("Speech recognition error:", event.error);
+        stopListening();
       };
   
       recognition.onend = () => {
-        // Keep mic on
-        micIcon.style.color = "yellow"; // yellow when idle
-        setTimeout(startListening, 300); // small delay before restarting
+        if (listening) {
+          setTimeout(startListening, 200);
+        } else {
+          micIcon.style.color = "yellow";
+        }
       };
+  
+      // Set initial mic color
+      micIcon.style.color = "yellow";
     });
   </script>
+  
   
   
 </head>
