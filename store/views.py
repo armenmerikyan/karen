@@ -4488,6 +4488,7 @@ def character_update(request, pk):
 
 @login_required
 def memory_list(request):
+    profile = get_latest_profile()
     memories = CharacterMemory.objects.filter(user=request.user)
     character = None
     character_id = request.GET.get('character')
@@ -4496,7 +4497,8 @@ def memory_list(request):
         character = get_object_or_404(UserCharacter, pk=character_id, user=request.user)
     return render(request, 'memories/memory_list.html', {
         'memories': memories,
-        'character': character
+        'character': character,
+        'profile': profile
     })
 
 @login_required
