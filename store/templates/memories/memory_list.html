@@ -1,39 +1,64 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
+
 {% block content %}
-<section class="py-0">
-  <div class="container-fluid">
-    <div class="container mt-5 text-light">         
-      <div class="row">
-        <div class="col-md-12 text-left">   
+<section class="py-5 bg-dark text-light">
+  <div class="container">
 
-          <h2>Your Memories 
+    <div class="card bg-secondary shadow-sm">
+      <div class="card-body">
 
-          {% if character %}  
-            {{ character.name }}<br>
-            <a href="{% url 'character_update' character.id %}" class="btn btn-link">← Back to {{ character.name }}</a>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h2 class="mb-0">
+              <i class="fas fa-brain me-2"></i>Your Memories{% if character %} — {{ character.name }}{% endif %}
+            </h2>
+          </div>
+          {% if character %}
+            <a href="{% url 'character_update' character.id %}" class="btn btn-outline-light btn-sm">
+              <i class="fas fa-arrow-left me-1"></i>Back to {{ character.name }}
+            </a>
           {% endif %}
-
-          </h2>
-          <p>
-          <a href="{% url 'add_memory' %}{% if character %}?character={{ character.id }}{% endif %}">➕ Add New Memory</a>
-          </p>
-          <ul>
-            {% for memory in memories %}
-              <li>
-                <strong>{{ memory.character.name }}</strong>: {{ memory.content|truncatechars:80 }}
-                <br>
-                <a href="{% url 'edit_memory' memory.pk %}">✏️ Edit</a> |
-                <a href="{% url 'delete_memory' memory.pk %}">🗑️ Delete</a>
-              </li>
-            {% empty %}
-              <li>No memories found.</li>
-            {% endfor %}
-          </ul>
-
         </div>
-      </div>      
+
+        <div class="mb-3">
+          <a href="{% url 'add_memory' %}{% if character %}?character={{ character.id }}{% endif %}" class="btn btn-success">
+            <i class="fas fa-plus me-1"></i>Add New Memory
+          </a>
+        </div>
+
+        <ul class="list-group">
+          {% for memory in memories %}
+            <li class="list-group-item bg-dark text-light border-secondary">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h6 class="mb-1">
+                    <i class="fas fa-user me-1"></i>{{ memory.character.name }}
+                  </h6>
+                  <p class="mb-1">
+                    <i class="fas fa-quote-left me-1 text-muted"></i>{{ memory.content|truncatechars:80 }}
+                  </p>
+                </div>
+                <div class="text-end">
+                  <a href="{% url 'edit_memory' memory.pk %}" class="btn btn-outline-warning btn-sm mb-1">
+                    <i class="fas fa-pen"></i> Edit
+                  </a><br>
+                  <a href="{% url 'delete_memory' memory.pk %}" class="btn btn-outline-danger btn-sm">
+                    <i class="fas fa-trash"></i> Delete
+                  </a>
+                </div>
+              </div>
+            </li>
+          {% empty %}
+            <li class="list-group-item bg-dark text-light border-secondary text-center">
+              <i class="fas fa-info-circle me-1"></i>No memories found.
+            </li>
+          {% endfor %}
+        </ul>
+
+      </div>
     </div>
+
   </div>
-</section>    
+</section>
 {% endblock %}
