@@ -18,36 +18,53 @@
       const micButton = document.getElementById("micButton");
       const micIcon = micButton.querySelector("i");
       const userMessage = document.getElementById("userMessage");
-  
+      const SILENCE_TIMEOUT = 4000; // 4 seconds timeout, adjust as needed
+
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
         micButton.disabled = true;
         micButton.title = "Speech recognition not supported in this browser.";
         return;
       }
-  
+      
       const recognition = new SpeechRecognition();
       recognition.lang = 'en-US';
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
+      // Use non-continuous mode so we control restarting manually
       recognition.continuous = false;
-  
+
       let listening = false;
-  
+      let autoSubmitTimer = null;
+
+      const resetAutoSubmitTimer = () => {
+        if (autoSubmitTimer) clearTimeout(autoSubmitTimer);
+        autoSubmitTimer = setTimeout(() => {
+          if (userMessage.value.trim() !== "") {
+            sendMessage();
+          }
+        }, SILENCE_TIMEOUT);
+      };
+
       const startListening = () => {
         recognition.start();
         micIcon.style.color = "red";
         micButton.classList.add("active");
         listening = true;
+        resetAutoSubmitTimer();
       };
-  
+
       const stopListening = () => {
-        recognition.stop();
+        listening = false;
         micIcon.style.color = "orange";
         micButton.classList.remove("active");
-        listening = false;
+        if (autoSubmitTimer) {
+          clearTimeout(autoSubmitTimer);
+          autoSubmitTimer = null;
+        }
+        recognition.stop();
       };
-  
+
       micButton.addEventListener("click", () => {
         if (listening) {
           stopListening();
@@ -55,36 +72,51 @@
           startListening();
         }
       });
-  
+
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
+        // Append transcript to input (add a space if necessary)
         if (userMessage.value.trim() !== '') {
           userMessage.value += ' ';
         }
         userMessage.value += transcript;
+
+        // If transcript includes "done talking", submit immediately (if input is not empty)
+        if (transcript.toLowerCase().includes("done talking") && userMessage.value.trim() !== "") {
+          sendMessage();
+          if (autoSubmitTimer) {
+            clearTimeout(autoSubmitTimer);
+            autoSubmitTimer = null;
+          }
+          return;
+        }
+        resetAutoSubmitTimer();
       };
-  
+
       recognition.onerror = (event) => {
         console.error("Speech recognition error:", event.error);
         stopListening();
       };
-  
+
       recognition.onend = () => {
+        // Increase delay slightly before restarting to accommodate slower speakers
         if (listening) {
-          setTimeout(startListening, 250);
+          setTimeout(() => {
+            try {
+              recognition.start();
+            } catch (e) {
+              console.error(e);
+            }
+          }, 500);
         } else {
           micIcon.style.color = "orange";
         }
       };
-  
-      // Set default state
+
+      // Set the initial state of the mic icon.
       micIcon.style.color = "orange";
     });
   </script>
-  
-  
-  
-  
 </head>
 <body class="bg-light">
   <div id="chatContainer">
@@ -98,7 +130,6 @@
       <button type="button" class="btn btn-outline-secondary" id="micButton">
         <i class="fas fa-microphone"></i>
       </button>
-      
       <div class="form-check form-switch mb-0">
         <input class="form-check-input" type="checkbox" id="ttsToggle">
         <label class="form-check-label" for="ttsToggle">
