@@ -83,8 +83,35 @@
       const selectedVoice = voices[selectedIndex];
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.voice = selectedVoice;
+
+      // Pause recognition while speaking
+      const wasListening = window.listening;
+      if (wasListening) {
+        try {
+          window.recognition.stop();
+          window.listening = false;
+        } catch (e) {
+          console.warn("Error stopping mic for speech:", e);
+        }
+      }
+
+      utterance.onend = () => {
+        // Resume mic after speaking
+        if (wasListening) {
+          setTimeout(() => {
+            try {
+              window.recognition.start();
+              window.listening = true;
+            } catch (e) {
+              console.error("Failed to resume mic after speech:", e);
+            }
+          }, 400); // small delay helps avoid overlap
+        }
+      };
+
       speechSynthesis.speak(utterance);
     }
+
 
     function sendMessage() {
       const userMessageInput = document.getElementById('userMessage');
