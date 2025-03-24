@@ -6,145 +6,11 @@
   <title>Chat with Bot</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="{% static 'css/chat.css' %}"> 
+  <link rel="stylesheet" href="{% static 'css/chat.css' %}">
   <script>
     const CHARACTER_ID = {{ character.id }};
     const CHAT_URL = `/user_chatbot/${CHARACTER_ID}/response/`;
   </script>
-  <script src="{% static 'js/chat.js' %}" defer></script>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const micButton = document.getElementById("micButton");
-      const micIcon = micButton.querySelector("i");
-      const userMessage = document.getElementById("userMessage");
-      const SILENCE_TIMEOUT = 4000; // 4 seconds timeout
-
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        micButton.disabled = true;
-        micButton.title = "Speech recognition not supported in this browser.";
-        return;
-      }
-      
-      // Global recognition instance and tracking variable.
-      window.recognition = new SpeechRecognition();
-      window.recognition.lang = 'en-US';
-      window.recognition.interimResults = false;
-      window.recognition.maxAlternatives = 1;
-      window.recognition.continuous = true; // Keep the mic on continuously
-
-      window.listening = false;
-      // Holds the last transcript that triggered sendMessage
-      window.lastSentTranscript = '';
-
-      let autoSubmitTimer = null;
-
-      const resetAutoSubmitTimer = () => {
-        if (autoSubmitTimer) clearTimeout(autoSubmitTimer);
-        autoSubmitTimer = setTimeout(() => {
-          if (userMessage.value.trim() !== "") {
-            sendMessage();
-          }
-        }, SILENCE_TIMEOUT);
-      };
-
-      const startListening = () => {
-        try {
-          window.recognition.start();
-        } catch (e) {
-          console.error(e);
-        }
-        micIcon.style.color = "red";
-        micButton.classList.add("active");
-        userMessage.focus();
-        window.listening = true;
-        resetAutoSubmitTimer();
-      };
-
-      const stopListening = () => {
-        window.listening = false;
-        micIcon.style.color = "orange";
-        micButton.classList.remove("active");
-        if (autoSubmitTimer) {
-          clearTimeout(autoSubmitTimer);
-          autoSubmitTimer = null;
-        }
-        try {
-          window.recognition.stop();
-        } catch (e) {
-          console.error(e);
-        }
-      };
-
-      micButton.addEventListener("click", () => {
-        if (window.listening) {
-          stopListening();
-        } else {
-          startListening();
-        }
-      });
-      
-      window.recognition.onresult = (event) => {
-        // Only process final results.
-        let finalTranscript = "";
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript;
-          }
-        }
-        if (!finalTranscript) return;
-        
-        const triggerPhrase = "done talking";
-        let processedTranscript = finalTranscript;
-        
-        // If the final transcript ends with the trigger phrase, remove it.
-        if (processedTranscript.toLowerCase().endsWith(triggerPhrase)) {
-          processedTranscript = processedTranscript.slice(0, -triggerPhrase.length).trim();
-          // Only trigger send if there's content and it isn’t identical to the last submission.
-          if (processedTranscript && processedTranscript !== window.lastSentTranscript) {
-            userMessage.value = processedTranscript;
-            window.lastSentTranscript = processedTranscript;
-            if (autoSubmitTimer) {
-              clearTimeout(autoSubmitTimer);
-              autoSubmitTimer = null;
-            }
-            sendMessage();
-          }
-          return;
-        }
-        
-        // Otherwise, append the final transcript to the input.
-        if (userMessage.value.trim() !== '') {
-          userMessage.value += ' ';
-        }
-        userMessage.value += processedTranscript;
-        resetAutoSubmitTimer();
-      };
-
-      window.recognition.onerror = (event) => {
-        console.error("Speech recognition error:", event.error);
-        stopListening();
-      };
-
-      window.recognition.onend = () => {
-        if (window.listening) {
-          setTimeout(() => {
-            try {
-              window.recognition.start();
-            } catch (e) {
-              console.error(e);
-            }
-          }, 500);
-        } else {
-          micIcon.style.color = "orange";
-        }
-      };
-
-      micIcon.style.color = "orange";
-    });
-  </script>
-  
 </head>
 <body class="bg-light">
   <div id="chatContainer">
@@ -177,5 +43,222 @@
       <button type="button" class="btn btn-primary" onclick="sendMessage()">Send</button>
     </div>
   </div>
+
+  <script>
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    let voices = [];
+    let isSubmitting = false;
+    let lastMessageSent = "";
+
+    function populateVoices() {
+      voices = speechSynthesis.getVoices();
+      const voiceSelect = document.getElementById('voiceSelect');
+      voiceSelect.innerHTML = '';
+
+      voices.forEach((voice, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `${voice.name} (${voice.lang})${voice.default ? ' — DEFAULT' : ''}`;
+        voiceSelect.appendChild(option);
+      });
+    }
+
+    speechSynthesis.onvoiceschanged = populateVoices;
+
+    function speakText(text) {
+      const selectedIndex = document.getElementById('voiceSelect').value;
+      const selectedVoice = voices[selectedIndex];
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.voice = selectedVoice;
+      speechSynthesis.speak(utterance);
+    }
+
+    function sendMessage() {
+      const userMessageInput = document.getElementById('userMessage');
+      const messageText = userMessageInput.value.trim();
+
+      if (isSubmitting || !messageText || messageText === lastMessageSent) return;
+
+      lastMessageSent = messageText;
+      isSubmitting = true;
+
+      const chatWindow = document.getElementById('chatWindow');
+      const userMessageDiv = document.createElement('div');
+      userMessageDiv.classList.add('message', 'user');
+      userMessageDiv.textContent = "You: " + messageText;
+      chatWindow.appendChild(userMessageDiv);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+
+      userMessageInput.value = '';
+
+      const data = { message: messageText };
+
+      fetch(CHAT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(data => {
+        const botMessageDiv = document.createElement('div');
+        botMessageDiv.classList.add('message', 'bot');
+        botMessageDiv.textContent = data.response ? "Bot: " + data.response : "Error: " + data.error;
+        chatWindow.appendChild(botMessageDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        if (document.getElementById('ttsToggle').checked && data.response) {
+          speakText(data.response);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        const errorDiv = document.createElement('div');
+        errorDiv.classList.add('message', 'bot');
+        errorDiv.textContent = "Error: " + error;
+        chatWindow.appendChild(errorDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      })
+      .finally(() => {
+        isSubmitting = false;
+        if (window.listening && window.recognition) {
+          try {
+            window.recognition.start();
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      });
+
+      userMessageInput.focus();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const userMessageInput = document.getElementById('userMessage');
+      userMessageInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          sendMessage();
+        }
+      });
+
+      populateVoices();
+
+      const micButton = document.getElementById("micButton");
+      const micIcon = micButton.querySelector("i");
+      const userMessage = document.getElementById("userMessage");
+      const SILENCE_TIMEOUT = 4000;
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        micButton.disabled = true;
+        micButton.title = "Speech recognition not supported in this browser.";
+        return;
+      }
+
+      window.recognition = new SpeechRecognition();
+      window.recognition.lang = 'en-US';
+      window.recognition.interimResults = false;
+      window.recognition.maxAlternatives = 1;
+      window.recognition.continuous = true;
+
+      window.listening = false;
+      let autoSubmitTimer = null;
+
+      const resetAutoSubmitTimer = () => {
+        if (autoSubmitTimer) clearTimeout(autoSubmitTimer);
+        autoSubmitTimer = setTimeout(() => {
+          if (userMessage.value.trim() !== "") {
+            sendMessage();
+          }
+        }, SILENCE_TIMEOUT);
+      };
+
+      const startListening = () => {
+        try {
+          window.recognition.start();
+          micIcon.style.color = "red";
+          micButton.classList.add("active");
+          userMessage.focus();
+          window.listening = true;
+          resetAutoSubmitTimer();
+        } catch (e) {
+          console.error(e);
+        }
+      };
+
+      const stopListening = () => {
+        window.listening = false;
+        micIcon.style.color = "orange";
+        micButton.classList.remove("active");
+        if (autoSubmitTimer) {
+          clearTimeout(autoSubmitTimer);
+          autoSubmitTimer = null;
+        }
+        window.recognition.stop();
+      };
+
+      micButton.addEventListener("click", () => {
+        if (window.listening) {
+          stopListening();
+        } else {
+          startListening();
+        }
+      });
+
+      window.recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+
+        if (transcript.toLowerCase().includes("done talking") && userMessage.value.trim() !== "") {
+          if (autoSubmitTimer) clearTimeout(autoSubmitTimer);
+          sendMessage();
+          return;
+        }
+
+        if (userMessage.value.trim() !== '') {
+          userMessage.value += ' ';
+        }
+        userMessage.value += transcript;
+        resetAutoSubmitTimer();
+      };
+
+      window.recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        stopListening();
+      };
+
+      window.recognition.onend = () => {
+        if (window.listening) {
+          setTimeout(() => {
+            try {
+              window.recognition.start();
+            } catch (e) {
+              console.error(e);
+            }
+          }, 500);
+        } else {
+          micIcon.style.color = "orange";
+        }
+      };
+
+      micIcon.style.color = "orange";
+    });
+  </script>
 </body>
 </html>

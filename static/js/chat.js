@@ -14,7 +14,8 @@ function getCookie(name) {
 }
 
 let voices = [];
-let isSubmitting = false; // Prevent duplicate submissions
+let isSubmitting = false;
+let lastMessageSent = "";
 
 function populateVoices() {
   voices = speechSynthesis.getVoices();
@@ -40,15 +41,13 @@ function speakText(text) {
 }
 
 function sendMessage() {
-  if (isSubmitting) return;
-  isSubmitting = true;
-  
   const userMessageInput = document.getElementById('userMessage');
   const messageText = userMessageInput.value.trim();
-  if (!messageText) {
-    isSubmitting = false;
-    return;
-  }
+  
+  if (isSubmitting || !messageText || messageText === lastMessageSent) return;
+
+  lastMessageSent = messageText;
+  isSubmitting = true;
 
   const chatWindow = document.getElementById('chatWindow');
   const userMessageDiv = document.createElement('div');
@@ -56,8 +55,7 @@ function sendMessage() {
   userMessageDiv.textContent = "You: " + messageText;
   chatWindow.appendChild(userMessageDiv);
   chatWindow.scrollTop = chatWindow.scrollHeight;
-  
-  // Clear the input immediately.
+
   userMessageInput.value = '';
 
   const data = { message: messageText };
@@ -92,9 +90,8 @@ function sendMessage() {
   })
   .finally(() => {
     isSubmitting = false;
-    // Clear the lastSentTranscript so that new speech can trigger a send.
-    window.lastSentTranscript = '';
-    // Restart recognition if still active.
+
+    // Restart recognition if mic is still supposed to be on
     if (window.listening && window.recognition) {
       try {
         window.recognition.start();
