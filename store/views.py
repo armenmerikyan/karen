@@ -4807,14 +4807,22 @@ def register_mcp(request):
     if not schemas:
         return JsonResponse({"error": "No schemas found in OpenAPI spec."}, status=400)
 
-    tools = []
+    client = OpenAI(api_key=user.openai_api_key)
+
+    registered = []
+    failed = []
 
     for name, schema in schemas.items():
         if not isinstance(schema, dict):
-            continue  # Skip malformed schemas
+            continue  # skip invalid
 
-        # Ensure type is object
-        schema["type"] = "object"
+        # Skip if not type: object or has disallowed keywords
+        if schema.get("type") != "object":
+            continue
+        if any(k in schema for k in ["enum", "anyOf", "oneOf", "allOf", "not"]):
+            continue
+
+        schema["type"] = "object"  # enforce object type
 
         tool = {
             "type": "function",
@@ -4824,18 +4832,22 @@ def register_mcp(request):
                 "parameters": schema
             }
         }
-        tools.append(tool)
 
-    try:
-        client = OpenAI(api_key=user.openai_api_key)
+        try:
+            client.chat.completions.create(
+                model="gpt-4-turbo",
+                messages=[{"role": "system", "content": f"Registering {name}_api"}],
+                tools=[tool],
+                tool_choice="auto"
+            )
+            registered.append(name)
+        except Exception as e:
+            failed.append({"schema": name, "error": str(e)})
 
-        response = client.chat.completions.create(
-            model="gpt-4-turbo",
-            messages=[{"role": "system", "content": "Registering all MCP APIs"}],
-            tools=tools,
-            tool_choice="auto"
-        )
-
-        return JsonResponse({"status": "All MCP APIs registered", "tool_count": len(tools), "openai_response": response.dict()})
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({
+        "status": "MCP registration completed",
+        "registered_count": len(registered),
+        "failed_count": len(failed),
+        "registered": registered,
+        "failed": failed
+    })
