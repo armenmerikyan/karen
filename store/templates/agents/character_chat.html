@@ -95,16 +95,28 @@
         }
       }
 
-      utterance.onend = () => {
-        if (wasListening && window.shouldBeListening) {
-          setTimeout(() => {
-            startListening(true);
-          }, 400);
-        }
-      };
-
+      // Speak the text
       speechSynthesis.speak(utterance);
+
+      // Check every 500ms if the speech is still happening
+      const waitUntilSpeechEnds = setInterval(() => {
+        if (!speechSynthesis.speaking) {
+          clearInterval(waitUntilSpeechEnds);
+
+          // Resume mic only if user wants it
+          if (wasListening && window.shouldBeListening) {
+            setTimeout(() => {
+              try {
+                startListening(true);
+              } catch (e) {
+                console.error("Failed to restart mic after speech:", e);
+              }
+            }, 400); // buffer delay
+          }
+        }
+      }, 500);
     }
+
 
     function sendMessage() {
       const userMessageInput = document.getElementById('userMessage');
