@@ -4630,6 +4630,7 @@ def copy_model_to_current(request, character_id):
     
 
 logger = logging.getLogger(__name__)
+
 @csrf_exempt
 def user_chatbot_response_private(request, character_id):
     if not request.user.is_authenticated:
@@ -4640,8 +4641,6 @@ def user_chatbot_response_private(request, character_id):
     if not request.user.openai_api_key:
         return JsonResponse({"error": "ChatGPT API key is missing."}, status=400)
 
-    if request.method != "POST":
-        return JsonResponse({"error": "Invalid request method"}, status=400)
 
     try:
         data = json.loads(request.body)
