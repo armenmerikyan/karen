@@ -50,10 +50,14 @@
           {% endif %}
           <li class="nav-item">
             <a href="{% url 'update_profile' %}" class="nav-link">Profile</a>
-          </li>
+          </li>         
+          <li class="nav-item">
+            <a href="{% url 'character_list' %}" class="nav-link">Characters</a>
+          </li>          
           <li class="nav-item">
             <a href="{% url 'logout' %}" class="nav-link">Logout</a>
           </li>
+
         {% endif %}
       </ul>
       <!-- Shopping cart link aligned to the right with Font Awesome icon -->
