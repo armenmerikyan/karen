@@ -4778,3 +4778,54 @@ class AddMemoryView(APIView):
             'status': 'error',
             'errors': serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@csrf_exempt
+@login_required
+@require_GET
+def register_mcp(request):
+    user = request.user
+
+    if not user.openai_api_key:
+        return JsonResponse({"error": "User does not have an OpenAI API key."}, status=400)
+
+    # Get local OpenAPI schema from the same server
+    schema_url = request.build_absolute_uri('/api/schema/')
+    schema_response = requests.get(schema_url)
+
+    if schema_response.status_code != 200:
+        return JsonResponse({"error": "Failed to fetch schema."}, status=schema_response.status_code)
+
+    try:
+        full_schema = schema_response.json()
+    except Exception:
+        return JsonResponse({"error": "Invalid JSON in schema response."}, status=500)
+
+    # Extract 'Business' schema
+    parameters_schema = full_schema.get("components", {}).get("schemas", {}).get("Business")
+
+    if not parameters_schema:
+        return JsonResponse({"error": "'Business' schema not found in OpenAPI spec."}, status=400)
+
+    parameters_schema["type"] = "object"
+
+    try:
+        client = openai.OpenAI(api_key=user.openai_api_key)
+
+        response = client.chat.completions.create(
+            model="gpt-4-turbo",
+            messages=[{"role": "system", "content": "Registering MCP API"}],
+            tools=[{
+                "type": "function",
+                "function": {
+                    "name": "MCP_API",
+                    "description": "Gigahard MCP API for business data retrieval.",
+                    "parameters": parameters_schema
+                }
+            }],
+            tool_choice="auto"
+        )
+
+        return JsonResponse({"status": "MCP registered", "openai_response": response.dict()})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)    

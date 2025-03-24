@@ -284,6 +284,7 @@ urlpatterns = [
     path('user_chatbot/<int:character_id>/response/', views.user_chatbot_response_private, name='user_chatbot_response_private'),
     path('chat/<int:character_id>/', views.chat_view, name='chat_view'),
     path('memory/add/', views.AddMemoryView.as_view(), name='add_character_memory'),
+    path('api/register_mcp/', views.register_mcp, name='register-mcp'),
     
 
 
