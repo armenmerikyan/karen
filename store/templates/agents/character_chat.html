@@ -222,9 +222,20 @@
         }
       });
 
-      window.recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
+      let lastTranscript = "";
 
+      window.recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.trim();
+
+        // Avoid repeated transcript
+        if (transcript === lastTranscript) {
+          console.log("Duplicate transcript ignored:", transcript);
+          return;
+        }
+
+        lastTranscript = transcript;
+
+        // Submit if "done talking" spoken
         if (transcript.toLowerCase().includes("done talking") && userMessage.value.trim() !== "") {
           if (autoSubmitTimer) clearTimeout(autoSubmitTimer);
           sendMessage();
@@ -238,12 +249,10 @@
         resetAutoSubmitTimer();
       };
 
-      window.recognition.onerror = (event) => {
-        console.error("Speech recognition error:", event.error);
-        stopListening();
-      };
-
       window.recognition.onend = () => {
+        // Reset last transcript on recognition end
+        lastTranscript = "";
+
         if (window.listening) {
           setTimeout(() => {
             try {
@@ -257,8 +266,6 @@
         }
       };
 
-      micIcon.style.color = "orange";
-    });
   </script>
 </body>
 </html>
