@@ -14,6 +14,10 @@
                     {{ form.as_p }}
                     <button type="submit">Update Profile</button>
                 </form>
+                <hr>
+                <p>
+                  <a href="{% url 'character_list' %}" class="btn btn-outline-light">View My AI Characters</a>
+                </p>   
                 <HR>
                 <p>Wallet: {{user.sol_wallet_address}} </p>
                 <p><div id="walletAddress"></div>  </p>
@@ -22,11 +26,7 @@
                 <HR>
                   <p><button id="generateTokenButton" class="btn btn-success">Generate Token</button></p>
                   <p>Token: <span id="tokenDisplay"></span></p>       
-                  
-                  <hr>
-                  <p>
-                    <a href="{% url 'character_list' %}" class="btn btn-outline-light">View My AI Characters</a>
-                  </p>                  
+                                 
             </div>
         </div>
     </div>
