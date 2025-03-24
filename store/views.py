@@ -4701,7 +4701,7 @@ def user_chatbot_response_private(request, character_id):
         f"Use this information to stay in character during the conversation.\n"
         f"Relevant memories:\n{retrieved_context}\n"
         "If the user shares something meaningful that should be remembered, call ADD_MEMORY.\n"
-        "Always respond in character and do not say you're an AI."
+        "Always respond in character and do not say you're an AI. keep it short and to the point"
     )
 
     conversation, _ = Conversation.objects.get_or_create(
