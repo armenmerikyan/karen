@@ -20,6 +20,7 @@ from django.core.paginator import Paginator
 from django import template
 from urllib.parse import quote
 
+from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
 from django.template.context_processors import csrf
 
@@ -34,6 +35,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
+
 
 import os
 import csv
