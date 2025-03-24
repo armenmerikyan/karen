@@ -63,6 +63,7 @@
     let voices = [];
     let isSubmitting = false;
     let lastMessageSent = "";
+    window.shouldBeListening = false;
 
     function populateVoices() {
       voices = speechSynthesis.getVoices();
@@ -84,7 +85,6 @@
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.voice = selectedVoice;
 
-      // Pause recognition while speaking
       const wasListening = window.listening;
       if (wasListening) {
         try {
@@ -96,22 +96,15 @@
       }
 
       utterance.onend = () => {
-        // Resume mic after speaking
-        if (wasListening) {
+        if (wasListening && window.shouldBeListening) {
           setTimeout(() => {
-            try {
-              window.recognition.start();
-              window.listening = true;
-            } catch (e) {
-              console.error("Failed to resume mic after speech:", e);
-            }
-          }, 400); // small delay helps avoid overlap
+            startListening(true);
+          }, 400);
         }
       };
 
       speechSynthesis.speak(utterance);
     }
-
 
     function sendMessage() {
       const userMessageInput = document.getElementById('userMessage');
@@ -161,9 +154,9 @@
       })
       .finally(() => {
         isSubmitting = false;
-        if (window.listening && window.recognition) {
+        if (window.shouldBeListening && window.recognition) {
           try {
-            window.recognition.start();
+            startListening(true);
           } catch (e) {
             console.error(e);
           }
@@ -214,7 +207,8 @@
         }, SILENCE_TIMEOUT);
       }
 
-      function startListening() {
+      function startListening(force = false) {
+        if (!force && !window.shouldBeListening) return;
         try {
           recognition.start();
           micIcon.style.color = "red";
@@ -225,7 +219,8 @@
         }
       }
 
-      function stopListening() {
+      function stopListening(force = false) {
+        if (!force && window.shouldBeListening) return;
         try {
           recognition.stop();
         } catch (e) {
@@ -238,16 +233,17 @@
       }
 
       micButton.addEventListener("click", () => {
-        if (window.listening) {
-          stopListening();
+        window.shouldBeListening = !window.shouldBeListening;
+        if (window.shouldBeListening) {
+          startListening(true);
         } else {
-          startListening();
+          stopListening(true);
         }
       });
 
       recognition.onresult = (event) => {
         const transcript = event.results[event.results.length - 1][0].transcript.trim();
-        if (transcript === lastTranscript) return; // prevent duplicate
+        if (transcript === lastTranscript) return;
         lastTranscript = transcript;
 
         if (transcript.toLowerCase().includes("done talking") && userMessageInput.value.trim()) {
@@ -263,11 +259,11 @@
       };
 
       recognition.onend = () => {
-        lastTranscript = ""; // Clear for next cycle
-        if (window.listening) {
+        lastTranscript = "";
+        if (window.shouldBeListening) {
           setTimeout(() => {
             try {
-              recognition.start();
+              startListening(true);
             } catch (e) {
               console.error("Restart failed:", e);
             }
@@ -277,7 +273,7 @@
 
       recognition.onerror = (event) => {
         console.error("Recognition error:", event.error);
-        stopListening();
+        stopListening(true);
       };
 
       micIcon.style.color = "orange";
