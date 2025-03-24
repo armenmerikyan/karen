@@ -7,7 +7,9 @@
       <div class="row">
         <div class="col-md-12 text-left">   
           <h2>Your Characters</h2>
-          <a href="{% url 'character_create' %}" class="btn btn-primary mb-3">Create New Character</a>
+          <a href="{% url 'character_create' %}" class="btn btn-primary mb-3">
+            <i class="fas fa-plus"></i> Create New Character
+          </a>          
           <ul class="list-group">
             {% for character in characters %}
               <li class="list-group-item bg-dark text-light mb-2">
