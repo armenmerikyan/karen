@@ -14,6 +14,7 @@ function getCookie(name) {
 }
 
 let voices = [];
+let isSubmitting = false; // flag to prevent duplicate submissions
 
 function populateVoices() {
   voices = speechSynthesis.getVoices();
@@ -39,9 +40,15 @@ function speakText(text) {
 }
 
 function sendMessage() {
+  if (isSubmitting) return; // prevent duplicate submissions
+  isSubmitting = true;
+  
   const userMessageInput = document.getElementById('userMessage');
-  const messageText = userMessageInput.value;
-  if (!messageText) return;
+  const messageText = userMessageInput.value.trim();
+  if (!messageText) {
+    isSubmitting = false;
+    return;
+  }
 
   const chatWindow = document.getElementById('chatWindow');
   const userMessageDiv = document.createElement('div');
@@ -49,6 +56,8 @@ function sendMessage() {
   userMessageDiv.textContent = "You: " + messageText;
   chatWindow.appendChild(userMessageDiv);
   chatWindow.scrollTop = chatWindow.scrollHeight;
+  
+  // Clear the input immediately so subsequent voice events won’t resend the same message.
   userMessageInput.value = '';
 
   const data = { message: messageText };
@@ -82,7 +91,8 @@ function sendMessage() {
     chatWindow.scrollTop = chatWindow.scrollHeight;
   })
   .finally(() => {
-    // If the mic is still active, restart recognition.
+    isSubmitting = false;
+    // Restart recognition if still active.
     if (window.listening && window.recognition) {
       try {
         window.recognition.start();
