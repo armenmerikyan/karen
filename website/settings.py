@@ -340,7 +340,7 @@ SOCIALACCOUNT_PROVIDERS = {
             'key': ''
         }
     }
-}
+} 
 
 CORS_ALLOWED_ORIGINS = [
     "https://gigahard.ai",
