@@ -127,36 +127,6 @@ function trainCharacter(characterId) {
   });
 }
 </script>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-      const openaiApiKey = "{{ user.openai_api_key|default:'' }}";
-      const characterId = "{{ form.instance.id|default:'' }}";  // get character ID if it exists
-
-      if (openaiApiKey) {
-          let url = '/api/register_mcp/';
-          if (characterId) {
-              url += `?character_id=${characterId}`;
-          }
-
-          fetch(url, {
-              method: 'GET',
-              credentials: 'include'
-          })
-          .then(response => response.json())
-          .then(data => {
-              console.log('MCP Registration Response:', data);
-              if (data.status === "MCP registered") {
-                  console.log("MCP registered successfully.");
-              } else {
-                  console.warn("MCP registration returned a warning or error.", data);
-              }
-          })
-          .catch(error => {
-              console.error('Error registering MCP:', error);
-          });
-      }
-  });
-</script>
+ 
 
 {% endblock %}

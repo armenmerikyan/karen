@@ -160,5 +160,30 @@
       }
     });
   </script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+      const openaiApiKey = "{{ user.openai_api_key|default:'' }}";
+
+      if (openaiApiKey) {
+          fetch('/api/register_mcp/', {
+              method: 'GET',
+              credentials: 'include'
+          })
+          .then(response => response.json())
+          .then(data => {
+              console.log('MCP Registration Response:', data);
+              if (data.status === "MCP registered") {
+                  // Optionally show confirmation on screen
+                  console.log("MCP registered successfully.");
+              } else {
+                  console.warn("MCP registration returned a warning or error.", data);
+              }
+          })
+          .catch(error => {
+              console.error('Error registering MCP:', error);
+          });
+      }
+  });
+</script>
 
 {% endblock %}

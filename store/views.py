@@ -4630,7 +4630,6 @@ def copy_model_to_current(request, character_id):
     
 
 logger = logging.getLogger(__name__)
-
 @csrf_exempt
 def user_chatbot_response_private(request, character_id):
     if not request.user.is_authenticated:
@@ -4654,6 +4653,7 @@ def user_chatbot_response_private(request, character_id):
 
     client = OpenAI(api_key=request.user.openai_api_key)
 
+    # Default to fine-tuned model if available
     model_id = "gpt-3.5-turbo"
     if character.chatgpt_model_id_current:
         try:
@@ -4722,6 +4722,7 @@ def user_chatbot_response_private(request, character_id):
     chat_history.append({"role": "user", "content": user_message})
     messages = [{"role": "system", "content": system_message}] + chat_history
 
+    # Tool definition
     tools = [
         {
             "type": "function",
@@ -4742,19 +4743,31 @@ def user_chatbot_response_private(request, character_id):
         }
     ]
 
-    try:
-        response = client.chat.completions.create(
-            model=model_id,
-            messages=messages,
-            tools=tools,
-            tool_choice="auto"
-        )
+    # Use GPT-4 if tools are required (fine-tuned models don't support tools)
+    using_tools = tools and model_id.startswith("ft:")
+    model_for_tools = "gpt-4" if using_tools else model_id
 
-        tool_calls = response.choices[0].message.tool_calls if response.choices else []
+    try:
+        chat_args = {
+            "model": model_for_tools,
+            "messages": messages,
+        }
+
+        if using_tools:
+            chat_args["tools"] = tools
+            chat_args["tool_choice"] = "auto"
+
+        response = client.chat.completions.create(**chat_args)
+        tool_calls = getattr(response.choices[0].message, "tool_calls", []) if response.choices else []
 
         if tool_calls:
             for tool in tool_calls:
-                function_args = json.loads(tool.function.arguments)
+                try:
+                    function_args = json.loads(tool.function.arguments)
+                except Exception as e:
+                    logger.error("Tool arguments parsing failed: %s", tool.function.arguments)
+                    raise
+
                 if tool.function.name == "ADD_MEMORY":
                     content = function_args.get("content", "")
                     if content:
@@ -4773,11 +4786,18 @@ def user_chatbot_response_private(request, character_id):
                         "content": json.dumps({"status": "success", "content": content})
                     })
 
-        # Continue chat after tool use
-        final_response = client.chat.completions.create(
-            model=model_id,
-            messages=messages
-        )
+            # Continue chat after tool use (still use GPT-4)
+            final_response = client.chat.completions.create(
+                model=model_for_tools,
+                messages=messages
+            )
+        else:
+            # No tools used: fallback to fine-tuned model for final response
+            final_response = client.chat.completions.create(
+                model=model_id,
+                messages=messages
+            )
+
         bot_reply = final_response.choices[0].message.content if final_response.choices else "I'm not sure what to say."
 
         Message.objects.create(conversation=conversation, role="user", content=user_message)
@@ -4826,28 +4846,14 @@ class AddMemoryView(APIView):
 @login_required
 @require_GET
 def register_mcp(request):
-    user = request.user
-    character_id = request.GET.get('character_id')
+    user = request.user 
 
     if not user.openai_api_key:
         return JsonResponse({"error": "User does not have an OpenAI API key."}, status=400)
 
     # Try to get character (optional)
     character = None
-    model_id = "gpt-3.5-turbo"
-    if character_id:
-        try:
-            character = UserCharacter.objects.get(id=character_id, user=user)
-            if character.chatgpt_model_id_current:
-                client = OpenAI(api_key=user.openai_api_key)
-                try:
-                    fine_tune_status = client.fine_tuning.jobs.retrieve(character.chatgpt_model_id_current)
-                    if fine_tune_status.status == 'succeeded' and fine_tune_status.fine_tuned_model:
-                        model_id = fine_tune_status.fine_tuned_model
-                except Exception as e:
-                    logger.warning("Fine-tune retrieval error: %s", str(e))
-        except UserCharacter.DoesNotExist:
-            return JsonResponse({"error": "Character not found."}, status=404)
+    model_id = "gpt-4" 
 
     # Get schema
     schema_url = request.build_absolute_uri('/api/schema/')
