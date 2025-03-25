@@ -36,7 +36,7 @@ from rest_framework import status
 
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
-
+print("test")
 import os
 import csv
 import io
@@ -4445,12 +4445,11 @@ def character_create(request):
         form = UserCharacterForm(request.POST, request.FILES)
         if form.is_valid():
             character = form.save(commit=False)
-            character.user = request.user
-            print("Uploaded file:", request.FILES.get('image'))  # Debug line
+            character.user = request.user 
             character.save()
             return redirect('character_list')
         else:
-            print(form.errors)  # To see if image caused a validation issue
+            print(form.errors)  # To see if image caused a validation issue test test
     else:
         form = UserCharacterForm()
     return render(request, 'agents/character_form.html', {'form': form, 'is_edit': False, 'profile': profile})
@@ -4461,7 +4460,6 @@ def character_update(request, pk):
     character = get_object_or_404(UserCharacter, pk=pk, user=request.user)
     model_status = None
     model_error = None
-
     # Check fine-tuning status if the character has a chatgpt_model_id_current and the API key exists
     if character.chatgpt_model_id_current and request.user.openai_api_key:
         try:
@@ -4475,8 +4473,8 @@ def character_update(request, pk):
             model_status = "Error"
             model_error = str(e)
     
-    if request.method == 'POST':
-        form = UserCharacterForm(request.POST, instance=character)
+    if request.method == 'POST': 
+        form = UserCharacterForm(request.POST, request.FILES, instance=character)
         if form.is_valid():
             form.save()
             return redirect('character_list')
