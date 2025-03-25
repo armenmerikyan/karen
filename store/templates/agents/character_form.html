@@ -7,7 +7,7 @@
       <div class="row">
         <div class="col-md-12 text-left">   
           <h2>{% if is_edit %}Edit{% else %}Create{% endif %} Character</h2>
-          {% if form.instance.image %}
+          {% if form.instance.character_image %}
             <div class="mb-4">
               <label><strong>Current Image:</strong></label><br>
               <img src="{{ form.instance.character_image.url }}" alt="Character Image"
