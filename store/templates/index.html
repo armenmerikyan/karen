@@ -206,9 +206,6 @@
             <div class="card bg-terminal-dark border-terminal-green p-3 mb-2">
               <div class="d-flex justify-content-between">
                 <div>
-                  {% if token.image_uri %}
-                    <img src="{{ token.image_uri }}" alt="{{ token.name }}" class="img-fluid mb-2" style="max-height: 60px;">
-                  {% endif %}
                   <code class="text-monospace text-terminal-green d-block">
                     > {{ token.name }}
                   </code>
@@ -227,7 +224,7 @@
                 > {{ token.description }}
               </p>
             </div>
-            {% endfor %}            
+            {% endfor %}
           </div>
         </div>
       </div>
