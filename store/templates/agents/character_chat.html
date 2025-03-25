@@ -63,7 +63,9 @@
     let voices = [];
     let isSubmitting = false;
     let lastMessageSent = "";
-    window.shouldBeListening = false;
+    window.shouldBeListening = true;
+    window.ignoreTranscript = false;
+    window.interruptableSpeech = null;
 
     function populateVoices() {
       voices = speechSynthesis.getVoices();
@@ -85,38 +87,17 @@
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.voice = selectedVoice;
 
-      const wasListening = window.listening;
-      if (wasListening) {
-        try {
-          window.recognition.stop();
-          window.listening = false;
-        } catch (e) {
-          console.warn("Error stopping mic for speech:", e);
-        }
-      }
+      window.ignoreTranscript = true;
+      window.interruptableSpeech = utterance;
 
-      // Speak the text
+      speechSynthesis.cancel();
       speechSynthesis.speak(utterance);
 
-      // Check every 500ms if the speech is still happening
-      const waitUntilSpeechEnds = setInterval(() => {
-        if (!speechSynthesis.speaking) {
-          clearInterval(waitUntilSpeechEnds);
-
-          // Resume mic only if user wants it
-          if (wasListening && window.shouldBeListening) {
-            setTimeout(() => {
-              try {
-                startListening(true);
-              } catch (e) {
-                console.error("Failed to restart mic after speech:", e);
-              }
-            }, 400); // buffer delay
-          }
-        }
-      }, 500);
+      utterance.onend = () => {
+        window.ignoreTranscript = false;
+        window.interruptableSpeech = null;
+      };
     }
-
 
     function sendMessage() {
       const userMessageInput = document.getElementById('userMessage');
@@ -166,13 +147,6 @@
       })
       .finally(() => {
         isSubmitting = false;
-        if (window.shouldBeListening && window.recognition) {
-          try {
-            startListening(true);
-          } catch (e) {
-            console.error(e);
-          }
-        }
       });
 
       userMessageInput.focus();
@@ -220,7 +194,6 @@
       }
 
       function startListening(force = false) {
-        if (!force && !window.shouldBeListening) return;
         try {
           recognition.start();
           micIcon.style.color = "red";
@@ -231,25 +204,16 @@
         }
       }
 
-      function stopListening(force = false) {
-        if (!force && window.shouldBeListening) return;
-        try {
-          recognition.stop();
-        } catch (e) {
-          console.error("Stop failed:", e);
-        }
-        micIcon.style.color = "orange";
-        micButton.classList.remove("active");
-        window.listening = false;
-        if (autoSubmitTimer) clearTimeout(autoSubmitTimer);
-      }
+      startListening(true);
 
       micButton.addEventListener("click", () => {
-        window.shouldBeListening = !window.shouldBeListening;
-        if (window.shouldBeListening) {
-          startListening(true);
+        if (window.listening) {
+          recognition.stop();
+          micIcon.style.color = "orange";
+          micButton.classList.remove("active");
+          window.listening = false;
         } else {
-          stopListening(true);
+          startListening(true);
         }
       });
 
@@ -257,6 +221,19 @@
         const transcript = event.results[event.results.length - 1][0].transcript.trim();
         if (transcript === lastTranscript) return;
         lastTranscript = transcript;
+
+        if (window.ignoreTranscript && window.interruptableSpeech) {
+          console.log("User interrupted TTS with:", transcript);
+          speechSynthesis.cancel();
+          window.ignoreTranscript = false;
+          window.interruptableSpeech = null;
+          return; // Don't add this transcript yet
+        }
+
+        if (window.ignoreTranscript) {
+          console.log("Ignoring TTS echo:", transcript);
+          return;
+        }
 
         if (transcript.toLowerCase().includes("done talking") && userMessageInput.value.trim()) {
           sendMessage();
@@ -271,7 +248,6 @@
       };
 
       recognition.onend = () => {
-        lastTranscript = "";
         if (window.shouldBeListening) {
           setTimeout(() => {
             try {
@@ -285,10 +261,9 @@
 
       recognition.onerror = (event) => {
         console.error("Recognition error:", event.error);
-        stopListening(true);
       };
 
-      micIcon.style.color = "orange";
+      micIcon.style.color = "red";
     });
   </script>
 </body>
