@@ -1806,6 +1806,9 @@ class UserCharacter(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_public = models.BooleanField(default=False, help_text="Whether this character is publicly viewable")
 
+    # ✅ Add this field
+    image = models.ImageField(upload_to='character_images/', blank=True, null=True, help_text="Optional image for the character")
+
     def __str__(self):
         return f"{self.name} ({self.user.username})"
     
@@ -1818,7 +1821,7 @@ class UserCharacter(models.Model):
             "metadata": self.metadata or {},
             "created_at": self.created_at.isoformat(),
             "user_id": self.user.id,
-            "type": "agent",  # optional: could be "agent", "npc", etc.
+            "type": "agent",
         }
 
 class CharacterMemory(models.Model):
