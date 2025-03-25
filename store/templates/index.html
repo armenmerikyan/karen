@@ -2,72 +2,91 @@
 {% load custom_filters %}
 
 {% block content %}
-<!-- Gigahard Services Section -->
-<section class="py-5 bg-dark text-light position-relative overflow-hidden">
-  <!-- Animated background elements -->
-  <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
-    <div class="position-absolute top-0 start-0 bg-teal rounded-circle" style="width: 300px; height: 300px; filter: blur(100px);"></div>
-    <div class="position-absolute bottom-0 end-0 bg-purple rounded-circle" style="width: 300px; height: 300px; filter: blur(100px);"></div>
-  </div>
-  
-  <div class="container position-relative">
-    <div class="text-center mb-5">
-      <span class="badge bg-teal bg-opacity-20 text-teal mb-3 px-3 py-2 rounded-pill">AI POWERED SOLUTIONS</span>
-      <h2 class="display-4 fw-bold mb-3">What Gigahard Offers</h2>
-      <p class="lead text-muted">One-Click AI Agents. Deployed and Operational in Under a Minute.</p>
+<!-- Gigahard Services Section - Terminal Style -->
+<section class="py-5 bg-black text-terminal-green">
+  <div class="container">
+    <!-- Header with blinking cursor effect -->
+    <div class="mb-5 terminal-header">
+      <h2 class="text-monospace mb-1">> What Gigahard Offers</h2>
+      <p class="text-monospace text-terminal-muted blink">> One-Click AI Agents. Deployed and Operational in Under a Minute._</p>
     </div>
     
-    <div class="row g-4">
+    <!-- Services Grid -->
+    <div class="row gx-3 gy-4">
       <!-- Agent Store -->
-      <div class="col-lg-4">
-        <div class="card h-100 border-0 shadow-lg bg-gray-800-hover transition-all">
+      <div class="col-md-4">
+        <div class="card bg-black border-terminal-green h-100 hover-terminal-item">
           <div class="card-body p-4">
-            <div class="icon-wrapper bg-teal bg-opacity-10 text-teal mb-4 rounded-3" style="width: 60px; height: 60px; line-height: 60px;">
-              <i class="fas fa-store fs-4"></i>
+            <div class="d-flex align-items-center mb-3">
+              <span class="text-terminal-green me-2">></span>
+              <i class="fas fa-store text-terminal-green me-3"></i>
+              <h3 class="text-monospace mb-0">Agent Store</h3>
             </div>
-            <h3 class="h4 fw-bold mb-3">Agent Store</h3>
-            <p class="text-muted mb-4">
-              Discover and launch AI agents for every use case — from business operations to creative workflows. Fast, flexible, and ready to work.
-            </p>
-            <a href="#" class="text-teal text-decoration-none d-flex align-items-center fw-semibold">
-              Explore agents <i class="fas fa-arrow-right ms-2"></i>
-            </a>
+            <div class="terminal-content pl-4">
+              <p class="text-monospace text-terminal-muted">
+                > Discover and launch AI agents for every use case — from business operations to creative workflows.
+              </p>
+              <p class="text-monospace text-terminal-muted">
+                > Fast, flexible, and ready to work.
+              </p>
+            </div>
+            <div class="mt-3 pl-4">
+              <a href="#" class="text-monospace text-terminal-green">
+                > explore_agents <span class="blink">_</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Agent-as-a-Service -->
-      <div class="col-lg-4">
-        <div class="card h-100 border-0 shadow-lg bg-gray-800-hover transition-all">
+      <div class="col-md-4">
+        <div class="card bg-black border-terminal-green h-100 hover-terminal-item">
           <div class="card-body p-4">
-            <div class="icon-wrapper bg-purple bg-opacity-10 text-purple mb-4 rounded-3" style="width: 60px; height: 60px; line-height: 60px;">
-              <i class="fas fa-robot fs-4"></i>
+            <div class="d-flex align-items-center mb-3">
+              <span class="text-terminal-green me-2">></span>
+              <i class="fas fa-robot text-terminal-green me-3"></i>
+              <h3 class="text-monospace mb-0">Agent-as-a-Service</h3>
             </div>
-            <h3 class="h4 fw-bold mb-3">Agent-as-a-Service</h3>
-            <p class="text-muted mb-4">
-              Create your own intelligent agent in minutes — fully customized, fine-tuned, and persistent. Designed for your workflow and resellable as a unique digital product.
-            </p>
-            <a href="#" class="text-purple text-decoration-none d-flex align-items-center fw-semibold">
-              Build your agent <i class="fas fa-arrow-right ms-2"></i>
-            </a>
+            <div class="terminal-content pl-4">
+              <p class="text-monospace text-terminal-muted">
+                > Create your own intelligent agent in minutes — fully customized.
+              </p>
+              <p class="text-monospace text-terminal-muted">
+                > Fine-tuned and persistent. Designed for your workflow.
+              </p>
+            </div>
+            <div class="mt-3 pl-4">
+              <a href="#" class="text-monospace text-terminal-green">
+                > build_agent <span class="blink">_</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Agent Hosting -->
-      <div class="col-lg-4">
-        <div class="card h-100 border-0 shadow-lg bg-gray-800-hover transition-all">
+      <div class="col-md-4">
+        <div class="card bg-black border-terminal-green h-100 hover-terminal-item">
           <div class="card-body p-4">
-            <div class="icon-wrapper bg-blue bg-opacity-10 text-blue mb-4 rounded-3" style="width: 60px; height: 60px; line-height: 60px;">
-              <i class="fas fa-server fs-4"></i>
+            <div class="d-flex align-items-center mb-3">
+              <span class="text-terminal-green me-2">></span>
+              <i class="fas fa-server text-terminal-green me-3"></i>
+              <h3 class="text-monospace mb-0">Agent Hosting</h3>
             </div>
-            <h3 class="h4 fw-bold mb-3">Agent Hosting</h3>
-            <p class="text-muted mb-4">
-              All agents run in secure, isolated environments — hosted and scaled on our cloud infrastructure. Built for performance, privacy, and control.
-            </p>
-            <a href="#" class="text-blue text-decoration-none d-flex align-items-center fw-semibold">
-              Learn about hosting <i class="fas fa-arrow-right ms-2"></i>
-            </a>
+            <div class="terminal-content pl-4">
+              <p class="text-monospace text-terminal-muted">
+                > All agents run in secure, isolated environments.
+              </p>
+              <p class="text-monospace text-terminal-muted">
+                > Hosted and scaled on our cloud infrastructure.
+              </p>
+            </div>
+            <div class="mt-3 pl-4">
+              <a href="#" class="text-monospace text-terminal-green">
+                > learn_hosting <span class="blink">_</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -75,115 +94,132 @@
   </div>
 </section>
 
-<!-- Blockchain Integration Section -->
-<section class="py-5 bg-gray-900 text-white">
+<!-- Blockchain Integration Section - Terminal Style -->
+<section class="py-5 bg-black text-terminal-green">
   <div class="container">
-    <div class="text-center mb-5">
-      <span class="badge bg-purple bg-opacity-20 text-purple mb-3 px-3 py-2 rounded-pill">BLOCKCHAIN INTEGRATION</span>
-      <h2 class="display-4 fw-bold mb-3">Gigahard End-to-End AI-Driven API Integration</h2>
-      <p class="lead text-muted">We Specialize in AI Agents that Understand Your Business, Product, and Customer</p>
+    <!-- Header with blinking cursor effect -->
+    <div class="mb-5 terminal-header">
+      <h2 class="text-monospace mb-1">> Gigahard End-to-End AI-Driven API Integration</h2>
+      <p class="text-monospace text-terminal-muted blink">> We Specialize in AI Agents that Understand Your Business_</p>
     </div>
 
     {% if not user.is_authenticated %}
-    <div class="card bg-gray-800 border-gray-700 mb-5 shadow-lg">
-      <div class="card-body text-center p-5">
-        <h3 class="h2 fw-bold mb-3">Ready to Transform Your Business?</h3>
-        <p class="text-muted mb-4">Take a moment to join our platform</p>
-        <a href="{% url 'register' %}" class="btn btn-teal btn-lg px-4 py-3 fw-semibold">
-          Create Account <i class="fas fa-arrow-right ms-2"></i>
-        </a>
+    <div class="card bg-black border-terminal-green mb-5 hover-terminal-item">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center mb-3">
+          <span class="text-terminal-green me-2">></span>
+          <h3 class="text-monospace mb-0">Ready to Transform Your Business?</h3>
+        </div>
+        <div class="terminal-content pl-4">
+          <p class="text-monospace text-terminal-muted mb-3">
+            > Take a moment to join our platform
+          </p>
+          <a href="{% url 'register' %}" class="btn btn-terminal">
+            > create_account <span class="blink">_</span>
+          </a>
+        </div>
       </div>
     </div>
     {% endif %}
 
-    <div class="row g-4">
+    <div class="row gx-3 gy-4">
       <!-- Solana Wallet -->
       <div class="col-lg-6">
-        <div class="card h-100 bg-gray-800 border-gray-700 shadow-lg">
+        <div class="card bg-black border-terminal-green h-100 hover-terminal-item">
           <div class="card-body p-4">
-            <div class="d-flex align-items-center mb-4">
-              <div class="icon-wrapper bg-purple bg-opacity-10 text-purple rounded-3 me-3" style="width: 50px; height: 50px; line-height: 50px;">
-                <i class="fas fa-wallet"></i>
-              </div>
-              <h3 class="h4 fw-bold mb-0">Solana Wallet Address</h3>
+            <div class="d-flex align-items-center mb-3">
+              <span class="text-terminal-green me-2">></span>
+              <i class="fas fa-wallet text-terminal-green me-3"></i>
+              <h3 class="text-monospace mb-0">Solana Wallet Address</h3>
             </div>
-            <p class="text-muted mb-4">
-              Our AI-driven agents streamline workflows, boost revenue, and enhance customer experiences. Join our presale and be part of the future of business automation!
-            </p>
-            <div class="bg-gray-700 rounded-3 p-3 mb-3">
-              <p class="small text-gray-500 mb-1">Send donations/payments to:</p>
-              <div class="d-flex align-items-center">
-                <code class="font-monospace text-purple-300 text-break me-2">
-                  <a href="https://solscan.io/account/{{profile.wallet}}" class="text-decoration-none hover:text-white">{{profile.wallet}}</a>
+            <div class="terminal-content pl-4">
+              <p class="text-monospace text-terminal-muted">
+                > Our AI-driven agents streamline workflows and boost revenue.
+              </p>
+              <p class="text-monospace text-terminal-muted mb-3">
+                > Join our presale and be part of the future:
+              </p>
+              <div class="card bg-terminal-dark border-terminal-green p-3 mb-3">
+                <code class="text-monospace text-terminal-green d-block">
+                  > <a href="https://solscan.io/account/{{profile.wallet}}" class="text-terminal-green">{{profile.wallet}}</a>
                 </code>
-                <button class="btn btn-sm btn-gray-700 text-gray-400 hover:text-white" onclick="navigator.clipboard.writeText('{{profile.wallet}}')">
-                  <i class="far fa-copy"></i>
+                <button class="btn btn-terminal-sm mt-2" onclick="navigator.clipboard.writeText('{{profile.wallet}}')">
+                  > copy_address <span class="blink">_</span>
                 </button>
               </div>
+              <p class="text-monospace text-terminal-muted">
+                > Thank you for your support!
+              </p>
             </div>
-            <p class="text-center text-gray-500 mb-0">Thank you for your support!</p>
           </div>
         </div>
       </div>
 
       <!-- X.com Handle -->
       <div class="col-lg-6">
-        <div class="card h-100 bg-gray-800 border-gray-700 shadow-lg">
+        <div class="card bg-black border-terminal-green h-100 hover-terminal-item">
           <div class="card-body p-4">
-            <div class="d-flex align-items-center mb-4">
-              <div class="icon-wrapper bg-blue bg-opacity-10 text-blue rounded-3 me-3" style="width: 50px; height: 50px; line-height: 50px;">
-                <i class="fab fa-twitter"></i>
+            <div class="d-flex align-items-center mb-3">
+              <span class="text-terminal-green me-2">></span>
+              <i class="fab fa-twitter text-terminal-green me-3"></i>
+              <h3 class="text-monospace mb-0">Follow Us on X</h3>
+            </div>
+            <div class="terminal-content pl-4">
+              <p class="text-monospace text-terminal-muted mb-3">
+                > Stay updated with our latest developments:
+              </p>
+              <div class="card bg-terminal-dark border-terminal-green p-3 mb-3">
+                <code class="text-monospace text-terminal-green d-block">
+                  > <a href="https://x.com/{{profile.x_handle}}" class="text-terminal-green">@{{profile.x_handle}}</a>
+                </code>
               </div>
-              <h3 class="h4 fw-bold mb-0">Follow Us on X</h3>
+              <a href="https://x.com/{{profile.x_handle}}" class="btn btn-terminal">
+                > visit_profile <span class="blink">_</span>
+              </a>
             </div>
-            <p class="text-muted mb-4">
-              Stay updated with our latest developments, announcements, and community events.
-            </p>
-            <div class="bg-gray-700 rounded-3 p-3 mb-4">
-              <p class="small text-gray-500 mb-1">Follow our X account:</p>
-              <code class="font-monospace text-blue-300">
-                <a href="https://x.com/{{profile.x_handle}}" class="text-decoration-none hover:text-white">@{{profile.x_handle}}</a>
-              </code>
-            </div>
-            <a href="https://x.com/{{profile.x_handle}}" class="btn btn-outline-blue w-100">
-              <i class="fab fa-twitter me-2"></i> Visit Our Profile
-            </a>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Solana Tokens -->
-    <div class="card bg-gray-800 border-gray-700 mt-4 shadow-lg">
+    <div class="card bg-black border-terminal-green mt-4 hover-terminal-item">
       <div class="card-body p-4">
-        <div class="d-flex align-items-center mb-4">
-          <div class="icon-wrapper bg-indigo bg-opacity-10 text-indigo rounded-3 me-3" style="width: 50px; height: 50px; line-height: 50px;">
-            <i class="fas fa-coins"></i>
-          </div>
-          <h3 class="h4 fw-bold mb-0">Solana Token Payments</h3>
+        <div class="d-flex align-items-center mb-3">
+          <span class="text-terminal-green me-2">></span>
+          <i class="fas fa-coins text-terminal-green me-3"></i>
+          <h3 class="text-monospace mb-0">Solana Token Payments</h3>
         </div>
-        <p class="text-muted mb-4">
-          Pay with tokens created on the Solana blockchain. Our platform supports multiple tokens for flexible transactions.
-        </p>
-        
-        <div class="list-group">
-          {% for token in tokens %}
-          <div class="list-group-item bg-gray-700 border-gray-600 rounded-2 mb-2">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h4 class="h6 fw-bold mb-1">{{ token.name }}</h4>
-                <div class="d-flex align-items-center">
-                  <code class="font-monospace small text-indigo-300 text-break me-2">{{ token.address }}</code>
-                  <button class="btn btn-sm btn-gray-700 text-gray-400 hover:text-white" onclick="navigator.clipboard.writeText('{{ token.address }}')">
-                    <i class="far fa-copy"></i>
+        <div class="terminal-content pl-4">
+          <p class="text-monospace text-terminal-muted mb-3">
+            > Pay with tokens created on the Solana blockchain:
+          </p>
+          
+          <div class="list-group-terminal">
+            {% for token in tokens %}
+            <div class="card bg-terminal-dark border-terminal-green p-3 mb-2">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <code class="text-monospace text-terminal-green d-block">
+                    > {{ token.name }}
+                  </code>
+                  <code class="text-monospace text-terminal-muted d-block mt-1 small">
+                    > {{ token.address }}
+                  </code>
+                  <button class="btn btn-terminal-sm mt-2" onclick="navigator.clipboard.writeText('{{ token.address }}')">
+                    > copy_address <span class="blink">_</span>
                   </button>
                 </div>
+                <span class="badge bg-terminal-dark border-terminal-green text-terminal-green">
+                  > token
+                </span>
               </div>
-              <span class="badge bg-indigo bg-opacity-10 text-indigo">Token</span>
+              <p class="text-monospace text-terminal-muted mt-2 mb-0 small">
+                > {{ token.description }}
+              </p>
             </div>
-            <p class="small text-gray-500 mt-2 mb-0">{{ token.description }}</p>
+            {% endfor %}
           </div>
-          {% endfor %}
         </div>
       </div>
     </div>
@@ -191,54 +227,62 @@
 </section>
 
 <style>
-  /* Custom colors */
-  .bg-teal { background-color: #20c997; }
-  .text-teal { color: #20c997; }
-  .bg-purple { background-color: #6f42c1; }
-  .text-purple { color: #6f42c1; }
-  .bg-blue { background-color: #0d6efd; }
-  .text-blue { color: #0d6efd; }
-  .bg-indigo { background-color: #6610f2; }
-  .text-indigo { color: #6610f2; }
-  .bg-gray-800 { background-color: #1e1e2d; }
-  .bg-gray-700 { background-color: #2a2a3c; }
-  .border-gray-700 { border-color: #2a2a3c; }
-  .bg-gray-600 { background-color: #3a3a4c; }
-  .border-gray-600 { border-color: #3a3a4c; }
+  /* Terminal-specific styles */
+  .text-terminal-green { color: #00FF00; }
+  .text-terminal-muted { color: #00AA00; }
+  .border-terminal-green { border: 1px solid #00AA00; }
+  .bg-terminal-dark { background-color: #0A0A0A; }
   
-  /* Custom button styles */
-  .btn-teal {
-    background-color: #20c997;
-    border-color: #20c997;
-    color: white;
+  .text-monospace { font-family: 'Courier New', Courier, monospace; }
+  
+  /* Terminal blinking cursor effect */
+  .blink {
+    animation: blink-animation 1s steps(2, start) infinite;
   }
-  .btn-teal:hover {
-    background-color: #1aa179;
-    border-color: #1aa179;
-  }
-  .btn-outline-blue {
-    border-color: #0d6efd;
-    color: #0d6efd;
-  }
-  .btn-outline-blue:hover {
-    background-color: #0d6efd;
-    color: white;
+  @keyframes blink-animation {
+    to { visibility: hidden; }
   }
   
-  /* Hover effects */
-  .bg-gray-800-hover:hover {
-    background-color: #1e1e2d;
-    transform: translateY(-5px);
-  }
-  .transition-all {
-    transition: all 0.3s ease;
+  /* Terminal item hover effect */
+  .hover-terminal-item:hover {
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    transform: translateY(-2px);
   }
   
-  /* Text colors */
-  .text-muted { color: #8c8c9e !important; }
-  .text-purple-300 { color: #a98eda; }
-  .text-blue-300 { color: #7da9ff; }
-  .text-indigo-300 { color: #8d6ef5; }
+  /* Terminal buttons */
+  .btn-terminal {
+    background-color: #0A0A0A;
+    color: #00FF00;
+    border: 1px solid #00AA00;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 0.375rem 0.75rem;
+  }
+  .btn-terminal:hover {
+    background-color: #00AA00;
+    color: #000000;
+    border-color: #00FF00;
+  }
+  .btn-terminal-sm {
+    background-color: #0A0A0A;
+    color: #00FF00;
+    border: 1px solid #00AA00;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Terminal list group */
+  .list-group-terminal {
+    background-color: transparent;
+    border-radius: 0;
+  }
+  
+  /* Terminal content indentation */
+  .terminal-content {
+    border-left: 1px solid #00AA00;
+    margin-left: 15px;
+    padding-left: 15px;
+  }
 </style>
 
 {% endblock %}
