@@ -4442,7 +4442,7 @@ def character_list(request):
 def character_create(request):
     profile = get_latest_profile()
     if request.method == 'POST':
-        form = UserCharacterForm(request.POST)
+        form = UserCharacterForm(request.POST, request.FILES)
         if form.is_valid():
             character = form.save(commit=False)
             character.user = request.user

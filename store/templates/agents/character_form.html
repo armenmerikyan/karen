@@ -7,6 +7,15 @@
       <div class="row">
         <div class="col-md-12 text-left">   
           <h2>{% if is_edit %}Edit{% else %}Create{% endif %} Character</h2>
+          {% if form.instance.image %}
+            <div class="mb-4">
+              <label><strong>Current Image:</strong></label><br>
+              <img src="{{ form.instance.image.url }}" alt="Character Image"
+                  class="img-fluid rounded shadow-sm"
+                  style="max-height: 300px; width: auto;">
+            </div>
+          {% endif %}
+
           <form method="post" enctype="multipart/form-data" class="mt-4">
 
             {% csrf_token %}
