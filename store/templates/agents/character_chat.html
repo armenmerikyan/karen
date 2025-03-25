@@ -63,7 +63,9 @@
     let voices = [];
     let isSubmitting = false;
     let lastMessageSent = "";
-    window.shouldBeListening = true;
+    let lastTranscript = "";
+
+    window.shouldBeListening = false;
     window.ignoreTranscript = false;
     window.interruptableSpeech = null;
 
@@ -97,7 +99,7 @@
         setTimeout(() => {
           window.ignoreTranscript = false;
           window.interruptableSpeech = null;
-        }, 1000); // Delay to let TTS audio fade
+        }, 1000);
       };
     }
 
@@ -158,21 +160,13 @@
       const userMessageInput = document.getElementById('userMessage');
       const micButton = document.getElementById('micButton');
       const micIcon = micButton.querySelector('i');
-      const SILENCE_TIMEOUT = 4000;
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
       populateVoices();
 
-      userMessageInput.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          sendMessage();
-        }
-      });
-
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
         micButton.disabled = true;
-        micButton.title = "Speech recognition not supported in this browser.";
+        micButton.title = "Speech recognition not supported.";
         return;
       }
 
@@ -183,39 +177,33 @@
       window.recognition = recognition;
       window.listening = false;
 
-      let autoSubmitTimer = null;
-      let lastTranscript = "";
-
-      function resetAutoSubmitTimer() {
-        if (autoSubmitTimer) clearTimeout(autoSubmitTimer);
-        autoSubmitTimer = setTimeout(() => {
-          if (userMessageInput.value.trim()) {
-            sendMessage();
-          }
-        }, SILENCE_TIMEOUT);
-      }
-
-      function startListening(force = false) {
+      function startListening() {
         try {
           recognition.start();
           micIcon.style.color = "red";
           micButton.classList.add("active");
           window.listening = true;
         } catch (e) {
-          console.error("Start failed:", e);
+          console.error("Mic start failed:", e);
         }
       }
 
-      startListening(true);
+      function stopListening() {
+        try {
+          recognition.stop();
+        } catch (e) {
+          console.error("Mic stop failed:", e);
+        }
+        micIcon.style.color = "orange";
+        micButton.classList.remove("active");
+        window.listening = false;
+      }
 
       micButton.addEventListener("click", () => {
         if (window.listening) {
-          recognition.stop();
-          micIcon.style.color = "orange";
-          micButton.classList.remove("active");
-          window.listening = false;
+          stopListening();
         } else {
-          startListening(true);
+          startListening();
         }
       });
 
@@ -236,7 +224,7 @@
         }
 
         if (window.ignoreTranscript) {
-          console.log("Ignored TTS echo:", transcript);
+          console.log("Ignored echo:", transcript);
           return;
         }
 
@@ -249,14 +237,13 @@
           userMessageInput.value += ' ';
         }
         userMessageInput.value += transcript;
-        resetAutoSubmitTimer();
       };
 
       recognition.onend = () => {
-        if (window.shouldBeListening) {
+        if (window.listening) {
           setTimeout(() => {
             try {
-              startListening(true);
+              recognition.start();
             } catch (e) {
               console.error("Restart failed:", e);
             }
@@ -266,9 +253,10 @@
 
       recognition.onerror = (event) => {
         console.error("Recognition error:", event.error);
+        stopListening();
       };
 
-      micIcon.style.color = "red";
+      micIcon.style.color = "orange";
     });
   </script>
 </body>
