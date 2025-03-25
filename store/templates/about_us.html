@@ -3,16 +3,31 @@
 {% load custom_filters %}
 
 {% block content %}
-<!-- About Us Section -->
-<section class="py-5">
+<!-- About Us Section - Terminal Style -->
+<section class="py-5 bg-black text-terminal-green">
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-12">
-        <div class="card shadow-lg">
+        <div class="card bg-black border-terminal-green hover-terminal-item">
           <div class="card-body p-4 p-md-5">
-            <h3 class="card-title text-center mb-4 display-4 font-weight-bold text-primary">About Us</h3>
-            <div class="about-us-content">
-              <p class="lead text-muted">{{ profile.about_us|safe }}</p>
+            <!-- Terminal-style header with blinking cursor -->
+            <div class="terminal-header mb-4">
+              <h3 class="text-monospace mb-1">
+                > about_gigahard<span class="blink">_</span>
+              </h3>
+              <div class="dashed-line my-3"></div>
+            </div>
+            
+            <!-- Terminal content area -->
+            <div class="terminal-content pl-4">
+              <div class="about-us-content text-monospace">
+                {{ profile.about_us|safe|linebreaksbr }}
+              </div>
+              
+              <!-- Terminal prompt at bottom -->
+              <div class="mt-4 pt-3 border-top border-terminal-green">
+                <span class="text-terminal-green">>_<span class="blink">_</span></span>
+              </div>
             </div>
           </div>
         </div>
@@ -21,3 +36,52 @@
   </div>
 </section>
 {% endblock %}
+
+<style>
+  /* Terminal-specific styles */
+  .text-terminal-green { color: #00FF00; }
+  .border-terminal-green { border: 1px solid #00AA00; }
+  
+  /* Terminal blinking cursor effect */
+  .blink {
+    animation: blink-animation 1s steps(2, start) infinite;
+  }
+  @keyframes blink-animation {
+    to { visibility: hidden; }
+  }
+  
+  /* Terminal item hover effect */
+  .hover-terminal-item:hover {
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+  }
+  
+  /* Terminal content indentation */
+  .terminal-content {
+    border-left: 1px solid #00AA00;
+    margin-left: 15px;
+    padding-left: 15px;
+  }
+  
+  /* Dashed line separator */
+  .dashed-line {
+    border: none;
+    border-top: 1px dashed #00AA00;
+    width: 100%;
+  }
+  
+  /* Ensure monospace font throughout */
+  .text-monospace, .about-us-content {
+    font-family: 'Courier New', Courier, monospace;
+    white-space: pre-wrap; /* Preserve line breaks */
+  }
+  
+  /* Style links within the content */
+  .about-us-content a {
+    color: #00FF00 !important;
+    text-decoration: underline;
+  }
+  
+  .about-us-content a:hover {
+    color: #FFFFFF !important;
+  }
+</style>
