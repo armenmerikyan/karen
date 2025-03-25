@@ -1804,6 +1804,7 @@ class UserCharacter(models.Model):
     external_id = models.CharField(max_length=255, blank=True, null=True)
     metadata = models.JSONField(blank=True, null=True, help_text="Additional context (e.g., backstory, goals)")
     created_at = models.DateTimeField(auto_now_add=True)
+    is_public = models.BooleanField(default=False, help_text="Whether this character is publicly viewable")
 
     def __str__(self):
         return f"{self.name} ({self.user.username})"
