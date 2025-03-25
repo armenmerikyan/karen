@@ -4446,8 +4446,11 @@ def character_create(request):
         if form.is_valid():
             character = form.save(commit=False)
             character.user = request.user
+            print("Uploaded file:", request.FILES.get('image'))  # Debug line
             character.save()
             return redirect('character_list')
+        else:
+            print(form.errors)  # To see if image caused a validation issue
     else:
         form = UserCharacterForm()
     return render(request, 'agents/character_form.html', {'form': form, 'is_edit': False, 'profile': profile})
