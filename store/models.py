@@ -1807,7 +1807,7 @@ class UserCharacter(models.Model):
     is_public = models.BooleanField(default=False, help_text="Whether this character is publicly viewable")
 
     # ✅ Add this field
-    image = models.ImageField(upload_to='character_images/', blank=True, null=True, help_text="Optional image for the character")
+    character_image = models.ImageField(upload_to='character_images/', blank=True, null=True, help_text="Optional image for the character")
 
     def __str__(self):
         return f"{self.name} ({self.user.username})"
