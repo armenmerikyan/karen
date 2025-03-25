@@ -94,8 +94,10 @@
       speechSynthesis.speak(utterance);
 
       utterance.onend = () => {
-        window.ignoreTranscript = false;
-        window.interruptableSpeech = null;
+        setTimeout(() => {
+          window.ignoreTranscript = false;
+          window.interruptableSpeech = null;
+        }, 1000); // Delay to let TTS audio fade
       };
     }
 
@@ -222,16 +224,19 @@
         if (transcript === lastTranscript) return;
         lastTranscript = transcript;
 
-        if (window.ignoreTranscript && window.interruptableSpeech) {
-          console.log("User interrupted TTS with:", transcript);
+        const wordCount = transcript.split(/\s+/).length;
+        const isLikelyRealInput = wordCount >= 2;
+
+        if (window.ignoreTranscript && window.interruptableSpeech && isLikelyRealInput) {
+          console.log("User interrupted TTS:", transcript);
           speechSynthesis.cancel();
           window.ignoreTranscript = false;
           window.interruptableSpeech = null;
-          return; // Don't add this transcript yet
+          return;
         }
 
         if (window.ignoreTranscript) {
-          console.log("Ignoring TTS echo:", transcript);
+          console.log("Ignored TTS echo:", transcript);
           return;
         }
 
