@@ -749,11 +749,11 @@ class Product(models.Model):
     user_character = models.OneToOneField('UserCharacter', on_delete=models.CASCADE, null=True, blank=True, related_name='product')
     
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.CASCADE,
         related_name='products'
     )
-    
+
     # Foreign keys for category, brand, and lifecycle stage
     #category = models.ForeignKey('Category', on_delete=models.CASCADE)
     #brand = models.ForeignKey('Brand', on_delete=models.CASCADE)
