@@ -45,7 +45,7 @@ class CharacterMemoryForm(forms.ModelForm):
 class UserCharacterForm(forms.ModelForm):
     class Meta:
         model = UserCharacter
-        fields = ['name', 'persona', 'chatgpt_model_id', 'chatgpt_model_id_current', 'is_public']
+        fields = ['name', 'persona', 'chatgpt_model_id', 'chatgpt_model_id_current', 'is_public', 'image']
 
 class ReferralForm(forms.ModelForm):
     usable_for_chatgpt = True  # Move this to class level
