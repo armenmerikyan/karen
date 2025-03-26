@@ -13,7 +13,7 @@ python3 -m venv gmenv
 source gmenv/bin/activate
 sudo apt update
 sudo apt install -y git
-sudo vi /etc/systemd/system/athena.service
+sudo vi /etc/systemd/system/karen.service
 sudo systemctl daemon-reload
 sudo systemctl enable athena
 
