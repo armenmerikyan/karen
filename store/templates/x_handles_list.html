@@ -12,24 +12,39 @@
           <h2>Add Twitter Handle</h2>
 
           <div class="mb-3">
-            <a href="{% url 'handle-list' %}?type=txt" class="btn btn-success mb-3" target="_blank">
-              Download text Report
-            </a>
-            <br>
-            <a href="https://chatgpt.com/g/g-67dd221e4600819193f08719c0412f27-crypto-oracle" target="_blank">
-              ChatGPT: Crypto Oracle
-            </a>
-            <br>
-            <form method="get" action="" class="mb-4">
+
+            <div class="card shadow-sm mb-3">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-robot text-primary"></i> ChatGPT: Crypto Oracle
+                </h5>
+                <p class="card-text">
+                  <i class="fas fa-chart-line text-success"></i> Get real-time insights, predictions, and answers on blockchain, crypto markets, and Web3 tech—powered by ChatGPT.
+                </p>
+                <a href="https://chatgpt.com/g/g-67dd221e4600819193f08719c0412f27-crypto-oracle" target="_blank" class="btn btn-outline-primary">
+                  <i class="fas fa-external-link-alt"></i> Launch Crypto Oracle
+                </a>
+              </div>
+            </div>
+
+            <form method="get" action="{% url 'handle-list' %}" class="mb-4">
               <div class="mb-3">
                 <label for="search" class="form-label">Search handles</label>
                 <input type="text" class="form-control" id="search" name="search"
-                      placeholder="e.g., 0xDesigner, 0xFrisk, 0xMLow, 0xMert_" />
+                       placeholder="e.g., 0xDesigner, 0xFrisk, 0xMLow, 0xMert_" />
               </div>
+            
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="type" name="type" value="txt">
+                <label class="form-check-label" for="type">
+                  Download results as .txt
+                </label>
+              </div>
+            
               <button type="submit" class="btn btn-primary">Search</button>
-            </form>
-
+            </form>            
           </div>
+          
 
           {% if user.is_staff %}
           <div class="mb-3">
