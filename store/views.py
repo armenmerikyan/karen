@@ -4913,6 +4913,7 @@ def register_mcp(request):
     })
 
 def public_characters_view(request):
+    profile = get_latest_profile()
     query = request.GET.get('q', '')
     characters = UserCharacter.objects.filter(is_public=True)
 
@@ -4923,5 +4924,6 @@ def public_characters_view(request):
 
     return render(request, 'public_characters.html', {
         'characters': characters,
-        'query': query
+        'query': query,
+        'profile': profile
     })
