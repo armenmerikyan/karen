@@ -28,6 +28,13 @@
                     <div class="card-body">
                       <h5 class="card-title">{{ character.name }}</h5>
                       <p class="card-text">{{ character.persona|truncatechars:120 }}</p>
+                      <!-- Debug info -->
+                      <div class="mt-3">
+                        <!-- Added the direct chat link here -->
+                        <a href="{% url 'chat_view' character.id %}" class="btn btn-success">
+                          <i class="fas fa-comments"></i> Chat
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
