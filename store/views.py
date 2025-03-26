@@ -4914,7 +4914,7 @@ def register_mcp(request):
 
 def public_characters_view(request):
     query = request.GET.get('q', '')
-    characters = UserCharacter.objects.filter(public=True)
+    characters = UserCharacter.objects.filter(is_public=True)
 
     if query:
         characters = characters.filter(
