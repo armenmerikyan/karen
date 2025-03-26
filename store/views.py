@@ -4758,7 +4758,7 @@ def user_chatbot_response_private(request, character_id):
 
     tools = None
     if character.user == request.user or character.allow_memory_update:
-        print("Condition passed")
+        logger.info("Adding ADD_MEMORY tool to chat_kwargs")
         tools = [
             {
                 "type": "function",
