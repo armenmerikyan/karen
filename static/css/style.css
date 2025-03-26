@@ -273,8 +273,10 @@ a.terminal-green:hover {
     border: 1px solid #444; /* Dropdown border */
   }
 
+
 #categorySelect {
-  white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: unset !important;
-}  
+  min-width: 100%;
+  width: auto;
+  max-width: 100%;
+  font-size: 1rem;
+}
