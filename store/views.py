@@ -309,8 +309,7 @@ from django.db.models import OuterRef, Subquery
 from scipy import spatial
 import ast
 
-version = "00.00.06"
-logger = logging.getLogger(__name__)
+version = "00.00.06" 
 register = template.Library()
 CADDY_API_URL = "http://localhost:2019/config/apps/http/servers/srv0/routes"
 
