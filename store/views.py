@@ -2891,6 +2891,1764 @@ def generate_message_chatgpt(request, customer_id, touchpoint_id):
         return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
 
     # Ensure the ChatGPT API key is available
+    if not profile.chatgpt_api_key:
+        return JsonResponse({"error": "ChatGPT API key is missing in the website profile."}, status=400)
+
+    print("API Key:", profile.chatgpt_api_key)  # Debugging: Print API key
+
+    # Fetch customer and touchpoint details
+    customer = get_object_or_404(Customer, id=customer_id)
+    touchpoint = get_object_or_404(TouchPointType, id=touchpoint_id)
+
+    # Prepare the prompt for OpenAI ChatGPT API
+    prompt = f"""
+    Website Information:
+    - Name: {profile.name}
+    - About Us: {profile.about_us}
+    - Wallet: {profile.wallet}
+    - x Handle: {profile.x_handle}
+    - Email: {profile.email}
+    - Phone: {profile.phone}
+    - Address: {profile.address1}, {profile.city}, {profile.state}, {profile.zip_code}, {profile.country}
+
+    Customer Information:
+    - Name: {customer.first_name} {customer.last_name}
+    - Email: {customer.email}
+    - Phone: {customer.phone_number}
+    - Address: {customer.address1}, {customer.city}, {customer.state}, {customer.zip_code}, {customer.country}
+
+    TouchPoint Information:
+    - Type: {touchpoint.name}
+    - Objective: {touchpoint.objective}
+    - Instructions: {touchpoint.instructions}
+    - Format: {touchpoint.touchpoint_format}
+
+    Generate a personalized message for the customer based on the above information.
+    """
+
+    # Initialize the OpenAI client with the API key from the profile
+    client = OpenAI(api_key=profile.chatgpt_api_key)
+
+    # Include business context about 'About Us' and ensure a short, concise response
+    context = [
+        {"role": "system", "content": f"You are a helpful chatbot assistant for a company. Here is some information about the company: {profile.about_us}. Please keep your responses really short and to the point."},
+        {"role": "user", "content": prompt}  # Include the prompt
+    ]
+
+    # Check fine-tuned model status
+    if profile.chatgpt_model_id_current:
+        fine_tune_status = client.fine_tuning.jobs.retrieve(profile.chatgpt_model_id_current)
+        print("Fine-tune status:", fine_tune_status)
+
+        if fine_tune_status.status == 'succeeded':
+            # Use the model ID for the fine-tuned model
+            model_id = fine_tune_status.fine_tuned_model
+        else:
+            # If still processing or failed, use a fallback model
+            model_id = "gpt-3.5-turbo"
+    else:
+        # If no fine-tuned model is specified, use a fallback model
+        model_id = "gpt-3.5-turbo"
+
+    print("Using model:", model_id)  # Debugging: Print model ID
+
+    try:
+        # Call the OpenAI API
+        response = client.chat.completions.create(
+            model=model_id,  # Use the fine-tuned model or fallback model
+            messages=context
+        )
+
+        # Extract the bot's reply
+        bot_reply = response.choices[0].message.content
+
+        return JsonResponse({"message": bot_reply})
+
+    except Exception as e:
+        # Handle any errors from the OpenAI API
+        print("OpenAI API Error:", str(e))  # Debugging: Print API error
+        return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
+
+@csrf_exempt
+@login_required
+def save_generated_message(request):
+    if request.method == "POST":
+        print(f"Raw POST data: {request.POST}")  # Debugging
+
+        customer_id = request.POST.get("customer_id")
+        touchpoint_id = request.POST.get("touchpoint_id")
+        message_text = request.POST.get("message")
+
+        print(f"Received customer_id: {customer_id}, touchpoint_id: {touchpoint_id}, message: {message_text}")
+
+        if not customer_id or not touchpoint_id or not message_text:
+            return JsonResponse({"status": "error", "message": "Missing required fields"}, status=400)
+
+        try:
+            customer = get_object_or_404(Customer, id=customer_id)
+            touchpoint = get_object_or_404(TouchPointType, id=touchpoint_id)
+
+            print(f"Found customer: {customer}, touchpoint: {touchpoint}")
+
+            message = GeneratedMessage.objects.create(
+                customer=customer,
+                touchpoint=touchpoint,
+                message=message_text
+            )
+            
+            return JsonResponse({"status": "success", "message_id": message.id})
+        
+        except Exception as e:
+            print(f"Error: {e}")
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+    return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
+
+@login_required
+def customer_messages(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+    messages = GeneratedMessage.objects.filter(customer=customer).order_by('-created_at')
+
+    return render(request, 'customer_messages.html', {'customer': customer, 'messages': messages})
+
+@login_required
+def customer_messages(request, customer_id):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+    customer = get_object_or_404(Customer, id=customer_id)
+    messages = GeneratedMessage.objects.filter(customer=customer).order_by('-created_at')
+    
+    context = {
+        'profile': profile,
+        'customer': customer,
+        'messages': messages,
+    }
+    
+    return render(request, 'customer_messages.html', context)
+
+@login_required
+def update_generated_message(request, pk):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+
+    message = get_object_or_404(GeneratedMessage, pk=pk)
+    
+    if request.method == 'POST':
+        form = GeneratedMessageForm(request.POST, instance=message)
+        if form.is_valid():
+            form.save()
+            return redirect('customer_edit', customer_id=message.customer.id)  # Redirect to customer detail page
+    else:
+        form = GeneratedMessageForm(instance=message)
+    
+    return render(request, 'generated_message_update.html', {'form': form, 'message': message, 'profile': profile})
+
+
+# View to upload and display PDFs
+@admin_required
+def pdf_list(request):
+    pdfs = PDFDocument.objects.all()
+    return render(request, 'pdf_list.html', {'pdfs': pdfs})
+
+# View to serve a PDF
+@admin_required
+def view_pdf(request, pk):
+    pdf = get_object_or_404(PDFDocument, pk=pk)
+    return FileResponse(pdf.file.open('rb'), content_type='application/pdf')
+
+# View to add a new PDF
+@admin_required
+def add_pdf(request):
+    if request.method == 'POST':
+        form = PDFDocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('pdf_list')
+    else:
+        form = PDFDocumentForm()
+    return render(request, 'add_pdf.html', {'form': form})
+
+# View to edit an existing PDF
+@admin_required
+def edit_pdf(request, pk):
+    pdf = get_object_or_404(PDFDocument, pk=pk)
+    if request.method == 'POST':
+        form = PDFDocumentForm(request.POST, request.FILES, instance=pdf)
+        if form.is_valid():
+            form.save()
+            return redirect('pdf_list')
+    else:
+        form = PDFDocumentForm(instance=pdf)
+    return render(request, 'edit_pdf.html', {'form': form, 'pdf': pdf})
+  
+@login_required
+def secure_download(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+
+    # Check if the user has a cart containing this product and if the cart is paid
+    try:
+        cart = Cart.objects.get(user=request.user, checked_out=True, paid=True)
+    except Cart.DoesNotExist:
+        logger.error(f"User {request.user} does not have a paid, checked-out cart.")
+        return HttpResponseForbidden("You don't have an active, paid cart.")
+
+    # Check if the product exists in the cart
+    cart_product = CartProduct.objects.filter(cart=cart, product=product).first()
+    if not cart_product:
+        logger.error(f"User {request.user} does not have product {product_id} in their cart.")
+        return HttpResponseForbidden("You have not purchased this product.")
+
+    # Serve the file securely
+    file_path = join(settings.MEDIA_ROOT, product.digital_file.name)
+    if not product.digital_file:
+        logger.error(f"Product {product_id} does not have a digital file.")
+        return HttpResponseForbidden("The product does not have a digital file.")
+    
+    logger.info(f"Serving digital file for product {product_id}.")
+    return FileResponse(open(file_path, 'rb'), as_attachment=True)
+
+def get_latest_profile():
+    return WebsiteProfile.objects.order_by('-created_at').first()
+
+def validate_profile(profile):
+    if not profile:
+        return {"error": "No website profile found. Please create a profile first."}, 400
+    if not profile.chatgpt_api_key:
+        return {"error": "ChatGPT API key is missing in the website profile."}, 400
+    return None
+
+def format_training_entry(system_content, user_content, assistant_content):
+    return {"messages": [
+        {"role": "system", "content": system_content},
+        {"role": "user", "content": user_content},
+        {"role": "assistant", "content": assistant_content}
+    ]}
+
+
+def get_general_info(profile):
+    training_data = []
+    info_entries = [
+        ("terms_of_service", "What are the terms of service?"),
+        ("privacy_policy", "What is the privacy policy?"),
+        ("about_us", "Tell me about your company."),
+        ("email", "What is your contact email?"),
+        ("phone", "What is your contact phone number?")
+    ]
+    for attr, question in info_entries:
+        content = getattr(profile, attr, None)
+        if content:
+            training_data.append(format_training_entry(
+                "You are a helpful AI assistant that provides website information.",
+                question,
+                content
+            ))
+    
+    address_fields = [profile.address1, profile.address2, profile.city, profile.state, profile.zip_code, profile.country]
+    address_info = ", ".join(filter(None, address_fields)).strip(', ')
+    if address_info:
+        training_data.append(format_training_entry(
+            "You are a helpful AI assistant that provides website address information.",
+            "What is your business address?",
+            address_info
+        ))
+    return training_data
+
+def get_conversation_info():
+    training_data = []
+    conversations = Conversation.objects.prefetch_related("messages").all()
+
+    for convo in conversations:
+        messages = convo.messages.order_by("timestamp")
+        formatted_messages = [
+            {"role": msg.role, "content": msg.content_update if msg.content_update else msg.content}
+            for msg in messages
+        ]
+        training_data.append({"messages": formatted_messages})
+
+    return training_data
+
+
+def get_product_info():
+    training_data = []
+    products = Product.objects.all()
+    for product in products:
+        desc = f"Here are the details for {product.name}:\nDescription: {product.description}\n"
+        training_data.append(format_training_entry(
+            "You are a knowledgeable assistant that provides details about products.",
+            f"What can you tell me about {product.name}?",
+            desc
+        ))
+    return training_data
+
+def get_qa_info():
+    training_data = []
+    approved_qas = QuestionAnswer.objects.filter(
+        is_approved=True, has_sensitive_data=False, is_visible_public=True, is_deleted=False
+    )
+    for qa in approved_qas:
+        training_data.append(format_training_entry(
+            "You are a helpful AI assistant providing accurate answers to customer questions.",
+            qa.question,
+            qa.answer
+        ))
+    return training_data
+
+def save_training_data(training_data):
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl", mode="w", encoding="utf-8") as temp_file:
+        jsonl_file_path = temp_file.name
+        for entry in training_data:
+            temp_file.write(json.dumps(entry) + "\n")
+    return jsonl_file_path
+
+def upload_and_finetune(client, jsonl_file_path, profile):
+    try:
+        with open(jsonl_file_path, "rb") as file:
+            file_response = client.files.create(file=file, purpose="fine-tune")
+        file_id = file_response.id
+        fine_tune_response = client.fine_tuning.jobs.create(training_file=file_id, model="gpt-3.5-turbo")
+        profile.chatgpt_model_id = fine_tune_response.id
+        profile.save()
+        os.remove(jsonl_file_path)
+        return file_id, fine_tune_response.id
+    except Exception as e:
+        return None, str(e)
+
+@csrf_exempt
+@admin_required
+def train_product_model(request):
+    if request.method != "GET":
+        return JsonResponse({"error": "Invalid request"}, status=400)
+    
+    profile = get_latest_profile()
+    validation_error = validate_profile(profile)
+    if validation_error:
+        return JsonResponse(*validation_error)
+    
+    client = OpenAI(api_key=profile.chatgpt_api_key)
+    training_data = get_general_info(profile) + get_product_info() + get_qa_info() + get_conversation_info()
+    jsonl_file_path = save_training_data(training_data)
+    
+    file_id, result = upload_and_finetune(client, jsonl_file_path, profile)
+    if not file_id:
+        return JsonResponse({"error": f"An error occurred: {result}"}, status=500)
+    
+    return redirect('admin_panel')
+
+@admin_required
+def copy_profile(request):
+    # Get the WebsiteProfile object by ID
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+     
+    # Copy the profile's model ID to the current active model ID
+    profile.chatgpt_model_id_current = profile.chatgpt_model_id
+    profile.save()
+    
+    # Optionally, you can redirect to another page after performing the action
+    return redirect('admin_panel')
+ 
+
+# List all question answers
+@staff_required
+def question_answer_list(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+    
+    question_answers = QuestionAnswer.objects.all()
+    return render(request, 'question_answer_list.html', {'question_answers': question_answers, 'profile': profile})
+
+# View a single question answer
+@staff_required
+def question_answer_detail(request, pk):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+    question_answer = get_object_or_404(QuestionAnswer, pk=pk)
+    return render(request, 'question_answer_detail.html', {'question_answer': question_answer, 'profile': profile})
+
+# Add a new question answer
+@staff_required
+def question_answer_add(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+    if request.method == 'POST':
+        form = QuestionAnswerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('question_answer_list')
+    else:
+        form = QuestionAnswerForm()
+    return render(request, 'question_answer_form.html', {'form': form, 'profile': profile})
+
+# Edit a question answer
+@staff_required
+def question_answer_edit(request, pk):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+    question_answer = get_object_or_404(QuestionAnswer, pk=pk)
+    if request.method == 'POST':
+        form = QuestionAnswerForm(request.POST, instance=question_answer)
+        if form.is_valid():
+            form.save()
+            return redirect('question_answer_list')
+    else:
+        form = QuestionAnswerForm(instance=question_answer)
+    return render(request, 'question_answer_form.html', {'form': form, 'profile': profile})
+
+# Delete a question answer
+@staff_required
+def question_answer_delete(request, pk):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+    question_answer = get_object_or_404(QuestionAnswer, pk=pk)
+    if request.method == 'POST':
+        question_answer.delete()
+        return redirect('question_answer_list')
+    return render(request, 'question_answer_confirm_delete.html', {'question_answer': question_answer, 'profile': profile})
+
+def public_question_answer_list(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+    
+    # Filter answers that are:
+    # - approved (is_approved)
+    # - visible to the public (is_visible_public)
+    # - not marked as deleted (is_deleted)
+    # - do not contain sensitive data (has_sensitive_data=False)
+    question_answers = QuestionAnswer.objects.filter(
+        is_approved=True,
+        is_visible_public=True,
+        is_deleted=False,
+        has_sensitive_data=False
+    )
+    
+    return render(request, 'question_answer_list.html', {'question_answers': question_answers, 'profile': profile})
+
+# Add a new answer (only answer field)
+@login_required
+def simple_question_add(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+
+    if request.method == 'POST':
+        form = SimpleQuestionForm(request.POST)
+        if form.is_valid():
+            # Create a new QuestionAnswer object but don't save it yet
+            question_answer = form.save(commit=False)
+            # Set the created_by field to the currently logged-in user
+            question_answer.created_by = request.user
+            # Now save the object to the database
+            question_answer.save()
+
+            if not request.user.is_staff:
+                return redirect('public_question_answer_list')
+                
+            return redirect('question_answer_list')
+    else:
+        form = SimpleQuestionForm()  # Use the new form with only the 'answer' field
+
+    return render(request, 'question_answer_form.html', {'form': form, 'profile': profile})
+
+@admin_required
+def conversation_list(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+    
+    conversations = Conversation.objects.prefetch_related("messages").all()
+    
+    # Link conversations with customers based on email
+    for conversation in conversations:
+        if conversation.user:
+            try:
+                customer = Customer.objects.get(email=conversation.user.email)
+                conversation.customer = customer
+            except Customer.DoesNotExist:
+                conversation.customer = None
+        else:
+            conversation.customer = None
+
+    
+    return render(request, "conversation_list.html", {"conversations": conversations, 'profile': profile})
+
+@csrf_exempt
+@admin_required
+@require_POST
+def update_message_content(request, message_id):
+    try:
+        # Log the raw request body for debugging
+        print("Raw request body:", request.body)
+        print("message id ", message_id )
+
+        # Parse JSON data from the request body
+        try:
+            data = json.loads(request.body)
+            print("Parsed JSON data:", data)
+        except json.JSONDecodeError as e:
+            print("Failed to parse JSON:", e)
+            return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
+
+        # Extract the content_update field
+        content_update = data.get('content_update')
+        if not content_update:
+            print("No content_update provided in the request")
+            return JsonResponse({'success': False, 'error': 'content_update is required'})
+
+        # Log the received content_update
+        print("Content update received:", content_update)
+
+        # Fetch the message object
+        try:
+            message = Message.objects.get(id=message_id)
+            print("Message found:", message)
+        except Message.DoesNotExist:
+            print("Message not found for ID:", message_id)
+            return JsonResponse({'success': False, 'error': 'Message not found'})
+
+        # Update the message content
+        message.content_update = content_update
+        message.save()
+ 
+        # Log the updated message for debugging
+
+        return JsonResponse({'success': True})
+    except Exception as e:
+        print("Unexpected error:", str(e))
+        return JsonResponse({'success': False, 'error': str(e)})
+    
+
+@admin_required
+def visitor_list(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+    
+    visitors = Visitor.objects.all().order_by('-last_visit')  # Sort by last_visit, latest first
+    visitor_count = visitors.count()  # Count total visitors
+    
+    return render(request, 'visitor_list.html', {
+        'visitors': visitors,
+        'profile': profile,
+        'visitor_count': visitor_count
+    })
+
+
+@admin_required
+def visitor_delete(request, id):
+    visitor = get_object_or_404(Visitor, id=id)  # Fetch the visitor to delete
+    
+    if request.method == 'POST':
+        visitor.delete()  # Delete the visitor
+        return redirect('visitor_list')  # Redirect to the visitors list page
+
+    # Optionally, handle GET for confirmation page or show an error if needed
+    return redirect('visitor_list')  # Default action if not POST
+
+
+@admin_required
+def list_users(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+    
+    if not request.user.is_staff:
+        return redirect('user_list')  # Redirect if not an admin
+    users = User.objects.all()
+    return render(request, 'user_list.html', {'users': users, 'profile': profile})
+
+
+
+@admin_required
+def clear_user_fields(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    reset_user_fields(user)
+    return redirect('user_list')
+
+@admin_required
+def referral_list(request):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
+    referrals = Referral.objects.all()
+    return render(request, 'referrals.html', {'referrals': referrals, 'profile': profile})
+
+# List all landing pages
+@admin_required
+def landing_page_list(request):
+    profile = get_latest_profile()
+
+    landing_pages = LandingPage.objects.all()
+    return render(request, 'landing_page_list.html', {'landing_pages': landing_pages, 'profile': profile})
+
+# Add a new landing page
+@admin_required
+def landing_page_create(request):
+    profile = get_latest_profile()
+    if request.method == 'POST':
+        form = LandingPageForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('landing_page_list')
+    else:
+        form = LandingPageForm()
+    return render(request, 'landing_page_form.html', {'form': form, 'profile': profile})
+
+# Edit an existing landing page
+@admin_required
+def landing_page_edit(request, pk):
+    profile = get_latest_profile()
+    landing_page = get_object_or_404(LandingPage, pk=pk)
+    if request.method == 'POST':
+        form = LandingPageForm(request.POST, instance=landing_page)
+        if form.is_valid():
+            form.save()
+            return redirect('landing_page_list')
+    else:
+        form = LandingPageForm(instance=landing_page)
+    return render(request, 'landing_page_form.html', {'form': form, 'profile': profile})
+ 
+CADDY_API_URL_CONFIG = "http://localhost:2019/config"  # Update with your Caddy API URL
+CADDY_API_HTTP_URL = "http://localhost:2019/config/apps/http"
+
+def remove_domain_proxy(domain):
+    """
+    Remove the domain and its reverse proxy configuration from Caddy.
+    
+    :param domain: The domain to remove (e.g., "example.com").
+    """
+    domain_id = domain.replace('.', '-')  # ID used in the proxy configuration
+
+    try:
+        # Step 1: Fetch current routes configuration from Caddy API
+        response = requests.get(CADDY_API_URL_CONFIG)
+
+        if response.status_code != 200:
+            print(f"Failed to fetch current routes configuration: {response.text}")
+            return
+        
+        # Step 2: Parse the current configuration
+        config = response.json()
+
+        # Step 3: Access the current 'http' routes configuration
+        apps = config.get('apps', {})
+        http = apps.get('http', {})
+        servers = http.get('servers', {})
+        srv0 = servers.get('srv0', {})
+
+        # Step 4: Get the current list of routes
+        routes = srv0.get('routes', [])
+        if isinstance(routes, list):
+            # Step 5: Filter out the route matching the domain_id
+            updated_routes = [route for route in routes if route.get('@id') != domain_id]
+
+            # Step 6: Check if routes were updated and send the updated config back to Caddy
+            if len(updated_routes) < len(routes):
+                config['apps']['http']['servers']['srv0']['routes'] = updated_routes
+
+                # Step 7: Send updated configuration back to Caddy
+                update_response = requests.put(CADDY_API_HTTP_URL, json=config)
+
+                if update_response.status_code == 200:
+                    print(f"Proxy configuration for domain {domain} removed successfully!")
+                else:
+                    print(f"Failed to update Caddy configuration: {update_response.text}")
+            else:
+                print(f"No proxy configuration found for domain {domain}.")
+        else:
+            print(f"Unexpected format for 'routes'. Expected list, but found: {type(routes)}")
+            
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+def delete_matching_routes(domain):
+    """
+    Deletes all routes that match the given domain.
+    """
+    domain_id = domain.replace('.', '-')
+
+    # Step 1: Get current routes to find existing entries
+    routes_response = requests.get(CADDY_API_URL)
+    
+    if routes_response.status_code == 200:
+        routes = routes_response.json()
+        
+        # Step 2: Find and delete the matching routes
+        for index, route in enumerate(routes):
+            if any(match.get('host') == [domain] for match in route.get('match', [])):
+                delete_url = f"{CADDY_API_URL}/{index}"
+                delete_response = requests.delete(delete_url)
+                
+                if delete_response.status_code == 200:
+                    print(f"Route for domain {domain} deleted successfully.")
+                else:
+                    print(f"Failed to delete route for domain {domain}: {delete_response.text}")
+    else:
+        print(f"Failed to fetch routes: {routes_response.text}")
+
+def add_domain_with_proxy(domain, port):
+    """
+    Add a new domain to Caddy and forward all requests to 127.0.0.1:port using HTTP.
+    If the domain already exists, it will be deleted first.
+
+    :param domain: The domain to add (e.g., "newdomain.com").
+    :param port: The port to forward requests to.
+    """
+    # Step 1: Delete any existing matching routes
+    delete_matching_routes(domain)
+
+    domain_with_scheme = f'http://{domain}'  # Use HTTP instead of HTTPS
+    if domain_with_scheme not in settings.CSRF_TRUSTED_ORIGINS:
+        settings.CSRF_TRUSTED_ORIGINS.append(domain_with_scheme)
+
+    # Add domain to ALLOWED_HOSTS without the scheme
+    if domain not in settings.ALLOWED_HOSTS:
+        settings.ALLOWED_HOSTS.append(domain)
+
+    if domain_with_scheme not in settings.CORS_ALLOWED_ORIGINS:
+        settings.CORS_ALLOWED_ORIGINS.append(domain_with_scheme)
+    
+
+    # Normalize domain ID for Caddy
+    domain_id = domain.replace('.', '-')
+
+    # Step 2: Create new route payload (remove array wrapper around payload)
+    payload = {
+        "@id": domain_id,
+        "match": [{"host": [domain]}],
+        "handle": [{
+            "handler": "reverse_proxy",
+            "upstreams": [{"dial": f"127.0.0.1:{port}"}],
+            "headers": {
+                "request": {
+                    "set": {
+                        "Host": ["{http.request.host}"],
+                        "X-Real-IP": ["{http.request.remote}"],
+                        "X-CSRFToken": ["{http.request.header.X-CSRFToken}"],
+                        "X-CSRF-TOKEN": ["{http.request.header.X-CSRF-TOKEN}"]
+                    }
+                }
+            },
+            "transport": {
+                "protocol": "http",
+                "read_timeout": "600s",
+                "write_timeout": "600s"
+            }
+        }]
+    }
+
+    # Step 3: Add new route (payload is no longer an array)
+    response = requests.post(CADDY_API_URL, json=payload)
+
+    if response.status_code == 200:
+        print(f"Domain {domain} added successfully!")
+    else:
+        print(f"Failed to add domain {domain}: {response.text}")
+
+@admin_required 
+def set_landing_page_active(request, pk):
+    landing_page = get_object_or_404(LandingPage, pk=pk)
+    add_domain_with_proxy(landing_page.domain_name,landing_page.port)
+    if landing_page.is_docker :
+        client = docker.from_env()
+
+        # Pull the image from Docker Hub
+        image_name = landing_page.docker_name
+        client.images.pull(image_name)
+
+        # Run the container with port mapping
+        container = client.containers.run(image_name, ports={'80/tcp': landing_page.port}, detach=True)
+
+        # Print the container ID to confirm it's running
+        print(f"Container started with ID: {container.id}")
+        landing_page.docker_id = container.id
+
+    landing_page.is_activated = True
+    landing_page.save()
+    return redirect('landing_page_list')
+
+
+@admin_required 
+def set_landing_page_inactive(request, pk):
+    landing_page = get_object_or_404(LandingPage, pk=pk)
+    delete_matching_routes(landing_page.domain_name)
+    time.sleep(1)
+    # Check if the landing page is using Docker
+    if landing_page.is_docker:
+        client = docker.from_env()
+        
+        # Stop and remove the container if it's running
+        if landing_page.docker_id:
+            container = client.containers.get(landing_page.docker_id)
+            container.stop()
+            container.remove()
+            print(f"Container with ID {landing_page.docker_id} stopped and removed.")
+            landing_page.docker_id = None  # Clear the docker ID from the landing page
+
+    # Deactivate the landing page
+    landing_page.is_activated = False
+    landing_page.save()
+
+    return redirect('landing_page_list')
+
+@csrf_exempt
+@require_POST
+def submit_form(request):
+    try:
+        print("Received form submission request.")
+
+        # Capture metadata from request headers
+        domain = request.get_host()  # e.g., "example.com"
+        source_ip = get_client_ip(request)
+        user_agent = request.META.get('HTTP_USER_AGENT', '')  # Browser user agent
+        referer = request.META.get('HTTP_REFERER', '')  # URL of the page that sent the request
+        origin = request.META.get('HTTP_ORIGIN', '')  # Origin of the request
+
+        print(f"Domain: {domain}")
+        print(f"Source IP: {source_ip}")
+        print(f"User Agent: {user_agent}")
+        print(f"Referer: {referer}")
+        print(f"Origin: {origin}")
+
+        # Try to parse JSON from the request body
+        try:
+            form_data = json.loads(request.body)
+            print("Form data received as JSON:", form_data)
+        except json.JSONDecodeError:
+            form_data = request.POST.dict()
+            print("Form data received as form-encoded:", form_data)
+
+        # Ensure form_data is properly formatted before saving
+        if not isinstance(form_data, dict):
+            raise ValueError("Form data is not a valid dictionary.")
+
+        # Create a new form submission instance with all fields
+        submission = FormSubmission.objects.create(
+            domain=domain,
+            data=form_data,  # JSONField supports dict storage
+            source_ip=source_ip,
+            is_processed=False,
+            user_agent=user_agent,
+            referer=referer,
+            origin=origin
+        )
+
+        print(f"Form submission saved with ID: {submission.pk}")
+
+        # Return a JSON response indicating success
+        return JsonResponse({'message': 'Form submitted successfully'})
+
+    except Exception as e:
+        print("Error occurred:", str(e))
+        return JsonResponse({'error': 'Failed to process form', 'details': str(e)}, status=500)
+
+@admin_required 
+def submission_list(request):
+    profile = get_latest_profile()
+    submissions = FormSubmission.objects.all().order_by('-created_at')
+    return render(request, 'submissions.html', {'submissions': submissions, 'profile': profile})
+
+
+@csrf_exempt  # If you need to bypass CSRF protection
+@login_required
+def generate_token(request):
+    if request.method == 'POST':
+        user = request.user
+        
+        # Create or retrieve the token associated with the user
+        token, created = Token.objects.get_or_create(user=user)
+        
+        # If the token was created, it will be stored in the database
+        if created:
+            # Optionally, you can log or handle the case where a new token is created.
+            print(f"New token created for user {user.username}")
+        
+        # Return the token in the response so the client can store it
+        return JsonResponse({'token': token.key})
+    
+    # If the request method is not POST, return an error
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+@admin_required 
+def business_list(request):
+    businesses = Business.objects.all()
+    total_businesses = businesses.count()
+    return render(request, 'business_list.html', {
+        'businesses': businesses,
+        'total_businesses': total_businesses
+    })
+
+@admin_required 
+def delete_business(request, business_id):
+    business = get_object_or_404(Business, id=business_id)
+    if request.method == "POST":
+        business.delete()
+        return redirect('business_list')
+    return render(request, 'delete_business.html', {'business': business})
+
+@admin_required 
+def cleaning_request_list(request):
+    cleaning_requests = CleaningRequest.objects.all()
+    return render(request, 'cleaning_request_list.html', {'cleaning_requests': cleaning_requests})
+
+# Model Context Protocol MCP 
+
+@extend_schema(
+    summary="Retrieve MCP-Compatible Business Context",
+    description="Returns MCP-compatible context for a specific business.",
+    parameters=[
+        OpenApiParameter(name='id', description='Business ID', required=True, type=int, location=OpenApiParameter.PATH),
+    ],
+)
+def get(self, request, id, *args, **kwargs):
+    business = self.get_object()
+    data = business.to_mcp_context()
+    return Response(data)
+
+
+
+class CustomHeaderAuthentication(TokenAuthentication):
+    def authenticate(self, request):
+        token = request.META.get("HTTP_X_API_KEY")  # Get the token from headers
+        if not token:
+            return None  # No authentication attempt
+
+        return self.authenticate_credentials(token)  # Pass token to credentials method
+
+    def authenticate_credentials(self, key):
+        try:
+            token = CustomToken.objects.get(key=key)
+        except CustomToken.DoesNotExist:
+            raise AuthenticationFailed("Invalid token")
+
+        if not token.user.is_active:
+            raise AuthenticationFailed("User inactive or deleted")
+
+        return (token.user, token)  # Ensure this tuple is returned
+    
+'''    
+    
+@extend_schema(
+    summary="Retrieve, Update, or Delete a Business",
+    description="API endpoint to retrieve, update, or delete a business by ID.",
+    tags=["Business"]
+)
+class BusinessDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API endpoint to retrieve, update, or delete a business.
+    """
+    queryset = Business.objects.all()
+    serializer_class = BusinessSerializer
+
+@extend_schema(
+    summary="Retrieve MCP-Compatible Business Context",
+    description="Returns business data formatted for MCP.",
+    responses=BusinessSerializer(many=True),  # explicitly specify the serializer
+)
+class BusinessMCPView(APIView):
+    queryset = Business.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        businesses = self.queryset
+        data = [b.to_mcp_context() for b in businesses]
+        return Response(data)
+    
+
+@extend_schema(
+    summary="Create a new business",
+    description="API endpoint to add a new business to the system. Save the `creator_secret` as it will be required for future updates.",
+    tags=["Business"]
+)
+#@login_required
+#@protected_resource(scopes=["userinfo"])    
+class BusinessCreateView(CreateAPIView):
+    """
+    API endpoint to create a new business.
+    """
+    #authentication_classes = [CustomHeaderAuthentication]
+    #permission_classes = [IsAuthenticated]
+    queryset = Business.objects.all()
+    serializer_class = BusinessSerializer 
+
+    def post(self, request, *args, **kwargs):
+
+        if not request.user or not request.user.is_authenticated:
+            return Response({"error": "Authentication required"}, status=403)
+                
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # Assign the authenticated user as the creator
+        business = serializer.save(creator=request.user)
+
+        headers = self.get_success_headers(serializer.data)
+
+        response_data = {
+            "message": "Business created successfully.",
+            "business": serializer.data,
+            "creator": {
+                "id": request.user.id,
+                "username": request.user.username,
+                "email": request.user.email,
+            },
+        }
+
+        return Response(response_data, status=201, headers=headers)
+    
+@extend_schema(
+    summary="List, Search, or Create Businesses",
+    description="API endpoint to list, search, or create a new business. Supports filtering by name, industry, and city.",
+    tags=["Business"]
+)  
+class BusinessListCreateView(ListCreateAPIView): 
+    """
+    API endpoint to list, search, or create businesses.
+    Supports search by name, industry, and city.
+    """
+    queryset = Business.objects.all()
+    serializer_class = BusinessSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ["name", "industry", "city"]  # Exact match filtering
+    search_fields = ["name", "industry", "city"]  # Partial search support 
+
+@extend_schema(
+    summary="Retrieve, Update, or Delete a Business",
+    description="API endpoint to retrieve, update, or delete a business by ID. Updating requires `creator_secret`.",
+    tags=["Business"]
+)
+class BusinessUpdateView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API endpoint to retrieve, update, or delete a business.
+    Updates require authentication and validation of ownership.
+    """
+    queryset = Business.objects.all()
+    serializer_class = BusinessSerializer
+    permission_classes = [IsAuthenticated]  # Ensures user authentication
+
+    def update(self, request, *args, **kwargs):
+        business = self.get_object()
+
+        # Ensure the authenticated user is the creator
+        if request.user != business.creator:
+            raise PermissionDenied("You do not have permission to update this business.")
+
+        return super().update(request, *args, **kwargs)
+
+@extend_schema(
+    summary="List Support Tickets",
+    description="Retrieve a list of support tickets with filtering options.",
+    tags=["Support Ticket"]
+)
+class SupportTicketListView(ListAPIView):
+    """
+    API endpoint to list support tickets with filtering.
+    """
+    queryset = SupportTicket.objects.all()
+    serializer_class = SupportTicketSerializer
+    filterset_fields = ["status", "priority", "assigned_to", "business"]
+    search_fields = ["title", "description", "created_by", "contact_email"]
+    ordering_fields = ["created_at", "updated_at"]
+    ordering = ["-created_at"]
+
+@extend_schema(
+    summary="Create a Support Ticket",
+    description="Endpoint to create a new support ticket.",
+    tags=["Support Ticket"]
+)
+class SupportTicketCreateView(CreateAPIView):
+    """
+    API endpoint to create a support ticket.
+    """
+    queryset = SupportTicket.objects.all()
+    serializer_class = SupportTicketSerializer
+
+@extend_schema(
+    summary="Retrieve or Update a Support Ticket",
+    description="Retrieve details of a support ticket or update its fields.",
+    tags=["Support Ticket"]
+)
+class SupportTicketDetailView(RetrieveUpdateAPIView):
+    """
+    API endpoint to retrieve or update a support ticket.
+    Supports full and partial updates.
+    """
+    queryset = SupportTicket.objects.all()
+    serializer_class = SupportTicketSerializer
+
+
+@extend_schema(
+    summary="Retrieve or Update a Support Ticket",
+    description="Retrieve details of a support ticket or update its fields.",
+    tags=["Support Ticket"]
+)
+class SupportTicketUpdateView(generics.UpdateAPIView):
+    """
+    API endpoint to update an existing support ticket.
+    """
+    queryset = SupportTicket.objects.all()
+    serializer_class = SupportTicketSerializer
+    permission_classes = [IsAuthenticated]
+
+'''
+
+# REVIEWS 
+ 
+ 
+
+@extend_schema(
+    summary="Register a new user",
+    description="Creates a new user with the provided username, email, password, and additional optional fields like company name, phone, and Solana wallet address.",
+    request=RegisterSerializer,
+    responses={
+        201: RegisterResponseSerializer,  # Updated response schema reference
+        400: OpenApiTypes.OBJECT
+    },
+    tags=["Authentication"],
+    examples=[
+        OpenApiExample(
+            name="Successful Registration",
+            value={
+                "id": 1,
+                "username": "john_doe",
+                "email": "john@example.com",
+                "message": "User registered successfully."
+            },
+            response_only=True
+        ),
+        OpenApiExample(
+            name="Validation Error - Missing Email",
+            value={"email": ["This field is required."]},
+            response_only=True
+        ),
+    ]
+)
+class RegisterAPIView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        return Response(
+            {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "message": "User registered successfully."
+            },
+            status=status.HTTP_201_CREATED
+        )
+
+@extend_schema(
+    summary="User Login",
+    description="Authenticates a user using their username and password, returning a JWT access and refresh token for authentication.",
+    request=CustomTokenObtainPairSerializer,
+    responses={
+        200: OpenApiTypes.OBJECT,  # Successful Response
+        401: OpenApiTypes.OBJECT   # Authentication Failed
+    },
+    tags=["Authentication"],
+    examples=[
+        OpenApiExample(
+            name="Successful Login",
+            value={
+                "username": "john_doe",
+                "password": "SecurePassword123"
+            },
+            request_only=True
+        ),
+        OpenApiExample(
+            name="Response - Successful Login",
+            value={
+                "refresh": "your-refresh-token",
+                "access": "your-access-token"
+            },
+            response_only=True
+        ),
+        OpenApiExample(
+            name="Authentication Error",
+            value={"detail": "No active account found with the given credentials"},
+            response_only=True
+        ),
+    ]
+)
+class CustomLoginView(TokenObtainPairView):
+    """
+    API endpoint for user login.
+    """
+    serializer_class = CustomTokenObtainPairSerializer
+    permission_classes = [AllowAny]
+
+# update   
+@extend_schema(
+    summary="Create a Cleaning Request",
+    description="Order home and business cleaning services through MaidsApp.com.",
+    tags=["Cleaning Request"]
+)
+class CleaningRequestCreateView(generics.CreateAPIView):
+    queryset = CleaningRequest.objects.all()
+    serializer_class = CleaningRequestSerializer
+
+    def send_confirmation_email(self, cleaning_data):
+        sg = sendgrid.SendGridAPIClient(api_key=settings.EMAIL_HOST_PASSWORD)
+        
+        subject = "New Cleaning Request Received"
+
+        # Render the email template with booking details
+        html_content = render_to_string("emails/provider_notification.html", {
+            "customer_name": cleaning_data.get("customer_name", "Unknown"),
+            "service_type": cleaning_data.get("service_type", "Not specified"),
+            "service_date": cleaning_data.get("service_date", "Not provided"),
+            "email": cleaning_data.get("email", "No email provided"),
+            "phone": cleaning_data.get("phone", "No phone provided"),
+            "line1": cleaning_data.get("line1", "No address provided"),
+            "city": cleaning_data.get("city", "No city provided"),
+            "state": cleaning_data.get("state", "No state provided"),
+            "zip_code": cleaning_data.get("zip_code", "No zip code provided"),
+            "notes": cleaning_data.get("notes", "No additional notes")
+        })
+
+        # Provider email - Change this to dynamic provider selection if needed
+        provider_email = "armenmerikyan@gmail.com"
+
+        message = Mail(
+            from_email=Email("no-reply@gigahard.ai", "MaidsApp"),
+            to_emails=To(provider_email),
+            subject=subject,
+            html_content=html_content
+        )
+
+        try:
+            sg.send(message)
+        except Exception as e:
+            print(f"Error sending email: {e}")
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            cleaning_request = serializer.save()
+            self.send_confirmation_email(serializer.data)
+            return Response(
+                {"message": "Service request created successfully!", "data": serializer.data}, 
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
+@extend_schema(
+    summary="Create an Immigration Case",
+    description="Submit an intake form for an immigration case in the United States.",
+    tags=["Immigration Case"]
+)
+class ImmigrationCaseCreateView(generics.CreateAPIView):
+    """API View to submit a new immigration intake form."""
+    queryset = ImmigrationCase.objects.all()
+    serializer_class = ImmigrationCaseSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            instance = serializer.save()
+            return Response(
+                {"message": "Intake form submitted successfully!", "case_id": instance.id},
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+'''
+
+@extend_schema(
+    summary="Create a Letter",
+    description="Submit a letter with sender, recipient, subject, and body.",
+    tags=["Letter"]
+)
+class LetterCreateView(generics.CreateAPIView):
+    """API View to submit a new letter."""
+    queryset = Letter.objects.all()
+    serializer_class = LetterSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            instance = serializer.save()
+            return Response(
+                {"message": "Letter submitted successfully!", "letter_id": instance.id},
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@extend_schema(
+    summary="Search Letters",
+    description="Search for letters by sender, recipient, or subject.",
+    tags=["Letter"]
+)
+class LetterSearchView(generics.ListAPIView):
+    """API View to search letters."""
+    serializer_class = LetterSerializer
+
+    def get_queryset(self):
+        queryset = Letter.objects.all()
+        sender = self.request.query_params.get('sender', None)
+        recipient = self.request.query_params.get('recipient', None)
+        subject = self.request.query_params.get('subject', None)
+        
+        if sender:
+            queryset = queryset.filter(sender__icontains=sender)
+        if recipient:
+            queryset = queryset.filter(recipient__icontains=recipient)
+        if subject:
+            queryset = queryset.filter(subject__icontains=subject)
+        
+        return queryset
+
+''' 
+
+@extend_schema(
+    tags=["Reviews"],
+    summary="List & Create Reviews",
+    description="Retrieve a list of reviews or create a new one. Supports filtering by business ID, rating, and text search.",
+    parameters=[
+        OpenApiParameter(name="business_id", description="Filter reviews by business ID", required=False, type=int),
+        OpenApiParameter(name="stars", description="Filter reviews by star rating (1-5)", required=False, type=int),
+        OpenApiParameter(name="search", description="Search reviews by comment or reviewer name", required=False, type=str),
+    ],
+)
+class ReviewListCreateView(generics.ListCreateAPIView):
+    """
+    API view for listing all reviews and creating a new review.
+    Supports filtering by business ID, review stars, and review text.
+    """
+    serializer_class = ReviewSerializer
+    permission_classes = [AllowAny]  # Adjust as needed
+
+    def get_queryset(self):
+        """
+        Filters reviews based on business_id, stars, or search text in comment/reviewer name.
+        Example: 
+        - /reviews/?business_id=1
+        - /reviews/?stars=5
+        - /reviews/?search=great
+        """
+        queryset = Review.objects.all()
+        business_id = self.request.query_params.get('business_id')
+        stars = self.request.query_params.get('stars')
+        search = self.request.query_params.get('search')
+
+        if business_id:
+            queryset = queryset.filter(business_id=business_id)
+        if stars:
+            queryset = queryset.filter(stars=stars)
+        if search:
+            queryset = queryset.filter(Q(comment__icontains=search) | Q(reviewer_name__icontains=search))
+
+        return queryset
+
+@extend_schema(
+    summary="View Review Detail",
+    description="View Review Detail for listed Business.",
+    tags=["Review"]
+)
+class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API view for retrieving, updating, or deleting a single review.
+    """
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    permission_classes = [AllowAny]  # Adjust permissions as needed
+
+
+# Hardcoded dealer email (replace with actual dealer email)
+DEALER_EMAIL = "armenmerikyan@gmail.com"
+
+@extend_schema(
+    summary="Create Car Finder Response",
+    description="Submit a car preference form to find the best car match based on budget, features, and personal preferences. A notification email is sent to the dealer upon submission.",
+    tags=["Car Finder"]
+)
+class CarFinderResponseCreateView(generics.CreateAPIView):
+    """
+    API endpoint to create a new CarFinderResponse.
+    """
+    queryset = CarFinderResponse.objects.all()
+    serializer_class = CarFinderResponseSerializer
+
+    def send_confirmation_email(self, car_finder_data):
+        sg = sendgrid.SendGridAPIClient(api_key=settings.EMAIL_HOST_PASSWORD)
+        
+        subject = "New Car Finder Request Received"
+
+        # Render email template with car request details
+        html_content = render_to_string("emails/dealer_notification.html", {
+            "contact_name": car_finder_data.get("contact_name", "Not provided"),
+            "contact_email": car_finder_data.get("contact_email", "Not provided"),
+            "contact_phone": car_finder_data.get("contact_phone", "Not provided"),
+            "contact_address": car_finder_data.get("contact_address", "Not provided"),
+            "budget_min": car_finder_data.get("budget_min", "Not specified"),
+            "budget_max": car_finder_data.get("budget_max", "Not specified"),
+            "vehicle_type": car_finder_data.get("vehicle_type", "Not specified"),
+            "primary_use": car_finder_data.get("primary_use", "Not specified"),
+            "passengers": car_finder_data.get("passengers", "Not specified"),
+            "brand_preference": car_finder_data.get("brand_preference", "None"),
+            "preferred_style": car_finder_data.get("preferred_style", "Not specified"),
+            "purchase_timeline": car_finder_data.get("purchase_timeline", "Not specified")
+        })
+
+        # Dealer email (change to dynamic selection if needed)
+        dealer_email = DEALER_EMAIL  # Ensure this is defined in settings.py
+
+        message = Mail(
+            from_email="no-reply@gigahard.ai",  # Fix: Use a string instead of Email()
+            to_emails=dealer_email,
+            subject=subject,
+            html_content=html_content
+        )
+
+        try:
+            sg.send(message)
+        except Exception as e:
+            # Log error instead of printing (better for production)
+            print(f"Error sending email: {e}")
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            car_finder_response = serializer.save()
+            self.send_confirmation_email(serializer.validated_data)  # Fix: Use validated_data
+            return Response(
+                {"message": "Car Finder request created successfully!", "data": serializer.data}, 
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+ 
+ 
+# TWITTER CHECKER   
+@admin_required
+def call_node_script(request):
+    handle = request.GET.get('handle')
+    if handle:
+        handle = handle.lstrip('@')
+
+    if not handle:
+        return JsonResponse({'status': 'error', 'message': 'Missing `handle` parameter'}, status=400)
+
+    try:
+        command = (
+            'source ~/.nvm/nvm.sh && '
+            'nvm use 20 && '
+            f'node /root/jena/src/twitter.login.js {handle}'
+        )
+
+        result = subprocess.run(
+            ['bash', '-c', command],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+
+        # Remove first two lines from stdout
+        filtered_output = '\n'.join(result.stdout.splitlines()[2:])
+
+        # Save successful check to DB
+        TwitterHandleChecker.objects.create(
+            handle=handle,
+            status='success',
+            result=filtered_output
+        )
+
+        return JsonResponse({'status': 'success', 'output': filtered_output})
+
+    except subprocess.CalledProcessError as e:
+        # Save failed check to DB
+        TwitterHandleChecker.objects.create(
+            handle=handle,
+            status='error',
+            result=e.stderr
+        )
+
+        return JsonResponse({'status': 'error', 'output': e.stderr}, status=500)
+ 
+def handle_list_view(request):
+    profile = get_latest_profile()
+
+    handles = TwitterHandleChecker.objects.all().order_by('-checked_at')[:300]
+
+    # Get distinct handle names only
+    distinct_handle_names = [
+        handle.lstrip('@') for handle in (
+            TwitterHandleChecker.objects
+            .order_by('handle')
+            .values_list('handle', flat=True)
+            .distinct()
+        )
+    ]
+
+
+    download_type = request.GET.get('type')
+
+    if download_type == 'txt':
+        random_suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+        filename = f"handles_{random_suffix}.txt"
+
+        response = HttpResponse(content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+        lines = []
+        lines.append("Twitter Handle Check Report\n")
+        lines.append("=" * 40 + "\n\n")
+
+        if profile:
+            lines.append(f"Project: {profile.name}\n")
+            about = profile.about_us or ""
+            short_about = (about[:97] + "...") if len(about) > 100 else about
+            lines.append(f"About: {short_about}\n")
+            lines.append(f"Wallet: {profile.wallet}\n")
+            lines.append(f"X Handle: @{profile.x_handle}\n\n")
+
+        for handle in handles:
+            lines.append(f"@{handle.handle} | Status: {handle.status}\n")
+            lines.append(f"Checked At: {handle.checked_at.strftime('%Y-%m-%d %H:%M:%S')}\n")
+            lines.append(f"Note: {handle.result or ''}\n")
+            lines.append("-" * 30 + "\n")
+
+        response.write("\n".join(lines))
+        return response
+
+    return render(request, 'x_handles_list.html', {
+        'handles': handles,
+        'profile': profile,
+        'distinct_handle_names': distinct_handle_names,
+    })
+
+
+@login_required
+def character_list(request):
+    profile = get_latest_profile()
+    characters = UserCharacter.objects.filter(user=request.user)
+    return render(request, 'agents/character_list.html', {'characters': characters, 'profile': profile})
+
+@login_required
+def character_create(request):
+    profile = get_latest_profile()
+    if request.method == 'POST':
+        form = UserCharacterForm(request.POST, request.FILES)
+        if form.is_valid():
+            character = form.save(commit=False)
+            character.user = request.user 
+            character.save()
+            return redirect('character_list')
+        else:
+            print(form.errors)  # To see if image caused a validation issue test test
+    else:
+        form = UserCharacterForm()
+    return render(request, 'agents/character_form.html', {'form': form, 'is_edit': False, 'profile': profile})
+
+@login_required
+def character_update(request, pk):
+    profile = get_latest_profile()
+    character = get_object_or_404(UserCharacter, pk=pk, user=request.user)
+    model_status = None
+    model_error = None
+    # Check fine-tuning status if the character has a chatgpt_model_id_current and the API key exists
+    if character.chatgpt_model_id_current and request.user.openai_api_key:
+        try:
+            client = OpenAI(api_key=request.user.openai_api_key)
+            fine_tune_status = client.fine_tuning.jobs.retrieve(character.chatgpt_model_id)
+            model_status = fine_tune_status.status
+            # If an error object exists, capture its message
+            if fine_tune_status.error:
+                model_error = fine_tune_status.error.message
+        except Exception as e:
+            model_status = "Error"
+            model_error = str(e)
+    
+    if request.method == 'POST': 
+        form = UserCharacterForm(request.POST, request.FILES, instance=character)
+        if form.is_valid():
+            form.save()
+            return redirect('character_list')
+    else:
+        form = UserCharacterForm(instance=character)
+    
+    context = {
+        'form': form,
+        'is_edit': True,
+        'model_status': model_status,
+        'model_error': model_error,
+        'character': character,
+        'profile': profile,
+    }
+    return render(request, 'agents/character_form.html', context)
+
+
+@login_required
+def memory_list(request):
+    profile = get_latest_profile()
+    memories = CharacterMemory.objects.filter(user=request.user)
+    character = None
+    character_id = request.GET.get('character')
+    if character_id:
+        memories = memories.filter(character_id=character_id)
+        character = get_object_or_404(UserCharacter, pk=character_id, user=request.user)
+    return render(request, 'memories/memory_list.html', {
+        'memories': memories,
+        'character': character,
+        'profile': profile
+    })
+
+@login_required
+def add_memory(request):
+    profile = get_latest_profile()
+    character_id = request.GET.get('character')
+    if not character_id:
+        return redirect('memory_list')  # or return 404
+
+    character = get_object_or_404(UserCharacter, pk=character_id, user=request.user)
+
+    if request.method == 'POST':
+        form = CharacterMemoryForm(request.POST)
+        if form.is_valid():
+            memory = form.save(commit=False)
+            memory.user = request.user
+            memory.character = character  # set manually
+            memory.save()
+            # Redirect to the memory list, forwarding the character id as a query parameter.
+            return redirect(reverse('memory_list') + f"?character={character_id}")
+    else:
+        form = CharacterMemoryForm()
+
+    return render(request, 'memories/memory_form.html', {
+        'form': form,
+        'title': 'Add Memory',
+        'character': character,  # optional, if you want to show character name on page
+        'profile': profile,
+    })
+
+
+@login_required
+def edit_memory(request, pk):
+    profile = get_latest_profile()
+    memory = get_object_or_404(CharacterMemory, pk=pk, user=request.user)
+
+    if request.method == 'POST':
+        form = CharacterMemoryForm(request.POST, instance=memory)
+        if form.is_valid():
+            form.save()
+            return redirect('memory_list')
+    else:
+        form = CharacterMemoryForm(instance=memory)
+
+    return render(request, 'memories/memory_form.html', {
+        'form': form,
+        'title': 'Edit Memory',
+        'character': memory.character,  # optional: show on page
+        'profile': profile,
+    })
+
+
+@login_required
+def delete_memory(request, pk):
+    memory = get_object_or_404(CharacterMemory, pk=pk, user=request.user)
+    if request.method == 'POST':
+        memory.delete()
+        return redirect('memory_list')
+    return render(request, 'memories/memory_confirm_delete.html', {'memory': memory})
+
+@csrf_exempt
+@login_required
+def fine_tune_character(request, character_id):
+    if request.method != "GET":
+        return JsonResponse({"error": "Only POST requests are allowed"}, status=400)
+
+    user = request.user
+    character = get_object_or_404(UserCharacter, id=character_id, user=user)
+    memories = character.memories.all().order_by('timestamp')
+
+    # Prepare training data
+    training_data = []
+    # Add system prompt
+    training_data.append({
+        "messages": [
+            {"role": "system", "content": character.persona},
+            {"role": "user", "content": "Let's get started."},
+            {"role": "assistant", "content": "I'm ready!"}
+        ]
+    })
+
+    # Add character memories as conversation-style examples
+    for memory in memories:
+        training_data.append({
+            "messages": [
+                {"role": "system", "content": f"Memory: {memory.content.strip()}"},
+                {"role": "user", "content": "Got it."},
+                {"role": "assistant", "content": "Understood."}
+            ]
+        })
+
+
+    # Save as jsonl file
+    with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix=".jsonl") as tmp_file:
+        for entry in training_data:
+            tmp_file.write(json.dumps(entry) + "\n")
+        tmp_file_path = tmp_file.name
+
+    try:
+        # Assume user has chatgpt_api_key stored in their profile
+        client = OpenAI(api_key=user.openai_api_key)
+        uploaded = client.files.create(file=open(tmp_file_path, "rb"), purpose="fine-tune")
+        fine_tune_job = client.fine_tuning.jobs.create(training_file=uploaded.id, model="gpt-3.5-turbo")
+
+        # Save fine-tuned model ID to character
+        character.chatgpt_model_id = fine_tune_job.id  
+        character.save()
+
+        return JsonResponse({"success": True, "model_id": fine_tune_job.id})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+    finally:
+        os.remove(tmp_file_path)
+
+@csrf_exempt
+@login_required
+def copy_model_to_current(request, character_id):
+    if request.method != "POST":
+        return JsonResponse({"error": "Only POST requests are allowed"}, status=400)
+
+    # Retrieve the UserCharacter object for the current user
+    character = get_object_or_404(UserCharacter, id=character_id, user=request.user)
+    
+    # Check if there is a fine-tuned model id available to copy
+    if character.chatgpt_model_id:
+        character.chatgpt_model_id_current = character.chatgpt_model_id
+        character.save()
+        return JsonResponse({
+            "success": True,
+            "message": "Fine-tuned model has been copied to current.",
+            "chatgpt_model_id_current": character.chatgpt_model_id_current
+        })
+    else:
+        return JsonResponse({"error": "No fine-tuned model available to copy."}, status=400)
+    
+
+logger = logging.getLogger(__name__)
+@csrf_exempt
+@login_required
+def user_chatbot_response_private(request, character_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"response": "Please log in to use the chat feature."})
+
+    character = get_object_or_404(UserCharacter, id=character_id, user=request.user)
+
     if not request.user.openai_api_key:
         return JsonResponse({"error": "ChatGPT API key is missing."}, status=400)
 
