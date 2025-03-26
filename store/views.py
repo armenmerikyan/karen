@@ -2891,10 +2891,6 @@ def generate_message_chatgpt(request, customer_id, touchpoint_id):
         return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
 
     # Ensure the ChatGPT API key is available
-from django.core.exceptions import PermissionDenied
-
-    character = get_object_or_404(UserCharacter, id=character_id, user=request.user)
-
     if not request.user.openai_api_key:
         return JsonResponse({"error": "ChatGPT API key is missing."}, status=400)
 
