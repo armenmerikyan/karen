@@ -4455,6 +4455,7 @@ def character_create(request):
 
 @login_required
 def character_update(request, pk):
+    
     profile = get_latest_profile()
     character = get_object_or_404(UserCharacter, pk=pk)
     if request.user != character.user:
@@ -4729,25 +4730,26 @@ def user_chatbot_response_private(request, character_id):
     chat_history.append({"role": "user", "content": user_message})
     messages = [{"role": "system", "content": system_message}] + chat_history
 
-    tools = [
-        {
-            "type": "function",
-            "function": {
-                "name": "ADD_MEMORY",
-                "description": "Add a memory to the character's memory bank.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "content": {
-                            "type": "string",
-                            "description": "The memory content to store."
-                        }
-                    },
-                    "required": ["content"]
+    if character.user == request.user or character.allow_memory_update:
+        tools = [
+            {
+                "type": "function",
+                "function": {
+                    "name": "ADD_MEMORY",
+                    "description": "Add a memory to the character's memory bank.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "content": {
+                                "type": "string",
+                                "description": "The memory content to store."
+                            }
+                        },
+                        "required": ["content"]
+                    }
                 }
             }
-        }
-    ]
+        ]
 
     try:
         response = client.chat.completions.create(
