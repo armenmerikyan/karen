@@ -4378,12 +4378,24 @@ def call_node_script(request):
 
         return JsonResponse({'status': 'error', 'output': e.stderr}, status=500)
  
+
 def handle_list_view(request):
     profile = get_latest_profile()
 
-    handles = TwitterHandleChecker.objects.all().order_by('-checked_at')[:300]
+    search_query = request.GET.get('search')
+    handles_qs = TwitterHandleChecker.objects.all()
 
-    # Get distinct handle names only
+    if search_query:
+        # Split handles by comma and optional space, strip whitespace
+        search_terms = [h.strip().lstrip('@') for h in search_query.split(',') if h.strip()]
+        # Create Q objects for OR filtering
+        query = Q()
+        for handle in search_terms:
+            query |= Q(handle__iexact=handle)
+        handles_qs = handles_qs.filter(query)
+
+    handles = handles_qs.order_by('-checked_at')[:300]
+
     distinct_handle_names = [
         handle.lstrip('@') for handle in (
             TwitterHandleChecker.objects
@@ -4393,13 +4405,10 @@ def handle_list_view(request):
         )
     ]
 
-
     download_type = request.GET.get('type')
-
     if download_type == 'txt':
         random_suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
         filename = f"handles_{random_suffix}.txt"
-
         response = HttpResponse(content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
@@ -4429,7 +4438,6 @@ def handle_list_view(request):
         'profile': profile,
         'distinct_handle_names': distinct_handle_names,
     })
-
 
 @login_required
 def character_list(request):
