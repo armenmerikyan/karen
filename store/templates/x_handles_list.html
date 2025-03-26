@@ -29,6 +29,18 @@
 
             <form method="get" action="{% url 'handle-list' %}" class="mb-4">
               <div class="mb-3">
+                <label for="categorySelect" class="form-label">Select Category:</label>
+                <select id="categorySelect" class="form-select"> 
+                  <option value="crypto">Crypto</option>
+                  <option value="fashion">Fashion</option>
+                  <option value="sports">Sports</option>
+                  <option value="tech">Tech</option>
+                  <option value="music">Music</option>
+                  <option value="gaming">Gaming</option>
+                  <option value="news">News</option> 
+                </select>
+              </div>
+              <div class="mb-3">
                 <label for="search" class="form-label">Search handles</label>
                 <input type="text" class="form-control" id="search" name="search"
                        placeholder="e.g., 0xDesigner, 0xFrisk, 0xMLow, 0xMert_" />
@@ -47,18 +59,6 @@
           
 
           {% if user.is_staff %}
-          <div class="mb-3">
-            <label for="categorySelect" class="form-label">Select Category:</label>
-            <select id="categorySelect" class="form-select"> 
-              <option value="crypto">Crypto</option>
-              <option value="fashion">Fashion</option>
-              <option value="sports">Sports</option>
-              <option value="tech">Tech</option>
-              <option value="music">Music</option>
-              <option value="gaming">Gaming</option>
-              <option value="news">News</option> 
-            </select>
-          </div>
           
           <div class="mb-3">
             <label for="handleInput" class="form-label">Enter Twitter Handle:</label>
