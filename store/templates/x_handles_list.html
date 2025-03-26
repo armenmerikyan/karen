@@ -35,15 +35,12 @@
                 <label for="categorySelect" class="form-label">Select Category:</label>
                 <select name="category" id="categorySelect" class="form-select w-100" style="white-space: normal;">
   
-                  <optgroup label="Tech & Web3">
                     <option value="crypto" {% if category_query == "crypto" %}selected{% endif %}>Crypto</option>
                     <option value="tech" {% if category_query == "tech" %}selected{% endif %}>Tech</option>
                     <option value="stocks" {% if category_query == "stocks" %}selected{% endif %}>Stocks</option>
                     <option value="gaming" {% if category_query == "gaming" %}selected{% endif %}>Gaming</option>
                     <option value="news" {% if category_query == "news" %}selected{% endif %}>News</option>
-                  </optgroup>
                 
-                  <optgroup label="Lifestyle & Culture">
                     <option value="fashion" {% if category_query == "fashion" %}selected{% endif %}>Fashion</option>
                     <option value="music" {% if category_query == "music" %}selected{% endif %}>Music</option>
                     <option value="sports" {% if category_query == "sports" %}selected{% endif %}>Sports</option>
@@ -52,9 +49,7 @@
                     <option value="health" {% if category_query == "health" %}selected{% endif %}>Health</option>
                     <option value="comedy" {% if category_query == "comedy" %}selected{% endif %}>Comedy</option>
 
-                  </optgroup>
                 
-                  <optgroup label="Wellness & Personal Growth">
                     <option value="addiction" {% if category_query == "addiction" %}selected{% endif %}>Addiction</option>
                     <option value="depression" {% if category_query == "depression" %}selected{% endif %}>Depression</option>
                     <option value="mental_health" {% if category_query == "mental_health" %}selected{% endif %}>Mental Health</option>
@@ -63,7 +58,6 @@
                     <option value="self_help" {% if category_query == "self_help" %}selected{% endif %}>Self Help</option>
                     <option value="fitness" {% if category_query == "fitness" %}selected{% endif %}>Fitness</option>
                     <option value="spirituality" {% if category_query == "spirituality" %}selected{% endif %}>Spirituality</option>
-                  </optgroup> 
                 </select>
                            
               </div>
