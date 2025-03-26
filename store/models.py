@@ -1773,6 +1773,12 @@ class TwitterHandleChecker(models.Model):
         help_text="Twitter handle to be checked (without @)",
         verbose_name="Twitter Handle"
     )
+    category = models.CharField(
+        max_length=100,
+        help_text="Category of the handle (e.g., crypto, fashion, sports)",
+        verbose_name="Category",
+        default="general"
+    )
     status = models.CharField(
         max_length=50,
         help_text="Current status of the handle (e.g., available, taken)",
@@ -1794,11 +1800,12 @@ class TwitterHandleChecker(models.Model):
         ordering = ['-checked_at']
 
     def __str__(self):
-        return f"{self.handle} - {self.status}"
+        return f"{self.handle} - {self.status} ({self.category})"
 
     def to_dict(self):
         return {
             "handle": self.handle,
+            "category": self.category,
             "status": self.status,
             "result": self.result,
             "checked_at": self.checked_at.isoformat(),

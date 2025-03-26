@@ -4332,10 +4332,12 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
     
  
  
-# TWITTER CHECKER   
+# TWITTER CHECKER
 @admin_required
 def call_node_script(request):
     handle = request.GET.get('handle')
+    category = request.GET.get('category', 'Crypto')  # Default to 'general' if not provided
+
     if handle:
         handle = handle.lstrip('@')
 
@@ -4362,6 +4364,7 @@ def call_node_script(request):
         # Save successful check to DB
         TwitterHandleChecker.objects.create(
             handle=handle,
+            category=category,
             status='success',
             result=filtered_output
         )
@@ -4372,11 +4375,13 @@ def call_node_script(request):
         # Save failed check to DB
         TwitterHandleChecker.objects.create(
             handle=handle,
+            category=category,
             status='error',
             result=e.stderr
         )
 
         return JsonResponse({'status': 'error', 'output': e.stderr}, status=500)
+
  
 
 def handle_list_view(request):

@@ -48,12 +48,26 @@
 
           {% if user.is_staff %}
           <div class="mb-3">
+            <label for="categorySelect" class="form-label">Select Category:</label>
+            <select id="categorySelect" class="form-select"> 
+              <option value="crypto">Crypto</option>
+              <option value="fashion">Fashion</option>
+              <option value="sports">Sports</option>
+              <option value="tech">Tech</option>
+              <option value="music">Music</option>
+              <option value="gaming">Gaming</option>
+              <option value="news">News</option> 
+            </select>
+          </div>
+          
+          <div class="mb-3">
             <label for="handleInput" class="form-label">Enter Twitter Handle:</label>
             <input type="text" id="handleInput" class="form-control" placeholder="e.g. elonmusk" />
             <button class="btn btn-primary mt-2" onclick="submitHandle()">Save Handle</button>
             <div id="statusMsg" class="mt-3"></div>          
           </div>
-          {% endif %}          
+          {% endif %}
+             
          
 
           <hr> 
@@ -102,7 +116,9 @@
 <script>
   function submitHandle() {
     const handleInput = document.getElementById('handleInput');
+    const categorySelect = document.getElementById('categorySelect');
     const handle = handleInput.value.trim();
+    const category = categorySelect.value;
     const statusMsg = document.getElementById('statusMsg');
 
     if (!handle) {
@@ -111,13 +127,14 @@
     }
 
     handleInput.disabled = true;
+    categorySelect.disabled = true;
     statusMsg.innerHTML = '<span class="text-info">Checking handle...</span>';
 
-    fetch(`/run-twitter-login/?handle=${encodeURIComponent(handle)}`)
+    fetch(`/run-twitter-login/?handle=${encodeURIComponent(handle)}&category=${encodeURIComponent(category)}`)
       .then(response => response.json())
       .then(data => {
         if (data.status === 'success') {
-          statusMsg.innerHTML = `<span class="text-success">Check complete for <strong>@${handle}</strong>. Refresh the page to see results.</span>`;
+          statusMsg.innerHTML = `<span class="text-success">Check complete for <strong>@${handle}</strong> in <strong>${category}</strong> category. Refresh the page to see results.</span>`;
         } else {
           statusMsg.innerHTML = `<span class="text-danger">Error: ${data.output}</span>`;
         }
@@ -127,7 +144,9 @@
       })
       .finally(() => {
         handleInput.disabled = false;
+        categorySelect.disabled = false;
       });
   }
 </script>
+
 {% endblock %}
