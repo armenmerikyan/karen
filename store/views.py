@@ -4642,6 +4642,7 @@ def copy_model_to_current(request, character_id):
 
 logger = logging.getLogger(__name__)
 @csrf_exempt
+@login_required
 def user_chatbot_response_private(request, character_id):
     if not request.user.is_authenticated:
         return JsonResponse({"response": "Please log in to use the chat feature."})
@@ -4809,6 +4810,7 @@ def user_chatbot_response_private(request, character_id):
         return JsonResponse({"error": "An internal error occurred."}, status=500)
 
 
+@login_required
 def chat_view(request, character_id):
     character = get_object_or_404(UserCharacter, id=character_id)
     return render(request, 'agents/character_chat.html', {'character': character})
