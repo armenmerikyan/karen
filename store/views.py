@@ -4650,7 +4650,7 @@ def user_chatbot_response_private(request, character_id):
 
     character = get_object_or_404(UserCharacter, id=character_id)
 
-    if not character.user.is_public and character.user != request.user:
+    if not character.is_public and character.user != request.user:
         raise Http404("Character not found.")
 
     if not request.user.openai_api_key:
