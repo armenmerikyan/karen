@@ -4647,7 +4647,11 @@ def user_chatbot_response_private(request, character_id):
     if not request.user.is_authenticated:
         return JsonResponse({"response": "Please log in to use the chat feature."})
 
-    character = get_object_or_404(UserCharacter, id=character_id, user=request.user)
+
+    character = get_object_or_404(UserCharacter, id=character_id)
+
+    if not character.user.is_public and character.user != request.user:
+        raise Http404("Character not found.")
 
     if not request.user.openai_api_key:
         return JsonResponse({"error": "ChatGPT API key is missing."}, status=400)
