@@ -4591,10 +4591,16 @@ def edit_memory(request, pk):
 
 @login_required
 def delete_memory(request, pk):
-    memory = get_object_or_404(CharacterMemory, pk=pk, user=request.user)
+    memory = get_object_or_404(CharacterMemory, pk=pk)
+
+    # Allow deletion if the logged-in user is either the memory creator or the character creator
+    if memory.user != request.user and memory.character.user != request.user:
+        return HttpResponseForbidden("You are not allowed to delete this memory.")
+
     if request.method == 'POST':
         memory.delete()
         return redirect('memory_list')
+
     return render(request, 'memories/memory_confirm_delete.html', {'memory': memory})
 
 @csrf_exempt
