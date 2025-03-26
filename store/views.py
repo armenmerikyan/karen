@@ -4665,8 +4665,7 @@ def copy_model_to_current(request, character_id):
     else:
         return JsonResponse({"error": "No fine-tuned model available to copy."}, status=400)
     
-
-logger = logging.getLogger(__name__)
+ 
 
 @csrf_exempt
 @login_required
