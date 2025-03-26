@@ -4388,8 +4388,8 @@ def call_node_script(request):
 def handle_list_view(request):
     profile = get_latest_profile()
 
-    search_query = request.GET.get('search')
-    category_query = request.GET.get('category')
+    search_query = request.GET.get('search', '').strip()
+    category_query = request.GET.get('category', '').strip()
 
     handles_qs = TwitterHandleChecker.objects.all()
 
@@ -4405,13 +4405,12 @@ def handle_list_view(request):
 
     handles = handles_qs.order_by('-checked_at')[:300]
 
+    distinct_qs = TwitterHandleChecker.objects.order_by('handle')
+    if category_query:
+        distinct_qs = distinct_qs.filter(category__iexact=category_query)
+
     distinct_handle_names = [
-        handle.lstrip('@') for handle in (
-            TwitterHandleChecker.objects
-            .order_by('handle')
-            .values_list('handle', flat=True)
-            .distinct()
-        )
+        handle.lstrip('@') for handle in distinct_qs.values_list('handle', flat=True).distinct()
     ]
 
     download_type = request.GET.get('type')
