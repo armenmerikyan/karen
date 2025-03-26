@@ -4667,12 +4667,12 @@ def copy_model_to_current(request, character_id):
     
 
 logger = logging.getLogger(__name__)
+
 @csrf_exempt
 @login_required
 def user_chatbot_response_private(request, character_id):
     if not request.user.is_authenticated:
         return JsonResponse({"response": "Please log in to use the chat feature."})
-
 
     character = get_object_or_404(UserCharacter, id=character_id)
 
@@ -4750,6 +4750,13 @@ def user_chatbot_response_private(request, character_id):
     chat_history.append({"role": "user", "content": user_message})
     messages = [{"role": "system", "content": system_message}] + chat_history
 
+    # Build chat kwargs dynamically
+    chat_kwargs = {
+        "model": model_id,
+        "messages": messages,
+    }
+
+    tools = None
     if character.user == request.user or character.allow_memory_update:
         tools = [
             {
@@ -4770,17 +4777,18 @@ def user_chatbot_response_private(request, character_id):
                 }
             }
         ]
+        chat_kwargs["tools"] = tools
+        chat_kwargs["tool_choice"] = "auto"
 
     try:
-        response = client.chat.completions.create(
-            model=model_id,
-            messages=messages,
-            tools=tools,
-            tool_choice="auto"
-        )
+        response = client.chat.completions.create(**chat_kwargs)
 
-        tool_calls = response.choices[0].message.tool_calls if response.choices else []
+        if not response.choices:
+            logger.warning("OpenAI response had no choices: %s", response)
+            return JsonResponse({"error": "Empty response from OpenAI."}, status=500)
+
         assistant_message = response.choices[0].message
+        tool_calls = assistant_message.tool_calls or []
 
         if tool_calls:
             for tool in tool_calls:
@@ -4804,12 +4812,12 @@ def user_chatbot_response_private(request, character_id):
                         except Exception as e:
                             logger.warning("Embedding for new memory failed: %s", str(e))
 
-                    # Include assistant message with tool_calls + tool response
+                    # Follow up to complete tool call
                     followup_messages = messages + [
                         {
                             "role": "assistant",
                             "content": None,
-                            "tool_calls": [tool.model_dump()]  # Assumes pydantic object
+                            "tool_calls": [tool.model_dump()]
                         },
                         {
                             "role": "tool",
@@ -4817,14 +4825,11 @@ def user_chatbot_response_private(request, character_id):
                             "content": json.dumps({"status": "success", "content": content})
                         }
                     ]
-
                     final_response = client.chat.completions.create(
                         model=model_id,
                         messages=followup_messages
                     )
-
-                    break  # Only handle one tool call for now
-
+                    break
         else:
             final_response = response
 
@@ -4839,7 +4844,6 @@ def user_chatbot_response_private(request, character_id):
         logger.error("Final messages being sent to OpenAI: %s", json.dumps(messages, indent=2))
         logger.error("Chat processing failed: %s", str(e))
         return JsonResponse({"error": "An internal error occurred."}, status=500)
-
 
 @login_required
 def chat_view(request, character_id):
