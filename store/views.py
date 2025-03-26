@@ -4457,6 +4457,11 @@ def character_create(request):
 def character_update(request, pk):
     profile = get_latest_profile()
     character = get_object_or_404(UserCharacter, pk=pk, user=request.user)
+    if request.user != character.user:
+        return redirect('public_characters')
+
+    
+
     model_status = None
     model_error = None
     # Check fine-tuning status if the character has a chatgpt_model_id_current and the API key exists
