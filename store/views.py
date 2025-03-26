@@ -4405,7 +4405,7 @@ def handle_list_view(request):
     if category_query:
         handles_qs = handles_qs.filter(category__iexact=category_query)
 
-    handles = handles_qs.order_by('-checked_at')[:300]
+    handles = handles_qs.order_by('-checked_at')[:500]
 
     # Filter distinct handle list by category as well
     distinct_qs = TwitterHandleChecker.objects.order_by('handle')
