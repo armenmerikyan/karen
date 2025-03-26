@@ -4600,10 +4600,9 @@ def delete_memory(request, pk):
 
     if request.method == 'POST':
         memory.delete()
-        return redirect('character_detail', pk=character.pk)
+        return redirect('memory_list', character_id=character.pk)  # Pass character ID
 
     return render(request, 'memories/memory_confirm_delete.html', {'memory': memory})
-
 
 @csrf_exempt
 @login_required
