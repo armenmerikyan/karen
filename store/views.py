@@ -4456,7 +4456,7 @@ def character_create(request):
 @login_required
 def character_update(request, pk):
     profile = get_latest_profile()
-    character = get_object_or_404(UserCharacter, pk=pk, user=request.user)
+    character = get_object_or_404(UserCharacter, pk=pk)
     if request.user != character.user:
         return redirect('public_characters')
 
