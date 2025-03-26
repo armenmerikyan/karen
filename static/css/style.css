@@ -272,3 +272,9 @@ a.terminal-green:hover {
     background-color: #2d2d2d; /* Dropdown background */
     border: 1px solid #444; /* Dropdown border */
   }
+
+#categorySelect {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+}  
