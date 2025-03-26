@@ -4521,17 +4521,23 @@ def character_update(request, pk):
 @login_required
 def memory_list(request):
     profile = get_latest_profile()
-    memories = CharacterMemory.objects.filter(user=request.user)
-    character = None
     character_id = request.GET.get('character')
+    
     if character_id:
-        memories = memories.filter(character_id=character_id)
-        character = get_object_or_404(UserCharacter, pk=character_id, user=request.user)
+        # Filter by character only (ignore user)
+        memories = CharacterMemory.objects.filter(character_id=character_id)
+        character = get_object_or_404(UserCharacter, pk=character_id)
+    else:
+        # Default to user memories if no character is specified
+        memories = CharacterMemory.objects.filter(user=request.user)
+        character = None
+
     return render(request, 'memories/memory_list.html', {
         'memories': memories,
         'character': character,
         'profile': profile
     })
+
 
 @login_required
 def add_memory(request):
