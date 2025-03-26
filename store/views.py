@@ -4711,8 +4711,14 @@ def user_chatbot_response_private(request, character_id):
         logger.error("Embedding generation error: %s", str(e))
         return JsonResponse({"error": "Failed to generate query embedding"}, status=500)
 
-    memory_similarities = []
-    for memory in character.memories.all():
+    memory_similarities = []  # List to store memory similarities
+
+    memories = character.memories.all()
+
+    if not character.allow_memory_update:
+        memories = memories.filter(created_by=character.user)
+
+    for memory in memories:
         try:
             if not memory.embedding:
                 mem_embed_resp = client.embeddings.create(
@@ -4730,6 +4736,7 @@ def user_chatbot_response_private(request, character_id):
             memory_similarities.append((similarity, memory.content))
         except Exception as e:
             logger.warning("Similarity check failed for memory ID %s: %s", memory.id, str(e))
+
 
     top_memories = sorted(memory_similarities, key=lambda x: x[0], reverse=True)[:3]
     retrieved_context = "\n".join([m[1] for m in top_memories])
