@@ -296,13 +296,17 @@ AUTH_USER_MODEL="store.User"
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': False,  # Let existing Django loggers work
     'handlers': {
         'file': {
-            'level': 'DEBUG',
+            'level': 'DEBUG',  # Catch all logs: DEBUG, INFO, WARNING, ERROR, CRITICAL
             'class': 'logging.FileHandler',
             'filename': '/tmp/file.log',
         },
+    },
+    'root': {
+        'handlers': ['file'],
+        'level': 'DEBUG',  # Apply to everything not caught by named loggers
     },
     'loggers': {
         'django': {
@@ -312,6 +316,7 @@ LOGGING = {
         },
     },
 }
+
 
 
   
