@@ -4911,3 +4911,17 @@ def register_mcp(request):
         "registered": registered,
         "failed": failed
     })
+
+def public_characters_view(request):
+    query = request.GET.get('q', '')
+    characters = UserCharacter.objects.filter(public=True)
+
+    if query:
+        characters = characters.filter(
+            Q(name__icontains=query) | Q(persona__icontains=query)
+        )
+
+    return render(request, 'public_characters.html', {
+        'characters': characters,
+        'query': query
+    })

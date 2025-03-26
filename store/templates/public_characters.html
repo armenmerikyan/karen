@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<section class="py-0">
+  <div class="container-fluid">
+    <div class="container mt-5 text-light">         
+      <div class="row">
+        <div class="col-md-12 text-left">
+
+          <h2 class="mb-4">Explore Public Characters</h2>
+
+          <form method="get" class="mb-4">
+            <div class="input-group">
+              <input type="text" name="q" class="form-control" placeholder="Search characters..." value="{{ query }}">
+              <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+          </form>
+
+          {% if characters %}
+            <div class="row">
+              {% for character in characters %}
+                <div class="col-md-4 mb-4">
+                  <div class="card bg-dark text-light h-100">
+                    {% if character.character_image %}
+                      <img src="{{ character.character_image.url }}" class="card-img-top" alt="{{ character.name }}">
+                    {% endif %}
+                    <div class="card-body">
+                      <h5 class="card-title">{{ character.name }}</h5>
+                      <p class="card-text">{{ character.persona|truncatechars:120 }}</p>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p>No public characters found matching your search.</p>
+          {% endif %}
+
+        </div>
+      </div>      
+    </div>
+  </div>
+</section>    
+{% endblock %}
