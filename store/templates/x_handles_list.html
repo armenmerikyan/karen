@@ -20,11 +20,15 @@
               ChatGPT: Crypto Oracle
             </a>
             <br>
-          <form method="get" action="">
-              <label for="search">Search handles:</label>
-              <input type="text" id="search" name="search" placeholder="e.g., 0xDesigner, 0xFrisk, 0xMLow" style="width: 100%;">
-              <button type="submit" class="btn btn-primary mb-3">Search</button>
-          </form>
+            <form method="get" action="" class="mb-4">
+              <div class="mb-3">
+                <label for="search" class="form-label">Search handles</label>
+                <input type="text" class="form-control" id="search" name="search"
+                      placeholder="e.g., 0xDesigner, 0xFrisk, 0xMLow, 0xMert_" />
+              </div>
+              <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+
           </div>
 
           {% if user.is_staff %}
