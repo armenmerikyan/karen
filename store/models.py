@@ -1817,6 +1817,7 @@ class UserCharacter(models.Model):
 
     # ✅ Add this field
     character_image = models.ImageField(upload_to='character_images/', blank=True, null=True, help_text="Optional image for the character")
+    allow_memory_update = models.BooleanField(default=False, help_text="Whether memory updates are allowed for this character by other users")
 
     def __str__(self):
         return f"{self.name} ({self.user.username})"
