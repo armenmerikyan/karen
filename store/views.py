@@ -4385,6 +4385,7 @@ def call_node_script(request):
  
 
 
+
 def handle_list_view(request):
     profile = get_latest_profile()
 
@@ -4405,6 +4406,7 @@ def handle_list_view(request):
 
     handles = handles_qs.order_by('-checked_at')[:300]
 
+    # Filter distinct handle list by category as well
     distinct_qs = TwitterHandleChecker.objects.order_by('handle')
     if category_query:
         distinct_qs = distinct_qs.filter(category__iexact=category_query)
@@ -4445,6 +4447,8 @@ def handle_list_view(request):
         'handles': handles,
         'profile': profile,
         'distinct_handle_names': distinct_handle_names,
+        'category_query': category_query,
+        'search_query': search_query,
     })
 
 @login_required
