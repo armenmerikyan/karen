@@ -4384,20 +4384,24 @@ def call_node_script(request):
 
  
 
+
 def handle_list_view(request):
     profile = get_latest_profile()
 
     search_query = request.GET.get('search')
+    category_query = request.GET.get('category')
+
     handles_qs = TwitterHandleChecker.objects.all()
 
     if search_query:
-        # Split handles by comma and optional space, strip whitespace
         search_terms = [h.strip().lstrip('@') for h in search_query.split(',') if h.strip()]
-        # Create Q objects for OR filtering
         query = Q()
         for handle in search_terms:
             query |= Q(handle__iexact=handle)
         handles_qs = handles_qs.filter(query)
+
+    if category_query:
+        handles_qs = handles_qs.filter(category__iexact=category_query)
 
     handles = handles_qs.order_by('-checked_at')[:300]
 
@@ -4430,7 +4434,7 @@ def handle_list_view(request):
             lines.append(f"X Handle: @{profile.x_handle}\n\n")
 
         for handle in handles:
-            lines.append(f"@{handle.handle} | Status: {handle.status}\n")
+            lines.append(f"@{handle.handle} | Category: {handle.category} | Status: {handle.status}\n")
             lines.append(f"Checked At: {handle.checked_at.strftime('%Y-%m-%d %H:%M:%S')}\n")
             lines.append(f"Note: {handle.result or ''}\n")
             lines.append("-" * 30 + "\n")
