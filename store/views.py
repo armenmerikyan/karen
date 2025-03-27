@@ -4696,8 +4696,23 @@ def user_chatbot_response_private(request, character_id):
     if not character.is_public and character.user != request.user:
         raise Http404("Character not found.")
 
-    if not request.user.openai_api_key:
-        return JsonResponse({"error": "ChatGPT API key is missing."}, status=400)
+    # Determine which API key to use based on free sample rules
+    use_free_sample = False
+    if character.allow_free_sample_usage_anyone or (character.allow_free_sample_usage_users and request.user.is_authenticated):
+        if character.sample_usage_call_count < character.sample_usage_call_limit:
+            use_free_sample = True
+            # Increment and save the counter
+            character.sample_usage_call_count += 1
+            character.save()
+            api_key = character.user.openai_api_key
+        else:
+            if not request.user.openai_api_key:
+                return JsonResponse({"error": "Free sample limit reached. Please provide your own API key."}, status=400)
+            api_key = request.user.openai_api_key
+    else:
+        if not request.user.openai_api_key:
+            return JsonResponse({"error": "ChatGPT API key is missing."}, status=400)
+        api_key = request.user.openai_api_key
 
     try:
         data = json.loads(request.body)
@@ -4707,7 +4722,7 @@ def user_chatbot_response_private(request, character_id):
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
 
-    client = OpenAI(api_key=request.user.openai_api_key)
+    client = OpenAI(api_key=api_key)  # Use the determined API key
     model_id = "gpt-4-1106-preview"
 
     try:
