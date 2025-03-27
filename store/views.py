@@ -4724,7 +4724,7 @@ def user_chatbot_response_private(request, character_id):
     memories = character.memories.all()
 
     if not character.allow_memory_update:
-        memories = memories.filter(created_by=character.user)
+        memories = memories.filter(user=character.user)
 
     for memory in memories:
         try:
