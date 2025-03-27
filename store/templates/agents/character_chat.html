@@ -70,7 +70,7 @@
     window.interruptableSpeech = null;
 
     function populateVoices() {
-      voices = speechSynthesis.getVoices();
+      voices = speechSynthesis.getVoices().filter(voice => voice.lang.startsWith("en-US"));
       const voiceSelect = document.getElementById('voiceSelect');
       voiceSelect.innerHTML = '';
       voices.forEach((voice, index) => {
@@ -80,6 +80,7 @@
         voiceSelect.appendChild(option);
       });
     }
+
 
     speechSynthesis.onvoiceschanged = populateVoices;
 
