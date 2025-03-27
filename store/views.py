@@ -4683,12 +4683,15 @@ def copy_model_to_current(request, character_id):
  
 
 @csrf_exempt
-@login_required
 def user_chatbot_response_private(request, character_id):
-    if not request.user.is_authenticated:
-        return JsonResponse({"response": "Please log in to use the chat feature."})
+
+
 
     character = get_object_or_404(UserCharacter, id=character_id)
+
+    
+    if not request.user.is_authenticated:
+        return JsonResponse({"response": "Please log in to use the chat feature."})
 
     if not character.is_public and character.user != request.user:
         raise Http404("Character not found.")
@@ -4867,7 +4870,6 @@ def user_chatbot_response_private(request, character_id):
         logger.error("Chat processing failed: %s", str(e))
         return JsonResponse({"error": "An internal error occurred."}, status=500)
 
-@login_required
 def chat_view(request, character_id):
     character = get_object_or_404(UserCharacter, id=character_id)
     return render(request, 'agents/character_chat.html', {'character': character})
