@@ -572,6 +572,8 @@ class WebsiteProfile(models.Model):
     sendgrid_email = models.CharField(max_length=255, help_text="Send Grid Email.", blank=True, null=True)
     sendgrid_key = models.CharField(max_length=255, help_text="Send Grid API Key", blank=True, null=True)
 
+    google_analytics_key = models.CharField(max_length=255, help_text="Google Analytics Key", blank=True, null=True)
+    
     def __str__(self):
         return self.name
 

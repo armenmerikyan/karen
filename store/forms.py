@@ -254,7 +254,7 @@ class WebsiteProfileForm(forms.ModelForm):
             'tax_rate', 'terms_of_service', 'privacy_policy', 
             'stripe_publishable_key', 'stripe_secret_key', 
             'bird_eye_api_key', 'deepseek_api_key', 'chatgpt_api_key', 'chatgpt_model_id', 'chatgpt_model_id_current', 'dockerhub_username', 'dockerhub_password',
-            'sendgrid_email', 'sendgrid_key'
+            'sendgrid_email', 'sendgrid_key', 'google_analytics_key'
         ]
 
 class TokenProfileForm(forms.ModelForm):
