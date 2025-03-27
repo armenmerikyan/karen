@@ -1828,7 +1828,9 @@ class UserCharacter(models.Model):
     sample_usage_call_limit = models.IntegerField(default=100, help_text="The maximum number of sample usage calls allowed")
     sample_usage_call_count = models.IntegerField(default=0, help_text="The current number of sample usage calls")
 
-    # ✅ Add this field
+    x_handle = models.CharField(max_length=255, blank=True, null=True, help_text="The x.com handle.")
+
+        # ✅ Add this field
     character_image = models.ImageField(upload_to='character_images/', blank=True, null=True, help_text="Optional image for the character")
     allow_memory_update = models.BooleanField(default=False, help_text="Whether memory updates are allowed for this character by other users")
 

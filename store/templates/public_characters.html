@@ -38,6 +38,9 @@
                         <a href="{% url 'chat_view' character.id %}" class="btn btn-success">
                           <i class="fas fa-comments"></i> Chat
                         </a>
+                        {% if character.x_handle %}}
+                          <a href="https://x.com/{{ character.x_handle }}" target="_blank">X Handle</a>
+                        {% endif %}
                       </div>
                     </div>
                   </div>
