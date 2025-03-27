@@ -73,13 +73,23 @@
       voices = speechSynthesis.getVoices().filter(voice => voice.lang.startsWith("en-US"));
       const voiceSelect = document.getElementById('voiceSelect');
       voiceSelect.innerHTML = '';
+
+      let defaultIndex = 0;
+
       voices.forEach((voice, index) => {
         const option = document.createElement('option');
         option.value = index;
         option.textContent = `${voice.name} (${voice.lang})${voice.default ? ' — DEFAULT' : ''}`;
         voiceSelect.appendChild(option);
+
+        if (voice.default) {
+          defaultIndex = index;
+        }
       });
+
+      voiceSelect.selectedIndex = defaultIndex;
     }
+
 
 
     speechSynthesis.onvoiceschanged = populateVoices;
