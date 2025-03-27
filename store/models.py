@@ -573,7 +573,7 @@ class WebsiteProfile(models.Model):
     sendgrid_key = models.CharField(max_length=255, help_text="Send Grid API Key", blank=True, null=True)
 
     google_analytics_key = models.CharField(max_length=255, help_text="Google Analytics Key", blank=True, null=True)
-    
+
     def __str__(self):
         return self.name
 
@@ -1823,6 +1823,10 @@ class UserCharacter(models.Model):
     metadata = models.JSONField(blank=True, null=True, help_text="Additional context (e.g., backstory, goals)")
     created_at = models.DateTimeField(auto_now_add=True)
     is_public = models.BooleanField(default=False, help_text="Whether this character is publicly viewable")
+    allow_free_sample_usage_anyone = models.BooleanField(default=False, help_text="Whether this character allows free sample usage")
+    allow_free_sample_usage_users = models.BooleanField(default=False, help_text="Whether this character allows free sample usage")
+    sample_usage_call_limit = models.IntegerField(default=100, help_text="The maximum number of sample usage calls allowed")
+    sample_usage_call_count = models.IntegerField(default=0, help_text="The current number of sample usage calls")
 
     # ✅ Add this field
     character_image = models.ImageField(upload_to='character_images/', blank=True, null=True, help_text="Optional image for the character")
