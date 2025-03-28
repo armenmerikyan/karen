@@ -70,3 +70,6 @@ scp GeoLite2-City.mmdb root@YOUR_IP_HERE:/root/karen/static/
 
 
 docker buildx build --platform linux/amd64 -t gigahard/landing-page --push .
+
+
+scp  static/GeoLite2-City.mmdb root@YOUR_IP_HERE:/root/karen/static/GeoLite2-City.mmdb
