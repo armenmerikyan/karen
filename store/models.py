@@ -1829,6 +1829,7 @@ class UserCharacter(models.Model):
     sample_usage_call_count = models.IntegerField(default=0, help_text="The current number of sample usage calls")
 
     x_handle = models.CharField(max_length=255, blank=True, null=True, help_text="The x.com handle.")
+    chatgpt_link = models.CharField(max_length=255, blank=True, null=True, help_text="The ChatGPT link.")
 
         # ✅ Add this field
     character_image = models.ImageField(upload_to='character_images/', blank=True, null=True, help_text="Optional image for the character")
