@@ -20,11 +20,13 @@
                     </div> 
                     <button type="submit" class="btn btn-success btn-user btn-block mb-3">Login</button>
                     
-                    <!-- Google Sign-In Button -->
-                    <a href="/accounts/google/login/" class="btn btn-danger btn-user btn-block mb-3">
-                        <i class="fab fa-google"></i> Sign in with Google
-                    </a>
-                                        
+                    <!-- Google Sign-In Button --> 
+                    <form method="post" action="/accounts/google/login/">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-user btn-block mb-3">
+                            <i class="fab fa-google"></i> Sign in with Google
+                        </button>
+                    </form>                                        
                     <br>
                     <a href="{% url 'password_reset' %}" class="btn btn-link text-light">Forgot Password?</a>
                     <br>
