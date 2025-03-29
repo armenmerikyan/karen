@@ -23,13 +23,13 @@
             <div id="walletAddress" class="mt-2"></div>
           </div>
 
-          <button id="connectButton" class="btn btn-warning mb-4">Connect to Phantom</button>
+          <button id="connectButton" class="btn btn-save-terminal mb-4">Connect to Phantom</button>
 
           <hr class="dashed-line">
 
           <div class="mb-3">
             <strong>AI Agent Access Token:</strong> <span id="tokenDisplay" class="d-block mt-2 text-muted"></span><br>
-            <button id="generateTokenButton" class="btn btn-success mb-2">Generate Token</button>
+            <button id="generateTokenButton" class="btn btn-save-terminal mb-2">Generate Token</button>
           </div>
 
           <hr class="dashed-line">
@@ -38,7 +38,7 @@
             <strong id="tokenBalance"></strong>
           </div>
 
-          <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
+          <a href="{% url 'logout' %}" class="btn btn-terminal-red mt-3">Logout</a>
         </div>
       </div>
     </div>
