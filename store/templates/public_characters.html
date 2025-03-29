@@ -35,12 +35,15 @@
 
                 <!-- Free Sample Badge/Button -->
                 {% if character.allow_free_sample_usage_anyone %}
-                  <span class="badge bg-custom-green mb-2">Free Sample Available</span>
+                  <button class="btn btn-dark-custom w-100 mb-2" disabled>
+                    <i class="fas fa-gift me-1"></i> Free Sample Available
+                  </button>
                 {% else %}
                   <button class="btn btn-secondary w-100 mb-2" disabled>
                     <i class="fas fa-ban me-1"></i> No Free Sample
                   </button>
                 {% endif %}
+
 
                 <div class="mt-auto d-flex flex-column gap-2">
 
