@@ -2,66 +2,71 @@
 {% load custom_filters %}
 
 {% block content %}
-<section class="py-0">
-  <div class="container-fluid">
-    <div class="container mt-5 text-light">         
-      <div class="row">
-        <div class="col-md-12 text-left">
+<section class="py-5 bg-dark text-light">
+  <div class="container">
 
-          <h2 class="mb-4">Explore AI Agents</h2>
-
-          <form method="get" class="mb-4">
-            <div class="input-group">
-              <input type="text" name="q" class="form-control" placeholder="Search characters..." value="{{ query }}">
-              <button class="btn btn-primary" type="submit">Search</button>
-            </div>
-          </form>
-
-          {% if characters %}
-            <div class="row">
-              {% for character in characters %}
-                <div class="col-md-4 mb-4">
-                  <div class="card bg-dark text-light h-100">
-                    {% if character.character_image %}
-                      <img src="{{ character.character_image.url }}" class="card-img-top" alt="{{ character.name }}">
-                    {% endif %}
-                    <div class="card-body">
-                      <h5 class="card-title">{{ character.name }}</h5>
-                      <p class="card-text">{{ character.persona|truncatechars:120 }}</p>
-                      <!-- Debug info -->
-                      <div class="mt-3">
-                        <!-- Added the direct chat link here -->
-                        {% if character.allow_free_sample_usage_anyone %}
-                          <strong>Free Sample Usage: Yes</strong>
-                        {% endif %}  
-                        
-                        <a href="{% url 'chat_view' character.id %}" class="btn btn-success">
-                          <i class="fas fa-comments"></i> Chat
-                        </a>
-                        {% if character.x_handle %}
-                          <a href="https://x.com/{{ character.x_handle }}" class="btn btn-dark" target="_blank">
-                            <i class="fa-brands fa-x-twitter"></i>
-                          </a>
-                        {% endif %}
-                        {% if character.chatgpt_link %}
-                            <i class="fas fa-robot text-primary"></i> 
-                            <a href="{{ character.chatgpt_link }}" class="btn btn-dark" target="_blank">
-                              <i class="fas fa-external-link-alt"></i>
-                            </a>
-                        {% endif %}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              {% endfor %}
-            </div>
-          {% else %}
-            <p>No public characters found matching your search.</p>
-          {% endif %}
-
-        </div>
-      </div>      
+    <div class="mb-5 text-center">
+      <h2 class="display-5 fw-bold">🧠 Explore AI Agents</h2>
+      <p class="lead">Discover, connect, and chat with intelligent digital personas.</p>
     </div>
+
+    <form method="get" class="mb-5">
+      <div class="input-group input-group-lg shadow-sm">
+        <input type="text" name="q" class="form-control border-0" placeholder="Search characters..." value="{{ query }}">
+        <button class="btn btn-primary px-4" type="submit">
+          <i class="fas fa-search me-2"></i>Search
+        </button>
+      </div>
+    </form>
+
+    {% if characters %}
+      <div class="row g-4">
+        {% for character in characters %}
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100 bg-gradient text-light border-0 shadow-sm">
+
+              {% if character.character_image %}
+                <img src="{{ character.character_image.url }}" class="card-img-top rounded-top" alt="{{ character.name }}">
+              {% endif %}
+
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title mb-2">{{ character.name }}</h5>
+                <p class="card-text text-light small">{{ character.persona|truncatechars:120 }}</p>
+
+                {% if character.allow_free_sample_usage_anyone %}
+                  <span class="badge bg-success mb-2">Free Sample Available</span>
+                {% endif %}
+
+                <div class="mt-auto d-flex flex-wrap gap-2">
+                  <a href="{% url 'chat_view' character.id %}" class="btn btn-success w-100">
+                    <i class="fas fa-comments me-1"></i> Chat Now
+                  </a>
+
+                  {% if character.x_handle %}
+                    <a href="https://x.com/{{ character.x_handle }}" class="btn btn-outline-light w-100" target="_blank">
+                      <i class="fa-brands fa-x-twitter me-1"></i> X Profile
+                    </a>
+                  {% endif %}
+
+                  {% if character.chatgpt_link %}
+                    <a href="{{ character.chatgpt_link }}" class="btn btn-outline-primary w-100" target="_blank">
+                      <i class="fas fa-robot me-1"></i> GPT Link
+                    </a>
+                  {% endif %}
+                </div>
+
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center mt-5">
+        <h5 class="text-muted">🤖 No public characters found.</h5>
+        <p class="small">Try a different search term or come back later.</p>
+      </div>
+    {% endif %}
+
   </div>
-</section>    
+</section>
 {% endblock %}
