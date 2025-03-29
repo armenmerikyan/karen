@@ -212,8 +212,8 @@
                     > {{ token.name }}
                   </code>
                   <code class="text-monospace text-terminal-muted d-block mt-1 small">
-                    > {{ token.address }}
-                  </code>
+                    > {{ token.address[:4] }}...{{ token.address[-4:] }}
+                  </code>                  
                   <button class="btn btn-terminal-sm mt-2" onclick="navigator.clipboard.writeText('{{ token.address }}')">
                     > copy_address <span class="blink">_</span>
                   </button>
