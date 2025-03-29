@@ -43,10 +43,11 @@
                             <i class="fa-brands fa-x-twitter"></i>
                           </a>
                         {% endif %}
-                        {% if character.chatgpt_link %}}
-                          <a href="{{ character.chatgpt_link }}" class="btn btn-dark" target="_blank">
-                            <i class="fas fa-external-link-alt"></i>
-                          </a>
+                        {% if character.chatgpt_link %}
+                            <i class="fas fa-robot text-primary"></i> 
+                            <a href="{{ character.chatgpt_link }}" class="btn btn-dark" target="_blank">
+                              <i class="fas fa-external-link-alt"></i>
+                            </a>
                         {% endif %}
                       </div>
                     </div>
