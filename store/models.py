@@ -505,6 +505,7 @@ class WebsiteProfile(models.Model):
     about_us = models.TextField(help_text="Information about the website.")
     wallet = models.CharField(max_length=255, help_text="The address of the Solana Wallet.")
     x_handle = models.CharField(max_length=255, help_text="The x.com handle.")
+    
     email = models.EmailField(max_length=255, help_text="The contact email address.", blank=True, null=True)
     phone = models.CharField(max_length=20, help_text="The contact phone number.", blank=True, null=True)
 
@@ -1552,6 +1553,21 @@ class CarFinderResponse(models.Model):
             "features": {
                 "safety": self.safety_features,
                 "tech": self.tech_features,
+            },
+            "new_or_used": {
+                "open_to_used": self.open_to_used,
+                "max_mileage": self.max_mileage,
+            },
+            "brand_and_style": {
+                "brand_preference": self.brand_preference,
+                "preferred_style": self.preferred_style,
+            },
+            "timeline_and_location": {
+                "purchase_timeline": self.purchase_timeline,
+                "local_only": self.local_only,
+            },
+            "created_at": self.created_at.isoformat(),
+        }
                 "luxury": self.luxury_features,
                 "awd_4wd": self.awd_4wd_needed,
             },
