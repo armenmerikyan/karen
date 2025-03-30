@@ -286,6 +286,7 @@ urlpatterns = [
     path('memory/add/', views.AddMemoryView.as_view(), name='add_character_memory'),
     path('api/register_mcp/', views.register_mcp, name='register-mcp'),
     path('public_characters/', views.public_characters_view, name='public_characters'),
+    path('public_characters/<int:character_id>/detail/', views.public_character_detail, name='public_character_detail'),
     
 
 
