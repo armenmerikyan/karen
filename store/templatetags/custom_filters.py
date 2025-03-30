@@ -20,8 +20,10 @@ def multiply(value, arg):
         return 0  # Return 0 if there is an error
     
 @register.filter
-def add_class(value, class_name):
-    return value.as_widget(attrs={'class': class_name})
+def add_class(field, css_class):
+    if hasattr(field, 'as_widget'):
+        return field.as_widget(attrs={'class': css_class})
+    return field
  
 @register.filter(name='currency')
 def currency(value):
