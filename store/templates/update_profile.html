@@ -1,44 +1,124 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="d-flex align-items-center justify-content-center" style="min-height: 60vh;">
+<section class="py-5">
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-md-8">
-        <div class="content-container">
+      <div class="col-lg-8">
+        <!-- Terminal Header -->
+        <div class="terminal-header text-center mb-4">
+          <h2 class="text-monospace mb-1">> User Profile Configuration</h2>
+          <p class="text-monospace text-terminal-muted blink">> Customize Your Interface_</p>
+        </div>
 
-          <h2 class="mb-4">Update Profile</h2>
-
-          <form method="POST" class="mb-4">
-            {% csrf_token %}
-            <div class="mb-3"><strong>Username:</strong> {{ user.username }}</div>
-            <div class="mb-3"><strong>Email:</strong> {{ user.email }}</div>
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-save-terminal mt-3">Save Changes</button>
-          </form>
-
-          <hr class="dashed-line">
-
-          <div class="mb-3">
-            <strong>Wallet:</strong> {{ user.sol_wallet_address }}
-            <div id="walletAddress" class="mt-2"></div>
+        <!-- Profile Cards -->
+        <div class="row g-4">
+          <!-- Basic Info Card -->
+          <div class="col-12">
+            <div class="card bg-terminal-dark border-terminal-green hover-terminal-item">
+              <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                  <span class="text-terminal-green me-2">></span>
+                  <h3 class="text-monospace mb-0">Basic Information</h3>
+                </div>
+                <div class="terminal-content">
+                  <form method="POST" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="text-monospace text-terminal-muted">Username</label>
+                        <input type="text" class="form-control bg-black text-terminal-green" value="{{ user.username }}" readonly>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="text-monospace text-terminal-muted">Email</label>
+                        <input type="email" class="form-control bg-black text-terminal-green" value="{{ user.email }}" readonly>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="text-monospace text-terminal-muted">First Name</label>
+                        {{ form.first_name }}
+                      </div>
+                      <div class="col-md-6">
+                        <label class="text-monospace text-terminal-muted">Last Name</label>
+                        {{ form.last_name }}
+                      </div>
+                      <div class="col-12">
+                        <label class="text-monospace text-terminal-muted">OpenAI API Key</label>
+                        {{ form.openai_api_key }}
+                      </div>
+                    </div>
+                    <div class="mt-4">
+                      <button type="submit" class="btn btn-terminal">
+                        > save_changes <span class="blink">_</span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <button id="connectButton" class="btn btn-save-terminal mb-4">Connect to Phantom</button>
-
-          <hr class="dashed-line">
-
-          <div class="mb-3">
-            <strong>AI Agent Access Token:</strong> <span id="tokenDisplay" class="d-block mt-2 text-muted"></span><br>
-            <button id="generateTokenButton" class="btn btn-save-terminal mb-2">Generate Token</button>
+          <!-- Wallet Integration -->
+          <div class="col-md-6">
+            <div class="card bg-terminal-dark border-terminal-green hover-terminal-item">
+              <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                  <span class="text-terminal-green me-2">></span>
+                  <h3 class="text-monospace mb-0">Wallet</h3>
+                </div>
+                <div class="terminal-content">
+                  <p class="text-monospace text-terminal-muted mb-3" id="walletAddress">
+                    > awaiting_connection...
+                  </p>
+                  <button id="connectButton" class="btn btn-terminal">
+                    > connect_phantom <span class="blink">_</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <hr class="dashed-line">
-
-          <div class="mb-2">
-            <strong id="tokenBalance"></strong>
+          <!-- API Token -->
+          <div class="col-md-6">
+            <div class="card bg-terminal-dark border-terminal-green hover-terminal-item">
+              <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                  <span class="text-terminal-green me-2">></span>
+                  <h3 class="text-monospace mb-0">API Access</h3>
+                </div>
+                <div class="terminal-content">
+                  <p class="text-monospace text-terminal-muted mb-3" id="tokenDisplay">
+                    > token_status: active
+                  </p>
+                  <button id="generateTokenButton" class="btn btn-terminal">
+                    > generate_token <span class="blink">_</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <a href="{% url 'logout' %}" class="btn btn-terminal-red mt-3">Logout</a>
+          <!-- Token Balance -->
+          <div class="col-12">
+            <div class="card bg-terminal-dark border-terminal-green hover-terminal-item">
+              <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                  <span class="text-terminal-green me-2">></span>
+                  <h3 class="text-monospace mb-0">Token Balance</h3>
+                </div>
+                <div class="terminal-content">
+                  <p class="text-monospace text-terminal-green mb-0" id="tokenBalance">
+                    > checking_balance...
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Logout -->
+        <div class="text-center mt-4">
+          <a href="{% url 'logout' %}" class="btn btn-terminal-red">
+            > terminate_session <span class="blink">_</span>
+          </a>
         </div>
       </div>
     </div>
