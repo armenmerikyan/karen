@@ -211,7 +211,6 @@ class CategoryForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['image'].required = False
 
- 
 
 class CartForm(forms.ModelForm):
     class Meta:
@@ -249,13 +248,65 @@ class WebsiteProfileForm(forms.ModelForm):
     class Meta:
         model = WebsiteProfile
         fields = [
-            'name', 'about_us', 'wallet', 'x_handle', 'email', 'phone', 
+            # Basic Information
+            'name', 'about_us', 'email', 'phone',
+            
+            # Address Information 
             'address1', 'address2', 'city', 'state', 'zip_code', 'country',
-            'tax_rate', 'terms_of_service', 'privacy_policy', 
-            'stripe_publishable_key', 'stripe_secret_key', 
-            'bird_eye_api_key', 'deepseek_api_key', 'chatgpt_api_key', 'chatgpt_model_id', 'chatgpt_model_id_current', 'dockerhub_username', 'dockerhub_password',
-            'sendgrid_email', 'sendgrid_key', 'google_analytics_key'
+            
+            # Social Media Handles
+            'x_handle',
+            'facebook_url',
+            'instagram_handle',
+            'youtube_channel',
+            'tiktok_handle',
+            'snapchat_handle',
+            'pinterest_handle',
+            'linkedin_url',
+            
+            # Blockchain
+            'wallet',
+            
+            # Business Settings
+            'tax_rate',
+            'terms_of_service',
+            'privacy_policy',
+            
+            # API Keys & Integration
+            'stripe_publishable_key',
+            'stripe_secret_key',
+            'bird_eye_api_key',
+            'deepseek_api_key',
+            'chatgpt_api_key',
+            'chatgpt_model_id',
+            'chatgpt_model_id_current',
+            'dockerhub_username',
+            'dockerhub_password',
+            'sendgrid_email',
+            'sendgrid_key',
+            'google_analytics_key'
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Add placeholders and help text for social media fields
+        social_fields = {
+            'x_handle': 'Twitter/X handle (without @)',
+            'facebook_url': 'Full Facebook page URL',
+            'instagram_handle': 'Instagram username (without @)',
+            'youtube_channel': 'Full YouTube channel URL',
+            'tiktok_handle': 'TikTok username (without @)',
+            'snapchat_handle': 'Snapchat username',
+            'pinterest_handle': 'Pinterest username',
+            'linkedin_url': 'Full LinkedIn company page URL'
+        }
+        
+        for field, placeholder in social_fields.items():
+            if field in self.fields:
+                self.fields[field].widget.attrs.update({
+                    'placeholder': placeholder,
+                    'class': 'form-control'
+                })
 
 class TokenProfileForm(forms.ModelForm):
     class Meta:
