@@ -829,8 +829,13 @@ def product_add(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect('product_list')  # Redirect to the product list after saving
+            # Create product but don't save to DB yet
+            product = form.save(commit=False)
+            # Set the user to the current logged-in user
+            product.user = request.user
+            # Now save the product
+            product.save()
+            return redirect('product_list')
     else:
         form = ProductForm()
 
