@@ -575,6 +575,20 @@ class WebsiteProfile(models.Model):
 
     google_analytics_key = models.CharField(max_length=255, help_text="Google Analytics Key", blank=True, null=True)
 
+    # New social media fields
+    facebook_url = models.URLField(max_length=255, help_text="Facebook page URL.", blank=True, null=True)
+    instagram_handle = models.CharField(max_length=255, help_text="Instagram handle.", blank=True, null=True)
+    youtube_channel = models.URLField(max_length=255, help_text="YouTube channel URL.", blank=True, null=True)
+    tiktok_handle = models.CharField(max_length=255, help_text="TikTok handle.", blank=True, null=True)
+    snapchat_handle = models.CharField(max_length=255, help_text="Snapchat username.", blank=True, null=True)
+    pinterest_handle = models.CharField(max_length=255, help_text="Pinterest handle.", blank=True, null=True)
+    linkedin_url = models.URLField(max_length=255, help_text="LinkedIn company page URL.", blank=True, null=True)
+    discord_invite = models.URLField(max_length=255, help_text="Discord server invite URL.", blank=True, null=True)
+    telegram_handle = models.CharField(max_length=255, help_text="Telegram username or channel.", blank=True, null=True)
+    reddit_url = models.URLField(max_length=255, help_text="Reddit community URL.", blank=True, null=True)
+    github_org = models.URLField(max_length=255, help_text="GitHub organization URL.", blank=True, null=True)
+    medium_handle = models.CharField(max_length=255, help_text="Medium publication handle.", blank=True, null=True)
+
     def __str__(self):
         return self.name
 
@@ -1546,45 +1560,26 @@ class CarFinderResponse(models.Model):
                 "primary_use": self.primary_use,
                 "passengers": self.passengers,
             },
-            "fuel_efficiency": {
-                "prioritize": self.prioritize_fuel_efficiency,
-                "electric_or_hybrid": self.prefer_electric_or_hybrid,
-            },
             "features": {
                 "safety": self.safety_features,
                 "tech": self.tech_features,
-            },
-            "new_or_used": {
-                "open_to_used": self.open_to_used,
-                "max_mileage": self.max_mileage,
-            },
-            "brand_and_style": {
-                "brand_preference": self.brand_preference,
-                "preferred_style": self.preferred_style,
-            },
-            "timeline_and_location": {
-                "purchase_timeline": self.purchase_timeline,
-                "local_only": self.local_only,
-            },
-            "created_at": self.created_at.isoformat(),
-        }
                 "luxury": self.luxury_features,
-                "awd_4wd": self.awd_4wd_needed,
+                "awd_4wd": self.awd_4wd_needed
             },
             "new_vs_used": {
                 "open_to_used": self.open_to_used,
-                "max_mileage": self.max_mileage,
+                "max_mileage": self.max_mileage
             },
             "brand_and_style": {
                 "preferred_brand": self.brand_preference,
-                "preferred_style": self.preferred_style,
+                "preferred_style": self.preferred_style
             },
             "timeline": {
                 "purchase_timeline": self.purchase_timeline,
-                "local_only": self.local_only,
+                "local_only": self.local_only
             },
             "metadata": {
-                "created_at": self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                "created_at": self.created_at.strftime('%Y-%m-%d %H:%M:%S')
             }
         }
 
