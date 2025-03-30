@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<section class="py-5" style="background-color: #000;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card border-0 shadow-sm bg-black text-light">
+                    {% if character.character_image %}
+                        <img src="{{ character.character_image.url }}" 
+                             class="card-img-top rounded-top" 
+                             alt="{{ character.name }}"
+                             style="max-height: 400px; object-fit: cover;">
+                    {% endif %}
+
+                    <div class="card-body p-4">
+                        <h1 class="display-5 mb-3">{{ character.name }}</h1>
+
+                        {% if character.allow_free_sample_usage_anyone %}
+                            <div class="badge bg-success mb-3">
+                                <i class="fas fa-gift me-1"></i> Free Sample Available
+                                ({{ character.sample_usage_call_count }}/{{ character.sample_usage_call_limit }} calls)
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-4">
+                            <h5 class="text-muted mb-3">About</h5>
+                            <p class="lead">{{ character.persona }}</p>
+                        </div>
+
+                        <div class="d-grid gap-3">
+                            <a href="{% url 'chat_view' character.id %}" class="btn btn-success btn-lg">
+                                <i class="fas fa-comments me-2"></i> Start Chat
+                            </a>
+
+                            {% if character.x_handle %}
+                                <a href="https://x.com/{{ character.x_handle }}" 
+                                   class="btn btn-dark-custom" 
+                                   target="_blank">
+                                    <i class="fa-brands fa-x-twitter me-2"></i> Follow on X
+                                </a>
+                            {% endif %}
+
+                            {% if character.chatgpt_link %}
+                                <a href="{{ character.chatgpt_link }}" 
+                                   class="btn btn-dark-custom" 
+                                   target="_blank">
+                                    <i class="fas fa-robot me-2"></i> View on ChatGPT
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="{% url 'public_characters' %}" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Agents
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
