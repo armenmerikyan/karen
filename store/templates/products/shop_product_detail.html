@@ -53,10 +53,11 @@
                     </div>
 
                     <!-- Add to Cart Form -->
-                    <form method="POST" action="{% url 'add_to_cart' cart.id product.id %}" 
+                    <form method="POST" action="{% url 'shop_add_to_cart' %}" 
                           id="addToCartForm" 
                           class="mb-5">
                         {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
                         <div class="row g-3 align-items-center">
                             <div class="col-auto">
                                 <label for="quantity" class="form-label" style="color: #00FF00;">Quantity</label>

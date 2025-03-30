@@ -1932,6 +1932,37 @@ def view_cart_detail_shop(request, cart_id):
 
     return render(request, 'cart_detail_shop.html', context)
 
+def shop_product_detail(request, product_id):
+    profile = WebsiteProfile.objects.order_by('-created_at').first()
+    if not profile:
+        profile = WebsiteProfile(name="add name", about_us="some info about us")
+    
+    # Get cart from cookie or create new one
+    cart_id = request.COOKIES.get('cartId')
+    if cart_id:
+        try:
+            cart = Cart.objects.get(external_id=cart_id)
+        except Cart.DoesNotExist:
+            cart = Cart.objects.create(external_id=cart_id)
+    else:
+        # Generate a new cart ID if none exists
+        cart_id = str(uuid.uuid4())
+        cart = Cart.objects.create(external_id=cart_id)
+
+    # Fetch the specific product by its ID
+    product = get_object_or_404(Product, id=product_id)
+    
+    # Pass both product and cart to the template
+    response = render(request, 'products/shop_product_detail.html', {
+        'product': product, 
+        'profile': profile,
+        'cart': cart
+    })
+    
+    # Set cart cookie
+    response.set_cookie('cartId', cart_id)
+    return response
+
  
 
  
