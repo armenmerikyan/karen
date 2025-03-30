@@ -5003,3 +5003,12 @@ def public_characters_view(request):
         'query': query,
         'profile': profile
     })
+
+def public_character_detail(request, character_id):
+    profile = get_latest_profile()
+    character = get_object_or_404(UserCharacter, id=character_id, is_public=True)
+    
+    return render(request, 'public_character_detail.html', {
+        'character': character,
+        'profile': profile,
+    })
