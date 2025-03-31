@@ -1,61 +1,126 @@
 {% extends 'base.html' %}
 {% load socialaccount %}
 {% block content %}
-<section class="terminal-section d-flex align-items-start justify-content-start" style="min-height: 50vh;">
-    <div class="container">
-        <div class="row justify-content-start">
-            <div class="col-md-6 text-left text-light terminal-text">
-                <div class="terminal-header">
-                    <span class="terminal-prompt">$</span>
-                    <h2 class="text-left mb-4 terminal-title blink-text">System Registration</h2>
+
+<div class="cyber-container">
+    <div class="terminal-window">
+        <!-- Glowing Header Bar -->
+        <div class="terminal-header">
+            <div class="header-buttons">
+                <span class="btn-close"></span>
+                <span class="btn-minimize"></span>
+                <span class="btn-expand"></span>
+            </div>
+            <div class="terminal-title">GIGAHARD_SECURE_REGISTRATION.exe</div>
+        </div>
+
+        <!-- Matrix Rain Canvas Background -->
+        <canvas id="matrixRain" class="matrix-background"></canvas>
+
+        <!-- Main Content -->
+        <div class="terminal-content">
+            <div class="boot-sequence">
+                <div class="typing-text">Initializing Secure Registration Protocol...</div>
+                <div class="loading-bar">
+                    <div class="progress"></div>
                 </div>
+            </div>
+
+            <!-- Registration Form -->
+            <form method="POST" class="cyber-form">
+                {% csrf_token %}
                 
-                <!-- Google Sign In Button -->
-                <div class="mb-4">
-                    <a href="{% provider_login_url 'google' %}" class="btn btn-terminal-red btn-block">
-                        <span class="terminal-prompt">>></span>
-                        <i class="fab fa-google"></i> Initialize Google Authentication
-                    </a>
-                </div>
-
-                <div class="mb-4 terminal-divider">
-                    <span class="terminal-prompt">$</span>
-                    <p class="text-center">alternate_authentication_method --email</p>
-                </div>
-
-                <!-- Regular Registration Form -->
-                <form method="POST" class="text-left terminal-form">
-                    {% csrf_token %}
+                <div class="form-grid">
                     {% for field in form %}
-                    <div class="form-group terminal-input-group">
-                        <span class="terminal-prompt">$</span>
-                        <label for="{{ field.id_for_label }}" class="terminal-label">{{ field.label }}</label>
-                        {{ field }}
+                    <div class="input-group">
+                        <div class="cyber-input-wrapper">
+                            <label class="cyber-label">
+                                <span class="label-text">{{ field.label }}</span>
+                                <span class="cursor">_</span>
+                            </label>
+                            {{ field }}
+                            <div class="input-line"></div>
+                        </div>
                         {% if field.errors %}
-                        <div class="terminal-error mt-1">
-                            <span class="terminal-prompt">!</span>
+                        <div class="error-message">
+                            <span class="error-icon">!</span>
                             {{ field.errors }}
                         </div>
                         {% endif %}
                     </div>
                     {% endfor %}
-                    <button type="submit" class="btn btn-terminal-green btn-block">
-                        <span class="terminal-prompt">>></span>
-                        Initialize Registration
-                    </button>
-                </form>
+                </div>
 
-                <div class="mt-3 text-center terminal-footer">
-                    <span class="terminal-prompt">$</span>
-                    <p>System check: Account exists? 
-                        <a href="{% url 'login' %}" class="terminal-link">
-                            <span class="terminal-prompt">>></span>
-                            Access Login Portal
-                        </a>
-                    </p>
+                <!-- Neural Network Authentication -->
+                <div class="auth-options">
+                    <button type="submit" class="cyber-button primary">
+                        <span class="button-effect"></span>
+                        <span class="button-text">INITIALIZE REGISTRATION</span>
+                    </button>
+                    
+                    <div class="divider">
+                        <span class="line"></span>
+                        <span class="text">NEURAL LINK</span>
+                        <span class="line"></span>
+                    </div>
+
+                    <a href="{% provider_login_url 'google' %}" class="cyber-button google">
+                        <span class="button-effect"></span>
+                        <span class="button-text">GOOGLE NEURAL SYNC</span>
+                    </a>
+                </div>
+            </form>
+
+            <div class="system-status">
+                <div class="status-line">
+                    <span class="prompt">>></span>
+                    Already in system? 
+                    <a href="{% url 'login' %}" class="cyber-link">
+                        Access Mainframe
+                        <span class="link-effect"></span>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
+
+<!-- Matrix Rain Animation Script -->
+<script>
+    const canvas = document.getElementById('matrixRain');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%";
+    const characters = matrix.split("");
+    const fontSize = 14;
+    const columns = canvas.width/fontSize;
+    const drops = [];
+
+    for(let x = 0; x < columns; x++) {
+        drops[x] = 1; 
+    }
+
+    function draw() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#0F0";
+        ctx.font = fontSize + "px monospace";
+
+        for(let i = 0; i < drops.length; i++) {
+            const text = characters[Math.floor(Math.random() * characters.length)];
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+            if(drops[i] * fontSize > canvas.height && Math.random() > 0.975)
+                drops[i] = 0;
+
+            drops[i]++;
+        }
+    }
+
+    setInterval(draw, 35);
+</script>
 {% endblock %}

@@ -420,3 +420,317 @@ a.terminal-green:hover {
     margin-top: 20px;
     padding-top: 20px;
 }
+
+/* Cyberpunk Terminal Theme */
+.cyber-container {
+    min-height: 100vh;
+    background: #000;
+    padding: 2rem;
+    perspective: 1000px;
+}
+
+.terminal-window {
+    background: rgba(0, 0, 0, 0.95);
+    border: 1px solid #00ff00;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    animation: bootUp 1.5s ease-out;
+}
+
+.terminal-header {
+    background: #111;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #00ff00;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 8px;
+    margin-right: 15px;
+}
+
+.header-buttons span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: block;
+}
+
+.btn-close { background: #ff5f56; }
+.btn-minimize { background: #ffbd2e; }
+.btn-expand { background: #27c93f; }
+
+.terminal-title {
+    color: #00ff00;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    text-shadow: 0 0 5px #00ff00;
+}
+
+.matrix-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.1;
+    z-index: 1;
+}
+
+.terminal-content {
+    position: relative;
+    z-index: 2;
+    padding: 2rem;
+    color: #00ff00;
+}
+
+.boot-sequence {
+    margin-bottom: 2rem;
+}
+
+.typing-text {
+    border-right: 2px solid #00ff00;
+    white-space: nowrap;
+    overflow: hidden;
+    animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+.loading-bar {
+    height: 2px;
+    background: rgba(0, 255, 0, 0.2);
+    margin: 1rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.loading-bar .progress {
+    position: absolute;
+    height: 100%;
+    background: #00ff00;
+    width: 0%;
+    animation: loading 2s ease-in-out forwards;
+}
+
+.cyber-form {
+    background: rgba(0, 20, 0, 0.3);
+    padding: 2rem;
+    border: 1px solid rgba(0, 255, 0, 0.2);
+    border-radius: 5px;
+}
+
+.form-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.cyber-input-wrapper {
+    position: relative;
+}
+
+.cyber-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #00ff00;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.cyber-form input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.5);
+    color: #fff;
+    padding: 0.5rem 0;
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s ease;
+}
+
+.cyber-form input:focus {
+    outline: none;
+    border-bottom-color: #00ff00;
+    box-shadow: 0 4px 6px -1px rgba(0, 255, 0, 0.1);
+}
+
+.input-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #00ff00;
+    transition: width 0.3s ease;
+}
+
+.cyber-form input:focus ~ .input-line {
+    width: 100%;
+}
+
+.cyber-button {
+    position: relative;
+    background: transparent;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    padding: 0.8rem 2rem;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    margin: 1rem 0;
+    width: 100%;
+}
+
+.button-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 255, 0, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+.cyber-button:hover .button-effect {
+    transform: translateX(0);
+}
+
+.cyber-button:hover {
+    background: rgba(0, 255, 0, 0.1);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+.auth-options {
+    margin-top: 2rem;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+    color: rgba(0, 255, 0, 0.5);
+}
+
+.divider .line {
+    flex: 1;
+    height: 1px;
+    background: rgba(0, 255, 0, 0.2);
+}
+
+.divider .text {
+    padding: 0 1rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.error-message {
+    color: #ff3333;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.error-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #ff3333;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 16px;
+    font-size: 12px;
+}
+
+.system-status {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.status-line {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.9rem;
+}
+
+.prompt {
+    color: #00ff00;
+    font-weight: bold;
+}
+
+.cyber-link {
+    color: #00ff00;
+    text-decoration: none;
+    position: relative;
+    margin-left: 1rem;
+}
+
+.link-effect {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: #00ff00;
+    transition: width 0.3s ease;
+}
+
+.cyber-link:hover .link-effect {
+    width: 100%;
+}
+
+/* Animations */
+@keyframes bootUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) rotateX(10deg);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) rotateX(0);
+    }
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: #00ff00 }
+}
+
+@keyframes loading {
+    0% { width: 0; }
+    50% { width: 70%; }
+    100% { width: 100%; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .cyber-container {
+        padding: 1rem;
+    }
+    
+    .terminal-content {
+        padding: 1rem;
+    }
+    
+    .cyber-form {
+        padding: 1rem;
+    }
+}
