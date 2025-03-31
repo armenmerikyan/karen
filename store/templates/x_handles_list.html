@@ -181,9 +181,14 @@
 </script>
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <script>
-  new Choices('#categorySelect', {
-    searchEnabled: true,
-    itemSelectText: '',
+  document.addEventListener('DOMContentLoaded', function() {
+    const element = document.getElementById('categorySelect');
+    if (element) {
+      new Choices(element, {
+        searchEnabled: true,
+        itemSelectText: ''
+      });
+    }
   });
 </script>
 
