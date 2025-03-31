@@ -151,16 +151,10 @@
                                     <span class="label">HANDLE:</span>
                                     {% if profile.x_handle %}
                                         <a href="https://x.com/{{profile.x_handle}}" 
-                                           class="social-handle neon-text"
-                                           target="_blank"
-                                           onclick="console.log('link clicked')">
-                                            @{{profile.x_handle}}
-                                        </a>
-                                        <a href="https://x.com/{{profile.x_handle}}" 
-                                           class="cyber-button small"
+                                           class="cyber-button primary"
                                            target="_blank">
                                             <span class="button-effect"></span>
-                                            <span class="button-text">CONNECT</span>
+                                            <span class="button-text">@{{profile.x_handle}}</span>
                                         </a>
                                     {% else %}
                                         <span class="neon-text">Not Connected</span>
