@@ -18,7 +18,7 @@
             <div class="mb-3" style="min-width: 300px;">
 
               <label for="categorySelect" class="form-label">Select Category:</label>
-              <select name="category" id="categorySelect">
+              <select name="category" id="categorySelect" class="form-select">
                 <option value="crypto" {% if category_query == "crypto" %}selected{% endif %}>Crypto</option>
                 <option value="tech" {% if category_query == "tech" %}selected{% endif %}>Tech</option>
                 <option value="stocks" {% if category_query == "stocks" %}selected{% endif %}>Stocks</option>
