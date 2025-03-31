@@ -294,8 +294,8 @@ a.terminal-green:hover {
 
 /* Choices.js Custom Styling */
 .choices {
+  position: relative;
   margin-bottom: 24px;
-  width: 100%;
 }
 
 .choices__inner {
@@ -303,11 +303,35 @@ a.terminal-green:hover {
   border: 1px solid #00FF00;
   min-height: 44px;
   padding: 7.5px 7.5px 3.75px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  max-height: 44px;
+  overflow: hidden;
 }
 
 .choices__list--dropdown {
+  visibility: hidden;
+  z-index: 1;
+  position: absolute;
+  width: 100%;
   background-color: #000;
   border: 1px solid #00FF00;
+  top: 100%;
+  margin-top: -1px;
+  overflow: hidden;
+  word-break: break-all;
+  will-change: visibility;
+}
+
+.choices__list--dropdown.is-active {
+  visibility: visible;
+}
+
+.choices__list--single {
+  display: inline-block;
+  padding: 4px 16px 4px 4px;
+  width: 100%;
 }
 
 .choices__list--dropdown .choices__item--selectable {
@@ -319,15 +343,11 @@ a.terminal-green:hover {
   background-color: #111;
 }
 
-.choices__list--multiple .choices__item {
-  background-color: #000;
-  border: 1px solid #00FF00;
-  color: #00FF00;
-}
-
 .choices__input {
   background-color: #000;
   color: #00FF00;
+  border: 0;
+  margin: 0;
 }
 
 .choices__placeholder {
