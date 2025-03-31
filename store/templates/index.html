@@ -16,7 +16,7 @@
                 <span class="btn-expand"></span>
             </div>
             <div class="terminal-title">
-                <span class="glitch-text">GIGAHARD_MAINFRAME_ACCESS.exe</span>
+                <span class="glitch-text">{{ profile.name }}_MAINFRAME_ACCESS.exe</span>
                 <span class="blink-cursor">_</span>
             </div>
         </div>
@@ -40,7 +40,7 @@
             <div class="welcome-module">
                 <div class="cyber-frame">
                     <div class="frame-header">
-                        <span class="prompt">[ROOT@GIGAHARD]# </span>
+                        <span class="prompt">[ROOT@{{ profile.name|upper }}]# </span>
                         <span class="typing-effect">cat welcome.txt</span>
                     </div>
                     <div class="frame-content">
