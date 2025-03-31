@@ -345,3 +345,78 @@ a.terminal-green:hover {
   box-shadow: 0 0 12px #FF3333;
   transform: scale(1.02);
 }
+
+/* Terminal Theme Additions */
+.terminal-section {
+    background-color: #000000;
+    font-family: 'Courier New', monospace;
+    padding: 20px;
+}
+
+.terminal-text {
+    color: #00FF00;
+}
+
+.terminal-prompt {
+    color: #00FF00;
+    margin-right: 10px;
+}
+
+.terminal-title {
+    display: inline;
+    color: #00FF00;
+}
+
+.blink-text {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.btn-terminal-red {
+    background-color: #8B0000;
+    color: #FFFFFF;
+    border: 1px solid #FF0000;
+}
+
+.btn-terminal-green {
+    background-color: #003B00;
+    color: #00FF00;
+    border: 1px solid #00FF00;
+}
+
+.terminal-divider {
+    border-top: 1px solid #00FF00;
+    border-bottom: 1px solid #00FF00;
+    padding: 10px 0;
+}
+
+.terminal-input-group input {
+    background-color: #000000;
+    border: 1px solid #00FF00;
+    color: #00FF00;
+    padding: 5px 10px;
+}
+
+.terminal-error {
+    color: #FF0000;
+    font-style: italic;
+}
+
+.terminal-link {
+    color: #00FFFF;
+    text-decoration: none;
+}
+
+.terminal-link:hover {
+    color: #FFFFFF;
+    text-decoration: underline;
+}
+
+.terminal-footer {
+    border-top: 1px solid #00FF00;
+    margin-top: 20px;
+    padding-top: 20px;
+}
