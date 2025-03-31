@@ -126,7 +126,7 @@
                                         <a href="https://solscan.io/account/{{profile.wallet}}" 
                                            class="cyber-link neon-text"
                                            target="_blank">
-                                            {{profile.wallet}}
+                                            {{profile.wallet|slice:":4"}}...{{profile.wallet|slice:"-4:"}}
                                         </a>
                                         <button class="cyber-button small" 
                                                 onclick="copyToClipboard('{{profile.wallet}}')">
