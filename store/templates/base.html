@@ -1,79 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
-  {% load static %}
+<html lang="en" class="h-100">
+{% load static %}
 <head>
-  <title>{{ profile.name }}</title>
+  <title>{{ profile.name }} | Cyber Intelligence Hub</title>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <meta name="description" content="AI Agent Marketplace - {{ profile.name }}">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
-
-  <!-- Preload Critical Resources -->
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-  
-  <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  
-  <!-- Choices.js -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
-  
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=57">
-
-  <!-- Theme Color for Mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="description" content="Access advanced AI agents and digital products at {{ profile.name }} - Where artificial intelligence meets human ingenuity">
   <meta name="theme-color" content="#000000">
+  
+  <!-- Preload Critical Resources -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  
+  <!-- Core Styles -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=58">
+
+  <!-- Preload Key Scripts -->
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" as="script">
 </head>
 
-<body class="d-flex flex-column min-vh-100" data-bs-theme="dark">
-  <!-- Skip to main content for accessibility -->
-  <a href="#main-content" class="visually-hidden-focusable">Skip to main content</a>
+<body class="d-flex flex-column h-100 cyber-theme">
+  <!-- Accessibility Skip Link -->
+  <a href="#main-content" class="visually-hidden-focusable cyber-skip-link">
+    <div class="container">Skip to main content</div>
+  </a>
 
   <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark custom-navbar sticky-top py-3">
+  <nav class="navbar navbar-expand-lg navbar-dark cyber-nav py-2 backdrop-blur">
     <div class="container-fluid px-4">
-      <a class="navbar-brand d-flex align-items-center" href="/">
-        <img src="{% static 'img/logo.png' %}" alt="{{ profile.name }} logo" width="30" height="30" class="me-2">
-        <span class="brand-text">{{ profile.name }}</span>
+      <!-- Brand -->
+      <a class="navbar-brand cyber-brand" href="/">
+        <span class="brand-text glitch-text" data-text="{{ profile.name }}">{{ profile.name }}</span>
+        <span class="brand-decorator"></span>
       </a>
       
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" 
-              aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+      <!-- Mobile Toggle -->
+      <button class="navbar-toggler cyber-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="cyber-toggler-icon"></span>
       </button>
 
+      <!-- Nav Content -->
       <div class="collapse navbar-collapse" id="navbarContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link" href="{% url 'about_us' %}">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'public_characters' %}">Agents</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'shop_product_list' %}">Products</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'handle-list' %}">Oracle</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'public_question_answer_list' %}">Q&A</a></li>
+        <!-- Main Navigation -->
+        <ul class="navbar-nav mx-auto cyber-nav-links">
+          <li class="nav-item">
+            <a class="nav-link cyber-link" href="{% url 'about_us' %}">
+              <i class="fas fa-terminal me-2"></i>About
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link cyber-link" href="{% url 'public_characters' %}">
+              <i class="fas fa-robot me-2"></i>Agents
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link cyber-link" href="{% url 'shop_product_list' %}">
+              <i class="fas fa-cube me-2"></i>Products
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link cyber-link" href="{% url 'handle-list' %}">
+              <i class="fas fa-eye me-2"></i>Oracle
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link cyber-link" href="{% url 'public_question_answer_list' %}">
+              <i class="fas fa-question-circle me-2"></i>Q&A
+            </a>
+          </li>
         </ul>
 
-        <ul class="navbar-nav ms-auto">
+        <!-- User Navigation -->
+        <ul class="navbar-nav cyber-user-nav">
           {% if user.is_authenticated %}
             {% if user.is_staff %}
-              <li class="nav-item">
-                <a href="{% url 'admin_panel' %}" class="nav-link">
-                  <i class="fas fa-dashboard me-1"></i>Dashboard
-                </a>
-              </li>
+            <li class="nav-item">
+              <a href="{% url 'admin_panel' %}" class="nav-link cyber-admin-link">
+                <i class="fas fa-dashboard"></i>
+                <span class="d-none d-lg-inline ms-2">Control</span>
+              </a>
+            </li>
             {% endif %}
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
-                 data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-user-circle me-1"></i>{{ user.username }}
+              <a class="nav-link dropdown-toggle cyber-user-link" href="#" id="userDropdown" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle"></i>
+                <span class="d-none d-lg-inline ms-2">{{ user.username }}</span>
               </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <ul class="dropdown-menu dropdown-menu-end cyber-dropdown">
                 <li><a class="dropdown-item" href="{% url 'update_profile' %}">Profile</a></li>
                 <li><a class="dropdown-item" href="{% url 'character_list' %}">My Agents</a></li>
                 <li><hr class="dropdown-divider"></li>
@@ -82,18 +97,19 @@
             </li>
           {% else %}
             <li class="nav-item">
-              <a href="{% url 'login' %}" class="nav-link">
-                <i class="fas fa-sign-in-alt me-1"></i>Login
+              <a href="{% url 'login' %}" class="nav-link cyber-login-link">
+                <i class="fas fa-sign-in-alt"></i>
+                <span class="d-none d-lg-inline ms-2">Login</span>
               </a>
             </li>
           {% endif %}
           
           <li class="nav-item ms-2">
-            <a href="{% url 'view_cart_detail_shop_current' %}" class="nav-link position-relative">
+            <a href="{% url 'view_cart_detail_shop_current' %}" class="nav-link cyber-cart-link">
               <i class="fas fa-shopping-cart"></i>
-              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                {{ cart_count|default:"0" }}
-              </span>
+              {% if cart_count and cart_count > 0 %}
+              <span class="cyber-cart-badge">{{ cart_count }}</span>
+              {% endif %}
             </a>
           </li>
         </ul>
@@ -101,77 +117,101 @@
     </div>
   </nav>
 
-  <!-- Main Content -->
-  <main id="main-content" class="flex-grow-1 py-4">
+  <!-- System Messages -->
+  {% if messages %}
+  <div class="cyber-messages">
     <div class="container">
-      {% if messages %}
-        {% for message in messages %}
-          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        {% endfor %}
-      {% endif %}
-      
+      {% for message in messages %}
+      <div class="cyber-alert alert-{{ message.tags }} fade show" role="alert">
+        <div class="cyber-alert-content">
+          <i class="fas fa-info-circle me-2"></i>
+          {{ message }}
+        </div>
+        <button type="button" class="cyber-alert-close" data-bs-dismiss="alert">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Main Content -->
+  <main id="main-content" class="flex-shrink-0 py-4">
+    <div class="container cyber-container">
       {% block content %}{% endblock %}
     </div>
   </main>
 
   <!-- Footer -->
-  <footer class="footer mt-auto py-4">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-md-4 text-center text-md-start">
-          <span class="text-muted">&copy; 2024 {{ profile.name }}</span>
-        </div>
-        <div class="col-md-4 text-center my-3 my-md-0">
-          <a href="/" class="text-decoration-none">
-            <img src="{% static 'img/logo.png' %}" alt="{{ profile.name }}" width="30" height="30">
-          </a>
-        </div>
-        <div class="col-md-4 text-center text-md-end">
-          <a href="{% url 'terms_of_service' %}" class="text-muted me-3">Terms</a>
-          <a href="{% url 'privacy_policy' %}" class="text-muted">Privacy</a>
+  <footer class="footer mt-auto">
+    <div class="cyber-footer">
+      <div class="container">
+        <div class="row align-items-center g-3">
+          <div class="col-md-4 text-center text-md-start">
+            <div class="cyber-copyright">
+              <span class="cyber-year">2024</span>
+              <span class="cyber-divider">//</span>
+              <span class="cyber-brand-name">{{ profile.name }}</span>
+            </div>
+          </div>
+          <div class="col-md-4 text-center">
+            <div class="cyber-footer-brand">
+              <span class="cyber-symbol">&lt;/&gt;</span>
+            </div>
+          </div>
+          <div class="col-md-4 text-center text-md-end">
+            <div class="cyber-links">
+              <a href="{% url 'terms_of_service' %}" class="cyber-footer-link">Terms</a>
+              <span class="cyber-divider">//</span>
+              <a href="{% url 'privacy_policy' %}" class="cyber-footer-link">Privacy</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </footer>
 
-  <!-- Chat Widget -->
-  <div id="chat-widget" class="position-fixed bottom-0 end-0 m-3">
-    <button id="chat-toggle" class="btn btn-primary rounded-circle p-3" aria-label="Toggle chat">
+  <!-- Chat Interface -->
+  <div id="cyber-chat" class="cyber-chat-widget">
+    <button id="chat-toggle" class="cyber-chat-toggle" aria-label="Toggle chat interface">
       <i class="fas fa-comments"></i>
     </button>
     
-    <div id="chat-window" class="card d-none">
-      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <span>Chat Support</span>
-        <button type="button" class="btn-close btn-close-white" aria-label="Close chat"></button>
+    <div id="chat-window" class="cyber-chat-window d-none">
+      <div class="cyber-chat-header">
+        <span class="cyber-chat-title">AI Support Interface</span>
+        <button type="button" class="cyber-chat-close">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
-      <div id="chat-messages" class="card-body overflow-auto"></div>
-      <div class="card-footer">
+      <div id="chat-messages" class="cyber-chat-messages"></div>
+      <div class="cyber-chat-input">
         <div class="input-group">
-          <input type="text" id="chat-input" class="form-control" placeholder="Type a message...">
-          <button id="chat-send" class="btn btn-primary">Send</button>
+          <input type="text" id="chat-input" class="form-control cyber-input" 
+                 placeholder="Enter command..." aria-label="Chat message">
+          <button id="chat-send" class="btn cyber-btn">
+            <i class="fas fa-terminal"></i>
+          </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- Core Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
   <script src="{% static 'js/chat.js' %}" defer></script>
-  
-  <!-- Google Analytics -->
+
+  <!-- Analytics -->
   {% if profile.google_analytics_key %}
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ profile.google_analytics_key }}"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', '{{ profile.google_analytics_key }}');
-    </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ profile.google_analytics_key }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ profile.google_analytics_key }}');
+  </script>
   {% endif %}
 </body>
 </html>
