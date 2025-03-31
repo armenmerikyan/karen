@@ -122,16 +122,21 @@
                             <div class="panel-content">
                                 <div class="wallet-display">
                                     <span class="label">NEURAL_KEY:</span>
-                                    <a href="https://solscan.io/account/{{profile.wallet}}" 
-                                       class="wallet-address neon-text">
-                                        {{profile.wallet}}
-                                    </a>
+                                    {% if profile.wallet %}
+                                        <a href="https://solscan.io/account/{{profile.wallet}}" 
+                                           class="wallet-address neon-text"
+                                           target="_blank">
+                                            {{profile.wallet}}
+                                        </a>
+                                        <button class="cyber-button small" 
+                                                onclick="copyToClipboard('{{profile.wallet}}')">
+                                            <span class="button-effect"></span>
+                                            <span class="button-text">COPY_KEY</span>
+                                        </button>
+                                    {% else %}
+                                        <span class="neon-text">Not Connected</span>
+                                    {% endif %}
                                 </div>
-                                <button class="cyber-button small" 
-                                        onclick="navigator.clipboard.writeText('{{profile.wallet}}')">
-                                    <span class="button-effect"></span>
-                                    <span class="button-text">COPY_KEY</span>
-                                </button>
                             </div>
                         </div>
 
@@ -144,16 +149,22 @@
                             <div class="panel-content">
                                 <div class="social-display">
                                     <span class="label">HANDLE:</span>
-                                    <a href="https://x.com/{{profile.x_handle}}" 
-                                       class="social-handle neon-text">
-                                        @{{profile.x_handle}}
-                                    </a>
+                                    {% if profile.x_handle %}
+                                        <a href="https://x.com/{{profile.x_handle}}" 
+                                           class="social-handle neon-text"
+                                           target="_blank">
+                                            @{{profile.x_handle}}
+                                        </a>
+                                        <a href="https://x.com/{{profile.x_handle}}" 
+                                           class="cyber-button small"
+                                           target="_blank">
+                                            <span class="button-effect"></span>
+                                            <span class="button-text">CONNECT</span>
+                                        </a>
+                                    {% else %}
+                                        <span class="neon-text">Not Connected</span>
+                                    {% endif %}
                                 </div>
-                                <a href="https://x.com/{{profile.x_handle}}" 
-                                   class="cyber-button small">
-                                    <span class="button-effect"></span>
-                                    <span class="button-text">CONNECT</span>
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -225,6 +236,30 @@
 @keyframes blink {
     50% { opacity: 0; }
 }
+
+.copy-feedback {
+    animation: fadeInOut 2s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-20px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-20px); }
+}
+
+.wallet-display, .social-display {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.cyber-button.small {
+    padding: 8px 16px;
+    font-size: 0.9em;
+    margin-top: 0.5rem;
+}
 </style>
 
 <!-- Matrix Rain Animation Script -->
@@ -264,5 +299,68 @@
     }
 
     setInterval(draw, 35);
+</script>
+
+<script>
+function copyToClipboard(text) {
+    // Create a temporary input element
+    const tempInput = document.createElement('input');
+    tempInput.value = text;
+    document.body.appendChild(tempInput);
+    
+    // Select and copy the text
+    tempInput.select();
+    document.execCommand('copy');
+    
+    // Remove the temporary element
+    document.body.removeChild(tempInput);
+    
+    // Show feedback
+    const feedbackDiv = document.createElement('div');
+    feedbackDiv.textContent = 'Copied to clipboard!';
+    feedbackDiv.className = 'copy-feedback neon-text';
+    feedbackDiv.style.position = 'fixed';
+    feedbackDiv.style.top = '20px';
+    feedbackDiv.style.right = '20px';
+    feedbackDiv.style.padding = '10px';
+    feedbackDiv.style.background = 'rgba(0, 0, 0, 0.8)';
+    feedbackDiv.style.border = '1px solid #00FF00';
+    feedbackDiv.style.borderRadius = '5px';
+    feedbackDiv.style.zIndex = '1000';
+    
+    document.body.appendChild(feedbackDiv);
+    
+    // Remove feedback after 2 seconds
+    setTimeout(() => {
+        document.body.removeChild(feedbackDiv);
+    }, 2000);
+}
+
+// Modern clipboard API alternative (use this if available)
+async function copyToClipboardModern(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+        // Show feedback (same as above)
+        const feedbackDiv = document.createElement('div');
+        feedbackDiv.textContent = 'Copied to clipboard!';
+        feedbackDiv.className = 'copy-feedback neon-text';
+        feedbackDiv.style.position = 'fixed';
+        feedbackDiv.style.top = '20px';
+        feedbackDiv.style.right = '20px';
+        feedbackDiv.style.padding = '10px';
+        feedbackDiv.style.background = 'rgba(0, 0, 0, 0.8)';
+        feedbackDiv.style.border = '1px solid #00FF00';
+        feedbackDiv.style.borderRadius = '5px';
+        feedbackDiv.style.zIndex = '1000';
+        
+        document.body.appendChild(feedbackDiv);
+        
+        setTimeout(() => {
+            document.body.removeChild(feedbackDiv);
+        }, 2000);
+    } catch (err) {
+        console.error('Failed to copy text: ', err);
+    }
+}
 </script>
 {% endblock %}
