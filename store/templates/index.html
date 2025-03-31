@@ -150,12 +150,8 @@
                                 <div class="social-display">
                                     <span class="label">HANDLE:</span>
                                     {% if profile.x_handle %}
-                                        <a href="https://x.com/{{profile.x_handle}}" 
-                                           class="cyber-button primary"
-                                           target="_blank">
-                                            <span class="button-effect"></span>
-                                            <span class="button-text">@{{profile.x_handle}}</span>
-                                        </a>
+                                        <a href="https://twitter.com/{{profile.x_handle}}" 
+                                           target="_blank">@{{profile.x_handle}}</a>
                                     {% else %}
                                         <span class="neon-text">Not Connected</span>
                                     {% endif %}
