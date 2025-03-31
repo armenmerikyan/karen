@@ -15,85 +15,146 @@
                 <span class="btn-minimize"></span>
                 <span class="btn-expand"></span>
             </div>
-            <div class="terminal-title">GIGAHARD_MAINFRAME_ACCESS.exe</div>
+            <div class="terminal-title">
+                <span class="glitch-text">GIGAHARD_MAINFRAME_ACCESS.exe</span>
+                <span class="blink-cursor">_</span>
+            </div>
         </div>
 
         <!-- Main Content -->
         <div class="terminal-content">
+            <!-- Boot Animation -->
             <div class="boot-sequence">
-                <div class="typing-text">Initializing Gigahard Neural Interface...</div>
+                <div class="typing-text">INITIALIZING NEURAL INTERFACE...</div>
                 <div class="loading-bar">
                     <div class="progress"></div>
+                </div>
+                <div class="system-stats">
+                    <div class="stat-line">[STATUS: ONLINE]</div>
+                    <div class="stat-line">[SECURITY: ACTIVE]</div>
+                    <div class="stat-line">[NEURAL_LINK: READY]</div>
+                </div>
+            </div>
+
+            <!-- Welcome Message -->
+            <div class="welcome-module">
+                <div class="cyber-frame">
+                    <div class="frame-header">
+                        <span class="prompt">[ROOT@GIGAHARD]# </span>
+                        <span class="typing-effect">cat welcome.txt</span>
+                    </div>
+                    <div class="frame-content">
+                        <p class="cyber-text">WELCOME TO THE FIRST TRUE AI AGENT MARKETPLACE</p>
+                        <p class="cyber-text highlight">BUILD • DEPLOY • MONETIZE</p>
+                        <div class="cyber-separator">
+                            <span class="separator-line"></span>
+                            <span class="separator-text">SYSTEM READY</span>
+                            <span class="separator-line"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Services Section -->
             <div class="system-module">
                 <div class="module-header">
-                    <span class="prompt">>></span>
-                    <h2 class="text-monospace">GIGAHARD_SERVICES</h2>
+                    <span class="prompt">[SYS]# </span>
+                    <h2 class="neon-text">AVAILABLE_SERVICES</h2>
                 </div>
                 <div class="module-content">
-                    <p class="cyber-text">first true AI agent store. At {{profile.name}}, creators can build AI agents with code or no-code tools, deploy them instantly, list them on a public marketplace, and get paid when users engage or subscribe.</p>
-                    <p class="cyber-text blink">One-Click AI Agents. Deployed and Operational in Under a Minute._</p>
+                    <div class="service-grid">
+                        <div class="service-item">
+                            <i class="fas fa-robot neon-icon"></i>
+                            <h3>AI AGENTS</h3>
+                            <p>Deploy in 60 seconds</p>
+                        </div>
+                        <div class="service-item">
+                            <i class="fas fa-code neon-icon"></i>
+                            <h3>NO-CODE TOOLS</h3>
+                            <p>Visual Builder</p>
+                        </div>
+                        <div class="service-item">
+                            <i class="fas fa-store neon-icon"></i>
+                            <h3>MARKETPLACE</h3>
+                            <p>List & Earn</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Blockchain Integration -->
-            <div class="system-module">
-                <div class="module-header">
-                    <span class="prompt">>></span>
-                    <h2 class="text-monospace">NEURAL_BLOCKCHAIN_INTERFACE</h2>
-                </div>
-                
-                {% if not user.is_authenticated %}
-                <div class="cyber-alert">
-                    <div class="alert-header">
-                        <span class="prompt">>></span>
-                        <h3 class="text-monospace">ACCESS_REQUIRED</h3>
-                    </div>
+            <!-- Authentication Module -->
+            {% if not user.is_authenticated %}
+            <div class="auth-module">
+                <div class="cyber-alert warning">
+                    <div class="alert-icon">⚠</div>
                     <div class="alert-content">
-                        <p class="cyber-text">Neural handshake required for full system access</p>
-                        <a href="{% url 'register' %}" class="cyber-button">
-                            <span class="button-effect"></span>
-                            <span class="button-text">INITIALIZE_NEURAL_LINK</span>
-                        </a>
+                        <h3 class="neon-text">UNAUTHORIZED ACCESS DETECTED</h3>
+                        <p>Neural authentication required for full system access</p>
+                        <div class="auth-actions">
+                            <a href="{% url 'register' %}" class="cyber-button primary">
+                                <span class="button-effect"></span>
+                                <span class="button-text">INITIALIZE NEURAL LINK</span>
+                            </a>
+                            <a href="{% url 'login' %}" class="cyber-button secondary">
+                                <span class="button-effect"></span>
+                                <span class="button-text">EXISTING LINK</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
-                {% endif %}
+            </div>
+            {% endif %}
 
-                <!-- Solana Integration -->
-                <div class="grid-container">
-                    <div class="cyber-panel">
-                        <div class="panel-header">
-                            <i class="fas fa-wallet text-terminal-green"></i>
-                            <h3 class="text-monospace">SOLANA_NEURAL_BRIDGE</h3>
-                        </div>
-                        <div class="panel-content">
-                            <code class="cyber-code">
-                                <a href="https://solscan.io/account/{{profile.wallet}}" class="text-terminal-green">{{profile.wallet}}</a>
-                            </code>
-                            <button class="cyber-button small" onclick="navigator.clipboard.writeText('{{profile.wallet}}')">
-                                <span class="button-effect"></span>
-                                <span class="button-text">COPY_NEURAL_KEY</span>
-                            </button>
-                        </div>
+            <!-- Blockchain Integration -->
+            <div class="blockchain-module">
+                <div class="cyber-frame">
+                    <div class="frame-header">
+                        <span class="prompt">[CHAIN]# </span>
+                        <h2 class="neon-text">NEURAL_BLOCKCHAIN_INTERFACE</h2>
                     </div>
-
-                    <!-- X.com Integration -->
-                    <div class="cyber-panel">
-                        <div class="panel-header">
-                            <i class="fab fa-twitter text-terminal-green"></i>
-                            <h3 class="text-monospace">NEURAL_SOCIAL_LINK</h3>
+                    <div class="grid-container">
+                        <!-- Solana Integration -->
+                        <div class="cyber-panel glow">
+                            <div class="panel-header">
+                                <i class="fas fa-wallet neon-icon"></i>
+                                <h3>SOLANA_BRIDGE</h3>
+                            </div>
+                            <div class="panel-content">
+                                <div class="wallet-display">
+                                    <span class="label">NEURAL_KEY:</span>
+                                    <a href="https://solscan.io/account/{{profile.wallet}}" 
+                                       class="wallet-address neon-text">
+                                        {{profile.wallet}}
+                                    </a>
+                                </div>
+                                <button class="cyber-button small" 
+                                        onclick="navigator.clipboard.writeText('{{profile.wallet}}')">
+                                    <span class="button-effect"></span>
+                                    <span class="button-text">COPY_KEY</span>
+                                </button>
+                            </div>
                         </div>
-                        <div class="panel-content">
-                            <code class="cyber-code">
-                                <a href="https://x.com/{{profile.x_handle}}" class="text-terminal-green">@{{profile.x_handle}}</a>
-                            </code>
-                            <a href="https://x.com/{{profile.x_handle}}" class="cyber-button">
-                                <span class="button-effect"></span>
-                                <span class="button-text">ESTABLISH_CONNECTION</span>
-                            </a>
+
+                        <!-- Social Integration -->
+                        <div class="cyber-panel glow">
+                            <div class="panel-header">
+                                <i class="fab fa-twitter neon-icon"></i>
+                                <h3>SOCIAL_LINK</h3>
+                            </div>
+                            <div class="panel-content">
+                                <div class="social-display">
+                                    <span class="label">HANDLE:</span>
+                                    <a href="https://x.com/{{profile.x_handle}}" 
+                                       class="social-handle neon-text">
+                                        @{{profile.x_handle}}
+                                    </a>
+                                </div>
+                                <a href="https://x.com/{{profile.x_handle}}" 
+                                   class="cyber-button small">
+                                    <span class="button-effect"></span>
+                                    <span class="button-text">CONNECT</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -101,6 +162,70 @@
         </div>
     </div>
 </div>
+
+<style>
+/* Override any default link styles */
+.neon-text {
+    color: #00FF00 !important;
+    text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00;
+}
+
+.wallet-address, .social-handle {
+    color: #00FF00 !important;
+    text-decoration: none !important;
+    border-bottom: 1px solid #00FF00;
+    transition: all 0.3s ease;
+}
+
+.wallet-address:hover, .social-handle:hover {
+    color: #FFFFFF !important;
+    text-shadow: 0 0 10px #FFFFFF;
+    border-bottom-color: #FFFFFF;
+}
+
+.cyber-button {
+    background: transparent;
+    border: 1px solid #00FF00;
+    color: #00FF00 !important;
+    text-decoration: none !important;
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+}
+
+.cyber-button:hover {
+    background: rgba(0, 255, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    color: #FFFFFF !important;
+}
+
+.cyber-panel {
+    border: 1px solid #00FF00;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    margin: 10px 0;
+}
+
+.cyber-panel.glow {
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.neon-icon {
+    color: #00FF00;
+    text-shadow: 0 0 5px #00FF00;
+}
+
+.blink-cursor {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+</style>
 
 <!-- Matrix Rain Animation Script -->
 <script>
