@@ -292,6 +292,7 @@ a.terminal-green:hover {
   }
 
 
+/* Choices.js Custom Styling */
 #categorySelect {
   min-width: 100%;
   width: auto;
@@ -328,9 +329,23 @@ a.terminal-green:hover {
   color: #00FF00 !important;
 }
 
+.choices__list--dropdown .choices__item--selectable::after {
+  color: #00FF00 !important;
+}
+
+.choices__list--multiple .choices__item {
+  background-color: #000 !important;
+  border: 1px solid #00FF00 !important;
+}
+
 .choices__input {
   background-color: #000 !important;
   color: #00FF00 !important;
+}
+
+.choices__placeholder {
+  color: #00FF00 !important;
+  opacity: 0.7;
 }
 
 .btn-save-terminal {
