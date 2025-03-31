@@ -1,85 +1,62 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
-{% endblock %}
+ 
 
 {% block content %}
 <section class="py-0">
   <div class="container-fluid">
-    <div class="container mt-5 text-light">         
+    <div class="container mt-5 text-light">
       <div class="row">
-        <div class="col-md-12 text-left">   
-
+        <div class="col-md-12 text-left">
 
           <h2>Oracle AI Agent Composer</h2>
-           <p>
+          <p>
             Oracle AI Agent Composer by {{profile.name}} is a research tool that captures publicly available digital signals—like social media sentiment—to support ethical AI development. It does not store, resell, or exploit personal data. Oracle is designed strictly for research and analysis, adhering to high standards of privacy, transparency, and responsible data use.
-          </p> 
-          <div class="mb-3" style="min-width: 300px;">
-            <!--  
-            <div class="card shadow-sm mb-3">
-              <div class="card-body">
-                <h5 class="card-title">
-                  <i class="fas fa-robot text-primary"></i> ChatGPT: Crypto Oracle
-                </h5>
-                <p class="card-text">
-                  <i class="fas fa-chart-line text-success"></i> Get real-time insights, predictions, and answers on blockchain, crypto markets, and Web3 tech—powered by ChatGPT.
-                </p>
-                <a href="https://chatgpt.com/g/g-" target="_blank" class="btn btn-outline-primary">
-                  <i class="fas fa-external-link-alt"></i> Launch Crypto Oracle
-                </a>
-              </div>
+          </p>
+
+          <form method="get" action="{% url 'handle-list' %}" class="mb-4">
+            <div class="mb-3" style="min-width: 300px;">
+
+              <label for="categorySelect" class="form-label">Select Category:</label>
+              <select name="category" id="categorySelect">
+                <option value="crypto" {% if category_query == "crypto" %}selected{% endif %}>Crypto</option>
+                <option value="tech" {% if category_query == "tech" %}selected{% endif %}>Tech</option>
+                <option value="stocks" {% if category_query == "stocks" %}selected{% endif %}>Stocks</option>
+                <option value="gaming" {% if category_query == "gaming" %}selected{% endif %}>Gaming</option>
+                <option value="news" {% if category_query == "news" %}selected{% endif %}>News</option>
+                <option value="fashion" {% if category_query == "fashion" %}selected{% endif %}>Fashion</option>
+                <option value="music" {% if category_query == "music" %}selected{% endif %}>Music</option>
+                <option value="sports" {% if category_query == "sports" %}selected{% endif %}>Sports</option>
+                <option value="travel" {% if category_query == "travel" %}selected{% endif %}>Travel</option>
+                <option value="food" {% if category_query == "food" %}selected{% endif %}>Food</option>
+                <option value="health" {% if category_query == "health" %}selected{% endif %}>Health</option>
+                <option value="comedy" {% if category_query == "comedy" %}selected{% endif %}>Comedy</option>
+                <option value="addiction" {% if category_query == "addiction" %}selected{% endif %}>Addiction</option>
+                <option value="depression" {% if category_query == "depression" %}selected{% endif %}>Depression</option>
+                <option value="mental_health" {% if category_query == "mental_health" %}selected{% endif %}>Mental Health</option>
+                <option value="life_coach" {% if category_query == "life_coach" %}selected{% endif %}>Life Coach</option>
+                <option value="motivational_speaker" {% if category_query == "motivational_speaker" %}selected{% endif %}>Motivational Speaker</option>
+                <option value="self_help" {% if category_query == "self_help" %}selected{% endif %}>Self Help</option>
+                <option value="fitness" {% if category_query == "fitness" %}selected{% endif %}>Fitness</option>
+                <option value="spirituality" {% if category_query == "spirituality" %}selected{% endif %}>Spirituality</option>
+              </select> 
+
             </div>
-            -->
-            <form method="get" action="{% url 'handle-list' %}" class="mb-4">
-              <div class="mb-3" style="min-width: 300px;">
-  
-                <label for="categorySelect" class="form-label">Select Category:</label>
-                <select name="category" id="categorySelect" class="form-control"> 
-   
-                    <option value="crypto" {% if category_query == "crypto" %}selected{% endif %}>Crypto</option>
-                    <option value="tech" {% if category_query == "tech" %}selected{% endif %}>Tech</option>
-                    <option value="stocks" {% if category_query == "stocks" %}selected{% endif %}>Stocks</option>
-                    <option value="gaming" {% if category_query == "gaming" %}selected{% endif %}>Gaming</option>
-                    <option value="news" {% if category_query == "news" %}selected{% endif %}>News</option>
- 
-                    <option value="fashion" {% if category_query == "fashion" %}selected{% endif %}>Fashion</option>
-                    <option value="music" {% if category_query == "music" %}selected{% endif %}>Music</option>
-                    <option value="sports" {% if category_query == "sports" %}selected{% endif %}>Sports</option>
-                    <option value="travel" {% if category_query == "travel" %}selected{% endif %}>Travel</option>
-                    <option value="food" {% if category_query == "food" %}selected{% endif %}>Food</option>
-                    <option value="health" {% if category_query == "health" %}selected{% endif %}>Health</option>
-                    <option value="comedy" {% if category_query == "comedy" %}selected{% endif %}>Comedy</option>
- 
-                    <option value="addiction" {% if category_query == "addiction" %}selected{% endif %}>Addiction</option>
-                    <option value="depression" {% if category_query == "depression" %}selected{% endif %}>Depression</option>
-                    <option value="mental_health" {% if category_query == "mental_health" %}selected{% endif %}>Mental Health</option>
-                    <option value="life_coach" {% if category_query == "life_coach" %}selected{% endif %}>Life Coach</option>
-                    <option value="motivational_speaker" {% if category_query == "motivational_speaker" %}selected{% endif %}>Motivational Speaker</option>
-                    <option value="self_help" {% if category_query == "self_help" %}selected{% endif %}>Self Help</option>
-                    <option value="fitness" {% if category_query == "fitness" %}selected{% endif %}>Fitness</option>
-                    <option value="spirituality" {% if category_query == "spirituality" %}selected{% endif %}>Spirituality</option>
-                  
-                </select>
-                           
-              </div>
-              <div class="mb-3">
-                <label for="search" class="form-label">Search handles</label>
-                <input type="text" class="form-control" id="search" name="search"
-                       placeholder="e.g., 0xDesigner, 0xFrisk, 0xMLow, 0xMert_" />
-              </div>
-            
-              <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" id="type" name="type" value="txt">
-                <label class="form-check-label" for="type">
-                  Download results as .txt
-                </label>
-              </div>
-            
-              <button type="submit" class="btn btn-primary mt-3">Search</button>
-            </form>            
+            <div class="mb-3">
+              <label for="search" class="form-label">Search handles</label>
+              <input type="text" class="form-control" id="search" name="search"
+                placeholder="e.g., 0xDesigner, 0xFrisk, 0xMLow, 0xMert_" />
+            </div>
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="type" name="type" value="txt">
+              <label class="form-check-label" for="type">
+                Download results as .txt
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3">Search</button>
+          </form>      
           </div>
           
 
@@ -172,45 +149,6 @@
         categorySelect.disabled = false;
       });
   }
-</script>
-<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    new Choices('#categorySelect', {
-      searchEnabled: true,
-      itemSelectText: '',
-      shouldSort: false,
-      removeItemButton: false,
-      classNames: {
-        containerOuter: 'choices',
-        containerInner: 'choices__inner',
-        input: 'choices__input',
-        inputCloned: 'choices__input--cloned',
-        list: 'choices__list',
-        listItems: 'choices__list--multiple',
-        listSingle: 'choices__list--single',
-        listDropdown: 'choices__list--dropdown',
-        item: 'choices__item',
-        itemSelectable: 'choices__item--selectable',
-        itemDisabled: 'choices__item--disabled',
-        itemChoice: 'choices__item--choice',
-        placeholder: 'choices__placeholder',
-        group: 'choices__group',
-        groupHeading: 'choices__heading',
-        button: 'choices__button',
-        activeState: 'is-active',
-        focusState: 'is-focused',
-        openState: 'is-open',
-        disabledState: 'is-disabled',
-        highlightedState: 'is-highlighted',
-        selectedState: 'is-selected',
-        flippedState: 'is-flipped',
-        loadingState: 'is-loading',
-        noResults: 'has-no-results',
-        noChoices: 'has-no-choices'
-      }
-    });
-  });
-</script>
+</script> 
 
 {% endblock %}
