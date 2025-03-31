@@ -2,296 +2,142 @@
 {% load custom_filters %}
 
 {% block content %}
-<!-- Gigahard Services Section - Terminal Style -->
-<section class="py-5 bg-black text-terminal-green">
-  <div class="container">
-    <!-- Header with blinking cursor effect -->
-    <div class="mb-5 terminal-header">
-      <h2 class="text-monospace mb-1">> What Gigahard Offers</h2>
-      <p>first true AI agent store. At {{profile.name}}, creators can build AI agents with code or no-code tools, deploy them instantly, list them on a public marketplace, and get paid when users engage or subscribe.
-      </p>
-      <p class="text-monospace text-terminal-muted blink">> One-Click AI Agents. Deployed and Operational in Under a Minute._</p>
-    </div>
-    
-    <!-- Services Grid -->
-    <div class="row gx-3 gy-4">
-      <!-- Agent Store -->
-      <div class="col-md-4">
-        <div class="card bg-black border-terminal-green h-100 hover-terminal-item">
-          <div class="card-body p-4">
-            <div class="d-flex align-items-center mb-3">
-              <span class="text-terminal-green me-2">></span>
-              <i class="fas fa-store text-terminal-green me-3"></i>
-              <h3 class="text-monospace mb-0">Agent Store</h3>
-            </div>
-            <div class="terminal-content pl-4">
-              <p class="text-monospace text-terminal-muted">
-                > Discover and launch AI agents for every use case — from business operations to creative workflows.
-              </p>
-              <p class="text-monospace text-terminal-muted">
-                > Fast, flexible, and ready to work.
-              </p>
-            </div>
-            <!--
-            <div class="mt-3 pl-4">
-              <a href="#" class="text-monospace text-terminal-green">
-                > explore_agents <span class="blink">_</span>
-              </a>
-            </div>
-            -->
-          </div>
-        </div>
-      </div>
+<!-- Matrix Rain Canvas Background -->
+<canvas id="matrixRain" class="matrix-background"></canvas>
 
-      <!-- Agent-as-a-Service -->
-      <div class="col-md-4">
-        <div class="card bg-black border-terminal-green h-100 hover-terminal-item">
-          <div class="card-body p-4">
-            <div class="d-flex align-items-center mb-3">
-              <span class="text-terminal-green me-2">></span>
-              <i class="fas fa-robot text-terminal-green me-3"></i>
-              <h3 class="text-monospace mb-0">Agent-as-a-Service</h3>
+<!-- Main Terminal Window -->
+<div class="cyber-container">
+    <div class="terminal-window">
+        <!-- Glowing Header Bar -->
+        <div class="terminal-header">
+            <div class="header-buttons">
+                <span class="btn-close"></span>
+                <span class="btn-minimize"></span>
+                <span class="btn-expand"></span>
             </div>
-            <div class="terminal-content pl-4">
-              <p class="text-monospace text-terminal-muted">
-                > Create your own intelligent agent in minutes — fully customized.
-              </p>
-              <p class="text-monospace text-terminal-muted">
-                > Fine-tuned and persistent. Designed for your workflow.
-              </p>
-            </div>
-            <!--
-            <div class="mt-3 pl-4">
-              <a href="#" class="text-monospace text-terminal-green">
-                > build_agent <span class="blink">_</span>
-              </a>
-            </div>
-            -->
-          </div>
+            <div class="terminal-title">GIGAHARD_MAINFRAME_ACCESS.exe</div>
         </div>
-      </div>
 
-      <!-- Agent Hosting -->
-      <div class="col-md-4">
-        <div class="card bg-black border-terminal-green h-100 hover-terminal-item">
-          <div class="card-body p-4">
-            <div class="d-flex align-items-center mb-3">
-              <span class="text-terminal-green me-2">></span>
-              <i class="fas fa-server text-terminal-green me-3"></i>
-              <h3 class="text-monospace mb-0">Agent Hosting</h3>
-            </div>
-            <div class="terminal-content pl-4">
-              <p class="text-monospace text-terminal-muted">
-                > All agents run in secure, isolated environments.
-              </p>
-              <p class="text-monospace text-terminal-muted">
-                > Hosted and scaled on our cloud infrastructure.
-              </p>
-            </div>
-            <!--
-            <div class="mt-3 pl-4">
-              <a href="#" class="text-monospace text-terminal-green">
-                > learn_hosting <span class="blink">_</span>
-              </a>
-            </div>
-            -->
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Blockchain Integration Section - Terminal Style -->
-<section class="py-5 bg-black text-terminal-green">
-  <div class="container">
-    <!-- Header with blinking cursor effect -->
-    <div class="mb-5 terminal-header">
-      <h2 class="text-monospace mb-1">> Gigahard End-to-End AI-Driven API Integration</h2>
-      <p class="text-monospace text-terminal-muted blink">> We Specialize in AI Agents that Understand Your Business_</p>
-    </div>
-
-    {% if not user.is_authenticated %}
-    <div class="card bg-black border-terminal-green mb-5 hover-terminal-item">
-      <div class="card-body p-4">
-        <div class="d-flex align-items-center mb-3">
-          <span class="text-terminal-green me-2">></span>
-          <h3 class="text-monospace mb-0">Ready to Transform Your Business?</h3>
-        </div>
-        <div class="terminal-content pl-4">
-          <p class="text-monospace text-terminal-muted mb-3">
-            > Take a moment to join our platform
-          </p>
-          <a href="{% url 'register' %}" class="btn btn-terminal">
-            > create_account <span class="blink">_</span>
-          </a>
-        </div>
-      </div>
-    </div>
-    {% endif %}
-
-    <div class="row gx-3 gy-4">
-      <!-- Solana Wallet -->
-      <div class="col-lg-6">
-        <div class="card bg-black border-terminal-green h-100 hover-terminal-item">
-          <div class="card-body p-4">
-            <div class="d-flex align-items-center mb-3">
-              <span class="text-terminal-green me-2">></span>
-              <i class="fas fa-wallet text-terminal-green me-3"></i>
-              <h3 class="text-monospace mb-0">Solana Wallet Address</h3>
-            </div>
-            <div class="terminal-content pl-4">
-              <p class="text-monospace text-terminal-muted">
-                > Our AI-driven agents streamline workflows and boost revenue.
-              </p>
-              <p class="text-monospace text-terminal-muted mb-3">
-                > Join our presale and be part of the future:
-              </p>
-              <div class="card bg-terminal-dark border-terminal-green p-3 mb-3">
-                <code class="text-monospace text-terminal-green d-block">
-                  > <a href="https://solscan.io/account/{{profile.wallet}}" class="text-terminal-green">{{profile.wallet}}</a>
-                </code>
-                <button class="btn btn-terminal-sm mt-2" onclick="navigator.clipboard.writeText('{{profile.wallet}}')">
-                  > copy_address <span class="blink">_</span>
-                </button>
-              </div>
-              <p class="text-monospace text-terminal-muted">
-                > Thank you for your support!
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- X.com Handle -->
-      <div class="col-lg-6">
-        <div class="card bg-black border-terminal-green h-100 hover-terminal-item">
-          <div class="card-body p-4">
-            <div class="d-flex align-items-center mb-3">
-              <span class="text-terminal-green me-2">></span>
-              <i class="fab fa-twitter text-terminal-green me-3"></i>
-              <h3 class="text-monospace mb-0">Follow Us on X</h3>
-            </div>
-            <div class="terminal-content pl-4">
-              <p class="text-monospace text-terminal-muted mb-3">
-                > Stay updated with our latest developments:
-              </p>
-              <div class="card bg-terminal-dark border-terminal-green p-3 mb-3">
-                <code class="text-monospace text-terminal-green d-block">
-                  > <a href="https://x.com/{{profile.x_handle}}" class="text-terminal-green">@{{profile.x_handle}}</a>
-                </code>
-              </div>
-              <a href="https://x.com/{{profile.x_handle}}" class="btn btn-terminal">
-                > visit_profile <span class="blink">_</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Solana Tokens -->
-    <div class="card bg-black border-terminal-green mt-4 hover-terminal-item">
-      <div class="card-body p-4">
-        <div class="d-flex align-items-center mb-3">
-          <span class="text-terminal-green me-2">></span>
-          <i class="fas fa-coins text-terminal-green me-3"></i>
-          <h3 class="text-monospace mb-0">Solana Token Payments</h3>
-        </div>
-        <div class="terminal-content pl-4">
-          <p class="text-monospace text-terminal-muted mb-3">
-            > Pay with tokens created on the Solana blockchain:
-          </p>
-          
-          <div class="list-group-terminal">
-            {% for token in tokens %}
-            <div class="card bg-terminal-dark border-terminal-green p-3 mb-2">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <code class="text-monospace text-terminal-green d-block">
-                    > {{ token.name }}
-                  </code>
-                  <code class="text-monospace text-terminal-muted d-block mt-1 small">
-                    > {{ token.address|slice:":4" }}...{{ token.address|slice:"-4:" }}
-                  </code>
-                                  
-                  <button class="btn btn-terminal-sm mt-2" onclick="navigator.clipboard.writeText('{{ token.address }}')">
-                    > copy_address <span class="blink">_</span>
-                  </button>
+        <!-- Main Content -->
+        <div class="terminal-content">
+            <div class="boot-sequence">
+                <div class="typing-text">Initializing Gigahard Neural Interface...</div>
+                <div class="loading-bar">
+                    <div class="progress"></div>
                 </div>
-                <span class="badge bg-terminal-dark border-terminal-green text-terminal-green">
-                  > token
-                </span>
-              </div>
-              <p class="text-monospace text-terminal-muted mt-2 mb-0 small">
-                > {{ token.description }}
-              </p>
             </div>
-            {% endfor %}
-          </div>
+
+            <!-- Services Section -->
+            <div class="system-module">
+                <div class="module-header">
+                    <span class="prompt">>></span>
+                    <h2 class="text-monospace">GIGAHARD_SERVICES</h2>
+                </div>
+                <div class="module-content">
+                    <p class="cyber-text">first true AI agent store. At {{profile.name}}, creators can build AI agents with code or no-code tools, deploy them instantly, list them on a public marketplace, and get paid when users engage or subscribe.</p>
+                    <p class="cyber-text blink">One-Click AI Agents. Deployed and Operational in Under a Minute._</p>
+                </div>
+            </div>
+
+            <!-- Blockchain Integration -->
+            <div class="system-module">
+                <div class="module-header">
+                    <span class="prompt">>></span>
+                    <h2 class="text-monospace">NEURAL_BLOCKCHAIN_INTERFACE</h2>
+                </div>
+                
+                {% if not user.is_authenticated %}
+                <div class="cyber-alert">
+                    <div class="alert-header">
+                        <span class="prompt">>></span>
+                        <h3 class="text-monospace">ACCESS_REQUIRED</h3>
+                    </div>
+                    <div class="alert-content">
+                        <p class="cyber-text">Neural handshake required for full system access</p>
+                        <a href="{% url 'register' %}" class="cyber-button">
+                            <span class="button-effect"></span>
+                            <span class="button-text">INITIALIZE_NEURAL_LINK</span>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Solana Integration -->
+                <div class="grid-container">
+                    <div class="cyber-panel">
+                        <div class="panel-header">
+                            <i class="fas fa-wallet text-terminal-green"></i>
+                            <h3 class="text-monospace">SOLANA_NEURAL_BRIDGE</h3>
+                        </div>
+                        <div class="panel-content">
+                            <code class="cyber-code">
+                                <a href="https://solscan.io/account/{{profile.wallet}}" class="text-terminal-green">{{profile.wallet}}</a>
+                            </code>
+                            <button class="cyber-button small" onclick="navigator.clipboard.writeText('{{profile.wallet}}')">
+                                <span class="button-effect"></span>
+                                <span class="button-text">COPY_NEURAL_KEY</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- X.com Integration -->
+                    <div class="cyber-panel">
+                        <div class="panel-header">
+                            <i class="fab fa-twitter text-terminal-green"></i>
+                            <h3 class="text-monospace">NEURAL_SOCIAL_LINK</h3>
+                        </div>
+                        <div class="panel-content">
+                            <code class="cyber-code">
+                                <a href="https://x.com/{{profile.x_handle}}" class="text-terminal-green">@{{profile.x_handle}}</a>
+                            </code>
+                            <a href="https://x.com/{{profile.x_handle}}" class="cyber-button">
+                                <span class="button-effect"></span>
+                                <span class="button-text">ESTABLISH_CONNECTION</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-</section>
+</div>
 
-<style>
-  /* Terminal-specific styles */
-  .text-terminal-green { color: #00FF00; }
-  .text-terminal-muted { color: #00AA00; }
-  .border-terminal-green { border: 1px solid #00AA00; }
-  .bg-terminal-dark { background-color: #0A0A0A; }
-  
-  .text-monospace { font-family: 'Courier New', Courier, monospace; }
-  
-  /* Terminal blinking cursor effect */
-  .blink {
-    animation: blink-animation 1s steps(2, start) infinite;
-  }
-  @keyframes blink-animation {
-    to { visibility: hidden; }
-  }
-  
-  /* Terminal item hover effect */
-  .hover-terminal-item:hover {
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-    transform: translateY(-2px);
-  }
-  
-  /* Terminal buttons */
-  .btn-terminal {
-    background-color: #0A0A0A;
-    color: #00FF00;
-    border: 1px solid #00AA00;
-    font-family: 'Courier New', Courier, monospace;
-    padding: 0.375rem 0.75rem;
-  }
-  .btn-terminal:hover {
-    background-color: #00AA00;
-    color: #000000;
-    border-color: #00FF00;
-  }
-  .btn-terminal-sm {
-    background-color: #0A0A0A;
-    color: #00FF00;
-    border: 1px solid #00AA00;
-    font-family: 'Courier New', Courier, monospace;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-  }
-  
-  /* Terminal list group */
-  .list-group-terminal {
-    background-color: transparent;
-    border-radius: 0;
-  }
-  
-  /* Terminal content indentation */
-  .terminal-content {
-    border-left: 1px solid #00AA00;
-    margin-left: 15px;
-    padding-left: 15px;
-  }
-</style>
+<!-- Matrix Rain Animation Script -->
+<script>
+    const canvas = document.getElementById('matrixRain');
+    const ctx = canvas.getContext('2d');
 
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%";
+    const characters = matrix.split("");
+    const fontSize = 14;
+    const columns = canvas.width/fontSize;
+    const drops = [];
+
+    for(let x = 0; x < columns; x++) {
+        drops[x] = 1; 
+    }
+
+    function draw() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#0F0";
+        ctx.font = fontSize + "px monospace";
+
+        for(let i = 0; i < drops.length; i++) {
+            const text = characters[Math.floor(Math.random() * characters.length)];
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+            if(drops[i] * fontSize > canvas.height && Math.random() > 0.975)
+                drops[i] = 0;
+
+            drops[i]++;
+        }
+    }
+
+    setInterval(draw, 35);
+</script>
 {% endblock %}
