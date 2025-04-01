@@ -35,12 +35,12 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
- 
+
 import os
 import csv
 import io
 from io import BytesIO
-import socket 
+import socket
 from django.utils.timezone import now
 
 import urllib.request
@@ -50,7 +50,7 @@ from django.db.models import Q
 from django.db import models
 
 from django.utils import timezone  # Import Django's timezone module
- 
+
 from openai import OpenAI
 from openai import OpenAIError  # Import OpenAIError for exception handling
 
@@ -58,7 +58,7 @@ from openai import OpenAIError  # Import OpenAIError for exception handling
 import json
 from PIL import Image
 import requests
-import random 
+import random
 import uuid
 import hashlib
 
@@ -76,7 +76,7 @@ from django.views.decorators.http import require_POST
 
 import logging
 
-import time 
+import time
 import re
 import os
 
@@ -90,13 +90,13 @@ from .models import TwitterStatus
 from .models import UserQuery
 from .models import Comment
 from .models import TokenMarketingContent
-from .models import Tweet 
+from .models import Tweet
 from .models import ConvoLog
 from .models import ConversationTopic
 from .models import Token as PumpFunToken
 from .models import RaidLink
 from .models import Tweet
-from .models import Room 
+from .models import Room
 from .models import WebsiteProfile
 from .models import TokenProfile
 from .models import TokenProfile
@@ -114,8 +114,8 @@ from .models import GeneratedMessage
 from .models import PDFDocument
 from .models import QuestionAnswer
 from .models import Conversation, Message
-from .models import Visitor  
-from .models import Referral  
+from .models import Visitor
+from .models import Referral
 from .models import LandingPage
 from .models import FormSubmission
 from .models import Business
@@ -125,7 +125,7 @@ from .models import CleaningRequest
 from .models import ImmigrationCase
 from .models import Letter
 from .models import CarFinderResponse
-from .models import WebsiteCreationResponse 
+from .models import WebsiteCreationResponse
 from .models import TwitterHandleChecker
 from .models import CharacterMemory
 from .models import UserCharacter
@@ -148,18 +148,18 @@ from .forms import LifecycleStageForm
 from .forms import UserProfileUpdateForm
 from .forms import TokenProfileForm
 from .forms import TokenProfileForm
-from .forms import TweetForm 
+from .forms import TweetForm
 from .forms import TokenMarketingContentForm
-from .forms import TweetForm 
+from .forms import TweetForm
 from .forms import WebsiteProfileForm
 from .forms import UserCreationForm  # You need to create this form
- 
+
 from .serializers import UserRegisterSerializer as RegisterSerializer
 from .serializers import CustomTokenObtainPairSerializer
 from .serializers import ConversationTopicSerializer
 from .serializers import TwitterStatusSerializer
 from .serializers import UserQuerySerializer
-from .serializers import ConvoLogSerializer 
+from .serializers import ConvoLogSerializer
 from .serializers import EmptySerializer
 from .serializers import TwitterStatusSerializer
 from .serializers import BusinessSerializer
@@ -171,10 +171,10 @@ from .serializers import CleaningRequestSerializer
 from .serializers import ImmigrationCaseSerializer
 from .serializers import LetterSerializer
 from .serializers import CarFinderResponseSerializer
-from .serializers import WebsiteCreationResponseSerializer 
+from .serializers import WebsiteCreationResponseSerializer
 from .serializers import CharacterMemorySerializer
 
-import sendgrid 
+import sendgrid
 from sendgrid.helpers.mail import Mail, Email, To, Content
 
 import base64
@@ -189,7 +189,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
 from rest_framework import status
-from rest_framework.response import Response 
+from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -201,7 +201,7 @@ from django.contrib.auth import authenticate
 
 from django.core.paginator import Paginator
 from django.utils.timesince import timesince
-from django.http import JsonResponse 
+from django.http import JsonResponse
 from functools import wraps
 
 from django.contrib.auth.decorators import login_required
@@ -210,11 +210,11 @@ from functools import wraps
 from django.shortcuts import redirect
 
 from django.contrib.sites.shortcuts import get_current_site
-from django.template.loader import render_to_string 
+from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
- 
+
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth import get_user_model
 
@@ -223,13 +223,13 @@ import stripe
 from decimal import Decimal
 
 from django.contrib.auth import login, get_backends
-from django.contrib.sites.shortcuts import get_current_site 
+from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from django.shortcuts import render, redirect 
-from django.conf import settings 
+from django.shortcuts import render, redirect
+from django.conf import settings
 
 from solana.rpc.api import Client
 from solders.transaction import Transaction
@@ -239,19 +239,19 @@ from solders.keypair import Keypair
 from solders.rpc.config import RpcSendTransactionConfig as TxOpts
 
 from .decorators import staff_required
- 
+
 import PyPDF2
 
-from PyPDF2 import PdfReader, PdfWriter 
+from PyPDF2 import PdfReader, PdfWriter
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-    
-from reportlab.lib.styles import getSampleStyleSheet 
+
+from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Frame
-from reportlab.lib.units import inch  
+from reportlab.lib.units import inch
 from reportlab.platypus import Paragraph, Spacer, SimpleDocTemplate, PageBreak
- 
+
 
 import pdfminer
 from pdfminer.high_level import extract_text
@@ -264,35 +264,35 @@ import tempfile
 
 import geoip2.database
 from user_agents import parse
-import maxminddb 
+import maxminddb
 
 from .chatbot import reset_user_fields
- 
+
 import subprocess
 
 import docker
 
-from rest_framework import generics  
+from rest_framework import generics
 
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiParameter
-from drf_spectacular.types import OpenApiTypes 
+from drf_spectacular.types import OpenApiTypes
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
-from rest_framework.generics import ListCreateAPIView 
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.decorators import action
- 
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from oauth2_provider.views import TokenView 
+from oauth2_provider.views import TokenView
 from oauth2_provider.models import AccessToken
 from oauth2_provider.views import AuthorizationView
 from oauth2_provider.decorators import protected_resource
 
 
 from datetime import timedelta
-  
+
 from weasyprint import HTML
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -309,9 +309,9 @@ from django.db.models import OuterRef, Subquery
 from scipy import spatial
 import ast
 
-logger = logging.getLogger() 
+logger = logging.getLogger()
 
-version = "00.00.06" 
+version = "00.00.06"
 register = template.Library()
 CADDY_API_URL = "http://localhost:2019/config/apps/http/servers/srv0/routes"
 
@@ -381,7 +381,7 @@ class CustomTokenView(TokenView):
                 "expires_in": expires_in.total_seconds(),
             }
         return response
-    
+
 
 def register(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -398,18 +398,18 @@ def register(request):
             # Send email verification
             current_site = get_current_site(request)
             subject = "Verify your email address"
-            
+
             uidb64 = quote(urlsafe_base64_encode(force_bytes(user.pk)))  # URL encode the UID
             token = quote(default_token_generator.make_token(user))  # URL encode the token
 
- 
+
             message = render_to_string('email_verification.html', {
                 'user': user,
                 'domain': request.get_host(),
                 'uidb64': urlsafe_base64_encode(force_bytes(user.pk)),  # Pass uidb64, not uid
                 'token': default_token_generator.make_token(user),
             })
-            
+
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
             return redirect('email_verification_sent')  # Page showing verification message
@@ -434,7 +434,7 @@ def email_verification_confirm(request, uidb64, token):
         return redirect('login')  # Redirect to login after successful verification
     else:
         return render(request, 'email_verification_invalid.html')  # Show invalid link message
-    
+
 def resend_verification_email(request):
     if request.method == "POST":
         email = request.POST.get('email')
@@ -460,15 +460,15 @@ def resend_verification_email(request):
         return redirect('verification_email_sent')
 
     return render(request, 'resend_verification_email.html')
-    
+
 def shop_product_list(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
-    
+
     # Get search term from request
     search_query = request.GET.get('search', '')
-    
+
     # Filter products based on search query and lifecycle stage (sellable)
     if search_query:
         products = Product.objects.filter(
@@ -481,8 +481,8 @@ def shop_product_list(request):
     # Pass the products and profile to the template
     return render(request, 'products/shop_product_list.html', {'products': products, 'profile': profile})
 
- 
- 
+
+
 def shop_product_detail(request, product_id):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
@@ -543,11 +543,11 @@ def strip_non_unicode(text):
     return None
 
 def about_us(request):
-    
+
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
- 
+
 
     return render(request, 'about_us.html', { 'profile': profile})
 
@@ -568,11 +568,11 @@ def privacy_policy(request):
 def upvote_convo_log(request, log_id):
     # Get the ConvoLog object or return a 404 error if it doesn't exist
     convo_log = get_object_or_404(ConvoLog, id=log_id)
-    
+
     # Increment the upvote count by 1
     convo_log.upvote_count += 1
     convo_log.save()  # Save the updated upvote count
-    
+
     # Redirect back to the convo_log_detail page after the upvote
     return redirect('convo_log_detail', pk=convo_log.id)
 
@@ -588,7 +588,7 @@ def create_cart(request):
             return redirect('cart_list')  # Redirect to cart list page or anywhere you want after creating the cart
     else:
         form = CartForm()
-    
+
     return render(request, 'create_cart.html', {'form': form, 'profile': profile})
 
 @admin_required
@@ -607,7 +607,7 @@ def cart_create(request, customer_id):
         shipping_city=customer.city,
         shipping_state=customer.state,
         shipping_zipcode=customer.zip_code,
-        shipping_country=customer.country, 
+        shipping_country=customer.country,
     )
     return redirect('cart_edit', id=cart.id)
 
@@ -719,7 +719,7 @@ def cart_list(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
-    
+
     carts = Cart.objects.order_by('-date_created')  # Fetch all carts, newest first
     paginator = Paginator(carts, 10)  # 10 carts per page
     page_number = request.GET.get('page')  # Get the current page number from query parameters
@@ -753,15 +753,15 @@ def shop_add_to_cart(request):
 
     cart_id = request.COOKIES.get('cartId')
     logger.info(f"Cart ID: {cart_id}")
-    
+
     if request.method == 'POST':
         quantity = request.POST.get('quantity')
         product_id = request.POST.get('product_id')
         logger.info(f"Quantity: {quantity}, Product ID: {product_id}")
-        
+
         if not quantity or quantity == '':
             quantity = 1
-        
+
         try:
             product = Product.objects.get(id=product_id)
         except Product.DoesNotExist:
@@ -785,7 +785,7 @@ def shop_add_to_cart(request):
     else:
         logger.error("Invalid request method")
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
-    
+
 @admin_required
 def add_to_cart(request, cart_id, product_id):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -795,30 +795,30 @@ def add_to_cart(request, cart_id, product_id):
         product = Product.objects.get(id=product_id)
         cart = Cart.objects.get(id=cart_id)
         quantity = int(request.POST.get('quantity', 1))  # Default to 1 if no quantity is provided
-        
+
         if quantity < 1:
             return HttpResponseBadRequest("Quantity must be at least 1.")
 
 
         cart_products = CartProduct.objects.filter(cart=cart, product=product)
-        
+
         if cart_products.exists():
             # If multiple CartProducts exist, we can delete them or merge
             cart_products.delete()
-        
+
         # Check if product is not labor and get its tax rate
         tax_rate = profile.tax_rate if not product.is_labor else 0
-        
+
         # Create a new CartProduct entry with the correct quantity and tax rate
         CartProduct.objects.create(cart=cart, product=product, quantity=quantity, price=product.price, tax_rate=tax_rate)
- 
+
 
         return redirect('product_list_shop', cart_id=cart.id)
     except Product.DoesNotExist:
         return HttpResponseBadRequest("Product not found.")
     except Cart.DoesNotExist:
         return HttpResponseBadRequest("Cart not found.")
-    
+
 # View to add a new product
 @admin_required
 def product_add(request):
@@ -888,7 +888,7 @@ def customer_list(request):
 
 
 # Add new customer
-@admin_required 
+@admin_required
 def customer_add(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
@@ -923,7 +923,7 @@ def customer_edit(request, customer_id):
         form = CustomerForm(instance=customer)
 
     touchpoints = TouchPointType.objects.filter(
-        is_visible=True, 
+        is_visible=True,
         lifecycle_stage=customer.lifecycle_stage
     ) if customer.lifecycle_stage else TouchPointType.objects.none()
 
@@ -1030,10 +1030,10 @@ def custom_logout_view(request):
 def conversation_topics(request):
     topics_list = ConversationTopic.objects.all().order_by('-created_date')
     paginator = Paginator(topics_list, 10)  # Show 10 topics per page
-    
+
     page_number = request.GET.get('page')
     topics = paginator.get_page(page_number)
-    
+
     if request.headers.get('Content-Type') == 'application/json' or request.GET.get('format') == 'json':
         # Prepare data for JSON response with elapsed time
         topics_data = [
@@ -1050,7 +1050,7 @@ def conversation_topics(request):
 
 @extend_schema(exclude=True)
 @csrf_exempt
-@admin_required 
+@admin_required
 @api_view(['POST'])
 def create_conversation_topic(request):
     print("create_conversation_topic")
@@ -1101,23 +1101,23 @@ def get_user_query(request, query_id):
         user_query = UserQuery.objects.get(id=query_id)
     except UserQuery.DoesNotExist:
         return Response({'error': 'User query not found'}, status=status.HTTP_404_NOT_FOUND)
-    
+
     if request.method == 'GET':
         serializer = UserQuerySerializer(user_query)
         return Response(serializer.data)
- 
+
 def convo_log_detail(request, pk):
     convo_log = get_object_or_404(ConvoLog, pk=pk)
     #comments = Comment.objects.filter(convo_log_id=str(convo_log.id), is_visible=True).order_by('-date')
     comments = Comment.objects.filter(
-        convo_log_id=str(convo_log.id), 
+        convo_log_id=str(convo_log.id),
         is_visible=True
     ).order_by('-token_balance', '-date')
 
     for comment in comments:
         if isinstance(comment.comment, bytes):
             comment.comment = comment.comment.decode('utf-8')
-    
+
     return render(request, 'convo_log_detail.html', {
         'convo_log': convo_log,
         'comments': comments,
@@ -1125,7 +1125,7 @@ def convo_log_detail(request, pk):
     })
 
 def user_queries_view(request):
-    # Fetch all queries from the database 
+    # Fetch all queries from the database
     #queries = UserQuery.objects.all().order_by('-created_date')
     queries = UserQuery.objects.all().order_by('-created_date')[:50]
 
@@ -1141,17 +1141,17 @@ def user_queries_view(request):
     }
     return render(request, 'user_queries.html', context)
 
-    
+
 @csrf_exempt
 @admin_required
 def processed_status(request, status_id):
         # Fetch the TwitterStatus object by status_id
     twitter_status = get_object_or_404(TwitterStatus, status_id=status_id)
-    
-    # Check if the processed field is False and convert it to True 
+
+    # Check if the processed field is False and convert it to True
     twitter_status.processed = True
     twitter_status.save()  # Save the changes
-    
+
     # Response data after the update
     data = {
         'message': 'Status updated successfully',
@@ -1159,14 +1159,14 @@ def processed_status(request, status_id):
         'processed': twitter_status.processed,
     }
     return JsonResponse(data)
-    
+
     # If already processed, return a message
     data = {'message': 'Status is already processed', 'processed': twitter_status.processed}
     return JsonResponse(data)
-    
+
 def toggle_scam_filter(request):
     access_id = request.COOKIES.get('access_id')
-    
+
     if not access_id:
         return JsonResponse({'error': 'Access ID not found in cookies.'}, status=400)
 
@@ -1179,12 +1179,12 @@ def toggle_scam_filter(request):
     access_token.save()
 
     return JsonResponse({'success': True, 'is_scam_filter_on': access_token.is_scam_filter_on})
-    
+
 def twitter_status_detail(request, status_id):
     # Fetch the TwitterStatus object by status_id
     print(status_id)
     twitter_status = get_object_or_404(TwitterStatus, status_id=status_id)
-    
+
     # Prepare the data to be returned as JSON
     data = {
         'x_user': twitter_status.x_user,
@@ -1193,7 +1193,7 @@ def twitter_status_detail(request, status_id):
         'created_at': twitter_status.created_at,
         'processed': twitter_status.processed,
     }
-    
+
     return JsonResponse(data)
 
 class TwitterStatusDetailView(View):
@@ -1240,7 +1240,7 @@ def delete_status(request, status_id):
 def save_twitter_status(request):
     try:
         # Load the JSON body from the request
-        url = request.GET.get('url', 'got empty')   
+        url = request.GET.get('url', 'got empty')
         created_by_user = request.GET.get('created_by', 'got empty')
         print(url)
         print(created_by_user)
@@ -1261,7 +1261,7 @@ def save_twitter_status(request):
         print(f"An error occurred: {e}")
         return JsonResponse({"error": "An unexpected error occurred."}, status=500)
 
- 
+
 @login_required(login_url='login')
 def checkout_view(request):
     form = ShippingBillingForm()  # Default form in case cart doesn't exist
@@ -1358,16 +1358,16 @@ def process_checkout(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
-        
+
     cart_id = request.COOKIES.get('cartId')
-    
+
     print('CART ID CHECK OUT')
 
-    print(cart_id) 
+    print(cart_id)
 
 
     cart = get_object_or_404(Cart, external_id=cart_id)
-    #cart = Cart.objects.get(external_id=cart_id) 
+    #cart = Cart.objects.get(external_id=cart_id)
     #cart = Cart.objects.filter(external_id=cart_id).first()  # Use first() to get only one cart
 
     if cart:
@@ -1409,7 +1409,7 @@ def process_checkout(request):
             'total_with_tax': total_with_tax,
             'total_payments': total_payments,
             'balance_due': balance_due,
-            'profile': profile, 
+            'profile': profile,
         }
 
         response = render(request, 'order_confirmation.html', context)
@@ -1427,18 +1427,18 @@ def login_view(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
-        
+
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
-        
+
         if user is not None:
             login(request, user)
             next_url = request.GET.get('next', 'index')  # Redirect to the next URL or index
             return redirect(next_url)
         else:
-            return render(request, 'login.html', {'error': 'Invalid credentials', 'profile': profile})    
+            return render(request, 'login.html', {'error': 'Invalid credentials', 'profile': profile})
     return render(request, 'login.html', {'profile': profile})
 
 @csrf_exempt
@@ -1484,12 +1484,12 @@ def create_tweet_api(request):
             # Parse the JSON request body
             data = json.loads(request.body)
             tweet_url = data.get('url')
-            
+
             # Create and save the new tweet instance
             if tweet_url:
                 new_tweet = Tweet(content=tweet_url)  # Assuming you have a 'url' field in the Tweet model
                 new_tweet.save()
-                
+
                 # Return a success response
                 return JsonResponse({"message": "Tweet saved successfully", "id": new_tweet.id}, status=201)
             else:
@@ -1552,8 +1552,8 @@ def create_tweet(request):
             return redirect('tweet_list')  # Redirect to the list after saving
     else:
         form = TweetForm()
-    
-    return render(request, 'index.html', {'form': form})    
+
+    return render(request, 'index.html', {'form': form})
 
 @csrf_exempt
 @require_POST
@@ -1581,7 +1581,7 @@ def generate_response():
     random_author = random.choice(authors)
     SECRET_KEY = os.getenv('OPENAI_SECRET_KEY')
     openai.api_key = SECRET_KEY
-    model_engine = "gpt-3.5-turbo" 
+    model_engine = "gpt-3.5-turbo"
     response = openai.ChatCompletion.create(
         model='gpt-3.5-turbo',
         messages=[
@@ -1596,7 +1596,7 @@ def generate_response():
     return message_gpt
 
 # View to forward to x.com
-def forward_to_x(request): 
+def forward_to_x(request):
     msg = generate_response()
     encoded_msg = urllib.parse.quote(msg.strip('"') + " #schizou $schizou")
     return redirect('https://x.com/intent/post?text=' + encoded_msg)
@@ -1607,7 +1607,7 @@ class TokenMarketingContentCreateView(View):
     def post(self, request, *args, **kwargs):
         marketing_content = request.POST.get('marketing_content')
         contract_address = request.POST.get('contract_address')
-        
+
         if marketing_content and contract_address:
             # Create a new TokenMarketingContent object
             TokenMarketingContent.objects.create(
@@ -1633,7 +1633,7 @@ def toggle_handle_status(request, handle_id):
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
-        # X-Forwarded-For contains a comma-separated list of IPs, 
+        # X-Forwarded-For contains a comma-separated list of IPs,
         # the first one is the client IP
         ip = x_forwarded_for.split(',')[0]
     else:
@@ -1645,7 +1645,7 @@ def index(request):
     cart_id = request.COOKIES.get('cartId')
     if cart_id is None:
         cart_id = generate_id()
-    
+
     domain = request.get_host()
     landing_page = LandingPage.objects.filter(domain_name=domain, is_activated=True).first()
 
@@ -1661,8 +1661,8 @@ def index(request):
                 # If the container isn't found, pull the image and run it
                 image_name = landing_page.docker_name
                 client.images.pull(image_name)  # Pull the image from Docker Hub
-                container = client.containers.run(image_name, 
-                                                ports={'80/tcp': landing_page.port}, 
+                container = client.containers.run(image_name,
+                                                ports={'80/tcp': landing_page.port},
                                                 detach=True)  # Run the container with port mapping
 
                 landing_page.docker_id = container.id
@@ -1683,7 +1683,7 @@ def index(request):
                 return HttpResponse(f"Error: Unable to proxy the request to the Docker container. {e}", status=500)
 
 
-        else :    
+        else :
             landing_page.visitor_count = models.F('visitor_count') + 1  # Increment without race condition
             landing_page.save(update_fields=['visitor_count'])  # Save only the updated field
 
@@ -1691,7 +1691,7 @@ def index(request):
             response = render(request, 'landing_page.html', context)
             response.set_cookie('cartId', cart_id)
             return response
-            
+
 
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
@@ -1707,7 +1707,7 @@ def index(request):
     city = None
     state = None
     country = None
-    try: 
+    try:
         geoip2_db_path = settings.BASE_DIR / 'static' / 'GeoLite2-City.mmdb'
         print(geoip2_db_path)
         with geoip2.database.Reader(geoip2_db_path) as reader:
@@ -1748,9 +1748,9 @@ def index(request):
     context = {
         'cart_id': cart_id,
         'profile': profile,
-        'tokens': tokens, 
+        'tokens': tokens,
     }
-    
+
     response = render(request, 'index.html', context)
     response.set_cookie('cartId', cart_id)
 
@@ -1758,11 +1758,11 @@ def index(request):
 
 
 
- 
+
 @admin_required
 def list_and_add_website_profiles(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
-    
+
     if request.method == 'POST':
         form = WebsiteProfileForm(request.POST)
         if form.is_valid():
@@ -1806,7 +1806,7 @@ def admin_panel(request):
     fallback_model_status = "Unknown"
 
     try:
-        # OpenAI API setup 
+        # OpenAI API setup
         client = OpenAI(api_key=profile.chatgpt_api_key)
 
         # Retrieve current model status if model ID is available
@@ -1864,7 +1864,7 @@ def admin_panel(request):
 
 def generate_id():
     return uuid.uuid4().hex
- 
+
 
 def delete_product(request, product_id):
     cart_id = request.COOKIES.get('cartId')
@@ -1877,8 +1877,8 @@ def view_cart_detail_shop_current(request):
     cart_id = request.COOKIES.get('cartId')
 
     return view_cart_detail_shop(request, cart_id)
- 
- 
+
+
 def view_cart_detail_shop(request, cart_id):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
@@ -1888,7 +1888,7 @@ def view_cart_detail_shop(request, cart_id):
         cart = Cart.objects.get(external_id=cart_id)
     except Cart.DoesNotExist:
         # Create a new cart if it doesn't exist
-        cart = Cart.objects.create(external_id=cart_id)  # Adjust the length as needed 
+        cart = Cart.objects.create(external_id=cart_id)  # Adjust the length as needed
 
     cart_products = CartProduct.objects.filter(cart=cart)
 
@@ -1936,7 +1936,7 @@ def shop_product_detail(request, product_id):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         profile = WebsiteProfile(name="add name", about_us="some info about us")
-    
+
     # Get cart from cookie or create new one
     cart_id = request.COOKIES.get('cartId')
     if cart_id:
@@ -1951,21 +1951,21 @@ def shop_product_detail(request, product_id):
 
     # Fetch the specific product by its ID
     product = get_object_or_404(Product, id=product_id)
-    
+
     # Pass both product and cart to the template
     response = render(request, 'products/shop_product_detail.html', {
-        'product': product, 
+        'product': product,
         'profile': profile,
         'cart': cart
     })
-    
+
     # Set cart cookie
     response.set_cookie('cartId', cart_id)
     return response
 
- 
 
- 
+
+
 def extract_json_from_string(text):
     # Find the first occurrence of a JSON-like object
     pattern = r'\{(?:[^{}]|)*\}'
@@ -1974,14 +1974,14 @@ def extract_json_from_string(text):
         json_str = match.group()
         return json_str
     else:
-        return None        
- 
+        return None
+
 def verify_signature_game(request):
     if request.method == 'GET':
         public_key = request.GET.get('publicKey', '').strip()  # Ensure no leading/trailing spaces
         print(public_key)
         signature_base64 = request.GET.get('signature', '')
-        
+
         print(signature_base64)
         message_or_transaction = 'Hello from Game!'
         try:
@@ -2004,13 +2004,13 @@ def verify_signature_game(request):
                 'valid': True,
                 'message': 'Signature is valid.'
             }
-            response_tmp = JsonResponse(response_data) 
+            response_tmp = JsonResponse(response_data)
             user = request.user
             user.sol_wallet_address = public_key
             user.save()
 
-            return response_tmp  
-                    
+            return response_tmp
+
         except BadSignatureError:
             print("Signature verification failed: Invalid signature")
             return JsonResponse({'valid': False, 'message': 'Invalid signature'})
@@ -2040,12 +2040,12 @@ def verify_signature(request):
         else:
             ip_address = request.META.get('REMOTE_ADDR')
 
-        
+
         try:
-            
+
             # Decode the base64 signature into bytes
             signature_bytes = base64.b64decode(signature_base64)
-            
+
             # Prepare the message as bytes
             message_bytes = message_or_transaction.encode('utf-8')
 
@@ -2058,7 +2058,7 @@ def verify_signature(request):
             verify_key.verify(message_bytes, signature_bytes)
             #print("Signature is valid!")
 
-             
+
             url = "https://solana-mainnet.g.alchemy.com/v2/VtqY_fIlu2ELUJF4Ea1uLKEYsW-XopF5"
             headers = {"accept": "application/json", "content-type": "application/json"}
 
@@ -2087,7 +2087,7 @@ def verify_signature(request):
                 print("No token account found for the given public key and token mint.")
 
 
-            
+
             access_id = request.COOKIES.get('access_id')
 
             try:
@@ -2097,7 +2097,7 @@ def verify_signature(request):
                 # Handle the case where the access token is not found
                 public_wallet_address = None
 
-            if token_amount_float >= 0:    
+            if token_amount_float >= 0:
                 print("Token amount is greater than 1,000,000")
                 access_id = generate_id()
                 print(access_id)
@@ -2106,8 +2106,8 @@ def verify_signature(request):
                     'message': 'Signature is valid.'
                 }
                 response = JsonResponse(response_data)
-                response.set_cookie('access_id', access_id)     
- 
+                response.set_cookie('access_id', access_id)
+
                 access_token, created = Accesstoken.objects.get_or_create(
                     public_wallet_address=public_key,
                     defaults={
@@ -2124,7 +2124,7 @@ def verify_signature(request):
                     access_token.save()
 
                 # Optionally, you can print or log the instance for verification
-                print(access_token)                
+                print(access_token)
                 Comment.objects.create(
                     wallet_id=public_key,
                     token_balance=token_amount_float,
@@ -2136,14 +2136,14 @@ def verify_signature(request):
                     is_visible=True,
                     upvote_count=0
                 )
-                
 
-                return response    
+
+                return response
             else:
                 print("Token amount is not greater than 1,000,000")
                 print("Token Amount as Float:", token_amount_float)
                 return JsonResponse({'valid': True, 'message': 'Signature is valid.'})
-            
+
         except BadSignatureError:
             print("Signature verification failed: Invalid signature")
             return JsonResponse({'valid': False, 'message': 'Invalid signature'})
@@ -2169,29 +2169,29 @@ def game_state_manager_action(game, hands, players, current_player_index):
         Q(player_state='Check') | Q(player_state='Call')| Q(player_state='Raise') | Q(player_state='Blind') | Q(player_state='Big Blind')
     )
     if update_hands:
-        for index, hand in enumerate(update_hands): 
+        for index, hand in enumerate(update_hands):
             if hand.last_raise != True :
                 hand.player_state = ''
-                hand.save() 
- 
- 
+                hand.save()
+
+
 def game_state_manager_action_find_winner(game, hands, players):
 
 
     openai_var = os.getenv('OPENAI')
     openai.api_key = openai_var
-    prompt = 'reponde with json string with fromat {"winner": "", "winning_hand": ""} with winner being the plyer number and winning_hand being the Royal Flush, Straight Flush, Four of a Kind, Full House, Flush, Straight, Three of a Kind, Two Pair, One Pair, High Card.' 
+    prompt = 'reponde with json string with fromat {"winner": "", "winning_hand": ""} with winner being the plyer number and winning_hand being the Royal Flush, Straight Flush, Four of a Kind, Full House, Flush, Straight, Three of a Kind, Two Pair, One Pair, High Card.'
     print(prompt)
     for index, player in enumerate(players):
         hand = hands[index]
         prompt += f' player number {index + 1} has the following cards {hand.hand} last action was {hand.player_state}.\n'
         print(f"Counter: {index + 1}, Player ID: {player.id}")
-    
-    prompt +=  ' the following cards are the flop ' + str(game.flop)     
-    prompt +=  ' the following card is the turn ' + str(game.turn)     
-    prompt +=  ' the following card is the river ' + str(game.river)   
-    prompt +=  ' make sure you are correct when juding the player hand and consider their last action if it is Fold do not count them as winner'     
-    
+
+    prompt +=  ' the following cards are the flop ' + str(game.flop)
+    prompt +=  ' the following card is the turn ' + str(game.turn)
+    prompt +=  ' the following card is the river ' + str(game.river)
+    prompt +=  ' make sure you are correct when juding the player hand and consider their last action if it is Fold do not count them as winner'
+
     print(prompt)
 
     response = openai.ChatCompletion.create(
@@ -2208,7 +2208,7 @@ def game_state_manager_action_find_winner(game, hands, players):
 
     if json_data:
         print("Extracted Winner JSON:", json_data)
-        print(json_data['winner'])       
+        print(json_data['winner'])
         winner = json_data['winner']
         game.winner = int(winner) -1
         game.winning_hand = json_data['winning_hand']
@@ -2222,7 +2222,7 @@ def get_count(request):
     value = request.GET.get('value')
 
     access_cookie = request.COOKIES.get('access_id')
-    
+
     if not column_name or not value:
         return JsonResponse({'error': 'Both column_name and value must be provided.'}, status=400)
 
@@ -2232,13 +2232,13 @@ def get_count(request):
 
 
 
-# PUMP FUN CLUB CODE 
+# PUMP FUN CLUB CODE
 def superuser_required(user):
     return user.is_superuser
 
 
 @admin_required
-def marketcap_async(request): 
+def marketcap_async(request):
 
 
     access_id = request.COOKIES.get('access_id')
@@ -2265,7 +2265,7 @@ def marketcap_json(request):
         # Fetch the latest 30 records from the Token model
         search_name = request.GET.get('search_name')
         search_value = request.GET.get('search_value')
-        
+
         if search_name and search_value:
             # Using **kwargs to dynamically filter by search_name and search_value
             filter_kwargs = {search_name: search_value}
@@ -2273,14 +2273,14 @@ def marketcap_json(request):
         elif search_value:
             # Perform a like search on specific fields
             tokens = PumpFunToken.objects.filter(
-                Q(mint__icontains=search_value) | 
-                Q(name__icontains=search_value) | 
-                Q(symbol__icontains=search_value) | 
-                Q(image_uri__icontains=search_value) | 
-                Q(twitter__icontains=search_value) | 
-                Q(telegram__icontains=search_value) | 
+                Q(mint__icontains=search_value) |
+                Q(name__icontains=search_value) |
+                Q(symbol__icontains=search_value) |
+                Q(image_uri__icontains=search_value) |
+                Q(twitter__icontains=search_value) |
+                Q(telegram__icontains=search_value) |
                 Q(website__icontains=search_value)
-            ).order_by('-created_timestamp')[:15]            
+            ).order_by('-created_timestamp')[:15]
         else:
             tokens = PumpFunToken.objects.order_by('-created_timestamp')[:7]
 
@@ -2315,7 +2315,7 @@ def marketcap_json(request):
     }
 
     return JsonResponse(response_data)
-     
+
 @csrf_exempt
 @user_passes_test(superuser_required)
 def create_token(request):
@@ -2361,7 +2361,7 @@ def create_token(request):
             profile_image = request.POST.get('profile_image')
             usd_market_cap = request.POST.get('usd_market_cap')
             ai_analysis = request.POST.get('ai_analysis')
-            
+
             # Creating and saving the Token object
             token = PumpFunToken(
                 mint=mint,
@@ -2390,7 +2390,7 @@ def create_token(request):
                 ai_analysis=ai_analysis
             )
             token.save()
-            
+
             return JsonResponse({'message': 'Token created successfully.'}, status=201)
         except Exception as e:
             print(str(e))
@@ -2400,15 +2400,15 @@ def create_token(request):
 
 def token_detail(request, mint):
     token = get_object_or_404(PumpFunToken, mint=mint)
-    
+
     # Retrieve access_cookie from cookies
     access_cookie = request.COOKIES.get('access_id')
     print(access_cookie)
-    
+
     # Initialize user and public_wallet_address to None
     user = None
     public_wallet_address = None
-    
+
     if access_cookie:
         try:
             # Fetch the Accesstoken based on access_cookie
@@ -2420,13 +2420,13 @@ def token_detail(request, mint):
 
     if request.method == 'POST':
         url = request.POST.get('url')
-        
+
         if mint and url:
             # Check if the URL starts with 'https://x.com'
             if url.startswith('https://x.com'):
                 # Check if a RaidLink with the same URL and token mint already exists
                 existing_link = RaidLink.objects.filter(token_mint=mint, url=url).exists()
-                
+
                 if not existing_link:
                     raid_link = RaidLink(
                         token_mint=mint,
@@ -2447,7 +2447,7 @@ def token_detail(request, mint):
 
     # Retrieve all RaidLinks associated with the token mint
     raid_links = RaidLink.objects.filter(token_mint=mint)
-    
+
     # Extract distinct accounts from raid links
     accounts = set()
     for link in raid_links:
@@ -2529,10 +2529,10 @@ def create_tweet(request):
             return redirect('tweet_list')  # Redirect to the list after saving
     else:
         form = TweetForm()
-    
+
     return render(request, 'tweet_form.html', {'form': form})
 
-def marketcap_async_search(request): 
+def marketcap_async_search(request):
 
     search_name = str(request.GET.get('search_name', ''))
     search_value = request.GET.get('search_value', '')
@@ -2543,23 +2543,23 @@ def marketcap_async_search(request):
     except Exception as e:
         print("An error occurred while rendering the template:", e)
         return render(request, 'error.html', {'error_message': 'An error occurred while rendering the template.'})
- 
+
 
 @csrf_exempt
 @admin_required
-def tweet_add(request): 
+def tweet_add(request):
 
     form = TweetForm()
-    
-    context = { 
+
+    context = {
         'form': form,
     }
-    response = render(request, 'tweet_form.html', context) 
+    response = render(request, 'tweet_form.html', context)
 
 
     return response
 
- 
+
 
 def pay_with_stripe(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
@@ -2683,7 +2683,7 @@ def select_payment_type(request):
             })
 
     return render(request, 'select_payment.html', {'tokens': tokens, 'profile': profile})
- 
+
 def pay_with_token(request, token_address):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
@@ -2831,7 +2831,7 @@ def pay_with_solana(request):
     recipient = profile.wallet
     return redirect(f'/solana_payment/?amount={total_in_sol:.8f}&recipient={recipient}')
 
-     
+
 # List all touchpoint types
 @admin_required
 def touchpoint_type_list(request):
@@ -2870,7 +2870,7 @@ def touchpoint_type_edit(request, pk):
             return redirect('touchpoint_type_list')
     else:
         form = TouchPointTypeForm(instance=touchpoint_type)
-    return render(request, 'touchpoint_type_form.html', {'form': form, 'profile': profile})     
+    return render(request, 'touchpoint_type_form.html', {'form': form, 'profile': profile})
 
 @admin_required
 def generate_message(request, customer_id, touchpoint_id):
@@ -3032,9 +3032,9 @@ def save_generated_message(request):
                 touchpoint=touchpoint,
                 message=message_text
             )
-            
+
             return JsonResponse({"status": "success", "message_id": message.id})
-        
+
         except Exception as e:
             print(f"Error: {e}")
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
@@ -3055,13 +3055,13 @@ def customer_messages(request, customer_id):
         profile = WebsiteProfile(name="add name", about_us="some info about us")
     customer = get_object_or_404(Customer, id=customer_id)
     messages = GeneratedMessage.objects.filter(customer=customer).order_by('-created_at')
-    
+
     context = {
         'profile': profile,
         'customer': customer,
         'messages': messages,
     }
-    
+
     return render(request, 'customer_messages.html', context)
 
 @login_required
@@ -3071,7 +3071,7 @@ def update_generated_message(request, pk):
         profile = WebsiteProfile(name="add name", about_us="some info about us")
 
     message = get_object_or_404(GeneratedMessage, pk=pk)
-    
+
     if request.method == 'POST':
         form = GeneratedMessageForm(request.POST, instance=message)
         if form.is_valid():
@@ -3079,7 +3079,7 @@ def update_generated_message(request, pk):
             return redirect('customer_edit', customer_id=message.customer.id)  # Redirect to customer detail page
     else:
         form = GeneratedMessageForm(instance=message)
-    
+
     return render(request, 'generated_message_update.html', {'form': form, 'message': message, 'profile': profile})
 
 
@@ -3119,7 +3119,7 @@ def edit_pdf(request, pk):
     else:
         form = PDFDocumentForm(instance=pdf)
     return render(request, 'edit_pdf.html', {'form': form, 'pdf': pdf})
-  
+
 @login_required
 def secure_download(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -3142,7 +3142,7 @@ def secure_download(request, product_id):
     if not product.digital_file:
         logger.error(f"Product {product_id} does not have a digital file.")
         return HttpResponseForbidden("The product does not have a digital file.")
-    
+
     logger.info(f"Serving digital file for product {product_id}.")
     return FileResponse(open(file_path, 'rb'), as_attachment=True)
 
@@ -3181,7 +3181,7 @@ def get_general_info(profile):
                 question,
                 content
             ))
-    
+
     address_fields = [profile.address1, profile.address2, profile.city, profile.state, profile.zip_code, profile.country]
     address_info = ", ".join(filter(None, address_fields)).strip(', ')
     if address_info:
@@ -3257,20 +3257,20 @@ def upload_and_finetune(client, jsonl_file_path, profile):
 def train_product_model(request):
     if request.method != "GET":
         return JsonResponse({"error": "Invalid request"}, status=400)
-    
+
     profile = get_latest_profile()
     validation_error = validate_profile(profile)
     if validation_error:
         return JsonResponse(*validation_error)
-    
+
     client = OpenAI(api_key=profile.chatgpt_api_key)
     training_data = get_general_info(profile) + get_product_info() + get_qa_info() + get_conversation_info()
     jsonl_file_path = save_training_data(training_data)
-    
+
     file_id, result = upload_and_finetune(client, jsonl_file_path, profile)
     if not file_id:
         return JsonResponse({"error": f"An error occurred: {result}"}, status=500)
-    
+
     return redirect('admin_panel')
 
 @admin_required
@@ -3279,14 +3279,14 @@ def copy_profile(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
-     
+
     # Copy the profile's model ID to the current active model ID
     profile.chatgpt_model_id_current = profile.chatgpt_model_id
     profile.save()
-    
+
     # Optionally, you can redirect to another page after performing the action
     return redirect('admin_panel')
- 
+
 
 # List all question answers
 @staff_required
@@ -3294,7 +3294,7 @@ def question_answer_list(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
-    
+
     question_answers = QuestionAnswer.objects.all()
     return render(request, 'question_answer_list.html', {'question_answers': question_answers, 'profile': profile})
 
@@ -3354,7 +3354,7 @@ def public_question_answer_list(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
-    
+
     # Filter answers that are:
     # - approved (is_approved)
     # - visible to the public (is_visible_public)
@@ -3366,7 +3366,7 @@ def public_question_answer_list(request):
         is_deleted=False,
         has_sensitive_data=False
     )
-    
+
     return render(request, 'question_answer_list.html', {'question_answers': question_answers, 'profile': profile})
 
 # Add a new answer (only answer field)
@@ -3388,7 +3388,7 @@ def simple_question_add(request):
 
             if not request.user.is_staff:
                 return redirect('public_question_answer_list')
-                
+
             return redirect('question_answer_list')
     else:
         form = SimpleQuestionForm()  # Use the new form with only the 'answer' field
@@ -3400,9 +3400,9 @@ def conversation_list(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
-    
+
     conversations = Conversation.objects.prefetch_related("messages").all()
-    
+
     # Link conversations with customers based on email
     for conversation in conversations:
         if conversation.user:
@@ -3414,7 +3414,7 @@ def conversation_list(request):
         else:
             conversation.customer = None
 
-    
+
     return render(request, "conversation_list.html", {"conversations": conversations, 'profile': profile})
 
 @csrf_exempt
@@ -3454,24 +3454,24 @@ def update_message_content(request, message_id):
         # Update the message content
         message.content_update = content_update
         message.save()
- 
+
         # Log the updated message for debugging
 
         return JsonResponse({'success': True})
     except Exception as e:
         print("Unexpected error:", str(e))
         return JsonResponse({'success': False, 'error': str(e)})
-    
+
 
 @admin_required
 def visitor_list(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
-    
+
     visitors = Visitor.objects.all().order_by('-last_visit')  # Sort by last_visit, latest first
     visitor_count = visitors.count()  # Count total visitors
-    
+
     return render(request, 'visitor_list.html', {
         'visitors': visitors,
         'profile': profile,
@@ -3482,7 +3482,7 @@ def visitor_list(request):
 @admin_required
 def visitor_delete(request, id):
     visitor = get_object_or_404(Visitor, id=id)  # Fetch the visitor to delete
-    
+
     if request.method == 'POST':
         visitor.delete()  # Delete the visitor
         return redirect('visitor_list')  # Redirect to the visitors list page
@@ -3496,7 +3496,7 @@ def list_users(request):
     profile = WebsiteProfile.objects.order_by('-created_at').first()
     if not profile:
         return JsonResponse({"error": "No website profile found. Please create a profile first."}, status=400)
-    
+
     if not request.user.is_staff:
         return redirect('user_list')  # Redirect if not an admin
     users = User.objects.all()
@@ -3552,14 +3552,14 @@ def landing_page_edit(request, pk):
     else:
         form = LandingPageForm(instance=landing_page)
     return render(request, 'landing_page_form.html', {'form': form, 'profile': profile})
- 
+
 CADDY_API_URL_CONFIG = "http://localhost:2019/config"  # Update with your Caddy API URL
 CADDY_API_HTTP_URL = "http://localhost:2019/config/apps/http"
 
 def remove_domain_proxy(domain):
     """
     Remove the domain and its reverse proxy configuration from Caddy.
-    
+
     :param domain: The domain to remove (e.g., "example.com").
     """
     domain_id = domain.replace('.', '-')  # ID used in the proxy configuration
@@ -3571,7 +3571,7 @@ def remove_domain_proxy(domain):
         if response.status_code != 200:
             print(f"Failed to fetch current routes configuration: {response.text}")
             return
-        
+
         # Step 2: Parse the current configuration
         config = response.json()
 
@@ -3602,7 +3602,7 @@ def remove_domain_proxy(domain):
                 print(f"No proxy configuration found for domain {domain}.")
         else:
             print(f"Unexpected format for 'routes'. Expected list, but found: {type(routes)}")
-            
+
     except Exception as e:
         print(f"An error occurred: {e}")
 
@@ -3614,16 +3614,16 @@ def delete_matching_routes(domain):
 
     # Step 1: Get current routes to find existing entries
     routes_response = requests.get(CADDY_API_URL)
-    
+
     if routes_response.status_code == 200:
         routes = routes_response.json()
-        
+
         # Step 2: Find and delete the matching routes
         for index, route in enumerate(routes):
             if any(match.get('host') == [domain] for match in route.get('match', [])):
                 delete_url = f"{CADDY_API_URL}/{index}"
                 delete_response = requests.delete(delete_url)
-                
+
                 if delete_response.status_code == 200:
                     print(f"Route for domain {domain} deleted successfully.")
                 else:
@@ -3652,7 +3652,7 @@ def add_domain_with_proxy(domain, port):
 
     if domain_with_scheme not in settings.CORS_ALLOWED_ORIGINS:
         settings.CORS_ALLOWED_ORIGINS.append(domain_with_scheme)
-    
+
 
     # Normalize domain ID for Caddy
     domain_id = domain.replace('.', '-')
@@ -3690,7 +3690,7 @@ def add_domain_with_proxy(domain, port):
     else:
         print(f"Failed to add domain {domain}: {response.text}")
 
-@admin_required 
+@admin_required
 def set_landing_page_active(request, pk):
     landing_page = get_object_or_404(LandingPage, pk=pk)
     add_domain_with_proxy(landing_page.domain_name,landing_page.port)
@@ -3713,7 +3713,7 @@ def set_landing_page_active(request, pk):
     return redirect('landing_page_list')
 
 
-@admin_required 
+@admin_required
 def set_landing_page_inactive(request, pk):
     landing_page = get_object_or_404(LandingPage, pk=pk)
     delete_matching_routes(landing_page.domain_name)
@@ -3721,7 +3721,7 @@ def set_landing_page_inactive(request, pk):
     # Check if the landing page is using Docker
     if landing_page.is_docker:
         client = docker.from_env()
-        
+
         # Stop and remove the container if it's running
         if landing_page.docker_id:
             container = client.containers.get(landing_page.docker_id)
@@ -3787,7 +3787,7 @@ def submit_form(request):
         print("Error occurred:", str(e))
         return JsonResponse({'error': 'Failed to process form', 'details': str(e)}, status=500)
 
-@admin_required 
+@admin_required
 def submission_list(request):
     profile = get_latest_profile()
     submissions = FormSubmission.objects.all().order_by('-created_at')
@@ -3799,22 +3799,22 @@ def submission_list(request):
 def generate_token(request):
     if request.method == 'POST':
         user = request.user
-        
+
         # Create or retrieve the token associated with the user
         token, created = Token.objects.get_or_create(user=user)
-        
+
         # If the token was created, it will be stored in the database
         if created:
             # Optionally, you can log or handle the case where a new token is created.
             print(f"New token created for user {user.username}")
-        
+
         # Return the token in the response so the client can store it
         return JsonResponse({'token': token.key})
-    
+
     # If the request method is not POST, return an error
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
-@admin_required 
+@admin_required
 def business_list(request):
     businesses = Business.objects.all()
     total_businesses = businesses.count()
@@ -3823,7 +3823,7 @@ def business_list(request):
         'total_businesses': total_businesses
     })
 
-@admin_required 
+@admin_required
 def delete_business(request, business_id):
     business = get_object_or_404(Business, id=business_id)
     if request.method == "POST":
@@ -3831,12 +3831,12 @@ def delete_business(request, business_id):
         return redirect('business_list')
     return render(request, 'delete_business.html', {'business': business})
 
-@admin_required 
+@admin_required
 def cleaning_request_list(request):
     cleaning_requests = CleaningRequest.objects.all()
     return render(request, 'cleaning_request_list.html', {'cleaning_requests': cleaning_requests})
 
-# Model Context Protocol MCP 
+# Model Context Protocol MCP
 
 @extend_schema(
     summary="Retrieve MCP-Compatible Business Context",
@@ -3870,9 +3870,9 @@ class CustomHeaderAuthentication(TokenAuthentication):
             raise AuthenticationFailed("User inactive or deleted")
 
         return (token.user, token)  # Ensure this tuple is returned
-    
-'''    
-    
+
+'''
+
 @extend_schema(
     summary="Retrieve, Update, or Delete a Business",
     description="API endpoint to retrieve, update, or delete a business by ID.",
@@ -3897,7 +3897,7 @@ class BusinessMCPView(APIView):
         businesses = self.queryset
         data = [b.to_mcp_context() for b in businesses]
         return Response(data)
-    
+
 
 @extend_schema(
     summary="Create a new business",
@@ -3905,7 +3905,7 @@ class BusinessMCPView(APIView):
     tags=["Business"]
 )
 #@login_required
-#@protected_resource(scopes=["userinfo"])    
+#@protected_resource(scopes=["userinfo"])
 class BusinessCreateView(CreateAPIView):
     """
     API endpoint to create a new business.
@@ -3913,13 +3913,13 @@ class BusinessCreateView(CreateAPIView):
     #authentication_classes = [CustomHeaderAuthentication]
     #permission_classes = [IsAuthenticated]
     queryset = Business.objects.all()
-    serializer_class = BusinessSerializer 
+    serializer_class = BusinessSerializer
 
     def post(self, request, *args, **kwargs):
 
         if not request.user or not request.user.is_authenticated:
             return Response({"error": "Authentication required"}, status=403)
-                
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -3939,13 +3939,13 @@ class BusinessCreateView(CreateAPIView):
         }
 
         return Response(response_data, status=201, headers=headers)
-    
+
 @extend_schema(
     summary="List, Search, or Create Businesses",
     description="API endpoint to list, search, or create a new business. Supports filtering by name, industry, and city.",
     tags=["Business"]
-)  
-class BusinessListCreateView(ListCreateAPIView): 
+)
+class BusinessListCreateView(ListCreateAPIView):
     """
     API endpoint to list, search, or create businesses.
     Supports search by name, industry, and city.
@@ -3954,7 +3954,7 @@ class BusinessListCreateView(ListCreateAPIView):
     serializer_class = BusinessSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ["name", "industry", "city"]  # Exact match filtering
-    search_fields = ["name", "industry", "city"]  # Partial search support 
+    search_fields = ["name", "industry", "city"]  # Partial search support
 
 @extend_schema(
     summary="Retrieve, Update, or Delete a Business",
@@ -4036,9 +4036,9 @@ class SupportTicketUpdateView(generics.UpdateAPIView):
 
 '''
 
-# REVIEWS 
- 
- 
+# REVIEWS
+
+
 
 @extend_schema(
     summary="Register a new user",
@@ -4126,7 +4126,7 @@ class CustomLoginView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
     permission_classes = [AllowAny]
 
-# update   
+# update
 @extend_schema(
     summary="Create a Cleaning Request",
     description="Order home and business cleaning services through MaidsApp.com.",
@@ -4138,7 +4138,7 @@ class CleaningRequestCreateView(generics.CreateAPIView):
 
     def send_confirmation_email(self, cleaning_data):
         sg = sendgrid.SendGridAPIClient(api_key=settings.EMAIL_HOST_PASSWORD)
-        
+
         subject = "New Cleaning Request Received"
 
         # Render the email template with booking details
@@ -4176,12 +4176,12 @@ class CleaningRequestCreateView(generics.CreateAPIView):
             cleaning_request = serializer.save()
             self.send_confirmation_email(serializer.data)
             return Response(
-                {"message": "Service request created successfully!", "data": serializer.data}, 
+                {"message": "Service request created successfully!", "data": serializer.data},
                 status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    
+
 @extend_schema(
     summary="Create an Immigration Case",
     description="Submit an intake form for an immigration case in the United States.",
@@ -4201,7 +4201,7 @@ class ImmigrationCaseCreateView(generics.CreateAPIView):
                 status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 '''
 
 @extend_schema(
@@ -4238,17 +4238,17 @@ class LetterSearchView(generics.ListAPIView):
         sender = self.request.query_params.get('sender', None)
         recipient = self.request.query_params.get('recipient', None)
         subject = self.request.query_params.get('subject', None)
-        
+
         if sender:
             queryset = queryset.filter(sender__icontains=sender)
         if recipient:
             queryset = queryset.filter(recipient__icontains=recipient)
         if subject:
             queryset = queryset.filter(subject__icontains=subject)
-        
+
         return queryset
 
-''' 
+'''
 
 @extend_schema(
     tags=["Reviews"],
@@ -4271,7 +4271,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         """
         Filters reviews based on business_id, stars, or search text in comment/reviewer name.
-        Example: 
+        Example:
         - /reviews/?business_id=1
         - /reviews/?stars=5
         - /reviews/?search=great
@@ -4321,7 +4321,7 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
 
     def send_confirmation_email(self, car_finder_data):
         sg = sendgrid.SendGridAPIClient(api_key=settings.EMAIL_HOST_PASSWORD)
-        
+
         subject = "New Car Finder Request Received"
 
         # Render email template with car request details
@@ -4362,13 +4362,13 @@ class CarFinderResponseCreateView(generics.CreateAPIView):
             car_finder_response = serializer.save()
             self.send_confirmation_email(serializer.validated_data)  # Fix: Use validated_data
             return Response(
-                {"message": "Car Finder request created successfully!", "data": serializer.data}, 
+                {"message": "Car Finder request created successfully!", "data": serializer.data},
                 status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
- 
- 
+
+
+
 # TWITTER CHECKER
 @admin_required
 def call_node_script(request):
@@ -4419,7 +4419,7 @@ def call_node_script(request):
 
         return JsonResponse({'status': 'error', 'output': e.stderr}, status=500)
 
- 
+
 
 
 
@@ -4501,7 +4501,7 @@ def character_create(request):
         form = UserCharacterForm(request.POST, request.FILES)
         if form.is_valid():
             character = form.save(commit=False)
-            character.user = request.user 
+            character.user = request.user
             character.save()
             return redirect('character_list')
         else:
@@ -4512,13 +4512,13 @@ def character_create(request):
 
 @login_required
 def character_update(request, pk):
-    
+
     profile = get_latest_profile()
     character = get_object_or_404(UserCharacter, pk=pk)
     if request.user != character.user:
         return redirect('public_characters')
 
-    
+
 
     model_status = None
     model_error = None
@@ -4534,15 +4534,15 @@ def character_update(request, pk):
         except Exception as e:
             model_status = "Error"
             model_error = str(e)
-    
-    if request.method == 'POST': 
+
+    if request.method == 'POST':
         form = UserCharacterForm(request.POST, request.FILES, instance=character)
         if form.is_valid():
             form.save()
             return redirect('character_list')
     else:
         form = UserCharacterForm(instance=character)
-    
+
     context = {
         'form': form,
         'is_edit': True,
@@ -4558,7 +4558,7 @@ def character_update(request, pk):
 def memory_list(request):
     profile = get_latest_profile()
     character_id = request.GET.get('character')
-    
+
     if character_id:
         # Filter by character only (ignore user)
         memories = CharacterMemory.objects.filter(character_id=character_id)
@@ -4686,7 +4686,7 @@ def fine_tune_character(request, character_id):
         fine_tune_job = client.fine_tuning.jobs.create(training_file=uploaded.id, model="gpt-3.5-turbo")
 
         # Save fine-tuned model ID to character
-        character.chatgpt_model_id = fine_tune_job.id  
+        character.chatgpt_model_id = fine_tune_job.id
         character.save()
 
         return JsonResponse({"success": True, "model_id": fine_tune_job.id})
@@ -4703,7 +4703,7 @@ def copy_model_to_current(request, character_id):
 
     # Retrieve the UserCharacter object for the current user
     character = get_object_or_404(UserCharacter, id=character_id, user=request.user)
-    
+
     # Check if there is a fine-tuned model id available to copy
     if character.chatgpt_model_id:
         character.chatgpt_model_id_current = character.chatgpt_model_id
@@ -4715,10 +4715,9 @@ def copy_model_to_current(request, character_id):
         })
     else:
         return JsonResponse({"error": "No fine-tuned model available to copy."}, status=400)
-    
- 
 
-@login_required
+
+
 @csrf_exempt
 def user_chatbot_response_private(request, character_id):
 
@@ -4726,7 +4725,7 @@ def user_chatbot_response_private(request, character_id):
 
     character = get_object_or_404(UserCharacter, id=character_id)
 
-     
+
 
     if not character.is_public and character.user != request.user:
         raise Http404("Character not found.")
@@ -4920,7 +4919,6 @@ def user_chatbot_response_private(request, character_id):
         logger.error("Chat processing failed: %s", str(e))
         return JsonResponse({"error": "An internal error occurred."}, status=500)
 
-@login_required
 def chat_view(request, character_id):
     character = get_object_or_404(UserCharacter, id=character_id)
     return render(request, 'agents/character_chat.html', {'character': character})
@@ -4950,19 +4948,19 @@ class AddMemoryView(APIView):
             'status': 'error',
             'errors': serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 @csrf_exempt
 @login_required
 def register_mcp(request):
-    user = request.user 
+    user = request.user
 
     if not user.openai_api_key:
         return JsonResponse({"error": "User does not have an OpenAI API key."}, status=400)
 
     # Try to get character (optional)
     character = None
-    model_id = "gpt-4-1106-preview" 
+    model_id = "gpt-4-1106-preview"
 
     # Get schema
     schema_url = request.build_absolute_uri('/api/schema/')
@@ -5043,7 +5041,7 @@ def public_characters_view(request):
 def public_character_detail(request, character_id):
     profile = get_latest_profile()
     character = get_object_or_404(UserCharacter, id=character_id, is_public=True)
-    
+
     return render(request, 'public_character_detail.html', {
         'character': character,
         'profile': profile,
