@@ -132,6 +132,32 @@
     animation: glitch-anim 2s infinite linear alternate-reverse;
   }
 
+  /* Fix all links to use terminal green */
+  a {
+    color: rgba(0, 255, 0, 0.9) !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+  }
+
+  a:hover {
+    color: #FFFFFF !important;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+  }
+
+  /* Terminal cursor animation */
+  .terminal-cursor {
+    display: inline-block;
+    color: rgba(0, 255, 0, 0.9);
+    font-weight: bold;
+    animation: blink 1s step-end infinite;
+    margin-left: 2px;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
   /* Cyberpunk buttons */
   .cyber-btn {
     background: rgba(0, 20, 0, 0.6);
@@ -267,6 +293,11 @@
     margin-bottom: 15px;
     font-size: 0.8rem;
     color: rgba(0, 255, 0, 0.7);
+    font-family: 'Courier New', monospace;
+    background: rgba(0, 20, 0, 0.3);
+    border: 1px solid rgba(0, 255, 0, 0.2);
+    padding: 8px;
+    border-radius: 3px;
   }
 
   .character-stat {
@@ -276,6 +307,7 @@
 
   .character-stat i {
     margin-right: 5px;
+    color: rgba(0, 255, 0, 0.9);
   }
 
   /* Empty state */
@@ -345,10 +377,19 @@
   <div class="container position-relative">
     <!-- Header with glitch effect -->
     <div class="mb-5 text-center">
-      <h1 class="neon-text glitch-text display-4 fw-bold mb-4" data-text="AI AGENT STORE">AI AGENT STORE</h1>
+      <div class="terminal-header mb-2">
+        <span style="color: rgba(0, 255, 0, 0.7); font-family: 'Courier New', monospace; font-size: 0.9rem;">
+          > SYSTEM INITIALIZED... LOADING AGENTS DATABASE...
+        </span>
+      </div>
+      <h1 class="neon-text glitch-text display-4 fw-bold mb-3" data-text="AI AGENT TERMINAL">AI AGENT TERMINAL</h1>
       <div class="row justify-content-center">
         <div class="col-md-8">
-          <p class="lead" style="color: rgba(0, 255, 0, 0.8);">Discover, connect, and chat with intelligent digital personas — each with unique abilities, knowledge, and access to different data or actions.</p>
+          <div class="terminal-output p-2 mb-3" style="background: rgba(0, 20, 0, 0.3); border: 1px solid rgba(0, 255, 0, 0.2); border-radius: 3px;">
+            <p class="lead mb-0" style="color: rgba(0, 255, 0, 0.8); font-family: 'Courier New', monospace; font-size: 0.9rem;">
+              > DISCOVER, CONNECT, AND CHAT WITH INTELLIGENT DIGITAL PERSONAS — EACH WITH UNIQUE ABILITIES, KNOWLEDGE, AND ACCESS TO DIFFERENT DATA OR ACTIONS.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -410,8 +451,9 @@
             <div class="p-4">
               <!-- Character name with glitch effect -->
               <h3 class="mb-3">
-                <a href="{% url 'public_character_detail' character.id %}" class="text-decoration-none">
+                <a href="{% url 'public_character_detail' character.id %}" class="text-decoration-none terminal-link">
                   <span class="glitch-text neon-text" data-text="{{ character.name }}">{{ character.name }}</span>
+                  <span class="terminal-cursor">_</span>
                 </a>
               </h3>
 
@@ -419,22 +461,24 @@
               <div class="character-stats">
                 <div class="character-stat">
                   <i class="fas fa-bolt"></i>
-                  <span>v1.0</span>
+                  <span>STATUS:ONLINE</span>
                 </div>
                 <div class="character-stat">
                   <i class="fas fa-network-wired"></i>
-                  <span>CONNECTED</span>
+                  <span>NET:ACTIVE</span>
                 </div>
                 <div class="character-stat">
                   <i class="fas fa-shield-alt"></i>
-                  <span>SECURE</span>
+                  <span>SEC:ENABLED</span>
                 </div>
               </div>
 
               <!-- Character description -->
-              <p class="mb-4" style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; min-height: 60px;">
-                {{ character.persona|truncatechars:120 }}
-              </p>
+              <div class="terminal-text mb-4" style="min-height: 60px;">
+                <span style="color: rgba(0, 255, 0, 0.7); font-family: 'Courier New', monospace; font-size: 0.9rem;">
+                  > {{ character.persona|truncatechars:120 }}
+                </span>
+              </div>
 
               <!-- Action buttons -->
               <div class="d-grid gap-3">
