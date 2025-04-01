@@ -57,7 +57,6 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    min-height: 600px; /* Set minimum height for all cards */
   }
 
   .cyber-product-card:before {
@@ -85,7 +84,7 @@
     overflow: hidden;
     border-bottom: 1px solid rgba(0, 255, 0, 0.2);
     border-radius: 4px 4px 0 0;
-    height: 250px; /* Exact fixed height for all containers */
+    aspect-ratio: 16/9; /* Maintain consistent aspect ratio */
     width: 100%;
     display: flex;
     align-items: center;
@@ -96,11 +95,12 @@
   .product-image {
     transition: all 0.5s ease;
     filter: brightness(0.9) contrast(110%);
-    height: 200px; /* Exact fixed height for all images */
-    width: 200px; /* Exact fixed width for all images */
+    max-height: 100%;
+    max-width: 100%;
     object-fit: contain; /* Contain to prevent distortion */
     object-position: center; /* Center the image */
     margin: 0 auto; /* Center horizontally */
+    padding: 10px; /* Add some padding */
   }
 
   .cyber-product-card:hover .product-image {
@@ -328,18 +328,10 @@
     background: linear-gradient(180deg, #00FFAA, #00FFFF);
   }
 
-  /* Equal height cards */
-  .row-cols-1 > .col,
-  .row-cols-md-2 > .col,
-  .row-cols-lg-3 > .col {
+  /* Equal height cards - responsive approach */
+  .row > .col {
     display: flex;
     margin-bottom: 20px;
-  }
-
-  .cyber-product-card {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
   }
 
   /* Ensure product info takes remaining space */
@@ -356,10 +348,6 @@
 
   /* Responsive adjustments */
   @media (max-width: 768px) {
-    .product-grid {
-      grid-template-columns: 1fr;
-    }
-
     .neon-text {
       font-size: 1.8rem;
     }
@@ -371,7 +359,7 @@
     }
 
     .product-image-container {
-      height: 220px; /* Smaller height on mobile */
+      aspect-ratio: 4/3; /* Slightly different aspect ratio on mobile */
     }
   }
 </style>
@@ -419,8 +407,8 @@
     </div>
 
     {% if products %}
-      <!-- Product grid with consistent spacing and alignment -->
-      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" style="margin-top: 10px; display: flex; align-items: stretch;">
+      <!-- Product grid with responsive layout -->
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" style="margin-top: 10px;">
         {% for product in products %}
           <div class="col">
             <div class="cyber-product-card">
@@ -429,13 +417,11 @@
               <div class="product-image-container">
                 <div class="image-overlay"></div>
 
-                <div class="d-flex align-items-center justify-content-center" style="width: 200px; height: 200px; margin: 0 auto;">
-                  {% if product.product_image %}
-                    <img src="{{ product.product_image.url }}" class="product-image" alt="{{ product.name }}">
-                  {% else %}
-                    <i class="fas fa-cube fa-4x" style="color: rgba(0, 255, 0, 0.3);"></i>
-                  {% endif %}
-                </div>
+                {% if product.product_image %}
+                  <img src="{{ product.product_image.url }}" class="product-image" alt="{{ product.name }}">
+                {% else %}
+                  <i class="fas fa-cube fa-4x" style="color: rgba(0, 255, 0, 0.3);"></i>
+                {% endif %}
 
                 <!-- Product badge -->
                 <div class="product-badge">
