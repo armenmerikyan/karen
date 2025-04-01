@@ -84,14 +84,21 @@
     overflow: hidden;
     border-bottom: 1px solid rgba(0, 255, 0, 0.2);
     border-radius: 4px 4px 0 0;
+    height: 280px; /* Fixed height to match the image height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 10, 0, 0.5);
   }
 
   .product-image {
     transition: all 0.5s ease;
     filter: brightness(0.9) contrast(110%);
-    height: 220px;
-    object-fit: cover;
-    width: 100%;
+    max-height: 260px; /* Maximum height instead of fixed */
+    max-width: 90%; /* Prevent image from touching the edges */
+    object-fit: contain; /* Changed to contain to prevent distortion */
+    object-position: center; /* Center the image */
+    margin: 0 auto; /* Center horizontally */
   }
 
   .cyber-product-card:hover .product-image {
@@ -319,6 +326,32 @@
     background: linear-gradient(180deg, #00FFAA, #00FFFF);
   }
 
+  /* Equal height cards */
+  .row-cols-1 > .col,
+  .row-cols-md-2 > .col,
+  .row-cols-lg-3 > .col {
+    display: flex;
+    margin-bottom: 20px;
+  }
+
+  .cyber-product-card {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Ensure product info takes remaining space */
+  .product-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Push button to bottom */
+  .product-info .cyber-btn {
+    margin-top: auto;
+  }
+
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .product-grid {
@@ -333,6 +366,10 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 5px;
+    }
+
+    .product-image-container {
+      height: 220px; /* Smaller height on mobile */
     }
   }
 </style>
@@ -380,35 +417,27 @@
     </div>
 
     {% if products %}
-      <!-- Product grid -->
-      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <!-- Product grid with consistent spacing -->
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" style="margin-top: 10px;">
         {% for product in products %}
           <div class="col">
             <div class="cyber-product-card">
               <!-- Product image with overlay -->
-              {% if product.product_image %}
-                <div class="product-image-container">
-                  <div class="image-overlay"></div>
+              <!-- Product image container with consistent sizing -->
+              <div class="product-image-container">
+                <div class="image-overlay"></div>
+
+                {% if product.product_image %}
                   <img src="{{ product.product_image.url }}" class="product-image" alt="{{ product.name }}">
+                {% else %}
+                  <i class="fas fa-cube fa-4x" style="color: rgba(0, 255, 0, 0.3);"></i>
+                {% endif %}
 
-                  <!-- Product badge -->
-                  <div class="product-badge">
-                    <i class="fas fa-microchip me-1"></i> PRODUCT
-                  </div>
+                <!-- Product badge -->
+                <div class="product-badge">
+                  <i class="fas fa-microchip me-1"></i> PRODUCT
                 </div>
-              {% else %}
-                <div class="product-image-container" style="height: 220px;">
-                  <div class="image-overlay"></div>
-                  <div class="d-flex align-items-center justify-content-center h-100">
-                    <i class="fas fa-cube fa-4x" style="color: rgba(0, 255, 0, 0.3);"></i>
-                  </div>
-
-                  <!-- Product badge -->
-                  <div class="product-badge">
-                    <i class="fas fa-microchip me-1"></i> PRODUCT
-                  </div>
-                </div>
-              {% endif %}
+              </div>
 
               <div class="product-info">
                 <!-- Product name with terminal cursor -->
