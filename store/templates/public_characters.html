@@ -90,6 +90,7 @@
     filter: brightness(0.9) contrast(110%);
     height: 220px;
     object-fit: cover;
+    object-position: center 30%; /* Position to show eyes for profile pictures */
     width: 100%;
   }
 
@@ -447,7 +448,7 @@
             {% if character.character_image %}
               <div class="character-image-container">
                 <div class="image-overlay"></div>
-                <img src="{{ character.character_image.url }}" class="character-image w-100" alt="{{ character.name }}" style="height: 220px; object-fit: cover;">
+                <img src="{{ character.character_image.url }}" class="character-image w-100" alt="{{ character.name }}" style="height: 220px; object-fit: cover; object-position: center 30%;">
 
                 <!-- AI AGENT badge - top right -->
                 <div class="position-absolute" style="top: 15px; right: 15px; z-index: 2;">
