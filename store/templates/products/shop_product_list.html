@@ -57,6 +57,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    min-height: 600px; /* Set minimum height for all cards */
   }
 
   .cyber-product-card:before {
@@ -84,7 +85,8 @@
     overflow: hidden;
     border-bottom: 1px solid rgba(0, 255, 0, 0.2);
     border-radius: 4px 4px 0 0;
-    height: 280px; /* Fixed height to match the image height */
+    height: 250px; /* Exact fixed height for all containers */
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -94,9 +96,9 @@
   .product-image {
     transition: all 0.5s ease;
     filter: brightness(0.9) contrast(110%);
-    max-height: 260px; /* Maximum height instead of fixed */
-    max-width: 90%; /* Prevent image from touching the edges */
-    object-fit: contain; /* Changed to contain to prevent distortion */
+    height: 200px; /* Exact fixed height for all images */
+    width: 200px; /* Exact fixed width for all images */
+    object-fit: contain; /* Contain to prevent distortion */
     object-position: center; /* Center the image */
     margin: 0 auto; /* Center horizontally */
   }
@@ -417,8 +419,8 @@
     </div>
 
     {% if products %}
-      <!-- Product grid with consistent spacing -->
-      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" style="margin-top: 10px;">
+      <!-- Product grid with consistent spacing and alignment -->
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" style="margin-top: 10px; display: flex; align-items: stretch;">
         {% for product in products %}
           <div class="col">
             <div class="cyber-product-card">
@@ -427,11 +429,13 @@
               <div class="product-image-container">
                 <div class="image-overlay"></div>
 
-                {% if product.product_image %}
-                  <img src="{{ product.product_image.url }}" class="product-image" alt="{{ product.name }}">
-                {% else %}
-                  <i class="fas fa-cube fa-4x" style="color: rgba(0, 255, 0, 0.3);"></i>
-                {% endif %}
+                <div class="d-flex align-items-center justify-content-center" style="width: 200px; height: 200px; margin: 0 auto;">
+                  {% if product.product_image %}
+                    <img src="{{ product.product_image.url }}" class="product-image" alt="{{ product.name }}">
+                  {% else %}
+                    <i class="fas fa-cube fa-4x" style="color: rgba(0, 255, 0, 0.3);"></i>
+                  {% endif %}
+                </div>
 
                 <!-- Product badge -->
                 <div class="product-badge">
