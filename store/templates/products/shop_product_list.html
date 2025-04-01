@@ -1,48 +1,562 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
-{% block content %}
-<section class="py-0">
-  <div class="container-fluid">
-    <div class="container mt-5 text-light">
-      <h1>Products</h1>
-      
-      <!-- Search Box -->
-      <form method="GET" class="mb-4 d-flex">
-        <input type="text" name="search" class="form-control me-2" placeholder="Search Products" value="{{ request.GET.search }}">
-        <button type="submit" class="btn btn-primary">Search</button>
-      </form>
+{% load static %}
 
-      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4">
+{% block extra_head %}
+<!-- Cyberpunk font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* Target the canvas element directly */
+  canvas.particles-js-canvas-el {
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: -1 !important;
+    pointer-events: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+
+  /* Cyberpunk neon glow effects */
+  .neon-text {
+    color: #00FF00;
+    text-shadow: 0 0 5px #00FF00, 0 0 10px rgba(0, 255, 0, 0.7);
+    font-family: 'Orbitron', 'Courier New', monospace;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+
+  .neon-text-blue {
+    color: #00FFFF;
+    text-shadow: 0 0 5px #00FFFF, 0 0 10px rgba(0, 255, 255, 0.7);
+  }
+
+  /* Section styling */
+  .cyber-section {
+    position: relative;
+    background-color: #000;
+    background-image:
+      radial-gradient(circle at 50% 50%, rgba(0, 255, 0, 0.1) 0%, transparent 50%),
+      linear-gradient(0deg, #000 0%, #001500 100%);
+  }
+
+  /* Product card styling */
+  .cyber-product-card {
+    background: rgba(0, 10, 2, 0.9);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cyber-product-card:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #00FF00, #00FFFF, #FF00FF, #FFFF00, #00FF00);
+    background-size: 400% 400%;
+    animation: gradientBorder 3s ease infinite;
+    z-index: 1;
+  }
+
+  .cyber-product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    border-color: rgba(0, 255, 0, 0.6);
+  }
+
+  /* Product image styling */
+  .product-image-container {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+    border-radius: 4px 4px 0 0;
+  }
+
+  .product-image {
+    transition: all 0.5s ease;
+    filter: brightness(0.9) contrast(110%);
+    height: 220px;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  .cyber-product-card:hover .product-image {
+    filter: brightness(1.1) contrast(110%);
+    transform: scale(1.03);
+  }
+
+  .image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0,20,0,0.7) 0%, rgba(0,0,0,0.2) 50%, rgba(0,50,0,0.4) 100%);
+    z-index: 1;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+  }
+
+  .cyber-product-card:hover .image-overlay {
+    opacity: 0.6;
+  }
+
+  /* Product info styling */
+  .product-info {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .product-name {
+    font-family: 'Orbitron', 'Courier New', monospace;
+    color: rgba(0, 255, 0, 0.9);
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .product-price {
+    font-family: 'Courier New', monospace;
+    color: #00FFAA;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+  }
+
+  .product-description {
+    font-family: 'Courier New', monospace;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+  }
+
+  /* Cyberpunk buttons */
+  .cyber-btn {
+    background: rgba(0, 20, 0, 0.6);
+    color: rgba(0, 255, 0, 0.9) !important;
+    border: 1px solid rgba(0, 255, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    z-index: 1;
+    font-family: 'Orbitron', 'Courier New', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.6rem 1rem;
+    border-radius: 3px;
+  }
+
+  .cyber-btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.1), transparent);
+    transition: all 0.5s ease;
+    z-index: -1;
+  }
+
+  .cyber-btn:hover:before {
+    left: 100%;
+  }
+
+  .cyber-btn:hover {
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
+    color: #FFFFFF !important;
+    background: rgba(0, 40, 0, 0.8);
+    border-color: rgba(0, 255, 0, 0.6);
+  }
+
+  /* Search bar */
+  .cyber-search {
+    background: rgba(0, 15, 0, 0.7);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    color: rgba(0, 255, 0, 0.9);
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.2);
+    border-radius: 3px;
+    padding: 0.6rem 1rem;
+    font-family: 'Orbitron', 'Courier New', monospace;
+    letter-spacing: 1px;
+  }
+
+  .cyber-search:focus {
+    box-shadow: 0 0 12px rgba(0, 255, 0, 0.3);
+    border-color: rgba(0, 255, 0, 0.5);
+    outline: none;
+    background: rgba(0, 20, 0, 0.8);
+  }
+
+  /* Product stats */
+  .product-stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 0.8rem;
+    color: rgba(0, 255, 0, 0.7);
+    font-family: 'Courier New', monospace;
+    background: rgba(0, 20, 0, 0.3);
+    border: 1px solid rgba(0, 255, 0, 0.2);
+    padding: 8px;
+    border-radius: 3px;
+    gap: 10px;
+  }
+
+  .product-stat {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  .product-stat i {
+    margin-right: 5px;
+    color: rgba(0, 255, 0, 0.9);
+  }
+
+  /* Empty state */
+  .empty-state {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px dashed #00FF00;
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+  }
+
+  .empty-state i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    opacity: 0.7;
+  }
+
+  /* Animations */
+  @keyframes gradientBorder {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Product badge */
+  .product-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #00FF00;
+    color: #00FF00;
+    padding: 5px 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    border-radius: 3px;
+  }
+
+  /* Fix all links to use terminal green */
+  a {
+    color: rgba(0, 255, 0, 0.9) !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+  }
+
+  a:hover {
+    color: #FFFFFF !important;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+  }
+
+  /* Terminal cursor animation */
+  .terminal-cursor {
+    display: inline-block;
+    color: rgba(0, 255, 0, 0.9);
+    font-weight: bold;
+    animation: blink 1s step-end infinite;
+    margin-left: 2px;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    background: #000000;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 20, 0, 0.8);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #00FF00, #00FFAA);
+    border-radius: 10px;
+    border: 2px solid #000;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #00FFAA, #00FFFF);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .product-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .neon-text {
+      font-size: 1.8rem;
+    }
+
+    .product-stats {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- We don't need a separate div for particles, we'll attach it to the body -->
+
+<section class="cyber-section pt-2 pb-5">
+  <div class="container position-relative">
+    <!-- Header with glitch effect -->
+    <div class="mb-3 text-center">
+      <div class="terminal-header mb-1">
+        <span style="color: rgba(0, 255, 0, 0.7); font-family: 'Courier New', monospace; font-size: 0.9rem;">
+          > SYSTEM INITIALIZED... LOADING PRODUCT DATABASE...
+        </span>
+      </div>
+      <h1 class="neon-text display-4 fw-bold mb-2">CYBERNETIC PRODUCTS</h1>
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="terminal-output p-2 mb-2" style="background: rgba(0, 20, 0, 0.3); border: 1px solid rgba(0, 255, 0, 0.2); border-radius: 3px;">
+            <p class="mb-0" style="color: rgba(0, 255, 0, 0.8); font-family: 'Courier New', monospace; font-size: 0.9rem;">
+              > BROWSE OUR COLLECTION OF HIGH-TECH PRODUCTS DESIGNED FOR THE DIGITAL AGE.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enhanced search bar -->
+    <div class="row justify-content-center mb-4">
+      <div class="col-md-8">
+        <form method="GET" class="position-relative">
+          <div class="input-group input-group-lg">
+            <input type="text" name="search" class="form-control cyber-search" placeholder="SEARCH PRODUCTS..." value="{{ request.GET.search }}">
+            <button class="btn cyber-btn px-4" type="submit" style="color: rgba(0, 255, 0, 0.9) !important;">
+              <i class="fas fa-search me-2"></i>SCAN
+            </button>
+          </div>
+          <div class="position-absolute" style="bottom: -20px; right: 10px; font-size: 0.8rem; color: rgba(0, 255, 0, 0.6);">
+            <i class="fas fa-info-circle me-1"></i> {{ products|length }} products found
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {% if products %}
+      <!-- Product grid -->
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         {% for product in products %}
-          <div class="col mb-4">
-            <div class="card h-100 bg-secondary text-white d-flex flex-column">
-              <!-- Product Image -->
+          <div class="col">
+            <div class="cyber-product-card">
+              <!-- Product image with overlay -->
               {% if product.product_image %}
-                <img src="{{ product.product_image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                <div class="product-image-container">
+                  <div class="image-overlay"></div>
+                  <img src="{{ product.product_image.url }}" class="product-image" alt="{{ product.name }}">
+
+                  <!-- Product badge -->
+                  <div class="product-badge">
+                    <i class="fas fa-microchip me-1"></i> PRODUCT
+                  </div>
+                </div>
               {% else %}
-                <div class="text-center py-5 bg-light">No Image Available</div>
+                <div class="product-image-container" style="height: 220px;">
+                  <div class="image-overlay"></div>
+                  <div class="d-flex align-items-center justify-content-center h-100">
+                    <i class="fas fa-cube fa-4x" style="color: rgba(0, 255, 0, 0.3);"></i>
+                  </div>
+
+                  <!-- Product badge -->
+                  <div class="product-badge">
+                    <i class="fas fa-microchip me-1"></i> PRODUCT
+                  </div>
+                </div>
               {% endif %}
-              <div class="card-body d-flex flex-column">
-                <!-- Product Name -->
-                <h5 class="card-title">{{ product.name }}</h5>
-                <!-- Product Price -->
-                <p class="card-text">${{ product.price }}</p>
-                <!-- Product Description -->
-                <p class="card-text text-truncate" title="{{ product.description }}">
-                  {% if product.description|length > 100 %}
-                    {{ product.description|slice:":100" }}...
-                  {% else %}
-                    {{ product.description }}
-                  {% endif %}
-                </p>
-                <!-- More Info Button -->
-                <a href="{% url 'shop_product_detail' product.id %}" class="btn btn-success mt-auto">More Info</a>
+
+              <div class="product-info">
+                <!-- Product name with terminal cursor -->
+                <h3 class="product-name">
+                  {{ product.name }}<span class="terminal-cursor">_</span>
+                </h3>
+
+                <!-- Product stats -->
+                <div class="product-stats">
+                  <div class="product-stat">
+                    <i class="fas fa-tag"></i>
+                    <span>ID:{{ product.id }}</span>
+                  </div>
+                  <div class="product-stat">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>${{ product.price }}</span>
+                  </div>
+                  <div class="product-stat">
+                    <i class="fas fa-check-circle"></i>
+                    <span>STATUS:AVAILABLE</span>
+                  </div>
+                </div>
+
+                <!-- Product description -->
+                <div class="product-description">
+                  <span style="color: rgba(0, 255, 0, 0.7); font-family: 'Courier New', monospace;">
+                    > {% if product.description|length > 100 %}
+                        {{ product.description|slice:":100" }}...
+                      {% else %}
+                        {{ product.description }}
+                      {% endif %}
+                  </span>
+                </div>
+
+                <!-- Action button -->
+                <a href="{% url 'shop_product_detail' product.id %}" class="btn cyber-btn w-100">
+                  <i class="fas fa-info-circle me-2"></i> VIEW DETAILS
+                </a>
               </div>
             </div>
           </div>
         {% endfor %}
       </div>
-    </div>
+    {% else %}
+      <!-- Empty state with cyberpunk styling -->
+      <div class="empty-state mt-5">
+        <i class="fas fa-cube neon-text-blue"></i>
+        <h3 class="neon-text mb-3">NO PRODUCTS FOUND</h3>
+        <p style="color: rgba(0, 255, 0, 0.7);">Try a different search term or come back later.</p>
+        <div class="mt-4">
+          <a href="{% url 'shop_product_list' %}" class="btn cyber-btn" style="color: rgba(0, 255, 0, 0.9) !important;">
+            <i class="fas fa-sync-alt me-2"></i> RESET SEARCH
+          </a>
+        </div>
+      </div>
+    {% endif %}
   </div>
 </section>
+
+<!-- Particle.js for background effects -->
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize particles.js directly on the body
+    // This prevents the canvas from taking up space in the document flow
+    particlesJS("body", {
+      "particles": {
+        "number": {
+          "value": 80,
+          "density": {
+            "enable": true,
+            "value_area": 800
+          }
+        },
+        "color": {
+          "value": "#00ff00"
+        },
+        "shape": {
+          "type": ["circle", "triangle", "edge"],
+          "stroke": {
+            "width": 0,
+            "color": "#000000"
+          },
+        },
+        "opacity": {
+          "value": 0.5,
+          "random": true,
+          "anim": {
+            "enable": true,
+            "speed": 1,
+            "opacity_min": 0.1,
+            "sync": false
+          }
+        },
+        "size": {
+          "value": 3,
+          "random": true,
+          "anim": {
+            "enable": false,
+            "speed": 40,
+            "size_min": 0.1,
+            "sync": false
+          }
+        },
+        "line_linked": {
+          "enable": true,
+          "distance": 150,
+          "color": "#00ff00",
+          "opacity": 0.2,
+          "width": 1
+        },
+        "move": {
+          "enable": true,
+          "speed": 2,
+          "direction": "none",
+          "random": true,
+          "straight": false,
+          "out_mode": "out",
+          "bounce": false,
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": {
+            "enable": true,
+            "mode": "grab"
+          },
+          "onclick": {
+            "enable": true,
+            "mode": "push"
+          },
+          "resize": true
+        },
+        "modes": {
+          "grab": {
+            "distance": 140,
+            "line_linked": {
+              "opacity": 0.5
+            }
+          },
+          "push": {
+            "particles_nb": 4
+          }
+        }
+      },
+      "retina_detect": true
+    });
+  });
+</script>
 {% endblock %}
