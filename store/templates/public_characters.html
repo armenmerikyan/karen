@@ -17,6 +17,8 @@
     left: 0;
     z-index: -1;
     pointer-events: none;
+    margin: 0;
+    padding: 0;
   }
 
   /* Cyberpunk neon glow effects */
@@ -287,8 +289,8 @@
     background-image:
       radial-gradient(circle at 50% 50%, rgba(0, 255, 0, 0.1) 0%, transparent 50%),
       linear-gradient(0deg, #000 0%, #001500 100%);
-    min-height: 100vh;
-    padding: 20px 0; /* Reduced padding */
+    /* Removed min-height to prevent extra space */
+    /* Padding is now controlled in the section element directly */
   }
 
   /* Grid layout */
@@ -385,22 +387,22 @@
 {% endblock %}
 
 {% block content %}
-<!-- Particles background -->
+<!-- Particles background - positioned absolutely to not take up space -->
 <div id="particles-js"></div>
 
-<section class="cyber-section py-5">
+<section class="cyber-section pt-2 pb-5">
   <div class="container position-relative">
     <!-- Header with glitch effect -->
-    <div class="mb-4 text-center">
-      <div class="terminal-header mb-2">
+    <div class="mb-3 text-center">
+      <div class="terminal-header mb-1">
         <span style="color: rgba(0, 255, 0, 0.7); font-family: 'Courier New', monospace; font-size: 0.9rem;">
           > SYSTEM INITIALIZED... LOADING AGENTS DATABASE...
         </span>
       </div>
-      <h1 class="neon-text glitch-text display-4 fw-bold mb-3" data-text="AI AGENT TERMINAL">AI AGENT TERMINAL</h1>
+      <h1 class="neon-text glitch-text display-4 fw-bold mb-2" data-text="AI AGENT TERMINAL">AI AGENT TERMINAL</h1>
       <div class="row justify-content-center">
         <div class="col-md-8">
-          <div class="terminal-output p-2 mb-3" style="background: rgba(0, 20, 0, 0.3); border: 1px solid rgba(0, 255, 0, 0.2); border-radius: 3px;">
+          <div class="terminal-output p-2 mb-2" style="background: rgba(0, 20, 0, 0.3); border: 1px solid rgba(0, 255, 0, 0.2); border-radius: 3px;">
             <p class="lead mb-0" style="color: rgba(0, 255, 0, 0.8); font-family: 'Courier New', monospace; font-size: 0.9rem;">
               > DISCOVER, CONNECT, AND CHAT WITH INTELLIGENT DIGITAL PERSONAS — EACH WITH UNIQUE ABILITIES, KNOWLEDGE, AND ACCESS TO DIFFERENT DATA OR ACTIONS.
             </p>
@@ -418,7 +420,7 @@
     </div>
 
     <!-- Enhanced search bar -->
-    <div class="row justify-content-center mb-5">
+    <div class="row justify-content-center mb-4">
       <div class="col-md-8">
         <form method="get" class="position-relative">
           <div class="input-group input-group-lg">
