@@ -1,57 +1,101 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <div class="container mt-4">
-    <h1 class="mb-4">Questions & Answers</h1>
-    
-    {% if user.is_authenticated %}
-      {% if user.is_staff %}
-        <!-- Admin link: Add New Question Answer -->
-        <a href="{% url 'question_answer_add' %}" class="btn btn-primary mb-3">Add New Question Answer</a>
-      {% else %}
-        <!-- Regular user link: Add Simple Question -->
-        <a href="{% url 'simple_question_add' %}" class="btn btn-primary mb-3">Ask New Question</a>
-      {% endif %}
-    {% endif %}
-    
-    <ul class="list-group">
-      {% for qa in question_answers %}
-        <li class="list-group-item">
-          <div class="d-flex justify-content-between align-items-center">
-            {% if user.is_authenticated and user.is_staff %}
-              <a href="{% url 'question_answer_detail' qa.pk %}" class="text-decoration-none" style="font-size: 1.5rem; font-weight: bold;">{{ qa.question }}</a>
-            {% else %}
-              <span style="font-size: 1.5rem; font-weight: bold;">{{ qa.question }}</span>
-            {% endif %}
-
-            {% if user.is_authenticated and user.is_staff %}
-              <div class="d-flex align-items-center">
-                <a href="{% url 'question_answer_edit' qa.pk %}" class="btn btn-sm btn-warning me-2 d-flex align-items-center">
-                  <i class="fas fa-edit me-1"></i> Edit
-                </a>
-                <a href="{% url 'question_answer_delete' qa.pk %}" class="btn btn-sm btn-danger d-flex align-items-center">
-                  <i class="fas fa-trash-alt me-1"></i> Delete
-                </a>
-              </div>
-            {% endif %}
+<section class="cyber-section py-4 bg-black text-light">
+  <div class="container">
+    <!-- Header with terminal styling -->
+    <div class="text-center mb-4">
+      <div class="mb-2">
+        <span style="color: rgba(0, 255, 0, 0.7); font-family: 'Courier New', monospace; font-size: 0.9rem;">
+          > SYSTEM INITIALIZED... LOADING KNOWLEDGE DATABASE...
+        </span>
+      </div>
+      <h1 class="neon-text display-4 fw-bold mb-3">QUESTIONS & ANSWERS</h1>
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="p-2 mb-3" style="background: rgba(0, 20, 0, 0.3); border: 1px solid rgba(0, 255, 0, 0.2); border-radius: 3px;">
+            <p class="mb-0" style="color: rgba(0, 255, 0, 0.8); font-family: 'Courier New', monospace; font-size: 0.9rem;">
+              > ACCESS KNOWLEDGE DATABASE. FIND ANSWERS TO FREQUENTLY ASKED QUESTIONS.
+            </p>
           </div>
-          
-          {% if qa.answer %}
-            <div class="mt-2">
-              <button class="btn btn-sm btn-info toggle-answer" type="button" data-bs-toggle="collapse" data-bs-target="#answer-{{ qa.pk }}" aria-expanded="false" aria-controls="answer-{{ qa.pk }}">
-                <span class="toggle-text">Show Answer</span>
-                <i class="fas fa-chevron-down toggle-icon"></i> <!-- Font Awesome Down Arrow -->
-              </button>
-              <div class="collapse mt-2" id="answer-{{ qa.pk }}">
-                <div class="card card-body">
-                  {{ qa.answer }}
-                </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action buttons -->
+    {% if user.is_authenticated %}
+      <div class="text-center mb-4">
+        {% if user.is_staff %}
+          <!-- Admin link: Add New Question Answer -->
+          <a href="{% url 'question_answer_add' %}" class="btn cyber-btn">
+            <i class="fas fa-plus-circle me-2"></i> ADD NEW QUESTION
+          </a>
+        {% else %}
+          <!-- Regular user link: Add Simple Question -->
+          <a href="{% url 'simple_question_add' %}" class="btn cyber-btn">
+            <i class="fas fa-question-circle me-2"></i> ASK NEW QUESTION
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <!-- Questions list with terminal styling -->
+    <div class="row justify-content-center">
+      <div class="col-md-10">
+        {% for qa in question_answers %}
+          <div class="cyber-product-card mb-3 p-0">
+            <div class="card-body bg-dark text-light p-3">
+              <div class="d-flex justify-content-between align-items-center">
+                {% if user.is_authenticated and user.is_staff %}
+                  <a href="{% url 'question_answer_detail' qa.pk %}" class="terminal-link" style="font-size: 1.2rem; font-weight: bold;">
+                    <i class="fas fa-terminal me-2"></i>{{ qa.question }}<span class="terminal-cursor">_</span>
+                  </a>
+                {% else %}
+                  <span style="font-size: 1.2rem; font-weight: bold; color: rgba(0, 255, 0, 0.9);">
+                    <i class="fas fa-terminal me-2"></i>{{ qa.question }}
+                  </span>
+                {% endif %}
+
+                {% if user.is_authenticated and user.is_staff %}
+                  <div class="d-flex align-items-center">
+                    <a href="{% url 'question_answer_edit' qa.pk %}" class="btn cyber-btn me-2" style="color: #FFFF00 !important;">
+                      <i class="fas fa-edit me-1"></i> EDIT
+                    </a>
+                    <a href="{% url 'question_answer_delete' qa.pk %}" class="btn cyber-btn" style="color: #FF3333 !important;">
+                      <i class="fas fa-trash-alt me-1"></i> DELETE
+                    </a>
+                  </div>
+                {% endif %}
               </div>
+
+              {% if qa.answer %}
+                <div class="mt-3">
+                  <button class="btn cyber-btn toggle-answer" type="button" data-bs-toggle="collapse" data-bs-target="#answer-{{ qa.pk }}" aria-expanded="false" aria-controls="answer-{{ qa.pk }}">
+                    <i class="fas fa-chevron-down toggle-icon me-2"></i>
+                    <span class="toggle-text">SHOW ANSWER</span>
+                  </button>
+                  <div class="collapse mt-3" id="answer-{{ qa.pk }}">
+                    <div class="p-3" style="background: rgba(0, 20, 0, 0.5); border: 1px solid rgba(0, 255, 0, 0.3); border-radius: 3px; color: rgba(0, 255, 0, 0.9); font-family: 'Courier New', monospace;">
+                      <div class="mb-2" style="color: rgba(0, 255, 0, 0.7); font-size: 0.9rem;">
+                        > RETRIEVING ANSWER...
+                      </div>
+                      {{ qa.answer }}
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
             </div>
-          {% endif %}
-        </li>
-      {% endfor %}
-    </ul>
+          </div>
+        {% empty %}
+          <!-- Empty state with cyberpunk styling -->
+          <div class="text-center p-5 mt-4" style="background: rgba(0, 0, 0, 0.7); border: 1px dashed #00FF00; border-radius: 10px;">
+            <i class="fas fa-database fa-3x mb-3" style="color: #00FFFF;"></i>
+            <h3 class="neon-text mb-3">NO QUESTIONS FOUND</h3>
+            <p style="color: rgba(0, 255, 0, 0.7);">The knowledge database appears to be empty.</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
   </div>
 
   <script>
@@ -62,16 +106,17 @@
       const toggleIcon = button.querySelector('.toggle-icon');
 
       collapse.addEventListener('show.bs.collapse', function () {
-        toggleText.textContent = 'Hide Answer';
+        toggleText.textContent = 'HIDE ANSWER';
         toggleIcon.classList.remove('fa-chevron-down');
         toggleIcon.classList.add('fa-chevron-up');
       });
 
       collapse.addEventListener('hide.bs.collapse', function () {
-        toggleText.textContent = 'Show Answer';
+        toggleText.textContent = 'SHOW ANSWER';
         toggleIcon.classList.remove('fa-chevron-up');
         toggleIcon.classList.add('fa-chevron-down');
       });
     });
   </script>
+</section>
 {% endblock %}
