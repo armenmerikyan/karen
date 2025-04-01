@@ -218,6 +218,18 @@
     cursor: not-allowed;
   }
 
+  /* Make sure active buttons are visible */
+  .btn:not(:disabled) {
+    opacity: 1 !important;
+  }
+
+  /* Override Bootstrap button styles */
+  .btn-primary, .btn-success, .btn-info, .btn-warning, .btn-danger {
+    color: rgba(0, 255, 0, 0.9) !important;
+    background-color: rgba(0, 20, 0, 0.6) !important;
+    border-color: rgba(0, 255, 0, 0.4) !important;
+  }
+
   /* Search bar */
   .cyber-search {
     background: rgba(0, 15, 0, 0.7);
@@ -276,7 +288,7 @@
       radial-gradient(circle at 50% 50%, rgba(0, 255, 0, 0.1) 0%, transparent 50%),
       linear-gradient(0deg, #000 0%, #001500 100%);
     min-height: 100vh;
-    padding: 80px 0;
+    padding: 20px 0; /* Reduced padding */
   }
 
   /* Grid layout */
@@ -289,6 +301,7 @@
   /* Character stats */
   .character-stats {
     display: flex;
+    flex-wrap: wrap; /* Allow wrapping to prevent overlap */
     justify-content: space-between;
     margin-bottom: 15px;
     font-size: 0.8rem;
@@ -298,11 +311,13 @@
     border: 1px solid rgba(0, 255, 0, 0.2);
     padding: 8px;
     border-radius: 3px;
+    gap: 10px; /* Add gap between items */
   }
 
   .character-stat {
     display: flex;
     align-items: center;
+    white-space: nowrap; /* Prevent text wrapping within stat */
   }
 
   .character-stat i {
@@ -376,7 +391,7 @@
 <section class="cyber-section py-5">
   <div class="container position-relative">
     <!-- Header with glitch effect -->
-    <div class="mb-5 text-center">
+    <div class="mb-4 text-center">
       <div class="terminal-header mb-2">
         <span style="color: rgba(0, 255, 0, 0.7); font-family: 'Courier New', monospace; font-size: 0.9rem;">
           > SYSTEM INITIALIZED... LOADING AGENTS DATABASE...
@@ -408,7 +423,7 @@
         <form method="get" class="position-relative">
           <div class="input-group input-group-lg">
             <input type="text" name="q" class="form-control cyber-search" placeholder="SEARCH AGENTS..." value="{{ query }}">
-            <button class="btn cyber-btn px-4" type="submit">
+            <button class="btn cyber-btn px-4" type="submit" style="color: rgba(0, 255, 0, 0.9) !important;">
               <i class="fas fa-search me-2"></i>SCAN
             </button>
           </div>
@@ -474,9 +489,9 @@
               </div>
 
               <!-- Character description -->
-              <div class="terminal-text mb-4" style="min-height: 60px;">
-                <span style="color: rgba(0, 255, 0, 0.7); font-family: 'Courier New', monospace; font-size: 0.9rem;">
-                  > {{ character.persona|truncatechars:120 }}
+              <div class="terminal-text mb-4" style="min-height: 80px; overflow-wrap: break-word; word-wrap: break-word;">
+                <span style="color: rgba(0, 255, 0, 0.7); font-family: 'Courier New', monospace; font-size: 0.9rem; line-height: 1.4;">
+                  > {{ character.persona|truncatechars:100 }}
                 </span>
               </div>
 
@@ -484,7 +499,7 @@
               <div class="d-grid gap-3">
                 <!-- Free Sample Button -->
                 {% if character.allow_free_sample_usage_anyone %}
-                  <a href="{% url 'chat_view' character.id %}" class="btn cyber-btn cyber-btn-success">
+                  <a href="{% url 'chat_view' character.id %}" class="btn cyber-btn cyber-btn-success" style="color: #00FFAA !important;">
                     <i class="fas fa-gift me-2"></i> TRY FREE SAMPLE
                   </a>
                 {% else %}
@@ -494,19 +509,19 @@
                 {% endif %}
 
                 <!-- Chat Button -->
-                <a href="{% url 'chat_view' character.id %}" class="btn cyber-btn">
+                <a href="{% url 'chat_view' character.id %}" class="btn cyber-btn" style="color: rgba(0, 255, 0, 0.9) !important;">
                   <i class="fas fa-comments me-2"></i> CHAT WITH API KEY
                 </a>
 
                 <!-- Details Button -->
-                <a href="{% url 'public_character_detail' character.id %}" class="btn cyber-btn">
+                <a href="{% url 'public_character_detail' character.id %}" class="btn cyber-btn" style="color: rgba(0, 255, 0, 0.9) !important;">
                   <i class="fas fa-info-circle me-2"></i> VIEW DETAILS
                 </a>
 
                 <!-- Social Links -->
                 <div class="d-flex gap-2">
                   {% if character.x_handle %}
-                    <a href="https://x.com/{{ character.x_handle }}" class="btn cyber-btn flex-grow-1" target="_blank">
+                    <a href="https://x.com/{{ character.x_handle }}" class="btn cyber-btn flex-grow-1" style="color: rgba(0, 255, 0, 0.9) !important;" target="_blank">
                       <i class="fa-brands fa-x-twitter"></i>
                     </a>
                   {% else %}
@@ -516,7 +531,7 @@
                   {% endif %}
 
                   {% if character.chatgpt_link %}
-                    <a href="{{ character.chatgpt_link }}" class="btn cyber-btn flex-grow-1" target="_blank">
+                    <a href="{{ character.chatgpt_link }}" class="btn cyber-btn flex-grow-1" style="color: rgba(0, 255, 0, 0.9) !important;" target="_blank">
                       <i class="fas fa-robot"></i>
                     </a>
                   {% else %}
@@ -537,7 +552,7 @@
         <h3 class="neon-text mb-3">NO AGENTS FOUND</h3>
         <p style="color: rgba(0, 255, 0, 0.7);">Try a different search term or come back later.</p>
         <div class="mt-4">
-          <a href="{% url 'public_characters' %}" class="btn cyber-btn">
+          <a href="{% url 'public_characters' %}" class="btn cyber-btn" style="color: rgba(0, 255, 0, 0.9) !important;">
             <i class="fas fa-sync-alt me-2"></i> RESET SEARCH
           </a>
         </div>
