@@ -1,84 +1,460 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
+{% load static %}
+
+{% block extra_head %}
+<!-- Cyberpunk font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* Particle animation */
+  #particles-js {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Cyberpunk neon glow effects */
+  .neon-text {
+    color: #00FF00;
+    text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00, 0 0 20px #00FF00;
+    font-family: 'Orbitron', 'Courier New', monospace;
+    letter-spacing: 2px;
+  }
+
+  .neon-text-blue {
+    color: #00FFFF;
+    text-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF, 0 0 20px #00FFFF;
+  }
+
+  .neon-text-purple {
+    color: #FF00FF;
+    text-shadow: 0 0 5px #FF00FF, 0 0 10px #FF00FF, 0 0 20px #FF00FF;
+  }
+
+  .neon-text-yellow {
+    color: #FFFF00;
+    text-shadow: 0 0 5px #FFFF00, 0 0 10px #FFFF00, 0 0 20px #FFFF00;
+  }
+
+  /* Cyberpunk card design */
+  .cyber-card {
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid #00FF00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cyber-card:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #00FF00, #00FFFF, #FF00FF, #FFFF00, #00FF00);
+    background-size: 400% 400%;
+    animation: gradientBorder 3s ease infinite;
+    z-index: 1;
+  }
+
+  .cyber-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 25px rgba(0, 255, 0, 0.7);
+  }
+
+  /* Character image effects */
+  .character-image-container {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.5);
+  }
+
+  .character-image {
+    transition: all 0.5s ease;
+    filter: grayscale(30%) contrast(120%);
+  }
+
+  .cyber-card:hover .character-image {
+    filter: grayscale(0%) contrast(110%);
+    transform: scale(1.05);
+  }
+
+  .image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 50%, rgba(0,255,0,0.2) 100%);
+    z-index: 1;
+  }
+
+  /* Glitch effect */
+  .glitch-container {
+    position: relative;
+  }
+
+  .glitch-text {
+    position: relative;
+    display: inline-block;
+  }
+
+  .glitch-text:hover:after {
+    content: attr(data-text);
+    position: absolute;
+    left: 2px;
+    top: 0;
+    color: #00FFFF;
+    background: black;
+    overflow: hidden;
+    clip: rect(0, 900px, 0, 0);
+    animation: glitch-anim 2s infinite linear alternate-reverse;
+  }
+
+  /* Cyberpunk buttons */
+  .cyber-btn {
+    background: rgba(0, 0, 0, 0.8);
+    color: #00FF00;
+    border: 1px solid #00FF00;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    z-index: 1;
+    font-family: 'Orbitron', 'Courier New', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+  }
+
+  .cyber-btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.2), transparent);
+    transition: all 0.5s ease;
+    z-index: -1;
+  }
+
+  .cyber-btn:hover:before {
+    left: 100%;
+  }
+
+  .cyber-btn:hover {
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    color: #FFFFFF;
+    background: rgba(0, 50, 0, 0.8);
+  }
+
+  .cyber-btn-success {
+    border-color: #00FFAA;
+    color: #00FFAA;
+  }
+
+  .cyber-btn-success:hover {
+    box-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+    background: rgba(0, 50, 30, 0.8);
+  }
+
+  .cyber-btn-disabled {
+    border-color: #555;
+    color: #555;
+    cursor: not-allowed;
+  }
+
+  /* Search bar */
+  .cyber-search {
+    background: rgba(0, 20, 0, 0.8);
+    border: 1px solid #00FF00;
+    color: #00FF00;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+  }
+
+  .cyber-search:focus {
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    border-color: #00FF00;
+    outline: none;
+  }
+
+  /* Animations */
+  @keyframes gradientBorder {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes glitch-anim {
+    0% { clip: rect(44px, 9999px, 56px, 0); }
+    5% { clip: rect(20px, 9999px, 93px, 0); }
+    10% { clip: rect(23px, 9999px, 68px, 0); }
+    15% { clip: rect(58px, 9999px, 71px, 0); }
+    20% { clip: rect(18px, 9999px, 13px, 0); }
+    25% { clip: rect(18px, 9999px, 82px, 0); }
+    30% { clip: rect(95px, 9999px, 59px, 0); }
+    35% { clip: rect(75px, 9999px, 37px, 0); }
+    40% { clip: rect(94px, 9999px, 21px, 0); }
+    45% { clip: rect(91px, 9999px, 57px, 0); }
+    50% { clip: rect(82px, 9999px, 35px, 0); }
+    55% { clip: rect(6px, 9999px, 87px, 0); }
+    60% { clip: rect(89px, 9999px, 4px, 0); }
+    65% { clip: rect(99px, 9999px, 87px, 0); }
+    70% { clip: rect(61px, 9999px, 63px, 0); }
+    75% { clip: rect(87px, 9999px, 46px, 0); }
+    80% { clip: rect(64px, 9999px, 80px, 0); }
+    85% { clip: rect(6px, 9999px, 67px, 0); }
+    90% { clip: rect(66px, 9999px, 25px, 0); }
+    95% { clip: rect(40px, 9999px, 31px, 0); }
+    100% { clip: rect(86px, 9999px, 90px, 0); }
+  }
+
+  /* Section styling */
+  .cyber-section {
+    position: relative;
+    background-color: #000;
+    background-image:
+      radial-gradient(circle at 50% 50%, rgba(0, 255, 0, 0.1) 0%, transparent 50%),
+      linear-gradient(0deg, #000 0%, #001500 100%);
+    min-height: 100vh;
+    padding: 80px 0;
+  }
+
+  /* Grid layout */
+  .cyber-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+  }
+
+  /* Character stats */
+  .character-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 0.8rem;
+    color: rgba(0, 255, 0, 0.7);
+  }
+
+  .character-stat {
+    display: flex;
+    align-items: center;
+  }
+
+  .character-stat i {
+    margin-right: 5px;
+  }
+
+  /* Empty state */
+  .empty-state {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px dashed #00FF00;
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+  }
+
+  .empty-state i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    opacity: 0.7;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .cyber-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .neon-text {
+      font-size: 1.8rem;
+    }
+
+    .character-stats {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+    }
+
+    .cyber-section {
+      padding: 40px 0;
+    }
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    background: #000000;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 20, 0, 0.8);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #00FF00, #00FFAA);
+    border-radius: 10px;
+    border: 2px solid #000;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #00FFAA, #00FFFF);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<section class="py-5" style="background-color: #000;">
-  <div class="container">
+<!-- Particles background -->
+<div id="particles-js"></div>
 
+<section class="cyber-section py-5">
+  <div class="container position-relative">
+    <!-- Header with glitch effect -->
     <div class="mb-5 text-center">
-      <h2 class="display-5 fw-bold" style="color: #00FF00;">AI Agent Store</h2>
-      <p class="lead text-muted">Discover, connect, and chat with intelligent digital personas — each with unique abilities, knowledge, and access to different data or actions.</p>
+      <h1 class="neon-text glitch-text display-4 fw-bold mb-4" data-text="AI AGENT STORE">AI AGENT STORE</h1>
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <p class="lead" style="color: rgba(0, 255, 0, 0.8);">Discover, connect, and chat with intelligent digital personas — each with unique abilities, knowledge, and access to different data or actions.</p>
+        </div>
+      </div>
+
+      <!-- Decorative elements -->
+      <div class="d-none d-md-block position-absolute" style="top: 20px; right: 20px; opacity: 0.5;">
+        <i class="fas fa-microchip fa-3x neon-text-blue"></i>
+      </div>
+      <div class="d-none d-md-block position-absolute" style="top: 20px; left: 20px; opacity: 0.5;">
+        <i class="fas fa-robot fa-3x neon-text-purple"></i>
+      </div>
     </div>
 
-    <form method="get" class="mb-5">
-      <div class="input-group input-group-lg shadow-sm">
-        <input type="text" name="q" class="form-control border-0" placeholder="Search characters..." value="{{ query }}">
-        <button class="btn btn-dark-custom px-4" type="submit">
-          <i class="fas fa-search me-2"></i>Search
-        </button>
+    <!-- Enhanced search bar -->
+    <div class="row justify-content-center mb-5">
+      <div class="col-md-8">
+        <form method="get" class="position-relative">
+          <div class="input-group input-group-lg">
+            <input type="text" name="q" class="form-control cyber-search" placeholder="SEARCH AGENTS..." value="{{ query }}">
+            <button class="btn cyber-btn px-4" type="submit">
+              <i class="fas fa-search me-2"></i>SCAN
+            </button>
+          </div>
+          <div class="position-absolute" style="bottom: -20px; right: 10px; font-size: 0.8rem; color: rgba(0, 255, 0, 0.6);">
+            <i class="fas fa-info-circle me-1"></i> {{ characters|length }} agents found
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
 
     {% if characters %}
-      <div class="row g-4">
+      <!-- Character grid -->
+      <div class="cyber-grid">
         {% for character in characters %}
-          <div class="col-md-6 col-lg-4">
-            <div class="card h-100 border-0 shadow-sm bg-black text-light">
+          <div class="cyber-card h-100">
+            <!-- Character image with overlay -->
+            {% if character.character_image %}
+              <div class="character-image-container">
+                <div class="image-overlay"></div>
+                <img src="{{ character.character_image.url }}" class="character-image w-100" alt="{{ character.name }}" style="height: 220px; object-fit: cover;">
 
-              {% if character.character_image %}
-                <img src="{{ character.character_image.url }}" class="card-img-top rounded-top" alt="{{ character.name }}">
-              {% endif %}
+                <!-- Character type badge -->
+                <div class="position-absolute" style="top: 15px; right: 15px; z-index: 2;">
+                  <span class="badge bg-black border border-success" style="color: #00FF00;">
+                    <i class="fas fa-brain me-1"></i> AI AGENT
+                  </span>
+                </div>
 
-              <div class="card-body custom-card-body d-flex flex-column">
-                <h5 class="card-title mb-2">
-                  <a href="{% url 'public_character_detail' character.id %}" class="text-light text-decoration-none">
-                    {{ character.name }}
-                  </a>
-                </h5>
-                <p class="card-text text-muted small">{{ character.persona|truncatechars:120 }}</p>
-
-                <!-- Free Sample Badge/Button -->
+                <!-- Free sample badge if available -->
                 {% if character.allow_free_sample_usage_anyone %}
-                  <a href="{% url 'chat_view' character.id %}" class="btn btn-success w-100 mb-2">
-                    <i class="fas fa-gift me-1"></i> Try Free Sample
+                  <div class="position-absolute" style="top: 15px; left: 15px; z-index: 2;">
+                    <span class="badge bg-black border border-info" style="color: #00FFFF;">
+                      <i class="fas fa-gift me-1"></i> FREE SAMPLE
+                    </span>
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            <div class="p-4">
+              <!-- Character name with glitch effect -->
+              <h3 class="mb-3">
+                <a href="{% url 'public_character_detail' character.id %}" class="text-decoration-none">
+                  <span class="glitch-text neon-text" data-text="{{ character.name }}">{{ character.name }}</span>
+                </a>
+              </h3>
+
+              <!-- Character stats -->
+              <div class="character-stats">
+                <div class="character-stat">
+                  <i class="fas fa-bolt"></i>
+                  <span>v1.0</span>
+                </div>
+                <div class="character-stat">
+                  <i class="fas fa-network-wired"></i>
+                  <span>CONNECTED</span>
+                </div>
+                <div class="character-stat">
+                  <i class="fas fa-shield-alt"></i>
+                  <span>SECURE</span>
+                </div>
+              </div>
+
+              <!-- Character description -->
+              <p class="mb-4" style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; min-height: 60px;">
+                {{ character.persona|truncatechars:120 }}
+              </p>
+
+              <!-- Action buttons -->
+              <div class="d-grid gap-3">
+                <!-- Free Sample Button -->
+                {% if character.allow_free_sample_usage_anyone %}
+                  <a href="{% url 'chat_view' character.id %}" class="btn cyber-btn cyber-btn-success">
+                    <i class="fas fa-gift me-2"></i> TRY FREE SAMPLE
                   </a>
                 {% else %}
-                  <button class="btn btn-secondary w-100 mb-2" disabled>
-                    <i class="fas fa-ban me-1"></i> No Free Sample
+                  <button class="btn cyber-btn cyber-btn-disabled" disabled>
+                    <i class="fas fa-ban me-2"></i> NO FREE SAMPLE
                   </button>
                 {% endif %}
 
+                <!-- Chat Button -->
+                <a href="{% url 'chat_view' character.id %}" class="btn cyber-btn">
+                  <i class="fas fa-comments me-2"></i> CHAT WITH API KEY
+                </a>
 
-                <div class="mt-auto d-flex flex-column gap-2">
+                <!-- Details Button -->
+                <a href="{% url 'public_character_detail' character.id %}" class="btn cyber-btn">
+                  <i class="fas fa-info-circle me-2"></i> VIEW DETAILS
+                </a>
 
-                  <a href="{% url 'chat_view' character.id %}" class="btn btn-dark-custom w-100">
-                    <i class="fas fa-comments me-1"></i> Chat With Your API Key
-                  </a>
-
-                  <a href="{% url 'public_character_detail' character.id %}" class="btn btn-dark-custom w-100">
-                    <i class="fas fa-info-circle me-1"></i> View Details
-                  </a>
-
+                <!-- Social Links -->
+                <div class="d-flex gap-2">
                   {% if character.x_handle %}
-                    <a href="https://x.com/{{ character.x_handle }}" class="btn btn-dark-custom w-100" target="_blank">
-                      <i class="fa-brands fa-x-twitter me-1"></i> X Profile
+                    <a href="https://x.com/{{ character.x_handle }}" class="btn cyber-btn flex-grow-1" target="_blank">
+                      <i class="fa-brands fa-x-twitter"></i>
                     </a>
                   {% else %}
-                    <button class="btn btn-secondary w-100" disabled>
-                      <i class="fa-brands fa-x-twitter me-1"></i> No X Profile
+                    <button class="btn cyber-btn cyber-btn-disabled flex-grow-1" disabled>
+                      <i class="fa-brands fa-x-twitter"></i>
                     </button>
                   {% endif %}
 
                   {% if character.chatgpt_link %}
-                    <a href="{{ character.chatgpt_link }}" class="btn btn-dark-custom w-100" target="_blank">
-                      <i class="fas fa-robot me-1"></i> GPT Link
+                    <a href="{{ character.chatgpt_link }}" class="btn cyber-btn flex-grow-1" target="_blank">
+                      <i class="fas fa-robot"></i>
                     </a>
                   {% else %}
-                    <button class="btn btn-secondary w-100" disabled>
-                      <i class="fas fa-robot me-1"></i> GPT Link Unavailable
+                    <button class="btn cyber-btn cyber-btn-disabled flex-grow-1" disabled>
+                      <i class="fas fa-robot"></i>
                     </button>
                   {% endif %}
-
                 </div>
               </div>
             </div>
@@ -86,12 +462,109 @@
         {% endfor %}
       </div>
     {% else %}
-      <div class="text-center mt-5">
-        <h5 class="text-muted">🤖 No public characters found.</h5>
-        <p class="small">Try a different search term or come back later.</p>
+      <!-- Empty state with cyberpunk styling -->
+      <div class="empty-state mt-5">
+        <i class="fas fa-robot neon-text-purple"></i>
+        <h3 class="neon-text mb-3">NO AGENTS FOUND</h3>
+        <p style="color: rgba(0, 255, 0, 0.7);">Try a different search term or come back later.</p>
+        <div class="mt-4">
+          <a href="{% url 'public_characters' %}" class="btn cyber-btn">
+            <i class="fas fa-sync-alt me-2"></i> RESET SEARCH
+          </a>
+        </div>
       </div>
     {% endif %}
-
   </div>
 </section>
+
+<!-- Particle.js for background effects -->
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize particles.js
+    particlesJS("particles-js", {
+      "particles": {
+        "number": {
+          "value": 80,
+          "density": {
+            "enable": true,
+            "value_area": 800
+          }
+        },
+        "color": {
+          "value": "#00ff00"
+        },
+        "shape": {
+          "type": ["circle", "triangle", "edge"],
+          "stroke": {
+            "width": 0,
+            "color": "#000000"
+          },
+        },
+        "opacity": {
+          "value": 0.5,
+          "random": true,
+          "anim": {
+            "enable": true,
+            "speed": 1,
+            "opacity_min": 0.1,
+            "sync": false
+          }
+        },
+        "size": {
+          "value": 3,
+          "random": true,
+          "anim": {
+            "enable": false,
+            "speed": 40,
+            "size_min": 0.1,
+            "sync": false
+          }
+        },
+        "line_linked": {
+          "enable": true,
+          "distance": 150,
+          "color": "#00ff00",
+          "opacity": 0.2,
+          "width": 1
+        },
+        "move": {
+          "enable": true,
+          "speed": 2,
+          "direction": "none",
+          "random": true,
+          "straight": false,
+          "out_mode": "out",
+          "bounce": false,
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": {
+            "enable": true,
+            "mode": "grab"
+          },
+          "onclick": {
+            "enable": true,
+            "mode": "push"
+          },
+          "resize": true
+        },
+        "modes": {
+          "grab": {
+            "distance": 140,
+            "line_linked": {
+              "opacity": 0.5
+            }
+          },
+          "push": {
+            "particles_nb": 4
+          }
+        }
+      },
+      "retina_detect": true
+    });
+  });
+</script>
 {% endblock %}
