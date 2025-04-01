@@ -27,7 +27,7 @@ body {
 }
 
 /* Headings */
-.custom-card-body h3, 
+.custom-card-body h3,
 .custom-card-body h5 {
   color: inherit !important;
   margin: 1.5rem 0 !important; /* Added vertical margin */
@@ -35,7 +35,7 @@ body {
 }
 
 /* Navbar and Footer Styling */
-.navbar, footer { 
+.navbar, footer {
   color: #00FF00 !important;
   padding: 1.5rem 0 !important; /* Increased padding */
 }
@@ -85,7 +85,7 @@ footer a:hover {
 }
 
 /* Navbar Specific Styles */
-.navbar { 
+.navbar {
   color: #00FF00 !important;
 }
 
@@ -207,7 +207,7 @@ a.terminal-green:hover {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   margin-top: 10px; /* Space between icon and chat window */
 }
-  
+
 #chat-box {
   flex: 1;
   padding: 10px;
@@ -776,11 +776,11 @@ a.terminal-green:hover {
   .cyber-container {
     padding: 1.5rem;
   }
-  
+
   .terminal-content {
     padding: 1.5rem;
   }
-  
+
   .cyber-form {
     padding: 1.5rem;
   }
@@ -808,6 +808,9 @@ a.terminal-green:hover {
   background: rgba(0, 0, 0, 0.9);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--cyber-neon);
+  position: sticky;
+  top: 0;
+  z-index: 1050;
 }
 
 .cyber-brand {
@@ -949,16 +952,22 @@ a.terminal-green:hover {
   100% { transform: none; opacity: 1; }
 }
 
+/* Main Content Styles */
+#main-content {
+  position: relative;
+  z-index: 1;
+}
+
 /* Responsive Enhancements */
 @media (max-width: 768px) {
   .cyber-nav-links {
     margin: 1rem 0;
   }
-  
+
   .cyber-divider {
     margin: 0 0.5rem;
   }
-  
+
   .cyber-chat-window {
     width: 280px;
   }

@@ -7,11 +7,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <meta name="description" content="Access advanced AI agents and digital products at {{ profile.name }} - Where artificial intelligence meets human ingenuity">
   <meta name="theme-color" content="#000000">
-  
+
   <!-- Preload Critical Resources -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-  
+
   <!-- Core Styles -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -35,7 +35,7 @@
         <span class="brand-text glitch-text" data-text="{{ profile.name }}">{{ profile.name }}</span>
         <span class="brand-decorator"></span>
       </a>
-      
+
       <!-- Mobile Toggle -->
       <button class="navbar-toggler cyber-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
         <span class="cyber-toggler-icon"></span>
@@ -103,7 +103,7 @@
               </a>
             </li>
           {% endif %}
-          
+
           <li class="nav-item ms-2">
             <a href="{% url 'view_cart_detail_shop_current' %}" class="nav-link cyber-cart-link">
               <i class="fas fa-shopping-cart"></i>
@@ -177,7 +177,7 @@
     <button id="chat-toggle" class="cyber-chat-toggle" aria-label="Toggle chat interface">
       <i class="fas fa-comments"></i>
     </button>
-    
+
     <div id="chat-window" class="cyber-chat-window d-none">
       <div class="cyber-chat-header">
         <span class="cyber-chat-title">AI Support Interface</span>
@@ -188,7 +188,7 @@
       <div id="chat-messages" class="cyber-chat-messages"></div>
       <div class="cyber-chat-input">
         <div class="input-group">
-          <input type="text" id="chat-input" class="form-control cyber-input" 
+          <input type="text" id="chat-input" class="form-control cyber-input"
                  placeholder="Enter command..." aria-label="Chat message">
           <button id="chat-send" class="btn cyber-btn">
             <i class="fas fa-terminal"></i>
