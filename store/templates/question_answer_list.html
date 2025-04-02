@@ -2,7 +2,8 @@
 
 {% block content %}
 <section class="cyber-section py-4 bg-black text-light">
-  <div class="container">
+  <div class="container-fluid">
+    <div class="container">
     <!-- Header with terminal styling -->
     <div class="text-center mb-4">
       <div class="mb-2">
@@ -11,8 +12,8 @@
         </span>
       </div>
       <h1 class="neon-text display-4 fw-bold mb-3">QUESTIONS & ANSWERS</h1>
-      <div class="row justify-content-center">
-        <div class="col-md-8">
+      <div class="row">
+        <div class="col-12">
           <div class="p-2 mb-3" style="background: rgba(0, 20, 0, 0.3); border: 1px solid rgba(0, 255, 0, 0.2); border-radius: 3px;">
             <p class="mb-0" style="color: rgba(0, 255, 0, 0.8); font-family: 'Courier New', monospace; font-size: 0.9rem;">
               > ACCESS KNOWLEDGE DATABASE. FIND ANSWERS TO FREQUENTLY ASKED QUESTIONS.
@@ -40,8 +41,8 @@
     {% endif %}
 
     <!-- Questions list with terminal styling -->
-    <div class="row justify-content-center">
-      <div class="col-md-10">
+    <div class="row">
+      <div class="col-12">
         {% for qa in question_answers %}
           <div class="cyber-product-card mb-3 p-0">
             <div class="card-body bg-dark text-light p-3">
@@ -95,6 +96,7 @@
           </div>
         {% endfor %}
       </div>
+    </div>
     </div>
   </div>
 
