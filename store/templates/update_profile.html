@@ -1,129 +1,187 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="py-5">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <!-- Terminal Header -->
-        <div class="terminal-header text-center mb-4">
-          <h2 class="text-monospace mb-1">> User Profile Configuration</h2>
-          <p class="text-monospace text-terminal-muted blink">> Customize Your Interface_</p>
+<div class="cyber-container">
+  <div class="terminal-window">
+    <!-- Glowing Header Bar -->
+    <div class="terminal-header">
+      <div class="header-buttons">
+        <span class="btn-close"></span>
+        <span class="btn-minimize"></span>
+        <span class="btn-expand"></span>
+      </div>
+      <div class="terminal-title">GIGAHARD_USER_PROFILE.exe</div>
+    </div>
+
+    <!-- Matrix Rain Canvas Background -->
+    <canvas id="matrixRain" class="matrix-background"></canvas>
+
+    <!-- Main Content -->
+    <div class="terminal-content">
+      <div class="boot-sequence">
+        <div class="typing-text">Initializing User Profile Configuration...</div>
+        <div class="loading-bar">
+          <div class="progress"></div>
         </div>
+      </div>
 
-        <!-- Profile Cards -->
-        <div class="row g-4">
-          <!-- Basic Info Card -->
-          <div class="col-12">
-            <div class="card bg-terminal-dark border-terminal-green hover-terminal-item">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3">
-                  <span class="text-terminal-green me-2">></span>
-                  <h3 class="text-monospace mb-0">Basic Information</h3>
-                </div>
-                <div class="terminal-content">
-                  <form method="POST" class="needs-validation" novalidate>
-                    {% csrf_token %}
-                    <div class="row g-3">
-                      <div class="col-md-6">
-                        <label class="text-monospace text-terminal-muted">Username</label>
-                        <input type="text" class="form-control bg-black text-terminal-green" value="{{ user.username }}" readonly>
-                      </div>
-                      <div class="col-md-6">
-                        <label class="text-monospace text-terminal-muted">Email</label>
-                        <input type="email" class="form-control bg-black text-terminal-green" value="{{ user.email }}" readonly>
-                      </div>
-                      <div class="col-md-6">
-                        <label class="text-monospace text-terminal-muted">First Name</label>
-                        {{ form.first_name }}
-                      </div>
-                      <div class="col-md-6">
-                        <label class="text-monospace text-terminal-muted">Last Name</label>
-                        {{ form.last_name }}
-                      </div>
-                      <div class="col-12">
-                        <label class="text-monospace text-terminal-muted">OpenAI API Key</label>
-                        {{ form.openai_api_key }}
-                      </div>
-                    </div>
-                    <div class="mt-4">
-                      <button type="submit" class="btn btn-terminal">
-                        > save_changes <span class="blink">_</span>
-                      </button>
-                    </div>
-                  </form>
-                </div>
+      <!-- Basic Info Form -->
+      <form method="POST" class="cyber-form">
+        {% csrf_token %}
+        <div class="form-section">
+          <div class="section-header">
+            <span class="prompt">>></span>
+            <span class="section-title">BASIC INFORMATION</span>
+          </div>
+
+          <div class="form-grid">
+            <div class="input-group">
+              <div class="cyber-input-wrapper">
+                <label class="cyber-label">
+                  <span class="label-text">USERNAME</span>
+                  <span class="cursor">_</span>
+                </label>
+                <input type="text" class="cyber-input" value="{{ user.username }}" readonly>
+                <div class="input-line"></div>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <div class="cyber-input-wrapper">
+                <label class="cyber-label">
+                  <span class="label-text">EMAIL</span>
+                  <span class="cursor">_</span>
+                </label>
+                <input type="email" class="cyber-input" value="{{ user.email }}" readonly>
+                <div class="input-line"></div>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <div class="cyber-input-wrapper">
+                <label class="cyber-label">
+                  <span class="label-text">FIRST NAME</span>
+                  <span class="cursor">_</span>
+                </label>
+                {{ form.first_name }}
+                <div class="input-line"></div>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <div class="cyber-input-wrapper">
+                <label class="cyber-label">
+                  <span class="label-text">LAST NAME</span>
+                  <span class="cursor">_</span>
+                </label>
+                {{ form.last_name }}
+                <div class="input-line"></div>
+              </div>
+            </div>
+
+            <div class="input-group full-width">
+              <div class="cyber-input-wrapper">
+                <label class="cyber-label">
+                  <span class="label-text">OPENAI API KEY</span>
+                  <span class="cursor">_</span>
+                </label>
+                {{ form.openai_api_key }}
+                <div class="input-line"></div>
               </div>
             </div>
           </div>
 
-          <!-- Wallet Integration -->
-          <div class="col-md-6">
-            <div class="card bg-terminal-dark border-terminal-green hover-terminal-item">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3">
-                  <span class="text-terminal-green me-2">></span>
-                  <h3 class="text-monospace mb-0">Wallet</h3>
-                </div>
-                <div class="terminal-content">
-                  <p class="text-monospace text-terminal-muted mb-3" id="walletAddress">
-                    > awaiting_connection...
-                  </p>
-                  <button id="connectButton" class="btn btn-terminal">
-                    > connect_phantom <span class="blink">_</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- API Token -->
-          <div class="col-md-6">
-            <div class="card bg-terminal-dark border-terminal-green hover-terminal-item">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3">
-                  <span class="text-terminal-green me-2">></span>
-                  <h3 class="text-monospace mb-0">API Access</h3>
-                </div>
-                <div class="terminal-content">
-                  <p class="text-monospace text-terminal-muted mb-3" id="tokenDisplay">
-                    > token_status: active
-                  </p>
-                  <button id="generateTokenButton" class="btn btn-terminal">
-                    > generate_token <span class="blink">_</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Token Balance -->
-          <div class="col-12">
-            <div class="card bg-terminal-dark border-terminal-green hover-terminal-item">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3">
-                  <span class="text-terminal-green me-2">></span>
-                  <h3 class="text-monospace mb-0">Token Balance</h3>
-                </div>
-                <div class="terminal-content">
-                  <p class="text-monospace text-terminal-green mb-0" id="tokenBalance">
-                    > checking_balance...
-                  </p>
-                </div>
-              </div>
-            </div>
+          <div class="action-buttons">
+            <button type="submit" class="cyber-button primary">
+              <span class="button-effect"></span>
+              <span class="button-text">SAVE CONFIGURATION</span>
+            </button>
           </div>
         </div>
 
-        <!-- Logout -->
-        <div class="text-center mt-4">
-          <a href="{% url 'logout' %}" class="btn btn-terminal-red">
-            > terminate_session <span class="blink">_</span>
+        <!-- Advanced Options Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <span class="prompt">>></span>
+            <span class="section-title">ADVANCED CONNECTIVITY</span>
+          </div>
+
+          <div class="cyber-grid">
+            <!-- Wallet Integration -->
+            <div class="cyber-panel">
+              <div class="panel-header">
+                <span class="panel-icon"><i class="fas fa-wallet"></i></span>
+                <span class="panel-title">NEURAL WALLET</span>
+              </div>
+              <div class="panel-content">
+                <div class="status-display">
+                  <span class="status-prompt">></span>
+                  <span class="status-text" id="walletAddress">awaiting_connection...</span>
+                  <span class="cursor blink">_</span>
+                </div>
+                <button id="connectButton" class="cyber-button secondary">
+                  <span class="button-effect"></span>
+                  <span class="button-text">CONNECT PHANTOM</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- API Token -->
+            <div class="cyber-panel">
+              <div class="panel-header">
+                <span class="panel-icon"><i class="fas fa-key"></i></span>
+                <span class="panel-title">API ACCESS</span>
+              </div>
+              <div class="panel-content">
+                <div class="status-display">
+                  <span class="status-prompt">></span>
+                  <span class="status-text" id="tokenDisplay">token_status: active</span>
+                  <span class="cursor blink">_</span>
+                </div>
+                <button id="generateTokenButton" class="cyber-button secondary">
+                  <span class="button-effect"></span>
+                  <span class="button-text">GENERATE TOKEN</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Token Balance Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <span class="prompt">>></span>
+            <span class="section-title">SYSTEM RESOURCES</span>
+          </div>
+
+          <div class="cyber-panel full-width">
+            <div class="panel-header">
+              <span class="panel-icon"><i class="fas fa-coins"></i></span>
+              <span class="panel-title">TOKEN BALANCE</span>
+            </div>
+            <div class="panel-content">
+              <div class="status-display highlight">
+                <span class="status-prompt">></span>
+                <span class="status-text" id="tokenBalance">checking_balance...</span>
+                <span class="cursor blink">_</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- System Status -->
+      <div class="system-status">
+        <div class="status-line">
+          <span class="prompt">>></span>
+          <a href="{% url 'logout' %}" class="cyber-link danger">
+            TERMINATE SESSION
+            <span class="link-effect"></span>
           </a>
         </div>
       </div>
     </div>
   </div>
-</section>
+</div>
 
 <script>
   document.getElementById('generateTokenButton').addEventListener('click', function () {
@@ -224,5 +282,44 @@
       });
     }
   });
+</script>
+
+<!-- Matrix Rain Animation Script -->
+<script>
+  const canvas = document.getElementById('matrixRain');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%";
+  const characters = matrix.split("");
+  const fontSize = 14;
+  const columns = canvas.width/fontSize;
+  const drops = [];
+
+  for(let x = 0; x < columns; x++) {
+      drops[x] = 1;
+  }
+
+  function draw() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#0F0";
+      ctx.font = fontSize + "px monospace";
+
+      for(let i = 0; i < drops.length; i++) {
+          const text = characters[Math.floor(Math.random() * characters.length)];
+          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+          if(drops[i] * fontSize > canvas.height && Math.random() > 0.975)
+              drops[i] = 0;
+
+          drops[i]++;
+      }
+  }
+
+  setInterval(draw, 35);
 </script>
 {% endblock %}
