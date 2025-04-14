@@ -2,500 +2,145 @@
 {% load custom_filters %}
 
 {% block content %}
-<!-- Matrix Rain Canvas Background -->
-<canvas id="matrixRain" class="matrix-background" style="z-index: -1;"></canvas>
+<div class="container fade-in">
+    <!-- Welcome Section -->
+    <div class="section-header">
+        <h2>Welcome, {{ user.username|default:"Guest" }}</h2>
+        <div class="status-badge active">
+            <i class="fas fa-signal-stream me-2"></i>System Online
+        </div>
+    </div>
 
-<!-- Main Terminal Window -->
-<div class="cyber-container">
-    <div class="terminal-window">
-        <!-- Glowing Header Bar -->
-        <div class="terminal-header">
-            <div class="header-buttons">
-                <span class="btn-close"></span>
-                <span class="btn-minimize"></span>
-                <span class="btn-expand"></span>
+    <!-- Quick Stats -->
+    <div class="dashboard-grid">
+        <!-- Wallet Info -->
+        <div class="stats-card">
+            <div class="stats-info">
+                <p>Wallet Balance</p>
+                <h3>{{ profile.balance|default:"0.00" }} SOL</h3>
             </div>
-            <div class="terminal-title">
-                <span class="glitch-text">{{ profile.name }}_MAINFRAME_ACCESS.exe</span>
-                <span class="blink-cursor">_</span>
-            </div>
+            <i class="fas fa-wallet icon"></i>
         </div>
 
-        <!-- Main Content -->
-        <div class="terminal-content">
-            <!-- Boot Animation -->
-            <div class="boot-sequence">
-                <div class="typing-text">INITIALIZING NEURAL INTERFACE...</div>
-                <div class="loading-bar">
-                    <div class="progress"></div>
-                </div>
-                <div class="system-stats">
-                    <div class="stat-line">[STATUS: ONLINE]</div>
-                    <div class="stat-line">[SECURITY: ACTIVE]</div>
-                    <div class="stat-line">[NEURAL_LINK: READY]</div>
+        <!-- Active Agents -->
+        <div class="stats-card">
+            <div class="stats-info">
+                <p>Active Agents</p>
+                <h3>{{ active_agents_count|default:"0" }}</h3>
+            </div>
+            <i class="fas fa-robot icon"></i>
+        </div>
+
+        <!-- Products -->
+        <div class="stats-card">
+            <div class="stats-info">
+                <p>Available Products</p>
+                <h3>{{ products_count|default:"0" }}</h3>
+            </div>
+            <i class="fas fa-cube icon"></i>
+        </div>
+    </div>
+
+    <!-- Blockchain Integration -->
+    <div class="modern-card">
+        <div class="section-header">
+            <h2>Blockchain Interface</h2>
+            <button class="btn-modern">
+                <i class="fas fa-sync-alt me-2"></i>Refresh
+            </button>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Solana Integration -->
+            <div class="modern-card">
+                <h3>Solana Bridge</h3>
+                <div class="mt-3">
+                    {% if profile.wallet %}
+                    <div class="d-flex align-items-center justify-content-between">
+                        <a href="https://solscan.io/account/{{profile.wallet}}" 
+                           class="text-decoration-none"
+                           target="_blank">
+                            {{profile.wallet|slice:":4"}}...{{profile.wallet|slice:"-4:"}}
+                        </a>
+                        <button class="btn-modern btn-sm" onclick="copyToClipboard('{{profile.wallet}}')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    {% else %}
+                    <div class="text-center">
+                        <p class="text-secondary">No wallet connected</p>
+                        <button class="btn-modern">Connect Wallet</button>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
 
-            <!-- Welcome Message -->
-            <div class="welcome-module">
-                <div class="cyber-frame">
-                    <div class="frame-header">
-                        <span class="prompt">[ROOT@{{ profile.name|upper }}]# </span>
-                        <span class="typing-effect">cat welcome.txt</span>
-                    </div>
-                    <div class="frame-content">
-                        <p class="cyber-text">WELCOME TO THE FIRST TRUE AI AGENT MARKETPLACE</p>
-                        <p class="cyber-text highlight">BUILD • DEPLOY • MONETIZE</p>
-                        <div class="cyber-separator">
-                            <span class="separator-line"></span>
-                            <span class="separator-text">SYSTEM READY</span>
-                            <span class="separator-line"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Services Section -->
-            <div class="system-module">
-                <div class="module-header">
-                    <span class="prompt">[SYS]# </span>
-                    <h2 class="neon-text">AVAILABLE_SERVICES</h2>
-                </div>
-                <div class="module-content">
-                    <div class="service-grid">
-                        <div class="service-item">
-                            <i class="fas fa-robot neon-icon"></i>
-                            <h3>AI AGENTS</h3>
-                            <p>Deploy in 60 seconds</p>
-                        </div>
-                        <div class="service-item">
-                            <i class="fas fa-code neon-icon"></i>
-                            <h3>NO-CODE TOOLS</h3>
-                            <p>Visual Builder</p>
-                        </div>
-                        <div class="service-item">
-                            <i class="fas fa-store neon-icon"></i>
-                            <h3>MARKETPLACE</h3>
-                            <p>List & Earn</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Authentication Module -->
-            {% if not user.is_authenticated %}
-            <div class="auth-module">
-                <div class="cyber-alert warning">
-                    <div class="alert-icon">⚠</div>
-                    <div class="alert-content">
-                        <h3 class="neon-text">UNAUTHORIZED ACCESS DETECTED</h3>
-                        <p>Neural authentication required for full system access</p>
-                        <div class="auth-actions">
-                            <a href="{% url 'register' %}" class="cyber-button primary">
-                                <span class="button-effect"></span>
-                                <span class="button-text">INITIALIZE NEURAL LINK</span>
-                            </a>
-                            <a href="{% url 'login' %}" class="cyber-button secondary">
-                                <span class="button-effect"></span>
-                                <span class="button-text">EXISTING LINK</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Blockchain Integration -->
-            <div class="blockchain-module">
-                <div class="cyber-frame">
-                    <div class="frame-header">
-                        <span class="prompt">[CHAIN]# </span>
-                        <h2 class="neon-text">NEURAL_BLOCKCHAIN_INTERFACE</h2>
-                    </div>
-                    <div class="grid-container">
-                        <!-- Solana Integration -->
-                        <div class="cyber-panel glow">
-                            <div class="panel-header">
-                                <i class="fas fa-wallet neon-icon"></i>
-                                <h3>SOLANA_BRIDGE</h3>
-                            </div>
-                            <div class="panel-content">
-                                <div class="wallet-display">
-                                    <span class="label">NEURAL_KEY:</span>
-                                    {% if profile.wallet %}
-                                        <a href="https://solscan.io/account/{{profile.wallet}}" 
-                                           class="cyber-link neon-text"
-                                           target="_blank">
-                                            {{profile.wallet|slice:":4"}}...{{profile.wallet|slice:"-4:"}}
-                                        </a>
-                                        <button class="cyber-button small" 
-                                                onclick="copyToClipboard('{{profile.wallet}}')">
-                                            <i class="fas fa-copy"></i> COPY_KEY
-                                        </button>
-                                    {% else %}
-                                        <span class="status-text">[ NOT CONNECTED ]</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Social Integration -->
-                        <div class="cyber-panel glow">
-                            <div class="panel-header">
-                                <i class="fa-brands fa-x-twitter neon-icon"></i>
-                                <h3>SOCIAL_LINK</h3>
-                            </div>
-                            <div class="panel-content">
-                                <div class="social-display">
-                                    <span class="label">HANDLE:</span>
-                                    {% if profile.x_handle %}
-                                        <a href="https://twitter.com/{{profile.x_handle}}" 
-                                           class="cyber-link neon-text"
-                                           target="_blank">
-                                            <i class="fab fa-twitter"></i> @{{profile.x_handle}}
-                                        </a>
-                                    {% else %}
-                                        <span class="status-text">[ NOT CONNECTED ]</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Transaction History -->
+            <div class="modern-card">
+                <h3>Recent Transactions</h3>
+                <div class="mt-3">
+                    {% if transactions %}
+                    <ul class="list-unstyled">
+                        {% for tx in transactions|slice:":5" %}
+                        <li class="d-flex justify-content-between align-items-center mb-2">
+                            <span>{{ tx.description }}</span>
+                            <span class="status-badge {{ tx.status }}">{{ tx.amount }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-secondary text-center">No recent transactions</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Quick Actions -->
+    <div class="modern-card">
+        <div class="section-header">
+            <h2>Quick Actions</h2>
+        </div>
+        <div class="dashboard-grid">
+            <a href="{% url 'public_characters' %}" class="modern-card text-decoration-none">
+                <i class="fas fa-robot mb-3 icon"></i>
+                <h4>Browse Agents</h4>
+                <p class="text-secondary">Explore available AI agents</p>
+            </a>
+            
+            <a href="{% url 'shop_product_list' %}" class="modern-card text-decoration-none">
+                <i class="fas fa-cube mb-3 icon"></i>
+                <h4>Products</h4>
+                <p class="text-secondary">View digital products</p>
+            </a>
+            
+            <a href="{% url 'handle-list' %}" class="modern-card text-decoration-none">
+                <i class="fas fa-eye mb-3 icon"></i>
+                <h4>Oracle</h4>
+                <p class="text-secondary">Access prediction data</p>
+            </a>
+        </div>
+    </div>
 </div>
 
-<style>
-/* Override any default link styles */
-.neon-text {
-    color: #00FF00 !important;
-    text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00;
-}
-
-.wallet-address, .social-handle {
-    color: #00FF00 !important;
-    text-decoration: none !important;
-    border-bottom: 1px solid #00FF00;
-    transition: all 0.3s ease;
-}
-
-.wallet-address:hover, .social-handle:hover {
-    color: #FFFFFF !important;
-    text-shadow: 0 0 10px #FFFFFF;
-    border-bottom-color: #FFFFFF;
-}
-
-.cyber-button {
-    background: transparent;
-    border: 1px solid #00FF00;
-    color: #00FF00 !important;
-    text-decoration: none !important;
-    padding: 8px 16px;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    position: relative;
-    overflow: hidden;
-}
-
-.cyber-button:hover {
-    background: rgba(0, 255, 0, 0.1);
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-    color: #FFFFFF !important;
-}
-
-.cyber-panel {
-    border: 1px solid #00FF00;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 15px;
-    margin: 10px 0;
-}
-
-.cyber-panel.glow {
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-}
-
-.neon-icon {
-    color: #00FF00;
-    text-shadow: 0 0 5px #00FF00;
-}
-
-.blink-cursor {
-    animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-    50% { opacity: 0; }
-}
-
-.copy-feedback {
-    animation: fadeInOut 2s ease-in-out;
-}
-
-@keyframes fadeInOut {
-    0% { opacity: 0; transform: translateY(-20px); }
-    10% { opacity: 1; transform: translateY(0); }
-    90% { opacity: 1; transform: translateY(0); }
-    100% { opacity: 0; transform: translateY(-20px); }
-}
-
-.wallet-display, .social-display {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
-}
-
-.cyber-button.small {
-    padding: 8px 16px;
-    font-size: 0.9em;
-    margin-top: 0.5rem;
-}
-
-.matrix-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-}
-
-.cyber-container {
-    position: relative;
-    z-index: 1;
-}
-
-.terminal-window {
-    position: relative;
-    z-index: 2;
-}
-
-.terminal-content {
-    position: relative;
-    z-index: 3;
-}
-
-.cyber-frame {
-    border: 1px solid #00FF00;
-    background: rgba(0, 0, 0, 0.9);
-    padding: 20px;
-    margin: 20px 0;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
-}
-
-.frame-header {
-    border-bottom: 1px solid #00FF00;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.prompt {
-    color: #00FF00;
-    font-family: 'Courier New', monospace;
-}
-
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.cyber-panel {
-    border: 1px solid #00FF00;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 20px;
-    transition: all 0.3s ease;
-}
-
-.cyber-panel:hover {
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
-    transform: translateY(-2px);
-}
-
-.panel-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
-    padding-bottom: 10px;
-}
-
-.panel-header h3 {
-    margin: 0;
-    color: #00FF00;
-    font-size: 1.2em;
-    font-family: 'Courier New', monospace;
-}
-
-.neon-icon {
-    color: #00FF00;
-    text-shadow: 0 0 5px #00FF00;
-    font-size: 1.2em;
-}
-
-.cyber-link {
-    color: #00FF00 !important;
-    text-decoration: none;
-    padding: 5px 10px;
-    border: 1px solid #00FF00;
-    transition: all 0.3s ease;
-    display: inline-block;
-    margin: 5px 0;
-    background: rgba(0, 255, 0, 0.1);
-}
-
-.cyber-link:hover {
-    color: #FFFFFF !important;
-    background: rgba(0, 255, 0, 0.2);
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-    text-decoration: none;
-    border-color: #FFFFFF;
-}
-
-.label {
-    color: #00FF00;
-    opacity: 0.8;
-    font-size: 0.9em;
-    text-transform: uppercase;
-}
-
-.status-text {
-    color: #FF3333;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9em;
-}
-
-.cyber-button.small {
-    padding: 5px 10px;
-    font-size: 0.8em;
-    margin-top: 5px;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.cyber-button.small i {
-    font-size: 0.9em;
-}
-
-@media (max-width: 768px) {
-    .grid-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .cyber-frame {
-        padding: 15px;
-    }
-}
-</style>
-
-<!-- Matrix Rain Animation Script -->
-<script>
-    const canvas = document.getElementById('matrixRain');
-    const ctx = canvas.getContext('2d');
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%";
-    const characters = matrix.split("");
-    const fontSize = 14;
-    const columns = canvas.width/fontSize;
-    const drops = [];
-
-    for(let x = 0; x < columns; x++) {
-        drops[x] = 1; 
-    }
-
-    function draw() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        ctx.fillStyle = "#0F0";
-        ctx.font = fontSize + "px monospace";
-
-        for(let i = 0; i < drops.length; i++) {
-            const text = characters[Math.floor(Math.random() * characters.length)];
-            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-            if(drops[i] * fontSize > canvas.height && Math.random() > 0.975)
-                drops[i] = 0;
-
-            drops[i]++;
-        }
-    }
-
-    setInterval(draw, 35);
-</script>
-
+<!-- Clipboard Copy Script -->
 <script>
 function copyToClipboard(text) {
-    // Create a temporary input element
-    const tempInput = document.createElement('input');
-    tempInput.value = text;
-    document.body.appendChild(tempInput);
-    
-    // Select and copy the text
-    tempInput.select();
-    document.execCommand('copy');
-    
-    // Remove the temporary element
-    document.body.removeChild(tempInput);
-    
-    // Show feedback
-    const feedbackDiv = document.createElement('div');
-    feedbackDiv.textContent = 'Copied to clipboard!';
-    feedbackDiv.className = 'copy-feedback neon-text';
-    feedbackDiv.style.position = 'fixed';
-    feedbackDiv.style.top = '20px';
-    feedbackDiv.style.right = '20px';
-    feedbackDiv.style.padding = '10px';
-    feedbackDiv.style.background = 'rgba(0, 0, 0, 0.8)';
-    feedbackDiv.style.border = '1px solid #00FF00';
-    feedbackDiv.style.borderRadius = '5px';
-    feedbackDiv.style.zIndex = '1000';
-    
-    document.body.appendChild(feedbackDiv);
-    
-    // Remove feedback after 2 seconds
-    setTimeout(() => {
-        document.body.removeChild(feedbackDiv);
-    }, 2000);
-}
-
-// Modern clipboard API alternative (use this if available)
-async function copyToClipboardModern(text) {
-    try {
-        await navigator.clipboard.writeText(text);
-        // Show feedback (same as above)
-        const feedbackDiv = document.createElement('div');
-        feedbackDiv.textContent = 'Copied to clipboard!';
-        feedbackDiv.className = 'copy-feedback neon-text';
-        feedbackDiv.style.position = 'fixed';
-        feedbackDiv.style.top = '20px';
-        feedbackDiv.style.right = '20px';
-        feedbackDiv.style.padding = '10px';
-        feedbackDiv.style.background = 'rgba(0, 0, 0, 0.8)';
-        feedbackDiv.style.border = '1px solid #00FF00';
-        feedbackDiv.style.borderRadius = '5px';
-        feedbackDiv.style.zIndex = '1000';
-        
-        document.body.appendChild(feedbackDiv);
+    navigator.clipboard.writeText(text).then(() => {
+        // Show feedback
+        const toast = document.createElement('div');
+        toast.className = 'status-badge active fade-in';
+        toast.style.position = 'fixed';
+        toast.style.bottom = '20px';
+        toast.style.right = '20px';
+        toast.style.zIndex = '1000';
+        toast.textContent = 'Copied to clipboard!';
+        document.body.appendChild(toast);
         
         setTimeout(() => {
-            document.body.removeChild(feedbackDiv);
+            toast.remove();
         }, 2000);
-    } catch (err) {
-        console.error('Failed to copy text: ', err);
-    }
+    });
 }
 </script>
 {% endblock %}
