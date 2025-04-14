@@ -423,3 +423,31 @@ a:hover,
         padding: 1rem;
     }
 }
+
+/* Features Section */
+#features {
+  background-color: var(--dark-bg);
+}
+
+/* Section Utilities */
+.py-7 {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+  background-color: var(--dark-bg);
+}
+
+/* Override any green backgrounds */
+.hero-section, 
+.feature-section,
+.cta-section {
+  background-color: var(--dark-bg) !important;
+}
+
+/* Ensure text is white where needed */
+.text-muted {
+  color: var(--text-secondary) !important;
+}
+
+.lead {
+  color: var(--text-secondary);
+}

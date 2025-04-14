@@ -1,12 +1,12 @@
 /* Global Styles */
 body {
   background-color: #000000; /* Dark background */
-  color: #00FF00; /* Terminal green text color */
-  font-family: 'Courier New', Courier, monospace; /* Terminal character type */
-  text-align: left !important; /* Ensure left alignment */
-  font-size: 16px; /* Adjust font size as desired */
-  line-height: 1.8; /* Improved line height */
-  letter-spacing: 0.5px; /* Better letter spacing */
+  color: #ffffff; /* Change from green to white for better readability */
+  font-family: 'Courier New', Courier, monospace;
+  text-align: left !important;
+  font-size: 16px;
+  line-height: 1.8;
+  letter-spacing: 0.5px;
 }
 .custom-navbar {
   background-color: black !important;
@@ -45,7 +45,7 @@ body {
   background-color: rgba(0, 0, 0, 0.8) !important;
   padding: 2rem !important; /* Increased padding */
   border-radius: 8px !important;
-  color: #00FF00 !important;
+  color: #ffffff !important; /* Change from green to white */
   margin: 2rem auto !important; /* Added vertical margin */
 }
 
@@ -1026,6 +1026,8 @@ a.terminal-green:hover {
   min-height: 100vh;
   display: flex;
   align-items: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .hero-bg-pattern {
@@ -1034,9 +1036,8 @@ a.terminal-green:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px);
-  background-size: 50px 50px;
-  opacity: 0.5;
+  opacity: 0.1;
+  background-image: none; /* Remove any pattern that might add green */
 }
 
 /* Feature Cards */
