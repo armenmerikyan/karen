@@ -3,111 +3,174 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section bg-gradient-dark position-relative">
-  <div class="container py-5">
+<section class="hero-section position-relative overflow-hidden">
+  <div class="hero-bg-pattern"></div>
+  <div class="container py-7">
     <div class="row align-items-center">
-      <div class="col-lg-6">
-        <h1 class="display-4 fw-bold text-white mb-4">
-          Vibecode: Revolutionize Your Coding Experience Online
-        </h1>
-        <p class="lead text-light mb-4">
-          Experience the future of coding with AI-powered assistance, real-time collaboration, 
-          and intelligent code completion. Build better software, faster.
-        </p>
-        <div class="d-flex gap-3">
-          <a href="https://vibecode.gigahard.ai" class="btn btn-primary btn-lg pulse-button">
-            Try Vibecode Now
-          </a>
-          <a href="#features" class="btn btn-outline-light btn-lg">
-            Learn More
-          </a>
+      <div class="col-lg-6 position-relative z-2">
+        <div class="animate-fade-in">
+          <span class="badge bg-primary-subtle text-primary mb-3">Next-Gen Development Platform</span>
+          <h1 class="display-3 fw-bold text-gradient mb-4">
+            Code Smarter with AI-Powered Intelligence
+          </h1>
+          <p class="lead text-muted mb-5">
+            Experience the future of coding with Vibecode. Harness AI assistance, 
+            real-time collaboration, and intelligent completions to build exceptional software.
+          </p>
+          <div class="d-flex gap-3 flex-wrap">
+            <a href="https://vibecode.gigahard.ai" class="btn btn-gradient-primary btn-lg">
+              <i class="fas fa-rocket me-2"></i>Launch Vibecode
+            </a>
+            <a href="#features" class="btn btn-outline-light btn-lg">
+              <i class="fas fa-play me-2"></i>Watch Demo
+            </a>
+          </div>
+          <div class="mt-5 d-flex align-items-center gap-4">
+            <div class="d-flex align-items-center">
+              <div class="rating-stars text-warning">★★★★★</div>
+              <span class="ms-2 text-muted">4.9/5 Rating</span>
+            </div>
+            <div class="vr bg-light opacity-25 h-100"></div>
+            <div class="text-muted">
+              <strong>10K+</strong> Active Developers
+            </div>
+          </div>
         </div>
       </div>
-      <div class="col-lg-6">
-        <img src="{% static '/images/vibecode.ui.png' %}" alt="Vibecode Interface" class="img-fluid rounded-3 shadow-lg">
+      <div class="col-lg-6 position-relative z-1">
+        <div class="hero-image-wrapper">
+          <img src="{% static 'img/vibecode-interface.png' %}" alt="Vibecode Interface" 
+               class="img-fluid rounded-4 shadow-2xl floating-animation">
+          <div class="code-preview-card">
+            <div class="d-flex align-items-center mb-3">
+              <div class="code-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <small class="ms-3 text-muted">main.py</small>
+            </div>
+            <pre class="code-snippet"><code>def hello_world():
+    return "Hello, Vibecode!"</code></pre>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Features Section -->
-<section id="features" class="py-5 bg-darker">
-  <div class="container">
-    <h2 class="text-center text-white mb-5">Why Choose Vibecode?</h2>
+<section id="features" class="py-7 bg-darker position-relative">
+  <div class="section-pattern-overlay"></div>
+  <div class="container position-relative z-2">
+    <div class="text-center mb-6">
+      <span class="badge bg-success-subtle text-success mb-3">Features</span>
+      <h2 class="display-5 fw-bold text-white mb-4">Supercharge Your Development</h2>
+      <p class="lead text-muted mx-auto" style="max-width: 600px;">
+        Everything you need to write better code, faster. Built for developers, by developers.
+      </p>
+    </div>
+    
     <div class="row g-4">
       <div class="col-md-4">
-        <div class="feature-card p-4 rounded-3">
-          <i class="fas fa-robot fa-2x text-primary mb-3"></i>
-          <h3 class="h5 text-white">AI-Powered Assistant</h3>
-          <p class="text-muted">Get intelligent code suggestions and real-time assistance while you code.</p>
+        <div class="feature-card h-100">
+          <div class="feature-icon bg-primary-subtle text-primary mb-4">
+            <i class="fas fa-robot"></i>
+          </div>
+          <h3 class="h4 text-white mb-3">AI Co-Pilot</h3>
+          <p class="text-muted mb-0">Advanced AI that understands your codebase and helps you write better code with intelligent suggestions.</p>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="feature-card p-4 rounded-3">
-          <i class="fas fa-users fa-2x text-primary mb-3"></i>
-          <h3 class="h5 text-white">Real-Time Collaboration</h3>
-          <p class="text-muted">Code together with your team in real-time, seamlessly.</p>
+        <div class="feature-card h-100">
+          <div class="feature-icon bg-success-subtle text-success mb-4">
+            <i class="fas fa-users"></i>
+          </div>
+          <h3 class="h4 text-white mb-3">Real-Time Collaboration</h3>
+          <p class="text-muted mb-0">Code together in real-time with your team. Share, review, and debug together seamlessly.</p>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="feature-card p-4 rounded-3">
-          <i class="fas fa-code fa-2x text-primary mb-3"></i>
-          <h3 class="h5 text-white">Multi-Language Support</h3>
-          <p class="text-muted">Support for all major programming languages and frameworks.</p>
+        <div class="feature-card h-100">
+          <div class="feature-icon bg-info-subtle text-info mb-4">
+            <i class="fas fa-code"></i>
+          </div>
+          <h3 class="h4 text-white mb-3">Universal Language Support</h3>
+          <p class="text-muted mb-0">First-class support for all major programming languages, frameworks, and tools.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Testimonials Section -->
-<section class="py-5 bg-gradient-dark">
-  <div class="container">
-    <h2 class="text-center text-white mb-5">What Developers Say</h2>
+<!-- Social Proof Section -->
+<section class="py-7 bg-gradient-dark position-relative overflow-hidden">
+  <div class="container position-relative z-2">
+    <div class="text-center mb-6">
+      <span class="badge bg-warning-subtle text-warning mb-3">Testimonials</span>
+      <h2 class="display-5 fw-bold text-white mb-4">Loved by Developers</h2>
+    </div>
+    
     <div class="row g-4">
-      <div class="col-md-4">
-        <div class="testimonial-card p-4 rounded-3">
-          <div class="d-flex align-items-center mb-3">
-            <img src="{% static 'img/avatar1.png' %}" alt="User" class="rounded-circle me-3" width="50">
-            <div>
-              <h5 class="mb-0 text-white">Alex Chen</h5>
-              <small class="text-muted">Senior Developer</small>
+      <div class="col-lg-4">
+        <div class="testimonial-card h-100">
+          <div class="testimonial-rating text-warning mb-4">★★★★★</div>
+          <p class="testimonial-text mb-4">"Vibecode's AI suggestions are incredibly accurate. It's like having a senior developer watching over your shoulder."</p>
+          <div class="d-flex align-items-center">
+            <img src="{% static 'img/avatars/alex.jpg' %}" alt="Alex Chen" 
+                 class="testimonial-avatar rounded-circle">
+            <div class="ms-3">
+              <h5 class="mb-1 text-white">Alex Chen</h5>
+              <p class="mb-0 text-muted">Senior Developer @ Google</p>
             </div>
           </div>
-          <p class="text-light">"Vibecode has transformed how our team collaborates. The AI suggestions are incredibly accurate."</p>
         </div>
       </div>
-      <!-- Add more testimonials as needed -->
-    </div>
-  </div>
-</section>
-
-<!-- Other Products Section -->
-<section class="py-5 bg-darker">
-  <div class="container">
-    <h2 class="text-center text-white mb-5">Explore Our Ecosystem</h2>
-    <div class="row g-4">
-      {% if tokens %}
-      <div class="col-md-6">
-        <div class="card bg-dark border-light">
-          <div class="card-body">
-            <h3 class="card-title text-white">AI Agents</h3>
-            <p class="card-text text-muted">Discover our marketplace of specialized AI agents.</p>
-            <a href="{% url 'public_characters' %}" class="btn btn-outline-primary">Browse Agents</a>
+      <div class="col-lg-4">
+        <div class="testimonial-card h-100">
+          <div class="testimonial-rating text-warning mb-4">★★★★★</div>
+          <p class="testimonial-text mb-4">"The real-time collaboration features have transformed how our entire team works together. Game changer!"</p>
+          <div class="d-flex align-items-center">
+            <img src="{% static 'img/avatars/sarah.jpg' %}" alt="Sarah Miller" 
+                 class="testimonial-avatar rounded-circle">
+            <div class="ms-3">
+              <h5 class="mb-1 text-white">Sarah Miller</h5>
+              <p class="mb-0 text-muted">Tech Lead @ Microsoft</p>
+            </div>
           </div>
         </div>
       </div>
-      {% endif %}
-      <!-- Add other products/services -->
+      <div class="col-lg-4">
+        <div class="testimonial-card h-100">
+          <div class="testimonial-rating text-warning mb-4">★★★★★</div>
+          <p class="testimonial-text mb-4">"The language support is incredible. Whether I'm working in Python, Rust, or TypeScript, Vibecode just gets it."</p>
+          <div class="d-flex align-items-center">
+            <img src="{% static 'img/avatars/james.jpg' %}" alt="James Wilson" 
+                 class="testimonial-avatar rounded-circle">
+            <div class="ms-3">
+              <h5 class="mb-1 text-white">James Wilson</h5>
+              <p class="mb-0 text-muted">CTO @ Startup</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- CTA Section -->
-<section class="py-5 bg-primary">
-  <div class="container text-center">
-    <h2 class="text-white mb-4">Ready to Transform Your Coding Experience?</h2>
-    <a href="https://vibecode.gigahard.ai" class="btn btn-light btn-lg">Get Started with Vibecode</a>
+<section class="py-7 bg-primary position-relative overflow-hidden">
+  <div class="cta-pattern-overlay"></div>
+  <div class="container position-relative z-2">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h2 class="display-4 text-white fw-bold mb-4">Ready to Transform Your Development Workflow?</h2>
+        <p class="lead text-white-50 mb-0">Join thousands of developers who are coding smarter, not harder.</p>
+      </div>
+      <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+        <a href="https://vibecode.gigahard.ai" class="btn btn-light btn-lg px-5">
+          <i class="fas fa-rocket me-2"></i>Get Started Free
+        </a>
+      </div>
+    </div>
   </div>
 </section>
 {% endblock %}
