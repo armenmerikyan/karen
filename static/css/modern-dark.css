@@ -263,11 +263,21 @@ a:hover,
   box-shadow: 0 4px 12px rgba(114, 137, 218, 0.3);
 }
 
-/* CTA Button Styles */
+/* CTA Section Spacing */
+.py-7 {
+  padding-top: 5rem !important;
+  padding-bottom: 5rem !important;
+  margin-top: 3rem !important;
+  margin-bottom: 3rem !important;
+}
+
+/* CTA Button Styles with improved spacing */
 .btn-light {
   background-color: var(--text-primary) !important;
   border-color: var(--text-primary) !important;
   color: var(--dark-bg) !important;
+  padding: 1rem 2rem !important;
+  margin: 1.5rem 0 !important;
 }
 
 .btn-light:hover {
@@ -277,12 +287,22 @@ a:hover,
   box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
 }
 
-.btn-light i,
-.btn-light span {
-  color: var(--dark-bg) !important;
+/* CTA Content Spacing */
+.cta-content {
+  margin-bottom: 2rem !important;
 }
 
-.btn-light:hover i,
-.btn-light:hover span {
-  color: var(--dark-bg) !important;
+/* Responsive margins for different screen sizes */
+@media (max-width: 768px) {
+  .py-7 {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+    margin-top: 2rem !important;
+    margin-bottom: 2rem !important;
+  }
+  
+  .btn-light {
+    margin: 1rem 0 !important;
+    padding: 0.75rem 1.5rem !important;
+  }
 }
