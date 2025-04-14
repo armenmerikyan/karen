@@ -1157,3 +1157,44 @@ a.terminal-green:hover {
     width: 100%;
   }
 }
+
+/* Add these styles to ensure proper text highlighting in dark mode */
+.text-muted:hover,
+.lead:hover,
+p:hover,
+h1:hover,
+h2:hover,
+h3:hover,
+h4:hover,
+h5:hover,
+h6:hover {
+  color: #ffffff !important;
+  transition: color 0.3s ease;
+}
+
+/* Enhance link hover states */
+a:hover,
+.nav-link:hover,
+.btn:hover {
+  color: #ffffff !important;
+  text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+/* Specific hover states for cards and containers */
+.custom-card-body:hover,
+.content-container:hover {
+  background-color: rgba(0, 40, 0, 0.4) !important;
+  transition: background-color 0.3s ease;
+}
+
+/* Enhanced text highlight selection */
+::selection {
+  background: rgba(0, 255, 0, 0.3);
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background: rgba(0, 255, 0, 0.3);
+  color: #ffffff;
+}

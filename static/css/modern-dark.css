@@ -203,3 +203,62 @@ body {
   max-width: 100%;
   height: auto;
 }
+
+/* Text and Link Hover States */
+.text-muted:hover,
+.lead:hover,
+p:hover,
+h1:hover,
+h2:hover,
+h3:hover,
+h4:hover,
+h5:hover,
+h6:hover {
+  color: var(--text-primary) !important;
+  transition: color 0.3s ease;
+}
+
+/* Link Hover Effects */
+a:hover,
+.nav-link:hover,
+.btn:hover {
+  color: var(--accent-primary) !important;
+  text-shadow: 0 0 8px rgba(114, 137, 218, 0.5);
+  transition: all 0.3s ease;
+}
+
+/* Card and Container Hover Effects */
+.modern-card:hover,
+.feature-card:hover,
+.stats-card:hover {
+  background: var(--dark-surface-2);
+  border-color: var(--accent-primary);
+  transition: all 0.3s ease;
+}
+
+/* Text Selection */
+::selection {
+  background: var(--accent-primary);
+  color: var(--text-primary);
+  opacity: 0.3;
+}
+
+::-moz-selection {
+  background: var(--accent-primary);
+  color: var(--text-primary);
+  opacity: 0.3;
+}
+
+/* Enhanced Focus States */
+*:focus {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Button Hover States */
+.btn-modern:hover {
+  background: var(--accent-secondary);
+  color: var(--text-primary) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(114, 137, 218, 0.3);
+}
