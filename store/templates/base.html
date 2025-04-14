@@ -81,14 +81,6 @@
         <!-- User Navigation -->
         <ul class="navbar-nav cyber-user-nav">
           {% if user.is_authenticated %}
-            {% if user.is_staff %}
-            <li class="nav-item">
-              <a href="{% url 'admin_panel' %}" class="nav-link cyber-admin-link">
-                <i class="fas fa-dashboard"></i>
-                <span class="d-none d-lg-inline ms-2">Control</span>
-              </a>
-            </li>
-            {% endif %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle cyber-user-link" href="#" id="userDropdown" data-bs-toggle="dropdown">
                 <i class="fas fa-user-circle"></i>
@@ -97,6 +89,9 @@
               <ul class="dropdown-menu dropdown-menu-end cyber-dropdown">
                 <li><a class="dropdown-item" href="{% url 'update_profile' %}">Profile</a></li>
                 <li><a class="dropdown-item" href="{% url 'character_list' %}">My Agents</a></li>
+                <li><a class="dropdown-item" href="{% url 'admin_panel' %}">
+                  <i class="fas fa-dashboard me-2"></i>Control
+                </a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
               </ul>
