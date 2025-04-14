@@ -262,3 +262,27 @@ a:hover,
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(114, 137, 218, 0.3);
 }
+
+/* CTA Button Styles */
+.btn-light {
+  background-color: var(--text-primary) !important;
+  border-color: var(--text-primary) !important;
+  color: var(--dark-bg) !important;
+}
+
+.btn-light:hover {
+  background-color: var(--text-secondary) !important;
+  border-color: var(--text-secondary) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+}
+
+.btn-light i,
+.btn-light span {
+  color: var(--dark-bg) !important;
+}
+
+.btn-light:hover i,
+.btn-light:hover span {
+  color: var(--dark-bg) !important;
+}
